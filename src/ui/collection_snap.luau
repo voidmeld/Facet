@@ -1,4 +1,5 @@
 --!strict
+local reducedMotion = require("./motion")
 local Compose = require("../vendor/compose/core")
 local Types = require("./types")
 type SnapOptions = { direction: Compose.OrderedCollectionDirection?, reducedMotion: Types.Value<boolean>? }
@@ -20,7 +21,7 @@ return function<K>(
 	local stopWait: Compose.Dispose? = nil
 	local idle, from, target = 0, 0, 0
 	local previous, previousTime, velocity, gestureStart = 0, clock(), 0, 0
-	local motionReduced = ctx.reducedMotion()
+	local motionReduced = reducedMotion(ctx)
 	local function cancel()
 		running = false
 		motion:pause()

@@ -104,13 +104,6 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		return value
 	end
 	ctx.observe = (observe :: unknown) :: Shared.Observe
-	function ctx.reducedMotion(): (Compose.Use?) -> boolean
-		local gui = config.guiService
-		local native: Compose.Cell<unknown>? = if gui then observe(gui, "ReducedMotionEnabled") else nil
-		return function(use: Compose.Use?): boolean
-			return read(config.reducedMotion, use) == true or (native ~= nil and read(native, use) == true)
-		end
-	end
 
 	function ctx.playWhileShown(timeline: Shared.Playback, node: Instance)
 		local owner = assert(Compose.currentOwner(), "Facet playWhileShown requires a Compose owner")

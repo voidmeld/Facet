@@ -1,4 +1,5 @@
 --!strict
+local reducedMotion = require("./motion")
 local geometry = require("./nav_radial_geometry")
 local Types = require("./types")
 local Radial = require("./radial_types")
@@ -33,7 +34,7 @@ return function(
 		choice(spec.center, "back", { "back", "root", "close", "content", "empty" }, "center")
 		choice(spec.completion, "close", { "close", "back", "root", "stay" }, "completion")
 		choice(spec.buttonSurface, "native", { "native", "none" }, "buttonSurface")
-		local motionReduced = ctx.reducedMotion()
+		local motionReduced = reducedMotion(ctx)
 		local function reduced(use: Reactive.Use?): boolean
 			return spec.transition == false or motionReduced(use)
 		end

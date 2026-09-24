@@ -1,4 +1,5 @@
 --!strict
+local reducedMotion = require("./motion")
 local decoration = require("./native_decoration")
 local help = require("./help")
 local valueModel = require("./input_value")
@@ -272,7 +273,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.Button: invalid dialogAction"
 		)
 		local popTimeline = if spec.pop then runtime.timeline({ duration = 0.45, autoplay = false }) else nil
-		local popReduced = if popTimeline then ctx.reducedMotion() else nil
+		local popReduced = if popTimeline then reducedMotion(ctx) else nil
 		local popStart = Compose.cell(1)
 		local popScale
 		if popTimeline then
@@ -397,7 +398,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					return read(spec.busy, use) == true
 				end, function()
 					local phase = runtime.timeline({ duration = 1, repeats = math.huge })
-					local dotsReduced = ctx.reducedMotion()
+					local dotsReduced = reducedMotion(ctx)
 					local dots: Shared.FrameNativeProps = {
 						Name = "Busy",
 						Size = D2.fromOffset(18, 18),
@@ -1065,7 +1066,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local validationMessage = Compose.cell("")
 		local mayReject = numeric or spec.invalid ~= nil
 		local errorTimeline = if mayReject then runtime.timeline({ duration = 0.24, autoplay = false }) else nil
-		local errorReduced = if errorTimeline then ctx.reducedMotion() else nil
+		local errorReduced = if errorTimeline then reducedMotion(ctx) else nil
 		if errorTimeline then
 			assert(errorTimeline):seek(0.24)
 		end

@@ -1,4 +1,5 @@
 --!strict
+local reducedMotion = require("./motion")
 local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local CollectionTypes = require("./collection_types")
@@ -45,7 +46,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local committing: ComposeTypes.Cell<{ action: RowAction, edge: RowEdge }?> =
 			Compose.cell(nil :: { action: RowAction, edge: RowEdge }?)
 		local fired = false
-		local motionReduced = ctx.reducedMotion()
+		local motionReduced = reducedMotion(ctx)
 		local function reduced(use: ComposeTypes.Use?): boolean
 			return if spec.reducedMotion == nil then motionReduced(use) else read(spec.reducedMotion, use) == true
 		end
