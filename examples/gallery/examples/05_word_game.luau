@@ -94,15 +94,7 @@ end
 
 example.rules = rules
 
-local TILE_TINT: { [string]: any } = {
-	empty = { role = "contentSecondary", blend = 0.2 },
-
-	caret = { role = "contentSecondary", blend = 0.2 },
-	filled = { role = "contentSecondary", blend = 0.35 },
-	absent = { role = "contentSecondary", blend = 0.55 },
-	present = { role = "accent", blend = 0.55 },
-	correct = { role = "accent", blend = 1 },
-}
+local STATUS: { [string]: string } = { absent = "neutral", present = "warning", correct = "success" }
 
 local TILE_MARK: { [string]: string } = {
 	empty = "",
@@ -113,15 +105,6 @@ local TILE_MARK: { [string]: string } = {
 	correct = "v",
 }
 
-local ACTIVE_ROW_PLATE = { surface = "chip" }
-local IDLE_ROW_PLATE = { surface = "plain" }
-
-local KEY_SURFACE: { [string]: string } = {
-	unknown = "control",
-	absent = "base",
-	present = "chip",
-	correct = "accent",
-}
 local KEY_MARK: { [string]: string } = { absent = "x", present = "~", correct = "v" }
 
 local KEYBOARD = {
@@ -173,9 +156,8 @@ function example.build(ctx: any)
 	local UI, Compose = ctx.UI, ctx.Compose
 	local Host = ctx.Host
 	local Compose = ctx.Compose
-	local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Color3 = Color3, Enum = Enum }
-	local UDim, UDim2, Vector2, Color3, Enum =
-		nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Color3, nativeTypes.Enum
+	local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Enum = Enum }
+	local UDim, UDim2, Vector2, Enum = nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Enum
 
 	local rowsSig = Compose.cell(emptyRows())
 	local activeSig = Compose.cell(1)
@@ -289,16 +271,25 @@ function example.build(ctx: any)
 	end
 	local statusSig: any
 	local tileStateOf: { [string]: any } = {}
-	local tileSurfaceOf: { [string]: any } = {}
 	local keyPathByLetter: { [string]: any } = {}
-	local tileColors = {
-		empty = Color3.fromRGB(58, 67, 82),
-		caret = Color3.fromRGB(70, 83, 104),
-		filled = Color3.fromRGB(78, 89, 109),
-		absent = Color3.fromRGB(76, 82, 90),
-		present = Color3.fromRGB(155, 124, 30),
-		correct = Color3.fromRGB(37, 126, 79),
-	}
+	local function statusTag(node: Instance, state: any): Instance
+		local previous: string? = nil
+		Compose.watch(function(use)
+			local status = STATUS[use(state)]
+			local tag = if status ~= nil then `facet-status-{status}` else nil
+			if tag == previous then
+				return
+			end
+			if previous ~= nil then
+				node:RemoveTag(previous)
+			end
+			if tag ~= nil then
+				node:AddTag(tag)
+			end
+			previous = tag
+		end)
+		return node
+	end
 
 	local function WordGame()
 		local tiles: { any } = { columns = COLS, gap = "xs", rowGap = "xs", itemSizing = "uniform" }
@@ -311,52 +302,47 @@ function example.build(ctx: any)
 				local letter = Compose.formula(function(use)
 					return use(rowsSig)[rr].letters:sub(cc, cc)
 				end)
-				local tint = Compose.formula(function(use)
-					return TILE_TINT[use(state)]
-				end)
 				local mark = Compose.formula(function(use)
 					return TILE_MARK[use(state)]
 				end)
-				local surface = Compose.formula(function(use)
-					local taking = use(playingSig) and use(activeSig) == rr
-					return if taking then ACTIVE_ROW_PLATE.surface else IDLE_ROW_PLATE.surface
-				end)
 				tileStateOf[`{rr}:{cc}`] = state
-				tileSurfaceOf[`{rr}:{cc}`] = surface
-				table.insert(
-					tiles,
-					Host.Frame({
-						Name = `tile{r}_{c}`,
-						BackgroundTransparency = 1,
-						Size = function(use)
-							return UDim2.new(0, 44, 0, 44)
-						end,
-						Host.Frame "fill" {
-							Size = UDim2.fromScale(1, 1),
-							BorderSizePixel = 0,
-							BackgroundColor3 = function(use)
-								return tileColors[use(state)]
-							end,
-							Host.UICorner({ CornerRadius = UDim.new(0, 4) }),
-						},
-						UI.Label "ch" {
-							Text = letter,
-							TextColor3 = Color3.new(1, 1, 1),
-							TextSize = 24,
-							Size = UDim2.new(1, 0, 1, -12),
-							TextXAlignment = Enum.TextXAlignment.Center,
-							TextYAlignment = Enum.TextYAlignment.Center,
-						},
-						UI.Label "mark" {
-							Text = mark,
-							TextColor3 = Color3.new(1, 1, 1),
-							TextSize = 12,
-							Position = UDim2.new(0, 0, 1, -14),
-							Size = UDim2.new(1, 0, 0, 14),
-							TextXAlignment = Enum.TextXAlignment.Center,
-						},
-					})
-				)
+				local fill = Host.Frame "fill" {
+					Size = UDim2.fromScale(1, 1),
+					Host.UICorner({}),
+					UI.Label "ch" {
+						Text = letter,
+						TextSize = 24,
+						Size = UDim2.new(1, 0, 1, -12),
+						TextXAlignment = Enum.TextXAlignment.Center,
+						TextYAlignment = Enum.TextYAlignment.Center,
+					},
+					UI.Label "mark" {
+						Text = mark,
+						TextSize = 12,
+						Position = UDim2.new(0, 0, 1, -14),
+						Size = UDim2.new(1, 0, 0, 14),
+						TextXAlignment = Enum.TextXAlignment.Center,
+					},
+				}
+				fill:AddTag("facet-control")
+				statusTag(fill, state)
+				local outline = Host.UIStroke "ActiveRow" {
+					Thickness = 2,
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					Enabled = function(use)
+						return use(playingSig) and use(activeSig) == rr
+					end,
+				}
+				outline:AddTag("facet-status-ring")
+				local tile = Host.Frame({
+					Name = `tile{r}_{c}`,
+					BackgroundTransparency = 1,
+					Size = UDim2.fromOffset(44, 44),
+					fill,
+					outline,
+				})
+				tile:AddTag("facet-status-accent")
+				table.insert(tiles, tile)
 			end
 		end
 		local board = Host.Frame "board" {
@@ -380,20 +366,17 @@ function example.build(ctx: any)
 				local thisKey = key
 				local isCommand = key == "Enter" or key == "Back"
 				local labelOf: any
-				local surfaceOf: any
+				local state: any
 				if isCommand then
 					labelOf = if key == "Enter" then "Enter" else "Delete"
 				else
-					local state = Compose.formula(function(use)
+					state = Compose.formula(function(use)
 						return use(keysSig)[thisKey] or "unknown"
 					end)
 					labelOf = Compose.formula(function(use)
 						local s = use(state)
 						local m = KEY_MARK[s]
 						return if m ~= nil then thisKey .. m else thisKey
-					end)
-					surfaceOf = Compose.formula(function(use)
-						return KEY_SURFACE[use(state)]
 					end)
 				end
 				buttons[ki] = UI.Button({
@@ -427,6 +410,9 @@ function example.build(ctx: any)
 						PaddingRight = UDim.new(0, 0),
 					}),
 				})
+				if state ~= nil then
+					statusTag(buttons[ki], state)
+				end
 				keyPathByLetter[key] = `/Wordle/page/col/kb/{rowId}/key_{key}`
 			end
 			keyboardRows[ri] = Host.Frame({
@@ -608,14 +594,8 @@ function example.build(ctx: any)
 		state = function(r: number, c: number): string
 			return tileState(rowsSig:peek(), activeSig:peek(), r, c)
 		end,
-		tint = function(r: number, c: number): any
-			return TILE_TINT[tileStateOf[`{r}:{c}`]:peek()]
-		end,
 		mark = function(r: number, c: number): string
 			return TILE_MARK[tileStateOf[`{r}:{c}`]:peek()]
-		end,
-		tileSurface = function(r: number, c: number): string
-			return tileSurfaceOf[`{r}:{c}`]:peek()
 		end,
 		keyState = function(letter: string): string?
 			return keysSig:peek()[letter]
