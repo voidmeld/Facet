@@ -90,16 +90,15 @@ t.describe("native gallery workflows", function()
 			end
 		end
 		local finalRow = find(node, "kbrow3")
-		t.expect(finalRow:FindFirstChildWhichIsA("UIListLayout").HorizontalFlex)
-			.toBe(ctx.types.Enum.UIFlexAlignment.Fill)
+		t.expect(finalRow.Size.X.Scale).toBe(1)
 		local count = 0
 		for _, key in finalRow:GetChildren() do
 			if key:IsA("GuiButton") then
 				local command = key.Name == "key_Enter" or key.Name == "key_Back"
 				t.expect(key.AutomaticSize)
 					.toBe(if command then ctx.types.Enum.AutomaticSize.X else ctx.types.Enum.AutomaticSize.None)
-				t.expect(key:FindFirstChildWhichIsA("UIFlexItem").FlexMode)
-					.toBe(if command then ctx.types.Enum.UIFlexMode.None else ctx.types.Enum.UIFlexMode.Fill)
+				local flex = key:FindFirstChildWhichIsA("UIFlexItem")
+				t.expect(if command then flex == nil else flex.FlexMode == ctx.types.Enum.UIFlexMode.Fill).toBe(true)
 				t.expect(key.TextWrapped).toBe(false)
 				t.expect(key.Size.Y.Offset).toBe(44)
 				count += 1
