@@ -479,21 +479,23 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			if spec.trailingIcon then
 				table.insert(content, icon(spec.trailingIcon, { Name = "TrailingIcon" }, iconState))
 			end
-			table.insert(
-				p,
-				if imageCard
-					then ctx.column(content, {
-						Name = "Content",
-						ZIndex = 1,
-						Size = D2.fromScale(1, 1),
-						AutomaticSize = E.AutomaticSize.None,
-						ClipsDescendants = true,
-					})
-					else ctx.row(
-						content,
-						{ Name = "Content", ZIndex = 1, AnchorPoint = V2.new(0, 0.5), Position = D2.fromScale(0, 0.5) }
-					)
-			)
+			local contentFrame = if imageCard
+				then ctx.column(content, {
+					Name = "Content",
+					ZIndex = 1,
+					Size = D2.fromScale(1, 1),
+					AutomaticSize = E.AutomaticSize.None,
+					ClipsDescendants = true,
+				})
+				else ctx.row(
+					content,
+					{ Name = "Content", ZIndex = 1, AnchorPoint = V2.new(0, 0.5), Position = D2.fromScale(0, 0.5) }
+				)
+			if not imageCard then
+				assert(contentFrame:FindFirstChildWhichIsA("UIListLayout")).VerticalAlignment =
+					E.VerticalAlignment.Center
+			end
+			table.insert(p, contentFrame)
 		end
 		local keyboardAttached = false
 		table.insert(
@@ -652,6 +654,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			tag("facet-shape-circle", spec.shape == "circle")
 			tag("facet-disabled", not available)
 			tag("facet-accent", appearance == "emphasis")
+			tag("facet-appearance-soft", appearance == "soft")
+			tag("facet-appearance-utility", appearance == "utility")
+			tag("facet-appearance-link", appearance == "link")
 			attribute("selected", selected)
 			attribute("busy", busy)
 			attribute("appearance", appearance)

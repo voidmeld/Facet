@@ -400,6 +400,13 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 			})
 		end
 	end
+	rule("ScrollingFrame", {
+		VerticalScrollBarInset = types.Enum.ScrollBarInset.ScrollBar,
+		HorizontalScrollBarInset = types.Enum.ScrollBarInset.ScrollBar,
+		ScrollBarThickness = 4,
+		ScrollBarImageColor3 = c("contentSecondary"),
+		ScrollBarImageTransparency = 0.4,
+	})
 	rule(".facet-text", {
 		TextColor3 = c("content"),
 		FontFace = f(package.metrics.typography.body.font),
@@ -568,6 +575,22 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		end
 	end
 
+	rule(".facet-appearance-utility", { BackgroundTransparency = 1 })
+	rule(".facet-appearance-utility:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(".facet-appearance-utility:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
+	rule(
+		".facet-appearance-soft",
+		{ BackgroundColor3 = c("accent"), BackgroundTransparency = 0.8, TextColor3 = c("accent") }
+	)
+	rule(".facet-appearance-soft:Hover", { BackgroundColor3 = c("accent"), BackgroundTransparency = 0.7 })
+	rule(".facet-appearance-soft:Press", { BackgroundColor3 = c("accent"), BackgroundTransparency = 0.6 })
+	rule(".facet-appearance-soft >> .facet-button-caption", { TextColor3 = c("accent") })
+	rule(".facet-appearance-soft >> .facet-icon", { ImageColor3 = c("accent") })
+	rule(".facet-appearance-link", { BackgroundTransparency = 1, TextColor3 = c("accent") })
+	rule(".facet-appearance-link:Hover", { BackgroundTransparency = 1, TextColor3 = c("accent") })
+	rule(".facet-appearance-link:Press", { BackgroundTransparency = 1, TextTransparency = 0.3 })
+	rule(".facet-appearance-link >> .facet-button-caption", { TextColor3 = c("accent") })
+	rule(".facet-appearance-link >> .facet-icon", { ImageColor3 = c("accent") })
 	rule(".facet-tab-item", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item:Hover", { BackgroundTransparency = 1, TextColor3 = c("content") })

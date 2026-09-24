@@ -112,6 +112,24 @@ local owner = Compose.createRootOwner(function()
 		}
 	end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	Compose.cleanup(stop)
+	local stopBackdrop, backdrop = runtime.mount(function()
+		return Host.ScreenGui "FacetGalleryBackdrop" {
+			ResetOnSpawn = false,
+			IgnoreGuiInset = true,
+			ScreenInsets = Enum.ScreenInsets.None,
+			DisplayOrder = -1,
+			Host.StyleLink({ StyleSheet = Facet.Compose.static(sheet) }),
+			Host.Frame "Backdrop" {
+				Size = UDim2.fromScale(1, 1),
+				BorderSizePixel = 0,
+				Visible = function(use)
+					return not use(context.sceneVisible)
+				end,
+			},
+		}
+	end, players.LocalPlayer:WaitForChild("PlayerGui"))
+	backdrop:FindFirstChild("Backdrop"):AddTag("facet-surface")
+	Compose.cleanup(stopBackdrop)
 	local api = Host.BindableFunction "FacetShowcaseAPI" {
 		Parent = workspace,
 		OnInvoke = Compose.static(function(command, argument)

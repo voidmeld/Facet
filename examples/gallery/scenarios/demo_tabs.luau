@@ -45,6 +45,7 @@ return function(ctx: any, id: string, groups: { any })
 					head = function()
 						return UI.Button "UseTopTabs" {
 							label = "Use top tabs",
+							appearance = "utility",
 							Size = UDim2.new(1, 0, 0, 40),
 							onActivate = function()
 								preference:set("topBar")
@@ -54,7 +55,8 @@ return function(ctx: any, id: string, groups: { any })
 					trailing = function()
 						return UI.Button "UseSidebar" {
 							label = "Use sidebar",
-							Size = UDim2.fromOffset(128, 40),
+							appearance = "utility",
+							icon = "menu",
 							onActivate = function()
 								preference:set("sidebar")
 							end,

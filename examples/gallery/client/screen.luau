@@ -158,7 +158,7 @@ function screen.build(ctx: any)
 			Size = UDim2.new(1, 0, 0, 56),
 			BackgroundTransparency = 1,
 			Host.UIPadding({
-				PaddingLeft = UDim.new(0, 12),
+				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 12),
 				PaddingTop = UDim.new(0, 8),
 			}),
@@ -166,23 +166,25 @@ function screen.build(ctx: any)
 				FillDirection = Enum.FillDirection.Horizontal,
 				Padding = UDim.new(0, 8),
 				SortOrder = Enum.SortOrder.LayoutOrder,
+				VerticalAlignment = Enum.VerticalAlignment.Center,
 			}),
-			UI.Label({
+			UI.Label "Title" {
 				LayoutOrder = 1,
-				Name = "Title",
 				label = "Facet gallery",
-				Size = UDim2.new(1, -144, 0, 40),
-				AutomaticSize = Enum.AutomaticSize.None,
-			}),
-			UI.Button({
+				textRole = "title",
+				Size = UDim2.fromScale(0, 0),
+				AutomaticSize = Enum.AutomaticSize.XY,
+				Host.UIFlexItem({ FlexMode = Enum.UIFlexMode.Fill }),
+			},
+			UI.Button "Settings" {
 				LayoutOrder = 2,
-				Name = "Settings",
 				label = "Settings",
-				Size = UDim2.fromOffset(136, 40),
+				icon = "settings",
+				appearance = "utility",
 				onActivate = function()
 					settingsOpen:set(not settingsOpen:peek())
 				end,
-			}),
+			},
 		},
 		UI.TabView "Demos" {
 			selection = selected,
