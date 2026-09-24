@@ -154,8 +154,8 @@ local lifetime = Compose.createRootOwner(function()
 				Anchored = true,
 				Size = Vector3.new(200, 1, 200),
 				CFrame = CFrame.new(0, -0.5, 0),
-				Color = moodColor(Color3.fromRGB(24, 25, 38), Color3.fromRGB(173, 177, 187)),
-				Material = Enum.Material.SmoothPlastic,
+				Color = moodColor(Color3.fromRGB(74, 52, 38), Color3.fromRGB(176, 136, 98)),
+				Material = Enum.Material.Wood,
 			}
 		)
 		table.insert(
@@ -165,8 +165,8 @@ local lifetime = Compose.createRootOwner(function()
 				CanCollide = false,
 				Size = Vector3.new(180, 100, 1),
 				CFrame = CFrame.new(0, 30, 12),
-				Color = moodColor(Color3.fromRGB(30, 31, 50), Color3.fromRGB(206, 211, 224)),
-				Material = Enum.Material.SmoothPlastic,
+				Color = moodColor(Color3.fromRGB(46, 44, 56), Color3.fromRGB(222, 218, 210)),
+				Material = Enum.Material.Plaster,
 			}
 		)
 		for _, side in { -1, 1 } do
