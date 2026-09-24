@@ -21,6 +21,12 @@ type LevelSpec = Shared.TextButtonProps & ValueState<number> & InputTypes.LevelO
 	images: InputTypes.Images?,
 	tint: InputTypes.Tint?,
 }
+type Adjust = {
+	vertical: boolean?,
+	guard: boolean?,
+	arrows: ((ComposeTypes.Use, number) -> boolean)?,
+	extra: (((ComposeTypes.Use) -> boolean) -> ())?,
+}
 type ToggleButtonProps = InputTypes.ButtonProps & {
 	value: Shared.Value<boolean>?,
 	mixed: Shared.Value<boolean>?,
@@ -103,8 +109,32 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		apply: (number) -> (),
 		cancel: (() -> ())?,
 		minimum: number,
-		maximum: number
+		maximum: number,
+		options: Adjust?
 	): ()
+		local adjust: Adjust = options or {}
+		local landing = false
+		local function arrowHeld(): boolean
+			local input = ctx.config.services.UserInputService
+			if input == nil then
+				return false
+			end
+			local probe = (input :: unknown) :: {
+				IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)?,
+				IsGamepadButtonDown: ((UserInputService, Enum.UserInputType, Enum.KeyCode) -> boolean)?,
+			}
+			for _, key in { E.KeyCode.Up, E.KeyCode.Down, E.KeyCode.Left, E.KeyCode.Right } do
+				if probe.IsKeyDown and input:IsKeyDown(key) then
+					return true
+				end
+			end
+			for _, key in { E.KeyCode.DPadUp, E.KeyCode.DPadDown, E.KeyCode.DPadLeft, E.KeyCode.DPadRight } do
+				if probe.IsGamepadButtonDown and input:IsGamepadButtonDown(E.UserInputType.Gamepad1, key) then
+					return true
+				end
+			end
+			return false
+		end
 		local guiService = ctx.config.services.GuiService
 		local target = guiService and guiService.SelectedObject
 		local selected = Compose.cell(target ~= nil and (target == node or target:IsDescendantOf(node)))
@@ -115,6 +145,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local inside = target ~= nil and (target == node or target:IsDescendantOf(node))
 				if selected:peek() and not inside and cancel then
 					cancel()
+				end
+				if inside and not selected:peek() and adjust.guard then
+					landing = arrowHeld()
 				end
 				selected:set(inside)
 			end)
@@ -150,9 +183,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							stopRepeat()
 						end
 					end)
-					local function bind(name, keys, source, direction)
+					local function bind(name, keys, source, direction, arrow: boolean?)
 						local action: InputAction
 						action = ctx.action(node, name, keys, source, function()
+							if arrow and landing then
+								return
+							end
 							stopRepeat()
 							apply(direction)
 							heldAction = action
@@ -178,6 +214,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						end, {
 							priority = 100,
 							onReleased = function()
+								if arrow then
+									landing = false
+								end
 								if heldAction == action then
 									stopRepeat()
 								end
@@ -188,18 +227,31 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					bind("Increase", { E.KeyCode.Period, E.KeyCode.ButtonR1 }, active, 1)
 					if minimum ~= nil and maximum ~= nil then
 						for _, direction in { -1, 1 } do
+							local keys = if adjust.vertical
+								then (if direction < 0
+									then { E.KeyCode.Down, E.KeyCode.DPadDown }
+									else { E.KeyCode.Up, E.KeyCode.DPadUp })
+								else (if direction < 0
+									then { E.KeyCode.Left, E.KeyCode.DPadLeft }
+									else { E.KeyCode.Right, E.KeyCode.DPadRight })
 							bind(
 								if direction < 0 then "DecreaseArrow" else "IncreaseArrow",
-								if direction < 0
-									then { E.KeyCode.Left, E.KeyCode.DPadLeft }
-									else { E.KeyCode.Right, E.KeyCode.DPadRight },
+								keys,
 								function(use: ComposeTypes.Use)
+									local arrows = adjust.arrows
+									if arrows then
+										return active(use) and arrows(use, direction)
+									end
 									local value = read(spec.value, use)
 									return active(use) and (if direction < 0 then value > minimum else value < maximum)
 								end,
-								direction
+								direction,
+								true
 							)
 						end
+					end
+					if adjust.extra then
+						adjust.extra(active)
 					end
 					if cancel then
 						ctx.action(
@@ -1147,210 +1199,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		return node
 	end
 
-	UI.Slider = ctx.construct("Slider", function(spec: InputTypes.SliderImplementationProps): Frame
-		requireValue(spec, "number", "Slider")
-		local model = valueModel(spec :: valueModel.Options, read)
-		local track: Frame
-		local dragging: boolean?
-		local snapshot: number?
-		local function apply(value)
-			if enabled(spec) then
-				return changed(spec, model.quantize(value))
-			end
-			return false
-		end
-		local function fromPosition(position: Vector2): ()
-			local width = track.AbsoluteSize.X
-			if width > 0 then
-				apply(model.fromFraction((position.X - track.AbsolutePosition.X) / width))
-			end
-		end
-		local function cancel()
-			if dragging then
-				dragging = false
-				if snapshot ~= nil then
-					changed(spec, assert(snapshot))
-				end
-			end
-		end
-		local detector = Host.UIDragDetector "Drag" {
-			ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
-			Enabled = function(use: ComposeTypes.Use)
-				return enabled(spec, use)
-			end,
-			DragStart = function(position)
-				if enabled(spec) then
-					dragging, snapshot = true, read(spec.value)
-					if spec.tapToPosition ~= false then
-						fromPosition(position)
-					end
-				end
-			end,
-			DragContinue = function(position)
-				if dragging then
-					fromPosition(position)
-				end
-			end,
-			DragEnd = function()
-				if not dragging then
-					return
-				end
-				dragging = false
-				if spec.onCommit then
-					spec.onCommit(read(spec.value))
-				end
-			end,
-		}
-		track = ctx.styled(
-			Host.Frame({
-				Name = "Track",
-				Size = D2.new(1, 0, 0, 44),
-				BackgroundTransparency = 1,
-				Selectable = function(use: ComposeTypes.Use)
-					return enabled(spec, use)
-				end,
-				paintedPart({
-					Name = "Rail",
-					Size = D2.new(1, 0, 0, 6),
-					Position = D2.fromScale(0, 0.5),
-					AnchorPoint = V2.new(0, 0.5),
-					ctx.corner(3),
-				}, spec.trackImage, "slider-rail", "sliderTrack") :: ComposeTypes.Child,
-				ctx.styled(
-					Host.Frame "Fill" {
-						Size = function(use: ComposeTypes.Use)
-							return D2.new(model.fraction(read(spec.value, use)), 0, 0, 6)
-						end,
-						Position = D2.fromScale(0, 0.5),
-						AnchorPoint = V2.new(0, 0.5),
-						ctx.corner(3),
-					},
-					"slider-fill"
-				),
-				paintedPart({
-					Name = "Thumb",
-					Size = D2.fromOffset(24, 24),
-					AnchorPoint = V2.new(0.5, 0.5),
-					Position = function(use: ComposeTypes.Use)
-						return D2.fromScale(model.fraction(read(spec.value, use)), 0.5)
-					end,
-					ctx.corner(12),
-				}, spec.thumbImage, "slider-thumb", "sliderThumb"),
-				detector :: ComposeTypes.Child,
-			} :: Shared.FrameNativeProps),
-			"slider-track"
-		)
-		local trackLabel = (if spec.row then spec.row.title else nil) or spec.label
-		if trackLabel ~= nil then
-			attributes(track, {
-				AccessibleLabel = (function(use: ComposeTypes.Use): string
-					return read(trackLabel, use) or ""
-				end) :: Shared.Value<Shared.AttributeValue?>,
-			})
-		end
-		local fill = assert(track:FindFirstChild("Fill"))
-		assert(fill:IsA("Frame"))
-		ctx.skin(fill, "barFill")
-		local input = ctx.config.services.UserInputService
-		if input then
-			local preferred = ctx.observe(input, "PreferredInput")
-			Compose.watch(function(use: ComposeTypes.Use)
-				if use(preferred) == E.PreferredInput.Gamepad then
-					cancel()
-				end
-			end)
-		end
-		adjustment(track, spec, function(direction)
-			if apply(model.stepped(read(spec.value), direction)) and spec.onCommit then
-				spec.onCommit(read(spec.value))
-			end
-		end, cancel, model.min, model.max)
-		Compose.watch(function(use: ComposeTypes.Use)
-			if not enabled(spec, use) then
-				cancel()
-			end
-		end)
-		local readout = ctx.text({
-			Name = "Value",
-			Text = function(use: ComposeTypes.Use)
-				return model.format(read(spec.value, use))
-			end,
-		})
-		if not spec.row then
-			runtime.decorate(readout, {
-				Size = D2.fromOffset(44, 0),
-				AutomaticSize = E.AutomaticSize.XY,
-				TextXAlignment = E.TextXAlignment.Right,
-			})
-		end
-		local parts: { ComposeTypes.Child } = {}
-		if spec.row then
-			local row = spec.row
-			local header = { readout }
-			if spec.label or row.title then
-				table.insert(
-					header,
-					1,
-					ctx.text({
-						Name = "Label",
-						Text = row.title or spec.label,
-						Size = D2.fromOffset(0, 0),
-						AutomaticSize = E.AutomaticSize.Y,
-						TextWrapped = true,
-						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-					})
-				)
-			end
-			table.insert(
-				parts,
-				ctx.row(header, { Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
-			)
-			if row.description then
-				table.insert(
-					parts,
-					ctx.text({
-						Name = "Description",
-						Text = row.description,
-						Size = D2.new(1, 0, 0, 0),
-						AutomaticSize = E.AutomaticSize.Y,
-						TextWrapped = true,
-					})
-				)
-			end
-			table.insert(parts, track)
-		else
-			if spec.label then
-				table.insert(parts, ctx.text({ Name = "Label", Text = spec.label }))
-			end
-			runtime.decorate(track, { Size = D2.fromOffset(0, 44) })
-			runtime.mount(function()
-				return Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill })
-			end, track)
-			table.insert(parts, track)
-			table.insert(parts, readout)
-		end
-		local native = props(spec, {
-			"value",
-			"min",
-			"max",
-			"step",
-			"format",
-			"enabled",
-			"onChange",
-			"onCommit",
-			"label",
-			"tapToPosition",
-			"row",
-			"thumbImage",
-			"trackImage",
-		}, { Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
-		local node = ctx.styled(if spec.row then ctx.column(parts, native) else ctx.row(parts, native), "slider")
-		if not spec.row then
-			assert(node:FindFirstChildWhichIsA("UIListLayout")).VerticalAlignment = E.VerticalAlignment.Center
-		end
-		valueAttributes(node, spec, model)
-		return node
-	end)
+	require("./slider")(ctx, UI, {
+		enabled = enabled,
+		writable = writable,
+		attributes = attributes,
+		valueAttributes = valueAttributes,
+		adjustment = adjustment,
+		paintedPart = paintedPart,
+	})
 
 	local function level(source: InputTypes.RatingProps | InputTypes.LevelPickerProps, rating: boolean): TextButton
 		local spec = (source :: Shared.TextButtonProps) :: LevelSpec

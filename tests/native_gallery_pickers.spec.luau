@@ -84,4 +84,32 @@ t.describe("native gallery pickers and fields", function()
 		s.stop()
 		expect(#s.target:GetChildren()).toBe(0)
 	end)
+
+	t.it(
+		"the Basics tab shows the slider shapes: a band, a turned band, a vertical track, auto, none and a knob",
+		function()
+			local s = scenario("adaptive_controls")
+			local steps = s.built.steps
+			local band = find(s.node, "LapWindow")
+			expect(find(band, "HandleLower") ~= nil and find(band, "HandleUpper") ~= nil).toBe(true)
+			expect(steps.sliderBand().band).toBe("2-18")
+			expect(find(band, "Value").Text).toBe("2 – 18")
+			local tilt = find(find(s.node, "Tilt"), "Track")
+			expect(tilt.Rotation).toBe(0)
+			expect(steps.sliderTilt().degrees).toBe(45)
+			expect(tilt.Rotation).toBe(45)
+			local rear = find(s.node, "Balance")
+			expect(rear:HasTag("facet-slider-vertical")).toBe(true)
+			local before = find(rear, "Thumb").Position.Y.Scale
+			expect(steps.sliderAxis().rear).toBe(90)
+			expect(find(rear, "Thumb").Position.Y.Scale < before).toBe(true)
+			expect(find(find(s.node, "Boost"), "Thumb").Visible).toBe(false)
+			expect(find(find(s.node, "Camera"), "Thumb").Visible).toBe(false)
+			expect(find(find(s.node, "Steer"), "Knob") ~= nil).toBe(true)
+			s.built.reset()
+			expect(s.built.report().tilt).toBe(0)
+			s.stop()
+			expect(#s.target:GetChildren()).toBe(0)
+		end
+	)
 end)

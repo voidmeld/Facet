@@ -46,7 +46,9 @@ sources keep their native types.
 
 Run `python3 tools/check_types.py` to check the Facet runtime source and the
 positive and compile-fail public API witnesses. The checker uses pinned Roblox
-definitions. It reports vendor diagnostics separately. It does not accept a
+definitions. It raises the `LuauTarjanChildLimit` analyzer flag to 100000,
+because the old Luau solver stops at its default limit of 10000 on the full
+`Facet` type and reports "Code is too complex to typecheck". It reports vendor diagnostics separately. It does not accept a
 `--!strict` directive alone as proof of a typed API.
 
 ### Mounting
@@ -355,6 +357,48 @@ the control height. `row` gives a stacked title, description and track.
 Slider also supports `onCommit(value)`, `tapToPosition` (default true),
 `thumbImage`, `trackImage` and `row`. Dragging uses native drag detection.
 Keyboard and gamepad adjustment use the input actions of the control.
+
+Slider shapes. `axis`, `range`, `minGap` and `thumb` are construction options.
+A readable value for one of them causes an error that names the option.
+
+- `axis`: `x` (the default) or `y`. A `y` track runs from bottom to top. Its
+  arrows are Up and Down, and Left and Right do not change it. The arrow that
+  moves the selection onto a slider does not also change the value.
+- `range`: `value` holds `{ lower, upper }`. Each change calls
+  `onChange(pair, { thumb = "lower" | "upper" })`, and each completed gesture
+  calls `onCommit(pair, { thumb })` once. The two handles, `HandleLower` and
+  `HandleUpper`, are 44 by 44 selection stops, and the fill spans between
+  them. The handles never cross. A drag keeps the handle that it started
+  with. A press on the track moves the nearer handle. For coincident handles,
+  a press below the pair moves the lower one and a press above moves the upper
+  one. The arrows move the selected handle and stay on it when `minGap` stops
+  the move. With gamepad input, the arrows move the selection between the
+  handles until ButtonA engages the handle. ButtonB releases it. A pair that
+  is not legal at construction causes an error. A pair that becomes illegal
+  later is not painted or written back: the control keeps the last legal pair
+  and adds a line to the `diagnostics` attribute.
+- `minGap`: a number from 0 (the default) to the width of the range. It is the
+  least distance between the handles.
+- `thumb`: `always` (the default), `auto` or `none`. `auto` shows the handle on
+  hover, selection, drag and with touch input. `none` never shows it. Input
+  and the readout do not change.
+- `thumbContent(info)`: builds the knob once for each handle.
+  `info = { thumb, value, fraction, dragging, enabled }`. `thumb` is `value`,
+  `lower` or `upper`. The other four are readables. The knob has no
+  `sliderThumb` art and grows from 24 by 24 to fit its content. You cannot
+  use it with `thumbImage`.
+- `trackContent()`: builds a track node once, for example a colour ramp. It
+  replaces the rail and the fill, and fills the track. You cannot use it with
+  `trackImage`.
+- `rotation`: degrees, or a readable of them. It turns the painted track only.
+  The control turns a press back by the same angle, so it reads the value that the
+  upright track reads. The label and the readout stay upright.
+- `controlSize`: `compact`, `regular` or `large`. It sets the painted track
+  thickness (4, 6 or 8 pixels). The track stays 44 pixels thick as a target.
+
+Losing the input class during a drag (a change of `PreferredInput`) restores
+the value, or the whole pair, from the start of the drag. The later move and
+release commit nothing.
 
 ### Rating and LevelPicker
 
@@ -822,10 +866,6 @@ A `CivilDate` is `{ year, month, day, hour?, minute? }` in no time zone. A
   database. Convert a zone with daylight time to a fixed offset yourself.
   `systemClock(offsetMinutes?)` returns the default clock: the local date and
   time of the player, or the engine clock at the offset that you name.
-
-The `Facet` type gives `civilDate` the type `any`. The old Luau solver cannot
-check the whole `Facet` type when it also holds the civil date function types.
-For typed use, write `local civil: Facet.CivilDateModule = Facet.civilDate`.
 
 ```luau
 local civil = Facet.civilDate

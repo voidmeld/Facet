@@ -84,7 +84,7 @@ export type Facet = {
 	Roblox: ComposeRobloxModule,
 	controls: (Runtime, ControlOptions?) -> Controls,
 	themes: ThemeTypes.Themes,
-	civilDate: any,
+	civilDate: CivilTypes.Module,
 	recipes: { arithmetic: { parse: (unknown) -> number? } },
 	bind: (ComposeModule, ComposeRobloxModule) -> Facet,
 }

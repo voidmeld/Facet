@@ -60,6 +60,8 @@ export type ClearButtonMode = "never" | "always" | "whileEditing" | "unlessEditi
 export type SelectOnFocus = "none" | "all" | "end"
 export type FieldAppearance = "standard" | "contrast" | "utility"
 export type TextValue = Value<string>
+export type NumberValue = Value<number>
+export type TextBinding = ValueBinding<string>
 export type NumberCell = ComposeTypes.Cell<number>
 export type FlagValue = Value<boolean>
 export type SizeValue = Value<Shared.ControlSize>
@@ -119,8 +121,8 @@ export type TextInputBase = Shared.TextBoxProps & TextInputOptions & NumberOptio
 	value: TextValue,
 	onChange: ((string) -> ())?,
 }
-export type TextInputProps = TextInputBase & TextInputPresentation
-export type NumberInputProps = TextInputBase & {
+export type TextInputProps = TextInputBase & TextBinding & TextInputPresentation
+export type NumberInputProps = TextInputBase & TextBinding & {
 	numericValue: NumberCell,
 	onCommit: ((number, CommitReason) -> ())?,
 }
@@ -139,14 +141,51 @@ export type StepperImplementationProps =
 	& NumberInputOptions
 	& { value: Value<number>, onChange: ((number) -> ())? }
 export type StepperProps = StepperImplementationProps & ValueBinding<number>
-export type SliderImplementationProps = StepperImplementationProps & {
-	onCommit: ((number) -> ())?,
-	tapToPosition: boolean?,
-	thumbImage: Value<string>?,
-	trackImage: Value<string>?,
-	row: Row?,
+export type SliderRange = { lower: number, upper: number }
+export type SliderThumb = "value" | "lower" | "upper"
+export type SliderChange = { thumb: SliderThumb }
+export type SliderKnob = {
+	thumb: SliderThumb,
+	value: ComposeTypes.Readable<number>,
+	fraction: ComposeTypes.Readable<number>,
+	dragging: ComposeTypes.Readable<boolean>,
+	enabled: ComposeTypes.Readable<boolean>,
 }
-export type SliderProps = SliderImplementationProps & ValueBinding<number>
+export type SliderOptions = {
+	onCommit: ((any, SliderChange?) -> ())?,
+	tapToPosition: boolean?,
+	thumbImage: TextValue?,
+	trackImage: TextValue?,
+	row: Row?,
+	axis: ("x" | "y")?,
+	range: boolean?,
+	minGap: number?,
+	thumb: ("always" | "auto" | "none")?,
+	thumbContent: ((SliderKnob) -> Instance)?,
+	trackContent: (() -> Instance)?,
+	rotation: NumberValue?,
+	controlSize: SizeValue?,
+}
+export type SliderImplementationProps = Shared.FrameProps & ValueOptions & SliderOptions & {
+	enabled: Value<boolean>?,
+	label: Value<string>?,
+	value: Value<number> | RangeValue,
+	onChange: ((any, SliderChange?) -> ())?,
+}
+export type RangeValue = Value<SliderRange>
+export type SliderBinding =
+	{ range: false?, value: ComposeTypes.Cell<number>, onChange: ((number) -> ())?, onCommit: ((number) -> ())? }
+	| { range: false?, value: Value<number>, onChange: (number) -> (), onCommit: ((number) -> ())? }
+	| {
+		range: true,
+		value: RangeValue,
+		onChange: ((SliderRange, SliderChange) -> ())?,
+		onCommit: ((SliderRange, SliderChange) -> ())?,
+	}
+export type SliderProps = Shared.FrameProps & ValueOptions & SliderOptions & {
+	enabled: Value<boolean>?,
+	label: Value<string>?,
+} & SliderBinding
 export type LevelSize = "small" | "medium" | "large"
 export type Glyphs = { filled: string, empty: string }
 export type Images = { filled: string, empty: string }
