@@ -118,9 +118,13 @@ return {
 				onShow = function()
 					entry.showing:set(true)
 				end,
-				onHide = function()
+				onHide = function(reason: string)
 					entry.showing:set(false)
-					entry.requested:set(false)
+					-- "hidden" means the page left the screen; the request stays queued and the
+					-- coach mark returns with the page. Only retirement ends the request.
+					if reason ~= "hidden" then
+						entry.requested:set(false)
+					end
 				end,
 				onRetire = function(reason: string)
 					entry.retired:set(true)
@@ -250,7 +254,14 @@ return {
 			queueLine:set(queue().text)
 			stateLine:set(`{tip.id}: {stateOf(tip)}\n{second.id}: {stateOf(second)}`)
 		end
-		readState()
+		Compose.watch(function(use)
+			for _, entry in { tip, second } do
+				use(entry.retired)
+				use(entry.showing)
+				use(entry.requested)
+			end
+			readState()
+		end)
 
 		local function resetSession()
 			seen:set(false)

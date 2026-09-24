@@ -856,6 +856,47 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("hides a callout while its retained tab is away and shows it again on return", function()
+		local selection, events = Compose.cell("one"), {}
+		local world = setup(function(UI, Host)
+			return UI.TabView {
+				selection = selection,
+				tabs = {
+					{
+						id = "one",
+						content = function()
+							local anchor = UI.Button "Anchor" { label = "Anchor" }
+							return Host.Frame "One" {
+								anchor,
+								UI.Callout {
+									anchor = anchor,
+									content = function()
+										return Host.TextLabel "Tip" {}
+									end,
+									onShow = function()
+										table.insert(events, "show")
+									end,
+									onHide = function(reason)
+										table.insert(events, "hide:" .. reason)
+									end,
+									onRetire = function() end,
+								},
+							}
+						end,
+					},
+					{ id = "two", content = UI.Button "TwoAction" { label = "Two" } },
+				},
+			}
+		end)
+		t.expect(find(world.screen, "Tip") ~= nil).toBe(true)
+		selection:set("two")
+		t.expect(find(world.screen, "Tip")).toBe(nil)
+		selection:set("one")
+		t.expect(find(world.screen, "Tip") ~= nil).toBe(true)
+		t.expect(table.concat(events, ",")).toBe("show,hide:hidden,show")
+		world.stop()
+	end)
+
 	t.it("queues callouts by priority and retires once without writing model facts", function()
 		local seen, used, retired = Compose.cell(false), Compose.cell(false), {}
 		local world = setup(function(UI, Host)
