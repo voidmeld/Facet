@@ -19,6 +19,14 @@
 - The getting-started guide shows how to test a screen headlessly with the fake native engine. Guides and tutorial examples use `text` for `UI.Label`.
 - `Facet.bind(Compose, Roblox)` returns a Facet table whose controls and themes use the Compose instance that you give. A game that already uses Compose keeps one reactive graph. The controls in `src/ui` use the pinned copy only for types. `Facet.COMPOSE_COMMIT` names the tested Compose commit. `bind` names a missing Compose function. A control names itself when a runtime or a readable from a different Compose instance reaches it. Before this change, such a control failed with a Compose owner error, or did not update.
 - The public-surface snapshot lists the `RadialItem` and `RadialMenuSpec` types.
+- `UI.Dialog` is a modal whose `isPresented` the caller owns. The close button, Cancel and the backdrop propose through `onPresentedChange`, and `onDismiss` reports `close`, `outside`, `cancel` or `action` once. It pins a hero, a title, an action label and actions around one scrolling body, and every region moves into one scroller when the room is too small.
+- `UI.Popover` presents content against a trigger, a source node or a rectangle. The placement flips to the opposite edge, then hangs beside the source before any clamp, and takes `crossOffset`. A compact touch screen gets the Sheet route. Removing the source node reports `anchorLost`.
+- `UI.Snackbar` shows one short message at a time at the bottom of the layer. Close, Cancel, a timeout and a supersession propose through `onPresentedChange`. Readable time pauses under hover, selection and modals. Nine rows can be shown, waiting or leaving.
+- `UI.Notice` keeps a page status in view with a severity, a link, up to two actions and a close button. An affixed notice sets `FacetInsetTop` on its layer, and a visible snackbar sets `FacetInsetBottom`.
+- `UI.NavBar` is the slot bar: Back, leading, a filling center and one trailing node that moves to a second row when the center has too little room.
+- `UI.Sheet` takes `placement`, `edge`, `width`, `header`, `hero`, `actions`, `actionLayout`, `contentInset`, `scrollPolicy`, the `hug` detent and a `closeButton` that can carry a localized label. A release projects by its velocity, and a drag resists past the limits. The grabber reads `Size: Medium`.
+- `UI.Callout` takes `title`, `media`, `steps`, up to two `actions` and a top `closeButton`. A failing `onShow` goes to `onError`.
+- Button `help` also takes `{ title, body, shortcut, edge, align }`.
 
 ## Pre-0.12.0 development history
 

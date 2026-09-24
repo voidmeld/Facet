@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Compose = require("../src/vendor/compose/core")
 local overlay = require("./lib/overlay_world")
+local release = require("../src/ui/sheet_release")
 local Vector2 = require("@lune/roblox").Vector2
 
 local LONG = string.rep("A long line of body copy that wraps across the sheet. ", 40)
@@ -530,6 +531,7 @@ t.describe("native Sheet: gestures", function()
 	t.it("a fast flick projects past the nearest detent; a slow drag does not", function()
 		local w = mount(nil, { reducedMotion = true })
 		flick(w, { { -40, 0.01 }, { -40, 0.01 } })
+		t.expect(380 + 4000 * release.PROJECTION_S > 570).toBe(true)
 		t.expect(w.detent:peek()).toBe("large")
 		w.stop()
 		local slow = mount(nil, { reducedMotion = true })

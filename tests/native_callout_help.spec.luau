@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Compose = require("../src/vendor/compose/core")
 local overlay = require("./lib/overlay_world")
+local placement = require("../src/ui/overlay_placement")
 local Vector2 = require("@lune/roblox").Vector2
 
 local TIP = "Post Avatars to Marketplace"
@@ -522,6 +523,15 @@ t.describe("native help: the structured form and the live plate", function()
 		local w = helped({ body = "Posts it", edge = "trailing", align = "end" })
 		local panel = w.find("Help")
 		panel.AbsoluteSize = Vector2.new(120, 30)
+		local expected = placement.solve({
+			source = { x = 300, y = 200, w = 80, h = 44 },
+			size = { w = 120, h = 30 },
+			safe = { x = 8, y = 8, w = 800 - 16, h = 600 - 16 },
+			edge = "trailing",
+			align = "end",
+			gap = 6,
+		})
+		t.expect(panel.Position.X.Offset).toBe(expected.x)
 		t.expect(panel.Position.X.Offset).toBe(300 + 80 + 6)
 		t.expect(panel.Position.Y.Offset).toBe(200 + 44 - 30)
 		w.stop()

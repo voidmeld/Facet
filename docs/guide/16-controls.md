@@ -10,8 +10,9 @@ callbacks.
 | Actions | Button, SplitButton, Menu, RadialMenu |
 | Input | TextInput, Toggle, Slider, Stepper, Rating, LevelPicker, Chip |
 | Choices | Picker, ComboBox |
-| Navigation | TabView, NavigationStack, PageView |
-| Presentation | Alert, Sheet, DisclosureGroup, CollapsibleView, Callout |
+| Navigation | TabView, NavigationStack, PageView, NavBar |
+| Presentation | Alert, Dialog, Sheet, Popover, DisclosureGroup, CollapsibleView, Callout |
+| Feedback | Notice, Snackbar |
 | Data | VirtualList, VirtualGrid, Table, RowActions |
 | Information | Label, Badge, StatusIndicator, ProgressView, Skeleton, ShortcutHint |
 | Media | AsyncImage, Avatar, AvatarGroup, Stage |

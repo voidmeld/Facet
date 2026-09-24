@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Compose = require("../src/vendor/compose/core")
 local overlay = require("./lib/overlay_world")
+local parts = require("../src/ui/overlay_parts")
 local Vector2 = require("@lune/roblox").Vector2
 
 type Log = { changes: { boolean }, dismissed: { string }, pressed: { string } }
@@ -416,6 +417,9 @@ t.describe("native Dialog: composition, layout and the height budget", function(
 	end)
 
 	t.it("the width presets resolve to theme ceilings inside the safe room", function()
+		t.expect(parts.WIDTHS.automatic).toBe("controls.alert.maxWidth")
+		t.expect(parts.WIDTHS.narrow).toBe("controls.popup.panelWidth")
+		t.expect(parts.WIDTHS.wide).toBe("controls.dialog.wideWidth")
 		for _, case in
 			{
 				{ nil, 1200, 560 } :: { any },

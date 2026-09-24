@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Compose = require("../src/vendor/compose/core")
 local overlay = require("./lib/overlay_world")
+local reservations = require("../src/ui/reservations")
 local Vector2 = require("@lune/roblox").Vector2
 
 local function mount(build: (any, any) -> any, options: any?): any
@@ -223,6 +224,11 @@ t.describe("native Notice: affixed placement reserves space a real consumer avoi
 		local far = other.find("Banner")
 		far.AbsolutePosition, far.AbsoluteSize = Vector2.new(0, 0), Vector2.new(800, 30)
 		t.expect(other.screen:GetAttribute("FacetInsetTop")).toBe(30)
+		t.expect(w.screen:GetAttribute("FacetInsetTop")).toBe(88)
+		local token = {}
+		reservations.set(w.screen, token, "top", 0, 120)
+		t.expect(w.screen:GetAttribute("FacetInsetTop")).toBe(120)
+		reservations.clear(w.screen, token)
 		t.expect(w.screen:GetAttribute("FacetInsetTop")).toBe(88)
 		w.stop()
 		other.stop()

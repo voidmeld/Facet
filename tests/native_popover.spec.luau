@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Compose = require("../src/vendor/compose/core")
 local overlay = require("./lib/overlay_world")
+local placement = require("../src/ui/overlay_placement")
 local Vector2 = require("@lune/roblox").Vector2
 
 type Log = { changes: { boolean }, dismissed: { string } }
@@ -291,7 +292,17 @@ t.describe("native Popover: sources, anchor loss and bounds", function()
 		local panel = w.find("Panel")
 		panel.AbsoluteSize = Vector2.new(120, 80)
 		t.expect(w.find("Tail")).toBeNil()
-		t.expect(panel.Position.X.Offset).toBe(348)
+		local expected = placement.solve({
+			source = { x = 300, y = 200, w = 40, h = 40 },
+			size = { w = 120, h = 80 },
+			safe = { x = 8, y = 8, w = 800 - 16, h = 600 - 16 },
+			edge = "trailing",
+			align = "start",
+			gap = 8,
+			crossOffset = 10,
+		})
+		t.expect(expected.x).toBe(348)
+		t.expect(panel.Position.X.Offset).toBe(expected.x)
 		t.expect(panel.Position.Y.Offset).toBe(210)
 		w.stop()
 		local tailed = mount(function(UI, Host)

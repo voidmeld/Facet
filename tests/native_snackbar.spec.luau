@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Compose = require("../src/vendor/compose/core")
 local overlay = require("./lib/overlay_world")
+local reservations = require("../src/ui/reservations")
 local Vector2 = require("@lune/roblox").Vector2
 
 type Caller = {
@@ -430,6 +431,11 @@ t.describe("native Snackbar: admission and lifetime", function()
 		t.expect(w.find("Snack")).toBe(row)
 		frames(w, 0.3)
 		t.expect(w.find("Snack")).toBeNil()
+		t.expect(w.screen:GetAttribute("FacetInsetBottom")).toBe(0)
+		local token = {}
+		reservations.set(w.screen, token, "bottom", 700, 60)
+		t.expect(w.screen:GetAttribute("FacetInsetBottom")).toBe(844 - 700)
+		reservations.clear(w.screen, token)
 		t.expect(w.screen:GetAttribute("FacetInsetBottom")).toBe(0)
 		w.stop()
 	end)
