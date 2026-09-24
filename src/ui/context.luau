@@ -161,18 +161,6 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		end
 		return nil
 	end
-	function ctx.scrollStop<N>(frame: N & ScrollingFrame): N & ScrollingFrame
-		local canvas = observe(frame, "AbsoluteCanvasSize")
-		local window = observe(frame, "AbsoluteWindowSize")
-		runtime.decorate(frame, {
-			Selectable = function(use: ComposeTypes.Use)
-				local inner = use(canvas) :: Vector2?
-				local outer = use(window) :: Vector2?
-				return inner ~= nil and outer ~= nil and (inner.X > outer.X + 0.5 or inner.Y > outer.Y + 0.5)
-			end,
-		})
-		return frame
-	end
 
 	function ctx.playWhileShown(timeline: Shared.Playback, node: Instance)
 		local owner = assert(Compose.currentOwner(), "Facet playWhileShown requires a Compose owner")

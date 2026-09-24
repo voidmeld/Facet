@@ -382,6 +382,25 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 		end, { size = config.size, theme = config.theme, frames = config.frames or 20 })
 		return stage, context
 	end
+	function t.device(options: { [string]: any }): Vector2
+		local simulator = game:GetService("StudioDeviceSimulatorService") :: any
+		if options.device then
+			simulator:SetDeviceAsync(options.device)
+		end
+		if options.orientation then
+			simulator:SetOrientationAsync(options.orientation)
+		end
+		if options.width and options.height then
+			simulator:SetResolutionAsync(options.width, options.height)
+		end
+		t.settle(options.frames or 30)
+		table.insert(cleanups, 1, function()
+			pcall(function()
+				simulator:SetDeviceAsync(options.restore or "xbox")
+			end)
+		end)
+		return workspace.CurrentCamera.ViewportSize
+	end
 	function t.scenario(name: string): any
 		return (require :: any)(storage:WaitForChild("FacetScenarios"):WaitForChild(name))
 	end

@@ -162,7 +162,6 @@ export type Context = {
 	controlSize: (Value<ControlSize>?, "height" | "paddingX" | "iconSize", Use?) -> number,
 	observe: Observe,
 	observeStyled: Observe,
-	scrollStop: <N>(N & ScrollingFrame) -> N & ScrollingFrame,
 	shiftRoute: (Instance, () -> ()) -> (),
 	shiftActivation: (Instance, InputObject?) -> (() -> ())?,
 	playWhileShown: (Playback, Instance) -> (),

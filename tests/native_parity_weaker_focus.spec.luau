@@ -314,52 +314,6 @@ t.describe("native parity weaker focus", function()
 		world.stop()
 	end)
 
-	t.it("keeps the alert message out of selection and makes the tab strip a stop only when it scrolls", function()
-		local world = setup(function(UI, Host)
-			return Host.Frame({
-				UI.Alert({
-					isPresented = Compose.cell(true),
-					title = "Leave?",
-					message = "The match is still running.",
-					actions = { { id = "Stay", label = "Stay", role = "cancel" } },
-				}),
-				UI.TabView({
-					selection = Compose.cell("a"),
-					tabs = {
-						{
-							id = "a",
-							label = "Alpha",
-							content = function()
-								return Host.Frame({})
-							end,
-						},
-						{
-							id = "b",
-							label = "Beta",
-							content = function()
-								return Host.Frame({})
-							end,
-						},
-					},
-				}),
-			})
-		end)
-		local V2 = world.engine.types.Vector2
-		t.expect(find(world.screen, "AlertMessage").Selectable).toBe(false)
-		for _, name in { "Tabs" } do
-			local region = find(world.screen, name)
-			t.expect(region ~= nil).toBe(true)
-			region.AbsoluteWindowSize = V2.new(300, 200)
-			region.AbsoluteCanvasSize = V2.new(300, 120)
-			t.expect(region.Selectable).toBe(false)
-			region.AbsoluteCanvasSize = V2.new(300, 480)
-			t.expect(region.Selectable).toBe(true)
-			region.AbsoluteCanvasSize = V2.new(300, 200)
-			t.expect(region.Selectable).toBe(false)
-		end
-		world.stop()
-	end)
-
 	t.it("selects inside a modal only once its screen reaches a PlayerGui", function()
 		local engine: any = engineLib.new({ selectionNeedsPlayerGui = true })
 		local runtime = Facet.Roblox.createRuntime(engine)

@@ -353,7 +353,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				spec.onChange(id)
 			end
 		end
-		local bar = ctx.scrollStop(Host.ScrollingFrame "Tabs" {
+		local bar = Host.ScrollingFrame "Tabs" {
 			ZIndex = 2,
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
@@ -572,7 +572,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					return button
 				end,
 			}),
-		})
+		}
 		Compose.watch(function(use: ComposeTypes.Use)
 			bar:SetAttribute("FacetEntry", use(spec.selection))
 		end)
