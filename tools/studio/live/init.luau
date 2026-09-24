@@ -394,6 +394,22 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 			simulator:SetResolutionAsync(options.width, options.height)
 		end
 		t.settle(options.frames or 30)
+		local input = game:GetService("UserInputService")
+		local last, steady = input.PreferredInput, 0
+		for _ = 1, 180 do
+			if options.input and input.PreferredInput ~= options.input then
+				steady = 0
+			elseif input.PreferredInput == last then
+				steady += 1
+			else
+				steady = 0
+			end
+			last = input.PreferredInput
+			if steady >= 15 then
+				break
+			end
+			t.settle(1)
+		end
 		table.insert(cleanups, 1, function()
 			pcall(function()
 				simulator:SetDeviceAsync(options.restore or "xbox")

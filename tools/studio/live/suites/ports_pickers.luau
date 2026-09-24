@@ -1516,7 +1516,7 @@ add("dtp-phone-fit", { "post-pickers-157" }, function(t)
 			{ name = "landscape", orientation = Enum.ScreenOrientation.LandscapeRight },
 		}
 	do
-		t.device({ device = "iphone_14", orientation = turn.orientation })
+		t.device({ device = "iphone_14", input = Enum.PreferredInput.Touch, orientation = turn.orientation })
 		t.note(`{turn.name} viewport`, workspace.CurrentCamera.ViewportSize)
 		t.note(`{turn.name} preferred input`, tostring(game:GetService("UserInputService").PreferredInput))
 		local _, root, layer = datePicker(t, function(Compose)
@@ -1524,7 +1524,7 @@ add("dtp-phone-fit", { "post-pickers-157" }, function(t)
 		end, { position = UDim2.fromOffset(16, 16), size = UDim2.new(1, -32, 0, 0) })
 		phoneChecks(t, `{turn.name} single`, root, layer, turn.name == "portrait")
 		t.cleanup()
-		t.device({ device = "iphone_14", orientation = turn.orientation })
+		t.device({ device = "iphone_14", input = Enum.PreferredInput.Touch, orientation = turn.orientation })
 		local _, rangeRoot, rangeLayer = datePicker(t, function(Compose)
 			return rangeSpec(Compose, { draft = true, presets = preset, isPresented = openLater(Compose) })
 		end, { position = UDim2.fromOffset(16, 16), size = UDim2.new(1, -32, 0, 0) })
@@ -1851,7 +1851,8 @@ local function contentStart(t: any, row: any): number
 	for _, node in row:GetDescendants() do
 		if node:IsA("GuiObject") and t.visible(node) and node.AbsoluteSize.X > 0.5 and node.AbsoluteSize.Y > 0.5 then
 			local text = (node:IsA("TextLabel") and node.ContentText ~= "")
-			if text or node:IsA("ImageLabel") or node.Name == "Indicator" then
+			local skinned = node:FindFirstAncestor("SkinBoundary") ~= nil or node.Name == "SkinBoundary"
+			if not skinned and (text or node:IsA("ImageLabel") or node.Name == "Indicator") then
 				left = math.min(left, node.AbsolutePosition.X)
 			end
 		end
@@ -2794,7 +2795,7 @@ add("color-plane-layers-and-ring", { "post-pickers-188", "post-pickers-179" }, f
 end)
 
 add("color-touch-bubble-room", { "post-pickers-183" }, function(t)
-	t.device({ device = "iphone_14", orientation = Enum.ScreenOrientation.Portrait })
+	t.device({ device = "iphone_14", input = Enum.PreferredInput.Touch, orientation = Enum.ScreenOrientation.Portrait })
 	t.note("preferred input", tostring(game:GetService("UserInputService").PreferredInput))
 	local inlineValue, sheetValue
 	local stage = t.mount(function(UI, Host, Compose)
@@ -2864,7 +2865,7 @@ add("color-phone-sheet-apply-on-screen", { "post-pickers-182" }, function(t)
 			{ name = "landscape", orientation = Enum.ScreenOrientation.LandscapeRight },
 		}
 	do
-		t.device({ device = "iphone_14", orientation = turn.orientation })
+		t.device({ device = "iphone_14", input = Enum.PreferredInput.Touch, orientation = turn.orientation })
 		local opens = {}
 		local stage = t.mount(function(UI, Host, Compose)
 			local children: { any } = {

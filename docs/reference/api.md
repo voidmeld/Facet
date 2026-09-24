@@ -1788,8 +1788,9 @@ choose. For rows of text, use VirtualList or Table.
   immediately.
 - While engaged, the card's `UIScale` named `Lift` rises to 1.04 on a spring,
   and a body Button shows its `UIShadow` named `LiftShadow`. A card with no
-  body action has no shadow. The scale is paint only. Keep gutters of at least
-  the scaled growth around each card. Reduced motion keeps only the shadow.
+  body action has no shadow. The scale is paint only. Outside a layout, the card
+  offsets its `Position` by half of the growth, so it grows evenly around its
+  centre. Keep gutters of at least half the scaled growth around each card. Reduced motion keeps only the shadow.
   When a `browseTarget` exists, the card puts a `UIScale` named `CardLift` with
   the same scale on it, so the selection ring grows with the card.
 

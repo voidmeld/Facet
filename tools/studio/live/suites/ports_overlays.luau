@@ -613,6 +613,14 @@ add("notice-affixed-banner-moves-content", { "post-overlays-090" }, function(t)
 	if not banner then
 		return
 	end
+	local layer = family:FindFirstAncestorWhichIsA("LayerCollector")
+	local padding = family:FindFirstChildWhichIsA("UIPadding")
+	t.note("reservation", {
+		layer = layer and { layer:GetFullName(), layer.AbsolutePosition.Y, layer:GetAttribute("FacetInsetTop") },
+		family = family.AbsolutePosition.Y,
+		banner = { banner.AbsolutePosition.Y, banner.AbsoluteSize.Y, banner:GetFullName() },
+		padding = padding and padding.PaddingTop.Offset,
+	})
 	local top = t.rect(family).y
 	local b = t.rect(banner)
 	t.check("the banner sits at the top of the Status page", b.y >= top - 0.5 and b.y <= top + 17, { b, top })

@@ -10,7 +10,7 @@ local registerTable = require("../src/ui/collection_table")
 local engineLib = require("./lib/native_engine")
 
 local function setup(options)
-	local engine = engineLib.new()
+	local engine = engineLib.new(options and options.engine)
 	if options and options.clock then
 		engine.clock = options.clock
 	end
@@ -25,7 +25,9 @@ local function setup(options)
 		reducedMotion = true,
 	}
 	for field, value in options or {} do
-		config[field] = value
+		if field ~= "engine" then
+			config[field] = value
+		end
 	end
 	if config.userInputService and config.userInputService.GetPropertyChangedSignal == nil then
 		local service = engine.new("UserInputService")
@@ -489,6 +491,31 @@ t.describe("Compose native collections", function()
 		t.expect(gui.SelectedObject.Text).toBe("50")
 		stop()
 		t.expect(gui.SelectedObject).toBeNil()
+		runtime:dispose()
+	end)
+
+	t.it("waits for a PlayerGui before it restores the keyed focus target", function()
+		local engine, runtime, UI, target, gui = setup({ engine = { selectionNeedsPlayerGui = true } })
+		local focus = {}
+		local stop, node = runtime.mount(function()
+			return UI.VirtualList({
+				from = records(100),
+				key = key,
+				itemSize = 20,
+				overscan = 0,
+				focus = focus,
+				render = function(current)
+					return button(UI, current)
+				end,
+			})
+		end, target)
+		node.AbsoluteWindowSize = engine.types.Vector2.new(200, 100)
+		t.expect(pcall(focus.focus, 50)).toBe(true)
+		t.expect(gui.SelectedObject).toBeNil()
+		target.Parent = engine.new("PlayerGui")
+		focus.focus(51)
+		t.expect(gui.SelectedObject.Text).toBe("51")
+		stop()
 		runtime:dispose()
 	end)
 
