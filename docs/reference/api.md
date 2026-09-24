@@ -218,7 +218,8 @@ Presentation options:
 - `appearance`, `role`, `selected`, `name`, `hint` and `pop`.
 - `controlSize`: `compact`, `regular` or `large`.
 - `corners`: `pill` or `square`, or a readable of one.
-- `shape`: `rect` or `circle`.
+- `shape`: `rect` or `circle`. A circle with an authored `Size` on one axis
+  only keeps that axis and matches the other axis to it.
 - `icon` and `trailingIcon`.
 - `image`, `imageAspectRatio` (default `16/9`) and `imageFraming` (`fit` or
   `crop`).
@@ -508,9 +509,11 @@ Callout requires a native `anchor` with a separate parent, content and
 `onRetire`. The callout borrows the anchor. When a native ancestor of the anchor
 is hidden, the callout is suspended. `seen`, `sessions`, `afterSessions`,
 `featureUsed` and priority set eligibility and queue order. Retirement is
-delivered once. A callout is contextual teaching attached to a control. It is
-not a second application presenter. The callout scales and fades from the edge
-nearest to its anchor. See [Motion](#motion).
+delivered once. `edge = "top"` puts the callout above the anchor. If there is
+no room above and there is room below, the callout goes below the anchor. A
+callout is contextual teaching attached to a control. It is not a second
+application presenter. The callout scales and fades from the edge nearest to
+its anchor. See [Motion](#motion).
 
 ## Collections
 

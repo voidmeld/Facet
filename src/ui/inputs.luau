@@ -6,6 +6,7 @@ local valueModel = require("./input_value")
 local InputTypes = require("./input_types")
 local Shared = require("./types")
 local ThemeTypes = require("./theme_types")
+local EngineTypes = require("./engine_types")
 local ComposeTypes = require("../vendor/compose/core")
 type ValueState<T> = {
 	value: Shared.Value<T>,
@@ -388,7 +389,18 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 			end
 			p.AutomaticSize = E.AutomaticSize.None
-			table.insert(p, Host.UIAspectRatioConstraint({ AspectRatio = 1 }))
+			local aspect: EngineTypes.UIAspectRatioConstraintProps = { AspectRatio = 1 }
+			local authored = spec.Size
+			if authored ~= nil and not dynamic(authored) then
+				local size = authored :: UDim2
+				local wide = size.X.Scale ~= 0 or size.X.Offset ~= 0
+				local tall = size.Y.Scale ~= 0 or size.Y.Offset ~= 0
+				if wide ~= tall then
+					aspect.AspectType = E.AspectType.ScaleWithParentSize
+					aspect.DominantAxis = if wide then E.DominantAxis.Width else E.DominantAxis.Height
+				end
+			end
+			table.insert(p, Host.UIAspectRatioConstraint(aspect))
 			table.insert(p, Host.UICorner({ CornerRadius = D.new(1, 0) }))
 		elseif spec.corners then
 			table.insert(

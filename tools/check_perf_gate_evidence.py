@@ -44,7 +44,7 @@ def studio_rows(evidence_class):
             doc = load(os.path.join(STUDIO_DIR, name))
             candidates = [doc] if isinstance(doc, dict) and doc.get("schema") else []
             if isinstance(doc, dict):
-                candidates += [r for key in ("rows", "captures") for r in doc.get(key, []) or []]
+                candidates += [r for key in ("rows", "captures") if isinstance(doc.get(key), list) for r in doc[key]]
             for row in candidates:
                 if isinstance(row, dict) and row.get("schema") == "facet-perf-capture/1":
                     if row.get("evidenceClass") == evidence_class:

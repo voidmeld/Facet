@@ -298,6 +298,30 @@ t.describe("native gallery", function()
 			end
 		end
 	end
+	t.it("reserves the measured shell toolbar height above the demos", function()
+		local ctx, _, target = nativeContext()
+		ctx.selection = Compose.cell("all-controls")
+		ctx.themeMode = Compose.cell("light")
+		ctx.theme = Compose.cell(Facet.themes.neutralPackage())
+		ctx.packages = { Neutral = ctx.theme:peek() }
+		ctx.load = load
+		local stop, gui = ctx.runtime.mount(function()
+			return ctx.Host.ScreenGui "FacetGallery" {
+				require("../examples/gallery/client/screen").build(ctx),
+			}
+		end, target)
+		local root = find(gui, "Gallery")
+		local toolbar, demos = root:FindFirstChild("Toolbar"), root:FindFirstChild("Demos")
+		t.expect(toolbar.AutomaticSize).toBe(ctx.types.Enum.AutomaticSize.Y)
+		t.expect(demos.Position.Y.Offset).toBe(56)
+		toolbar.AbsoluteSize = ctx.types.Vector2.new(390, 80)
+		t.expect(demos.Position.Y.Offset).toBe(80)
+		t.expect(demos.Size.Y.Offset).toBe(-80)
+		toolbar.AbsoluteSize = ctx.types.Vector2.new(390, 40)
+		t.expect(demos.Position.Y.Offset).toBe(56)
+		stop()
+		ctx.runtime.dispose()
+	end)
 	t.it("keeps action controls ordered responsive and interactive through native layout properties", function()
 		local ctx, engine, target = nativeContext()
 		local built

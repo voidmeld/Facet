@@ -1887,6 +1887,38 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("moves a top callout below its anchor when only the bottom has room", function()
+		local world = setup(function(UI, Host)
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
+			return Host.Frame({
+				anchor,
+				UI.Callout({
+					anchor = anchor,
+					edge = "top",
+					onRetire = function() end,
+					content = function()
+						return UI.Label({ text = "Tip" })
+					end,
+				}),
+			})
+		end)
+		local V = world.engine.types.Vector2
+		world.screen.AbsoluteSize = V.new(844, 311)
+		local anchor, panel, arrow =
+			find(world.screen, "Anchor"), find(world.screen, "CalloutPanel"), find(world.screen, "Arrow")
+		anchor.AbsolutePosition = V.new(8, 18)
+		anchor.AbsoluteSize = V.new(109, 44)
+		panel.AbsoluteSize = V.new(280, 106)
+		t.expect(panel.Position.Y.Offset).toBe(18 + 44 + 8)
+		t.expect(arrow.Position.Y.Offset).toBe(18 + 44 + 8 - 5)
+		anchor.AbsolutePosition = V.new(8, 200)
+		t.expect(panel.Position.Y.Offset).toBe(200 - 106 - 8)
+		anchor.AbsolutePosition = V.new(8, 100)
+		panel.AbsoluteSize = V.new(280, 250)
+		t.expect(panel.Position.Y.Offset).toBe(8)
+		world.stop()
+	end)
+
 	t.it("suspends callout plates with hidden anchors and restores their native arrow", function()
 		local retired = 0
 		local world = setup(function(UI, Host)

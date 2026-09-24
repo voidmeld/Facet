@@ -34,15 +34,20 @@ function lab.build(ctx, modules)
 		table.insert(choices, { value = entry.id, label = entry.label })
 	end
 	local samples, frameSamples, elapsed, iterations, queue = {}, {}, 0, 0, {}
+	local clean, cleanSamples = Compose.cell(false), false
 	local function reset()
 		samples, frameSamples, elapsed, iterations = {}, {}, 0, 0
+		cleanSamples = clean:peek()
 		sequence:update(function(value)
 			return value + 1
 		end)
 	end
 	local function sample(dt)
-		if not active or selected:peek() == "idle-baseline" then
+		if not active or selected:peek() == "idle-baseline" or active.ready == false then
 			return
+		end
+		if not clean:peek() then
+			cleanSamples = false
 		end
 		local before = os.clock()
 		active.step()
@@ -75,17 +80,21 @@ function lab.build(ctx, modules)
 		row.scenario = selected:peek()
 		row.rows, row.seed, row.content = rowCount:peek(), 1, "normal"
 		row.implementation = if selected:peek() == "dense-scroll-native" then "native-all" else "compose-native"
-		row.theme, row.resourceState = "facet-neutral", "mixed"
+		row.theme, row.resourceState = if ctx.themeName then ctx.themeName:peek() else "facet-neutral", "mixed"
 		row.datasetDigest = modules.dataset.digest(modules.dataset.build({ count = row.rows, seed = 1 }))
 		row.repeat_, row.warmupFrames, row.captureFrames = #captures + 1, 0, #frameSamples
-		row.cleanCapture, row.profilerScopes = false, false
+		row.cleanCapture, row.profilerScopes = cleanSamples and #frameSamples > 0, false
 		row.frame = {
 			measured = #frameSamples > 0,
 			samplesMs = table.clone(frameSamples),
 			instrument = "Heartbeat intervals; not CPU or render work",
 		}
-		row.counters =
-			{ iterations = iterations, elapsedSeconds = elapsed, feedback = if active then active.counters else nil }
+		row.counters = {
+			iterations = iterations,
+			elapsedSeconds = elapsed,
+			feedback = if active then active.counters else nil,
+			preferredTextSize = row.preferredTextSize,
+		}
 		row.scopes = { measured = true, controlStepMs = table.clone(samples) }
 		local problems = modules.capture.problems(row)
 		assert(#problems == 0, table.concat(problems, "; "))
@@ -121,6 +130,9 @@ function lab.build(ctx, modules)
 	end
 	local toolbar = Host.Frame "Toolbar" {
 		LayoutOrder = 1,
+		Visible = function(use)
+			return not use(clean)
+		end,
 		Size = T.UDim2.new(1, 0, 0, 0),
 		AutomaticSize = T.Enum.AutomaticSize.Y,
 		BackgroundTransparency = 1,
@@ -201,7 +213,8 @@ function lab.build(ctx, modules)
 					workload = modules.sensory(context)
 					node = workload.build()
 				elseif item.workload == "dense-scroll-native" or item.workload == "mount-ramp" then
-					local rows = Compose.cell(data)
+					local progressive = item.workload == "dense-scroll-native" and ctx.heartbeat ~= nil
+					local rows = Compose.cell(if progressive then {} else data)
 					local function fullList()
 						return Host.ScrollingFrame({
 							Size = T.UDim2.fromScale(1, 1),
@@ -229,6 +242,25 @@ function lab.build(ctx, modules)
 						node = fullList()
 						workload.step = function()
 							node.CanvasPosition += T.Vector2.new(0, 61)
+						end
+						if progressive then
+							workload.ready = false
+							local filling
+							filling = ctx.heartbeat:Connect(function()
+								local current = rows:peek()
+								local nextRows = table.clone(current)
+								for index = #current + 1, math.min(#data, #current + 100) do
+									table.insert(nextRows, data[index])
+								end
+								rows:set(nextRows)
+								if #nextRows >= #data then
+									workload.ready = true
+									filling:Disconnect()
+								end
+							end)
+							Compose.cleanup(function()
+								filling:Disconnect()
+							end)
 						end
 					end
 				elseif item.workload == "variable-extents" or item.workload == "edit-locality" then
@@ -362,6 +394,15 @@ function lab.build(ctx, modules)
 			stop = stop,
 			reset = idle,
 			capture = capture,
+			clean = function(value)
+				clean:set(value == true)
+				reset()
+			end,
+			theme = function(name)
+				assert(ctx.setTheme, "this place has no theme packages")
+				ctx.setTheme(name)
+				reset()
+			end,
 			sweep = sweep,
 			ramp = ramp,
 			state = function()
@@ -373,6 +414,7 @@ function lab.build(ctx, modules)
 					queued = #queue,
 					captures = #captures,
 					active = active,
+					ready = active ~= nil and active.ready ~= false,
 				}
 			end,
 		})
@@ -411,7 +453,15 @@ function lab.build(ctx, modules)
 		}),
 		Host.UIListLayout({ SortOrder = T.Enum.SortOrder.LayoutOrder, Padding = T.UDim.new(0, 8) }),
 		toolbar,
-		UI.Label({ text = readout, LayoutOrder = 2, Size = T.UDim2.new(1, 0, 0, 40), TextWrapped = true }),
+		UI.Label({
+			text = readout,
+			LayoutOrder = 2,
+			Size = T.UDim2.new(1, 0, 0, 40),
+			TextWrapped = true,
+			Visible = function(use)
+				return not use(clean)
+			end,
+		}),
 		mount,
 	}
 	root:AddTag("facet-surface")

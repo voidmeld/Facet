@@ -1042,8 +1042,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						then x
 						elseif align == "trailing" then x + bounds.X - box.X
 						else x + (bounds.X - box.X) / 2
-					local above = read(spec.edge, use) == "top"
-						or (y + bounds.Y + box.Y + 16 > offer.Y and y >= box.Y + 16)
+					local roomAbove = y >= box.Y + 16
+					local roomBelow = y + bounds.Y + box.Y + 16 <= offer.Y
+					local above = if read(spec.edge, use) == "top"
+						then roomAbove or not roomBelow
+						else roomAbove and not roomBelow
 					local top = if above then y - box.Y - 8 else y + bounds.Y + 8
 					return {
 						left = math.clamp(left, 8, math.max(8, offer.X - box.X - 8)),

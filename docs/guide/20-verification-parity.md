@@ -24,8 +24,8 @@ where.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
   845 of them, no candidate test and no live Studio record show that
   Facet uses the mechanism correctly.
-- Of 130 main `full` producers, no producer is a gap. Five producers run
-  but wait for live Studio evidence, and four are weaker replacements. See
+- Of 130 main `full` producers, no producer is a gap and no producer is a
+  weaker replacement. Four producers run but wait for live Studio evidence. See
   [Producers](#producers).
 - A complete run writes `artifacts/verify/latest-<tier>.json` with release
   gate evidence. `tools/package.sh publish` reads the `release` file and
@@ -84,8 +84,8 @@ last column names the candidate specs that the group cites most.
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 63 | 23 | 16 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,326 | 94 | 58 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 497 | 63 | 38 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Layout and geometry | 1,326 | 94 | 25 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Text measurement and fit | 497 | 63 | 47 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
 | Focus and selection | 532 | 103 | 49 | 257 | 172 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
 | Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
@@ -101,13 +101,13 @@ last column names the candidate specs that the group cites most.
 | Navigation containers | 72 | 69 | 36 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
 | Presented surfaces | 287 | 124 | 81 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 214 | 159 | 6 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
-| Tables | 156 | 97 | 9 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
-| Row actions | 264 | 149 | 19 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 166 | 46 | 30 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| Tables | 156 | 97 | 1 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
+| Row actions | 264 | 149 | 13 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
+| HUD and world targets | 166 | 46 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 32 | 17 | 51 | 336 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 0 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
-| Gallery and examples | 425 | 246 | 58 | 113 | 66 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
+| Gallery and examples | 425 | 246 | 51 | 113 | 66 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 152 | 2 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
@@ -127,9 +127,25 @@ results:
 - the fit of the showcase on each viewport (`overflow_sweep`, 124 cases),
 - selection visuals and scroll-into-view geometry.
 
-`tools/lune/parity_blockers.json` still lists three pending live risks. The
-`coverage` producer fails for this reason. Studio evidence for the other
-native mechanisms is not recorded per contract.
+`tools/lune/parity_blockers.json` still lists one pending live risk: haptic
+motor output on a physical phone and gamepad. The `coverage` producer fails
+for this reason. Studio shows only that the controls request the effects.
+
+The live Studio harness in `tools/studio/live` records engine geometry for 34
+contracts in the `liveEvidence` field of each contract. The results are in
+`artifacts/studio-live`. The runs use the device emulator at 844x369 and
+388x824, at the Medium and Largest preferred text sizes. The harness found
+four defects, and the branch fixes them:
+
+- The collection toolbar took the whole page on a short landscape phone, so
+  the list had no height.
+- The gallery shell reserved a fixed 56 px, and a taller Settings button
+  overlapped the demo tabs.
+- A top callout with no room above covered its anchor.
+- A circle Button with a Size on one axis only collapsed to 0x0.
+
+[Device verification](11-device-verification.md#live-assertion-harness)
+describes the harness and its limits.
 
 ### Workloads
 
@@ -163,11 +179,11 @@ of each one after the producer restoration. The data is in `producers.rows`.
 
 | Status | Main `full` producers |
 |---|---:|
-| Equivalent candidate producer | 45 |
-| Replaced by a different check | 15 |
-| Replaced by a weaker check | 4 |
-| Producer runs; its live evidence is not recorded | 5 |
-| Retired with its subject | 61 |
+| Equivalent candidate producer | 48 |
+| Replaced by a different check | 16 |
+| Replaced by a weaker check | 0 |
+| Producer runs; its live evidence is not recorded | 4 |
+| Retired with its subject | 62 |
 | Total | 130 |
 
 No main producer is a gap now. Each main producer is equivalent, replaced,
@@ -271,34 +287,37 @@ Studio sessions during the run, so its timings are not reference timings.
 | `corpus_cli` | `suite` | fast, full, release | native_a11y_l10n_corpus spec in the suite: accessible names of controls and gallery demos, and a localization string corpus. |
 | `verify-selftest` | `verification-selftest` | fast, full, release |  |
 
-### Weaker replacements
+### Former weaker replacements
 
-These producers run, but they cover less than the main producer.
+These four producers were weaker than on `main`. They are now at the
+strength of `main`, or their subject is deleted.
 
 | Main producer | Candidate producer | Tier | Note |
 |---|---|---|---|
-| `check_example_drift_cli` | `native_documentation`, `architecture` |  | No guide/example source drift check. |
-| `faults` | `native_stress (200 seeded fault storms)` |  | Main ran 9 fault scenarios x 200 iterations. |
-| `fuzz-replication` | `native_stress (400 seeded deliveries)` |  | Facet replication module deleted; test covers an example model. |
-| `soak` | `native_stress (200 modal cycles, 100 structural cycles)` |  | Main soak ran the full presenter and scene soak fixtures. |
+| `check_example_drift_cli` | `example-drift`, `example-drift-selftest` | full, release | `tools/check_example_drift.py` scans the tutorial and reference examples for a literal `TextSize`, a literal paint colour, a raw colour, an unknown `textRole` and an engine reach-around. Each allowed literal has a reason, and a stale entry fails. |
+| `faults` | `suite` (`native_stress`) | fast, full, release | Six of the nine main scenarios run at 200 iterations or more: async storms, locale and UTF8 text, preferred input switches, teardown and the covered modal dismissal. The other three tested deleted subjects: the Facet scheduler (now Compose), the Facet resource cache and the Facet environment facts. |
+| `fuzz-replication` | `suite` (`native_stress`) | fast, full, release | Retired. `src/replication` is deleted. The example authority model converges under 400 seeded deliveries, the same count as `main`. |
+| `soak` | `suite` (`native_stress`) | fast, full, release | The same two fixtures as `main`: 200 modal cycles and 100 structural cycles, each twice, with a census after each cycle. |
 
 ### Producers that wait for live evidence
 
-These producers run in `full` and `release`. Each one exits 2 until a
+These producers run in `full` and `release`. Each one exits 2 until its
 Studio capture of the native performance lab is recorded under
 `artifacts/performance-stress-places/studio`. The lab place is
-`examples/performance.project.json`. The capture schema is in
-`examples/performance/lab/capture.luau`. The theme-cost and large-text modes
-also need a lab change: the lab captures only the neutral theme, and a capture
-row has no preferred text size.
+`examples/performance.project.json`, and `workspace.FacetPerfLabAPI` drives
+it (`select`, `theme`, `clean`, `run`, `stop`, `capture`). The capture schema
+is in `examples/performance/lab/capture.luau`. A capture row records the
+theme and the preferred text size.
+
+`perf-gate-evidence-studio` passes with one clean capture. See
+[the lab in Roblox Studio](19-paired-performance.md#the-performance-lab-in-roblox-studio).
 
 | Main producer | Candidate producer | Tier | Note |
 |---|---|---|---|
-| `check_perf_gate_evidence-device-matrix` | `perf-gate-evidence-device-matrix` | full, release | No emulator-class capture matrix is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-large-text` | `perf-gate-evidence-large-text` | full, release | The native lab capture has no preferred text size field. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-native-reference` | `perf-gate-evidence-native-reference` | full, release | No dense-scroll versus dense-scroll-native Studio pair is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-studio` | `perf-gate-evidence-studio` | full, release | No native Studio capture of the performance lab is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-theme-cost` | `perf-gate-evidence-theme-cost` | full, release | The native lab captures only the neutral theme; no ornate capture exists. The producer runs and reports FAIL_ENVIRONMENT. |
+| `check_perf_gate_evidence-device-matrix` | `perf-gate-evidence-device-matrix` | full, release | Five emulator-class viewports are not recorded. Set `workspace.Facet_PerfEvidenceClass` to `emulator` for these rows. |
+| `check_perf_gate_evidence-large-text` | `perf-gate-evidence-large-text` | full, release | Only the Largest text size is recorded. Scripts cannot set the preference, so each size needs the Roblox menu. |
+| `check_perf_gate_evidence-native-reference` | `perf-gate-evidence-native-reference` | full, release | In Studio the lab did not mount the next workload after `dense-scroll-native`. Those captures were discarded. |
+| `check_perf_gate_evidence-theme-cost` | `perf-gate-evidence-theme-cost` | full, release | The ornate capture came after the fault above and was discarded. |
 
 ### Retired producers
 
