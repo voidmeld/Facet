@@ -2226,4 +2226,298 @@ t.describe("native parity reference applications", function()
 			stop()
 		end)
 	end)
+
+	t.describe("Gallery recipes", function()
+		local function recipe(name: string): (any, any, () -> (), any, any)
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local target, gui = engine.new("Folder"), engine.new("GuiService")
+			local input = engine.new("UserInputService")
+			input.GetFocusedTextBox = function()
+				return nil
+			end
+			local ctx: { [string]: any } = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = runtime,
+				Host = runtime.constructors,
+				types = engine.types,
+				viewport = Compose.cell({ width = 1280, height = 720 }),
+				inputTarget = target,
+				worldTarget = engine.new("Folder"),
+				guiService = gui,
+				runService = { Heartbeat = engine.heartbeat },
+			}
+			local built
+			local stop, node = runtime.mount(function()
+				gallery.configure(ctx)
+				ctx.UI = Facet.controls(
+					runtime,
+					{
+						types = engine.types,
+						viewport = ctx.viewport,
+						guiService = gui,
+						services = { GuiService = gui, UserInputService = input },
+						reducedMotion = ctx.reducedMotion,
+					} :: any
+				)
+				built = (require :: any)("../examples/gallery/scenarios/" .. name).build(ctx)
+				if built.dispose then
+					Compose.cleanup(built.dispose)
+				end
+				return built.screen()
+			end, engine.new("ScreenGui"))
+			return built, node, function()
+				stop()
+				runtime:dispose()
+			end, ctx, engine
+		end
+
+		local function picker(node: any, name: string): any
+			for _, child in node:GetDescendants() do
+				if child.Name == name and child.ClassName == "Frame" and child:FindFirstChild("Presentation") then
+					return child
+				end
+			end
+			error(`no picker {name}`)
+		end
+
+		local function avatars(node: any): { [string]: any }
+			local out = {}
+			for _, child in node:GetDescendants() do
+				if child:HasTag("facet-avatar") then
+					out[child.Name] = child
+				end
+			end
+			return out
+		end
+
+		t.it("drives the avatar recipe through pending, failure, presence and size rungs", function()
+			local built, node, stop = recipe("avatar")
+			local portrait = assert(avatars(node).Portrait)
+			t.expect(built.report().state).toBe("ready")
+			t.expect(built.report().imageMounted).toBe(true)
+			local pending = built.steps.pending()
+			t.expect(pending.state).toBe("loading")
+			t.expect(pending.imageMounted).toBe(false)
+			local failed = built.steps.fail()
+			t.expect(failed.state).toBe("failed")
+			t.expect(failed.imageMounted).toBe(false)
+			t.expect(find(portrait, "Initials").Text).toBe("AQ")
+			t.expect(built.steps.ready().state).toBe("ready")
+			t.expect(find(portrait, "Image").Visible).toBe(true)
+			t.expect(portrait:GetAttribute("AccessibleLabel")).toBe("Ada Quill, online")
+			t.expect(built.steps.presence().presence).toBe("away")
+			t.expect(portrait:GetAttribute("AccessibleLabel")).toBe("Ada Quill, away")
+			t.expect(find(portrait, "Presence") ~= nil).toBe(true)
+			t.expect(built.steps.busy().presence).toBe("busy")
+			t.expect(built.steps.offline().presence).toBe("offline")
+			t.expect(portrait:GetAttribute("AccessibleLabel")).toBe("Ada Quill, offline")
+			t.expect(built.steps.compact().controlSize).toBe("compact")
+			t.expect(portrait.Size.X.Offset).toBe(36)
+			t.expect(avatars(node).Initials.Size.X.Offset).toBe(36)
+			t.expect(built.steps.large().controlSize).toBe("large")
+			t.expect(portrait.Size.X.Offset).toBe(56)
+			t.expect(avatars(node).Initials:FindFirstChild("Initials").Text).toBe("ÉN")
+			portrait.Activated.fire()
+			t.expect(built.report().activations).toBe(1)
+			built.reset()
+			t.expect(same(built.report(), {
+				state = "ready",
+				imageMounted = true,
+				presence = "online",
+				controlSize = "regular",
+				activations = 0,
+			})).toBe(true)
+			t.expect(portrait.Size.X.Offset > 36 and portrait.Size.X.Offset < 56).toBe(true)
+			stop()
+			t.expect(portrait.isDestroyed()).toBe(true)
+		end)
+
+		t.it("drives the avatar group recipe and resets the identity tab through its shared command", function()
+			local built, node, stop = recipe("avatar_group")
+			local function team(): any
+				return assert(find(node, "Team"))
+			end
+			local function overflow(): string
+				return find(team(), "Overflow").Text
+			end
+			t.expect(built.report().count).toBe(6)
+			t.expect(built.report().hidden).toBe(2)
+			t.expect(overflow()).toBe("+2")
+			local bo = avatars(team()).bo
+			built.steps.reorder()
+			t.expect(avatars(team()).bo).toBe(bo)
+			local fewer = built.steps.fewer()
+			t.expect(fewer.count).toBe(5)
+			t.expect(fewer.hidden).toBe(1)
+			t.expect(overflow()).toBe("+1")
+			t.expect(built.steps.compact().controlSize).toBe("compact")
+			t.expect(avatars(team()).bo.Size.X.Offset).toBe(36)
+			t.expect(built.steps.large().controlSize).toBe("large")
+			t.expect(avatars(team()).bo.Size.X.Offset).toBe(56)
+			t.expect(built.steps.spread().variant).toBe("spread")
+			t.expect(built.steps.ellipsis().variant).toBe("ellipsis")
+			t.expect(overflow() ~= "+1").toBe(true)
+			find(team(), "Overflow").Activated.fire()
+			t.expect(built.report().activations).toBe(1)
+			local restored = built.steps.restore()
+			t.expect(restored.count).toBe(6)
+			t.expect(restored.hidden).toBe(2)
+			stop()
+
+			local identity, root, stopIdentity = recipe("identity")
+			local report = identity.report()
+			t.expect(report.avatar.presence).toBe("online")
+			t.expect(report.group.count).toBe(6)
+			press(picker(root, "Picture"), "failed")
+			press(picker(root, "Presence"), "busy")
+			press(root, "RosterActions", "Fewer")
+			press(picker(root, "Layout"), "spread")
+			local changed = identity.report()
+			t.expect(changed.avatar.state).toBe("failed")
+			t.expect(changed.avatar.presence).toBe("busy")
+			t.expect(changed.group.count).toBe(5)
+			t.expect(changed.group.variant).toBe("spread")
+			local face = avatars(root).Portrait
+			press(root, "Reset")
+			local after = identity.report()
+			t.expect(after.avatar.presence).toBe("online")
+			t.expect(after.avatar.state).toBe("ready")
+			t.expect(same(after.group, report.group)).toBe(true)
+			t.expect(avatars(root).Portrait).toBe(face)
+			stopIdentity()
+		end)
+
+		t.it("drives the badge recipe through its statuses and rungs and resets the status tab", function()
+			local built, node, stop = recipe("badge")
+			local standard = assert(find(node, "Standard"))
+			local icon = assert(standard:FindFirstChildWhichIsA("ImageLabel"))
+			t.expect(standard:HasTag("facet-status-neutral")).toBe(true)
+			for _, word in { "warning", "error", "neutral" } do
+				t.expect(built.steps[word]().status).toBe(word)
+				t.expect(standard:HasTag("facet-status-" .. word)).toBe(true)
+				t.expect(find(node, "Media"):HasTag("facet-status-" .. word)).toBe(true)
+				t.expect(standard:FindFirstChildWhichIsA("ImageLabel")).toBe(icon)
+			end
+			t.expect(standard:HasTag("facet-status-warning")).toBe(false)
+			t.expect(find(node, "Utility"):HasTag("facet-badge-utility")).toBe(true)
+			t.expect(within(node, "Marked", "Status") ~= nil).toBe(true)
+			local compact = standard.Size.Y.Offset
+			press(picker(node, "Size"), "large")
+			t.expect(built.report().controlSize).toBe("large")
+			t.expect(standard.Size.Y.Offset > compact).toBe(true)
+			stop()
+
+			local family, root, stopFamily = recipe("status_family")
+			local initial = family.report()
+			press(picker(find(root, "BadgeRecipe"), "Status"), "error")
+			press(root, "StatusRecipe", "More")
+			t.expect(family.report().badge.status).toBe("error")
+			t.expect(family.report().status.count).toBe(25)
+			local count = assert(within(root, "Live", "Count"))
+			press(root, "Content", "Reset")
+			t.expect(same(family.report(), initial)).toBe(true)
+			t.expect(within(root, "Live", "Count")).toBe(count)
+			stopFamily()
+		end)
+
+		t.it("drives the skeleton recipe through silhouettes, branches and motion and releases its clock", function()
+			local built, node, stop, ctx, engine = recipe("skeleton")
+			local pending = assert(find(node, "Pending"))
+			t.expect(find(pending, "Placeholders") ~= nil).toBe(true)
+			t.expect(within(pending, "First", "Card") ~= nil).toBe(true)
+			t.expect(find(pending, "Face") ~= nil).toBe(true)
+			t.expect(find(pending, "Copy") ~= nil).toBe(true)
+			t.expect(engine.heartbeat.count() > 0).toBe(true)
+			t.expect(built.steps.removeFirst().first).toBe(false)
+			t.expect(within(pending, "First", "Card")).toBeNil()
+			t.expect(find(pending, "Face") ~= nil).toBe(true)
+			t.expect(built.steps.restoreFirst().first).toBe(true)
+			t.expect(within(pending, "First", "Card") ~= nil).toBe(true)
+			t.expect(built.steps.reduced().reduced).toBe(true)
+			t.expect(ctx.reducedMotion:peek()).toBe(true)
+			press(node, "Animate")
+			t.expect(built.report().reduced).toBe(false)
+			press(node, "Reduce")
+			t.expect(built.report().reduced).toBe(true)
+			t.expect(built.steps.full().reduced).toBe(false)
+			local loaded = built.steps.loaded()
+			t.expect(loaded.loading).toBe(false)
+			t.expect(find(pending, "Placeholders")).toBeNil()
+			t.expect(hasText(pending, "Your next race is ready.")).toBe(true)
+			t.expect(built.steps.loading().loading).toBe(true)
+			built.reset()
+			t.expect(same(built.report(), { loading = true, first = true, reduced = false })).toBe(true)
+			stop()
+			t.expect(engine.heartbeat.count()).toBe(0)
+		end)
+
+		t.it("drives the status indicator recipe through count caps and shapes", function()
+			local built, node, stop = recipe("status_indicator")
+			local count = assert(within(node, "Live", "Count"))
+			local cutout = assert(within(node, "Live", "Cutout"))
+			t.expect(same(built.report(), { count = 0, form = "dot", status = "neutral" })).toBe(true)
+			press(node, "Live", "More")
+			t.expect(built.report().count).toBe(25)
+			t.expect(count.Text).toBe("25")
+			t.expect(built.steps.capped().count > 99).toBe(true)
+			t.expect(count.Text).toBe("99+")
+			t.expect(cutout:HasTag("facet-status-hollow")).toBe(false)
+			t.expect(built.steps.ring().form).toBe("ring")
+			t.expect(cutout:HasTag("facet-status-hollow")).toBe(true)
+			t.expect(within(node, "Shapes", "ring", "Mark"):HasTag("facet-status-hollow")).toBe(true)
+			t.expect(within(node, "Shapes", "dot", "Mark"):HasTag("facet-status-hollow")).toBe(false)
+			t.expect(built.steps.error().status).toBe("error")
+			t.expect(count:HasTag("facet-status-error")).toBe(true)
+			press(node, "Live", "Reset")
+			t.expect(built.report().count).toBe(0)
+			t.expect(count.Text ~= "99+").toBe(true)
+			built.reset()
+			t.expect(same(built.report(), { count = 0, form = "dot", status = "neutral" })).toBe(true)
+			t.expect(count:HasTag("facet-status-neutral")).toBe(true)
+			stop()
+		end)
+
+		t.it("drives the shortcut hint recipe through rungs, a localized separator and live rebinding", function()
+			local built, node, stop, ctx = recipe("shortcut_hint")
+			local explicit = assert(find(node, "Explicit"))
+			t.expect(explicit.Text).toBe("K or F1")
+			t.expect(built.steps.localize().binding).toBeNil()
+			t.expect(explicit.Text).toBe("K ou F1")
+			local regular = explicit.Size.Y.Offset
+			t.expect(built.steps.compact().controlSize).toBe("compact")
+			local compact = explicit.Size.Y.Offset
+			t.expect(built.steps.large().controlSize).toBe("large")
+			t.expect(compact < regular and regular < explicit.Size.Y.Offset).toBe(true)
+			t.expect(built.steps.rename().title).toBe("Lap saved")
+			t.expect(hasText(find(node, "BoundLabel"), "Lap saved") or find(node, "BoundLabel").Text == "Lap saved")
+				.toBe(true)
+			local custom = assert(find(ctx.inputTarget, "RecipeCommand"))
+			local hint = assert(find(node, "Custom"))
+			t.expect(custom:FindFirstChildWhichIsA("InputBinding")).toBeNil()
+			t.expect(built.steps.rebind().binding).toBe("R")
+			local binding = assert(custom:FindFirstChildWhichIsA("InputBinding"))
+			t.expect(binding.KeyCode).toBe(ctx.types.Enum.KeyCode.R)
+			custom.PreferredBinding = binding
+			t.expect(within(hint, "PreferredBinding", "Key").Text).toBe("R")
+			t.expect(built.steps.bind().binding).toBe("Return")
+			t.expect(custom:FindFirstChildWhichIsA("InputBinding")).toBe(binding)
+			t.expect(within(hint, "PreferredBinding", "Key").Text).toBe("Enter")
+			press(node, "Bindings", "Rebind")
+			t.expect(within(hint, "PreferredBinding", "Key").Text).toBe("R")
+			press(node, "Bindings", "Unbind")
+			t.expect(built.report().binding).toBeNil()
+			t.expect(custom:FindFirstChildWhichIsA("InputBinding")).toBeNil()
+			custom.PreferredBinding = nil
+			t.expect(find(hint, "PreferredBinding")).toBeNil()
+			press(node, "OpenGuide")
+			t.expect(built.report().guideVisible).toBe(true)
+			t.expect(find(node, "GuideText") ~= nil).toBe(true)
+			built.reset()
+			t.expect(explicit.Text).toBe("K or F1")
+			t.expect(find(node, "GuideText")).toBeNil()
+			stop()
+		end)
+	end)
 end)

@@ -14,10 +14,20 @@ return {
 		local rootPath, controller
 		local records = {}
 		local function report()
-			return { loading = loading:peek(), first = first:peek() }
+			return {
+				loading = loading:peek(),
+				first = first:peek(),
+				reduced = if ctx.reducedMotion then ctx.reducedMotion:peek() else false,
+			}
 		end
 		local function command(cell, value)
 			cell:set(value)
+			return report()
+		end
+		local function motion(value)
+			if ctx.motionPreference then
+				ctx.motionPreference:set(value)
+			end
 			return report()
 		end
 
@@ -203,6 +213,12 @@ return {
 				end,
 				restoreFirst = function()
 					return command(first, true)
+				end,
+				reduced = function()
+					return motion(true)
+				end,
+				full = function()
+					return motion(false)
 				end,
 			},
 			reset = function()
