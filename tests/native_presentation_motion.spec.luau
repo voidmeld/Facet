@@ -377,6 +377,12 @@ t.describe("presentation motion: the Popover compact sheet", function()
 		t.expect(overlay.find(header, "Close") ~= nil).toBe(true)
 		t.expect(overlay.find(panel, "Grabber"):GetAttribute("AccessibleLabel")).toBe("Size: Fit")
 		t.expect(panel.Size.Y.Offset < 400).toBe(true)
+		local modal = w.find("Modal")
+		if modal then
+			modal.AbsoluteSize = Vector2.new(390, 800)
+		end
+		w.advance(FRAME)
+		w.advance(FRAME)
 		local travel = panel.Position.Y.Offset
 		t.expect(travel > 0).toBe(true)
 		for _ = 1, 6 do
