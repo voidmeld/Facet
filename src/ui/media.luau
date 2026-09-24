@@ -98,6 +98,15 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 
 	UI.Label = ctx.construct("Label", function(spec: Media.LabelProps): GuiObject
 		local keys = { "text", "label", "icon", "iconPosition", "textRole", "role", "gap" }
+		if
+			(
+				(if spec.text ~= nil then 1 else 0)
+				+ (if spec.label ~= nil then 1 else 0)
+				+ (if spec.Text ~= nil then 1 else 0)
+			) > 1
+		then
+			error("Facet UI.Label: set the text one time. Use text, and remove label and Text.", 0)
+		end
 		local label = textRole(
 			ctx.text(
 				if spec.icon
@@ -729,7 +738,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			)
 			trailing = {}
 		elseif spec.label then
-			table.insert(children, UI.Label({ label = spec.label }))
+			table.insert(children, UI.Label({ text = spec.label }))
 		end
 		table.insert(children, content)
 		for _, node in trailing do

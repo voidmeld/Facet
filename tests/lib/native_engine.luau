@@ -30,10 +30,33 @@ local function signal()
 		end,
 	}
 end
+local reflection = Roblox.getReflectionDatabase()
+local NEWER_MEMBERS: { [string]: { [string]: boolean } } = {
+	InputBinding = { PrimaryModifier = true, SecondaryModifier = true, DisplayName = true, DisplayImage = true },
+	InputAction = { PreferredBinding = true },
+}
+local function isMember(className: string, key: string): boolean
+	local newer = NEWER_MEMBERS[className]
+	if newer and newer[key] then
+		return true
+	end
+	local class = reflection:GetClass(className)
+	if class == nil then
+		return true
+	end
+	while class do
+		if class.Properties[key] ~= nil then
+			return true
+		end
+		class = if class.Superclass then reflection:GetClass(class.Superclass) else nil
+	end
+	return false
+end
 local function new(options: any?)
 	local made = {}
 	local rejectedSelections = {}
 	local defaultsByClass = {}
+	local membersByClass = {}
 	local datatypes: { [string]: { [string]: string | false } } = {}
 	local cloneRecords = setmetatable({}, { __mode = "k" })
 	local events = {
@@ -364,11 +387,28 @@ local function new(options: any?)
 				return if ok then value else nil
 			end,
 			__newindex = function(_, key, value)
-				if className == "Path2D" then
-					local valid = pcall(function()
-						return defaults[key]
-					end)
-					assert(valid, `{key} is not a valid member of Path2D "{properties.Name}"`)
+				if
+					type(key) == "string"
+					and properties[key] == nil
+					and not events[key]
+					and string.sub(key, 1, 1) ~= "_"
+					and string.sub(key, 1, 1) ~= "@"
+					and not (options and options.lenientProperties == true)
+				then
+					local members = membersByClass[className]
+					if members == nil then
+						members = {}
+						membersByClass[className] = members
+					end
+					local valid = members[key]
+					if valid == nil then
+						valid = pcall(function()
+							return defaults[key]
+						end) or isMember(className, key)
+						members[key] = valid
+					end
+					local double = type(value) == "function" or (type(value) == "table" and value.Connect ~= nil)
+					assert(valid or double, `{key} is not a valid member of {className} "{properties.Name}"`)
 				end
 				if value ~= nil and type(key) == "string" then
 					local kinds = datatypes[className]

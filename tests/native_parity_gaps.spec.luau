@@ -347,6 +347,24 @@ t.describe("native parity gaps", function()
 				end,
 			},
 		}
+		table.insert(cases, {
+			"Facet UI.Label: set the text one time. Use text, and remove label and Text.",
+			function(UI)
+				return UI.Label({ text = "a", label = "b" })
+			end,
+		})
+		table.insert(cases, {
+			"Facet UI.Label: set the text one time.",
+			function(UI)
+				return UI.Label({ text = "a", Text = "b" })
+			end,
+		})
+		table.insert(cases, {
+			"Sise is not a valid member of TextButton",
+			function(UI)
+				return UI.Button({ label = "Go", Sise = 1 })
+			end,
+		})
 		for _, case in cases do
 			local message = mountError(case[2])
 			t.expect(message ~= nil and string.find(message, case[1], 1, true) ~= nil).toBe(true)
