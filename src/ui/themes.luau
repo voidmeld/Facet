@@ -473,6 +473,10 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	local buttonInsets: ThemeTypes.Insets = if ((package.chrome or {}) :: { [string]: ThemeTypes.SkinLayer }).control
 		then ((package.chrome or {}) :: { [string]: ThemeTypes.SkinLayer }).control.contentInsets or {}
 		else {}
+	rule(
+		".facet-disclosure::UIPadding",
+		{ PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0) + 20) }
+	)
 	rule(".facet-busy::UIPadding", { PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0) + 20) })
 	rule(".facet-shape-circle::UIPadding", {
 		PaddingLeft = types.UDim.new(0, 0),
@@ -577,6 +581,27 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	)
 	rule(".facet-tab-filled >> .facet-button-caption", { TextColor3 = c("onAccent") })
 	rule(".facet-tab-filled >> .facet-icon", { ImageColor3 = c("onAccent") })
+	rule(".facet-segmented", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
+	rule(".facet-segmented::UICorner", { CornerRadius = types.UDim.new(0, package.metrics.radii.control + 2) })
+	rule(".facet-segmented::UIPadding", {
+		PaddingLeft = types.UDim.new(0, 3),
+		PaddingRight = types.UDim.new(0, 3),
+		PaddingTop = types.UDim.new(0, 3),
+		PaddingBottom = types.UDim.new(0, 3),
+	})
+	rule(".facet-segment", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
+	rule(".facet-segment >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
+	rule(
+		".facet-segment:Hover",
+		{ BackgroundTransparency = 0, BackgroundColor3 = c("controlHover"), TextColor3 = c("content") }
+	)
+	rule(
+		".facet-segment-current",
+		{ BackgroundTransparency = 0, BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") }
+	)
+	rule(".facet-segment-current:Hover", { BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") })
+	rule(".facet-segment-current >> .facet-button-caption", { TextColor3 = c("onAccent") })
+	rule(".facet-segment-current >> .facet-icon", { ImageColor3 = c("onAccent") })
 	for _, definition in (package.rules or {}) :: { ThemeTypes.Rule } do
 		rule(definition.selector, table.clone(definition.properties or definition.props or {}))
 	end

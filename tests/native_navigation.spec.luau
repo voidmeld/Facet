@@ -1294,6 +1294,9 @@ t.describe("native navigation controls", function()
 		t.expect(a.Text).toBe("Alpha (3)")
 		t.expect(segments:FindFirstChildWhichIsA("UIListLayout").FillDirection)
 			.toBe(world.engine.types.Enum.FillDirection.Vertical)
+		-- The headless engine does not lay out, so publish the authored 240 px width; below 360 px a
+		-- pointer or touch player gets the menu.
+		find(world.screen, "Auto").AbsoluteSize = world.engine.types.Vector2.new(240, 44)
 		world.input.PreferredInput = world.engine.types.Enum.PreferredInput.Touch
 		t.expect(find(find(world.screen, "Auto"), "Trigger") ~= nil).toBe(true)
 		world.input.PreferredInput = world.engine.types.Enum.PreferredInput.Gamepad

@@ -51,6 +51,8 @@ export type MenuSpec<V = string> = Types.FrameProps & {
 	query: Compose.Cell<string>?,
 	label: Value<string>?,
 	trigger: GuiObject | (() -> GuiObject)?,
+	-- Draws a popup chevron on the default trigger, for a menu that chooses a value.
+	disclosure: boolean?,
 	triggers: { MenuTrigger }?,
 	presentation: Value<"automatic" | "menu" | "sheet">?,
 	backLabel: Value<string>?,

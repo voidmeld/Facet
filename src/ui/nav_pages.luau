@@ -170,6 +170,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return if size.Y > 0 and size.X / size.Y > 1.4 then "bottomBarCompact" else "bottomBar"
 		end
 		local placement = Compose.formula(resolvePlacement)
+		local function railWidth(use: Core.Use): number
+			return read(spec.railWidth, use) or math.clamp(math.floor(use(dimensions).X * 0.2), 200, 280)
+		end
 		-- A nested strip in a short region spends height the page needs. Below COMPACT_HEIGHT it
 		-- collapses into one menu row that names the current tab; it expands again when room returns.
 		local COMPACT_HEIGHT = 480
@@ -306,7 +309,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end,
 			Size = function(use: Core.Use)
 				return if use(placement) == "sidebar"
-					then D2.new(0, read(spec.railWidth, use) or 180, 1, -use(headHeight) - use(footHeight))
+					then D2.new(0, railWidth(use), 1, -use(headHeight) - use(footHeight))
 					else D2.new(1, -use(trailingWidth), 0, 44)
 			end,
 			Position = function(use: Core.Use)
@@ -349,6 +352,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						AutomaticSize = function(use: Core.Use)
 							return if use(placement) == "sidebar" then E.AutomaticSize.None else E.AutomaticSize.X
 						end,
+						TextXAlignment = function(use: Core.Use)
+							return if use(placement) == "sidebar"
+								then E.TextXAlignment.Left
+								else E.TextXAlignment.Center
+						end,
+						TextTruncate = E.TextTruncate.AtEnd,
 						enabled = spec.enabled,
 						selected = function(use: Core.Use)
 							return use(spec.selection) == tab.id and read(spec.indicator, use) == "pill"
@@ -466,13 +475,13 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			Position = function(use: Core.Use)
 				local place = use(placement)
 				return if place == "sidebar"
-					then D2.fromOffset(read(spec.railWidth, use) or 180, 0)
+					then D2.fromOffset(railWidth(use), 0)
 					elseif place == "topBar" then D2.fromOffset(0, 44)
 					else D2.fromOffset(0, 0)
 			end,
 			Size = function(use: Core.Use)
 				return if use(placement) == "sidebar"
-					then D2.new(1, -(read(spec.railWidth, use) or 180), 1, 0)
+					then D2.new(1, -(railWidth(use)), 1, 0)
 					else D2.new(1, 0, 1, -44 - use(aboveHeight))
 			end,
 			Compose.LayerStack({
@@ -616,7 +625,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							ClipsDescendants = true,
 							Size = function(use: Core.Use)
 								return if slot == "head" or slot == "foot"
-									then D2.fromOffset(read(spec.railWidth, use) or 180, 0)
+									then D2.fromOffset(railWidth(use), 0)
 									elseif slot == "trailing" then D2.fromOffset(0, 44)
 									else D2.new(1, 0, 0, 0)
 							end,

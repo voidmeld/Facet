@@ -483,7 +483,23 @@ return function(
 				}
 				triggerProps.Attributes = attributes
 			end
-			trigger = UI.Button(triggerProps)
+			if spec.disclosure then
+				table.insert(
+					triggerProps,
+					ctx.icon("chevron.up.chevron.down", {
+						Name = "Disclosure",
+						Size = D2.fromOffset(12, 12),
+						AnchorPoint = V2.new(1, 0.5),
+						Position = D2.new(1, 20, 0.5, 0),
+						BackgroundTransparency = 1,
+					}) :: Types.Child
+				)
+			end
+			local button = UI.Button(triggerProps)
+			if spec.disclosure then
+				button:AddTag("facet-disclosure")
+			end
+			trigger = button
 		else
 			if table.find(allowed, "activate") then
 				runtime.connect(trigger, "Activated", open)
@@ -493,6 +509,7 @@ return function(
 			"items",
 			"query",
 			"label",
+			"disclosure",
 			"trigger",
 			"triggers",
 			"presentation",
@@ -674,18 +691,23 @@ return function(
 			local input = surfaces.service("UserInputService")
 			local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
 			local opened = spec.isPresented or Compose.cell(false)
+			local width = Compose.cell(0)
+			-- A few choices read best side by side, whatever the input; a crowded or narrow set folds
+			-- into a menu. Gamepad players keep the inline list for longer, where menus cost a press.
 			local resolved = Compose.formula(function(use: Core.Use): Nav.PickerStyle
 				if spec.query then
 					return "navigationLink"
+				end
+				local count = #read(spec.options, use)
+				local available = use(width)
+				if count <= 4 and (available == 0 or available >= 360) then
+					return "segmented"
 				end
 				local kind = use(preferred)
 				if kind == E.PreferredInput.KeyboardAndMouse or kind == E.PreferredInput.Touch then
 					return "menu"
 				end
-				return if #read(spec.options, use) <= 4
-					then "segmented"
-					elseif #read(spec.options, use) <= 6 then "inline"
-					else "menu"
+				return if count <= 6 then "inline" else "menu"
 			end)
 			local props = ctx.props(spec, pickerKeys, {
 				Name = "Picker",
@@ -763,7 +785,12 @@ return function(
 					end,
 				})
 			)
-			return Host.Frame(props)
+			local container = Host.Frame(props)
+			local measured = ctx.observe(container, "AbsoluteSize")
+			Compose.watch(function(use: Core.Use)
+				width:set(use(measured).X)
+			end)
+			return container
 		end
 		if style == "menu" then
 			local native: Types.FrameNativeProps = ctx.props(spec, pickerKeys)
@@ -785,6 +812,7 @@ return function(
 					then table.concat(labels, ", ")
 					else read(spec.placeholder, use) or read(spec.label, use) or "Choose"
 			end
+			menuSpec.disclosure = true
 			menuSpec.items = function(use: Core.Use)
 				local items = {}
 				for _, option in use(options) do
@@ -805,7 +833,38 @@ return function(
 				end
 				return items
 			end
-			return UI.Menu(menuSpec)
+			if spec.label == nil then
+				return UI.Menu(menuSpec)
+			end
+			-- A labelled choice reads as a settings row: the question on the leading edge and the
+			-- current answer, with its disclosure, on the trailing edge.
+			menuSpec.Name = "Value"
+			menuSpec.Size = nil
+			menuSpec.AnchorPoint = V2.new(1, 0.5)
+			menuSpec.Position = D2.fromScale(1, 0.5)
+			local row = ctx.props(spec, pickerKeys, {
+				Name = spec.Name or "Picker",
+				BackgroundTransparency = 1,
+				Size = D2.new(1, 0, 0, 0),
+				AutomaticSize = E.AutomaticSize.Y,
+			})
+			table.insert(
+				row,
+				ctx.text({
+					Name = "Label",
+					Text = function(use: Core.Use)
+						return read(spec.label, use) or ""
+					end,
+					Size = D2.new(1, -8, 0, 0),
+					AutomaticSize = E.AutomaticSize.Y,
+					TextXAlignment = E.TextXAlignment.Left,
+					AnchorPoint = V2.new(0, 0.5),
+					Position = D2.fromScale(0, 0.5),
+				})
+			)
+			table.insert(row, Host.UISizeConstraint({ MinSize = V2.new(0, 44) }))
+			table.insert(row, UI.Menu(menuSpec))
+			return Host.Frame(row)
 		end
 		if style == "navigationLink" then
 			local opened = spec.isPresented or Compose.cell(false)
@@ -965,20 +1024,36 @@ return function(
 					Compose.watch(function(use: Core.Use)
 						button:SetAttribute("FacetLabel", read(use(source).label, use))
 					end)
+					if style == "segmented" then
+						button:AddTag("facet-segment")
+						Compose.watch(function(use: Core.Use)
+							local current = selected(use) and read(spec.indicator, use) ~= "none"
+							if current then
+								button:AddTag("facet-segment-current")
+							elseif button:HasTag("facet-segment-current") then
+								button:RemoveTag("facet-segment-current")
+							end
+						end)
+					end
 					return button
 				end,
 			})
 		)
 		local p = ctx.props(spec, pickerKeys, {
 			Name = "Picker",
-			BackgroundTransparency = 1,
+			BackgroundTransparency = if style == "segmented" then nil else 1,
 			Size = D2.new(1, 0, 0, 0),
 			AutomaticSize = E.AutomaticSize.Y,
 		})
 		for _, child in children do
 			table.insert(p, child)
 		end
-		return Host.Frame(p)
+		local picker = Host.Frame(p)
+		if style == "segmented" then
+			-- One track holds the choices; the current one is a filled capsule inside it.
+			picker:AddTag("facet-segmented")
+		end
+		return picker
 	end)
 
 	UI.SplitButton = ctx.construct(function<V>(spec: Nav.SplitButtonSpec<V>): Frame

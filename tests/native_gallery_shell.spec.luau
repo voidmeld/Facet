@@ -167,7 +167,13 @@ t.describe("native gallery shell parity", function()
 		t.expect(gallery.dispatch(ctx, "theme", "missing").ok).toBe(false)
 		t.expect(ctx.themeName:peek()).toBe("Second")
 		find(root, "Settings", "TextButton").Activated.fire()
-		t.expect(find(find(root, "Theme"), "Trigger").Text).toBe("Second")
+		local themePicker = find(root, "Theme")
+		local trigger = find(themePicker, "Trigger")
+		if trigger then
+			t.expect(trigger.Text).toBe("Second")
+		else
+			t.expect(find(themePicker, "Second"):GetAttribute("selected")).toBe(true)
+		end
 		gallery.dispatch(ctx, "next")
 		t.expect(ctx.active:peek()).toBe("second")
 		stop()
