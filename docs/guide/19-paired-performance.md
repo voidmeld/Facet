@@ -214,6 +214,31 @@ steps. The total work did not increase.
 A fix needs a change to the vendored Compose snapshot, to the engine double, or
 to the workload. This branch does not change them.
 
+## Theme swaps in Roblox Studio
+
+The headless theme-swap scenes measure Luau work only. This check measures
+frame time in the real engine, which also applies the StyleSheet.
+
+- Host: Roblox Studio on the same Mac, a playtest at 844 x 369 points.
+- Page: the gallery All controls page.
+- Method: record the time of each rendered frame. Swap between the Classic
+  Desktop and Glossy Touch packages 8 times, one second apart.
+- Candidate (`db391974`): the gallery showcase API swaps the package. All 8 swaps
+  are applied.
+- `main` (`a8c88956`): the theme chips on the gallery settings screen swap the
+  package. The chip grid moves after the first swap, so fewer than 8 swaps can
+  apply.
+
+| Commit | Frames | p50 | p99 | Frames over 25 ms | Worst frame |
+|---|---:|---:|---:|---:|---:|
+| `main` | 1111 | 16.67 ms | 19.93 ms | 1 | 29.3 ms |
+| candidate | 549 | 16.66 ms | 17.54 ms | 0 | 19.8 ms |
+
+The candidate call that swaps the package takes 2.4 ms at p50 and 3.2 ms at
+p90, over 20 swaps. No swap causes a dropped frame at 60 frames per second.
+Thus the headless theme-swap flag is Luau and engine-double cost. It does not
+show as frame time in Studio.
+
 ## StyleSheet token prototype
 
 Branch `perf/stylesheet-tokens`, commit `5530b29f`, adds this change to
