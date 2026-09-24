@@ -32,7 +32,7 @@ local toggle: TextButton = UI.Toggle({
 		enabled:set(nextValue)
 	end,
 })
-local input: TextBox = UI.TextInput({
+local input: TextBox | Frame = UI.TextInput({
 	value = text,
 	onChange = function(nextValue: string)
 		text:set(nextValue)

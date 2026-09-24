@@ -9,6 +9,7 @@ export type Controls = {
 	Button: typeof(((nil :: unknown) :: Inputs.InputControls).Button),
 	Toggle: typeof(((nil :: unknown) :: Inputs.InputControls).Toggle),
 	TextInput: typeof(((nil :: unknown) :: Inputs.InputControls).TextInput),
+	NumberInput: typeof(((nil :: unknown) :: Inputs.InputControls).NumberInput),
 	Stepper: typeof(((nil :: unknown) :: Inputs.InputControls).Stepper),
 	Slider: typeof(((nil :: unknown) :: Inputs.InputControls).Slider),
 	Rating: typeof(((nil :: unknown) :: Inputs.InputControls).Rating),

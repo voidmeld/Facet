@@ -54,35 +54,76 @@ export type ToggleImplementationProps = Shared.TextButtonProps & ButtonVisualOpt
 	indicatorPosition: ("leading" | "trailing")?,
 }
 export type ToggleProps = ToggleImplementationProps & ValueBinding<boolean>
-export type CommitReason = "submit" | "focusLost"
+export type TextCommitReason = "submit" | "focusLost"
+export type CommitReason = TextCommitReason | "clamped"
 export type ClearButtonMode = "never" | "always" | "whileEditing" | "unlessEditing"
-export type TextInputOptions = {
-	enabled: Value<boolean>?,
-	disabled: Value<boolean>?,
-	placeholder: Value<string>?,
+export type SelectOnFocus = "none" | "all" | "end"
+export type FieldAppearance = "standard" | "contrast" | "utility"
+export type TextValue = Value<string>
+export type NumberCell = ComposeTypes.Cell<number>
+export type FlagValue = Value<boolean>
+export type SizeValue = Value<Shared.ControlSize>
+export type FieldAppearanceValue = Value<FieldAppearance>
+export type SelectOnFocusValue = Value<SelectOnFocus>
+export type RequiredMark = "required" | "optional"
+export type FieldCorners = "pill" | "square"
+export type FieldChrome = {
+	label: TextValue?,
+	requiredMark: RequiredMark?,
+	hint: TextValue?,
+	errorText: TextValue?,
+	controlSize: SizeValue?,
+	appearance: TextValue?,
+	corners: FieldCorners?,
+}
+export type TextInputOptions = FieldChrome & {
+	enabled: FlagValue?,
+	disabled: FlagValue?,
+	readOnly: FlagValue?,
+	placeholder: TextValue?,
 	multiline: boolean?,
+	visibleLines: number?,
 	validate: ((string) -> string?)?,
 	maxLength: number?,
 	invalid: ComposeTypes.Readable<boolean>?,
 	clearButton: boolean?,
 	clearButtonMode: ClearButtonMode?,
-	onCommit: ((string, CommitReason) -> ())?,
+	selectOnFocus: SelectOnFocusValue?,
+	leading: Instance?,
+	trailing: Instance?,
 	onCancel: (() -> ())?,
 	min: number?,
 	max: number?,
 	parse: ((string) -> number?)?,
 	format: ((number) -> string)?,
 }
+export type NumberOptions = {
+	step: number?,
+	precision: number?,
+	stepButtons: boolean?,
+	prefix: TextValue?,
+	suffix: TextValue?,
+	scrub: FlagValue?,
+}
 export type TextInputPresentation =
-	{ presentation: ("plain" | "search")?, numericValue: nil? }
-	| { presentation: "number", numericValue: ComposeTypes.Cell<number> }
-export type TextInputImplementationProps = Shared.TextBoxProps & TextInputOptions & {
-	value: Value<string>,
+	{ presentation: ("plain" | "search")?, numericValue: nil?, onCommit: ((string, TextCommitReason) -> ())? }
+	| { presentation: "number", numericValue: NumberCell, onCommit: ((number, CommitReason) -> ())? }
+export type TextInputImplementationProps = Shared.TextBoxProps & TextInputOptions & NumberOptions & {
+	value: TextValue,
 	onChange: ((string) -> ())?,
+	onCommit: ((any, CommitReason) -> ())?,
 	presentation: ("plain" | "search" | "number")?,
 	numericValue: ComposeTypes.Cell<number>?,
 }
-export type TextInputProps = TextInputImplementationProps & ValueBinding<string> & TextInputPresentation
+export type TextInputBase = Shared.TextBoxProps & TextInputOptions & NumberOptions & {
+	value: TextValue,
+	onChange: ((string) -> ())?,
+}
+export type TextInputProps = TextInputBase & TextInputPresentation
+export type NumberInputProps = TextInputBase & {
+	numericValue: NumberCell,
+	onCommit: ((number, CommitReason) -> ())?,
+}
 export type ValueOptions = {
 	min: number?,
 	max: number?,
@@ -179,7 +220,8 @@ export type ShortcutHintProps = ShortcutHintImplementationProps & ShortcutHintSo
 export type InputControls = {
 	Button: Constructor<ButtonProps, TextButton>,
 	Toggle: Constructor<ToggleProps, TextButton>,
-	TextInput: Constructor<TextInputProps, TextBox>,
+	TextInput: Constructor<TextInputProps, TextBox | Frame>,
+	NumberInput: Constructor<NumberInputProps, TextBox | Frame>,
 	Stepper: Constructor<StepperProps, Frame>,
 	Slider: Constructor<SliderProps, Frame>,
 	Rating: Constructor<RatingProps, TextButton>,

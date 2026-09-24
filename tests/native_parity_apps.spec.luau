@@ -3836,7 +3836,14 @@ t.describe("native parity reference applications", function()
 			end
 			local shared = { VirtualList = "CollectionSpec", VirtualGrid = "CollectionSpec" }
 			local names = controlNames()
-			t.expect(#names).toBe(35)
+			local published: { string } = {}
+			for name in
+				string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function")
+			do
+				table.insert(published, name)
+			end
+			table.sort(published)
+			t.expect(table.concat(names, " ")).toBe(table.concat(published, " "))
 			for _, name in names do
 				local contract = shared[name]
 				local found = if contract

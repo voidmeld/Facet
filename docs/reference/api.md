@@ -219,20 +219,127 @@ options apply.
 
 `value` is the string model. Roblox TextBox owns editing, IME, the caret, the
 text selection and focus. `onChange(text)` handles user edits. An external
-model update does not send it. `onCommit(text, reason)` receives `submit` or
-`focusLost`. `onCancel` observes cancellation and the restoration of the initial
-value of the edit.
+model update does not send it. `onCommit(value, reason)` receives `submit` or
+`focusLost`. The number presentation also reports `clamped`. `onCancel`
+observes cancellation and the restoration of the initial value of the edit.
 
 `presentation` is `plain`, `search` or `number`. The number presentation also
-uses a writable `numericValue`, `min`, `max`, `parse` and `format`. If a
-callback disables the input during a commit, the commit stops. `numericValue`
-does not change and `onCommit` does not run.
-`validate(proposed)` returns the accepted text, or `nil` to reject it.
-`maxLength` counts UTF-8 characters.
+uses a writable `numericValue`, `min`, `max`, `parse` and `format`, and the
+number options of [NumberInput](#numberinput). If a callback disables the input
+during a commit, the commit stops. `numericValue` does not change and
+`onCommit` does not run. `validate(proposed)` returns the accepted text, or
+`nil` to reject it. `maxLength` counts UTF-8 characters.
 
 The other options are `placeholder`, `multiline`, `invalid`, `enabled`,
 `disabled`, `clearButton` and `clearButtonMode` (`never`, `always`,
 `whileEditing` or `unlessEditing`). Native TextBox properties stay available.
+
+- `readOnly`: a boolean or a readable boolean. A read-only field stays
+  selectable, keeps full contrast and can take focus. `TextEditable` is false,
+  the control refuses each edit, the clear button does not show and focus loss
+  commits nothing. A live change keeps the same TextBox and the edit.
+- `selectOnFocus`: `none` (the default), `all` or `end`, or a readable of one.
+  The control applies it once for each focus session. A pointer focus applies
+  it at the release of that pointer. Other focus applies it at once. A change
+  during focus applies at the next focus. A live value that is not one of the
+  three words causes an error, and the control keeps the last correct word. The
+  TextBox has the `selectOnFocus` attribute only when you supply the option.
+- `visibleLines`: a whole number of at least 1, for a multiline field only. The
+  field shows that number of body lines in a native ScrollingFrame named
+  `Viewport`. Longer text scrolls in the viewport, and the viewport keeps its
+  size.
+
+#### Field chrome
+
+A field can have these field chrome options: `label`, `requiredMark`, `hint`,
+`errorText`, `leading`, `trailing`, `controlSize`, `appearance` and `corners`.
+A field without chrome options, number units, step buttons or `visibleLines`
+keeps the native TextBox as its root. Other fields return a Frame. The root
+Frame holds these children in order:
+
+1. `Label`: a TextButton that is not selectable. Its `Title` text is the label.
+   Activation focuses the TextBox. The label is 44 pixels tall or more, and
+   its words sit at the bottom. It follows `enabled`.
+2. `Input`: the plate. It holds `SearchIcon` or `Leading`, `Prefix`, the
+   TextBox named `Field`, `Suffix`, `Clear`, `Decrement`, `Increment` and
+   `Trailing`, in that order. A named `controlSize` puts the plate in an
+   `Input+target` Frame that is 44 pixels tall or more.
+3. `Message`: one line. It shows `errorText` when it is not empty, then the
+   number rejection text, then `hint`. An error shows the `status.error` mark
+   (`MessageMark`), adds the `facet-validation` tag to the text and the
+   `facet-invalid` tag to the plate. The plate does not move or shake.
+
+`requiredMark` is `required` or `optional`. It is notation only. It does not
+validate. `required` adds ` *` to the label text, also for a readable label.
+`optional` adds no word. Put localized "optional" text in `hint`.
+
+`leading` and `trailing` are native Instances. `leading` is decoration and is
+not a focus stop. A search field refuses `leading`, because its search mark
+leads. The focusable parts of `trailing` come after the TextBox and the clear
+button.
+
+`appearance` is `standard` (the `facet-field` plate), `contrast` (the
+`facet-control` plate) or `utility` (no plate). A readable word changes the tag
+in place. A word that is not one of these causes an error, and the plate keeps
+the last correct paint. `corners` is `pill` or `square`. It adds a native
+UICorner named `Corners`. `controlSize` is `compact`, `regular` or `large`.
+
+A word that the chrome does not know causes an error that names the option.
+
+### NumberInput
+
+`UI.NumberInput(spec)` is `UI.TextInput` with `presentation = "number"`. It
+refuses `presentation`. `value` (the editable string) and `numericValue` (the
+committed number) are cells that you own. Each TextInput option applies. These
+options are for the number presentation only:
+
+- `step`: a finite number above zero. The default is 1.
+- `precision`: a whole number of decimal places from 0 to 10. A commit and a
+  step press round half away from zero. Typing does not round.
+- `stepButtons`: two 44 by 44 buttons, `Decrement` and `Increment`, after the
+  clear button. They are ordinary focus stops and do not take the arrow keys.
+  The control disables a button at the bound that it faces, and disables both
+  buttons when the field is read-only or disabled. A press commits with `submit`. With `min` and
+  `max`, a press follows the step grid from `min`.
+- `prefix` and `suffix`: a string or a readable string beside the TextBox.
+  They are not part of the draft.
+- `scrub`: a boolean or a readable boolean. A horizontal drag across the
+  TextBox changes the number. See below.
+
+Without `precision`, a step press or a scrub rounds to the decimal places of
+`step` and `min`. Thus three presses of 0.1 give 0.3.
+
+A commit parses the draft. The default parser accepts an optional sign, digits
+and one decimal point only. It refuses an exponent, grouping, hex and blanks.
+`Facet.recipes.arithmetic.parse` adds arithmetic. A number outside `min` or
+`max` becomes the bound, and `onCommit(number, "clamped")` reports it. A draft
+that is empty, a sign alone or a point alone is incomplete. At commit, the
+field restores the text of the last committed number and shows no message,
+unless `requiredMark` is `required`. A draft that is not a number keeps its
+text and shows "Enter a valid number.". `onCommit` receives the number.
+
+`scrub` starts after 6 pixels of mouse travel or 14 pixels of touch travel. A
+tap below that distance stays a native tap. A drag that is mostly vertical
+stays native. A horizontal drag ends the edit without a commit and restores
+the text of the edit start. Then each 8 pixels of total travel is one `step`,
+with the rounding and bounds of the step buttons. `onChange` reports each new
+text. The release commits once with `submit`. Escape or ButtonB, a change of
+PreferredInput, disabling, `readOnly`, `scrub` turning off and disposal cancel
+the drag: the number and the text return to the values at the drag start, and
+nothing commits. A write of your own to `numericValue` during a drag ends the
+drag, and your number stays.
+
+```luau
+local draft, laps = Compose.cell("3"), Compose.cell(3)
+UI.NumberInput "Laps" {
+    value = draft,
+    numericValue = laps,
+    min = 1,
+    max = 99,
+    stepButtons = true,
+    label = "Laps",
+}
+```
 
 ### Stepper and Slider
 

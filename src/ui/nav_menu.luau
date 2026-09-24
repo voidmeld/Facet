@@ -12,7 +12,7 @@ return function(
 		SplitButton: Nav.SplitButtonConstructor,
 		ComboBox: Types.Constructor<Nav.ComboBoxSpec, Frame>,
 		Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
-		TextInput: Types.Constructor<Inputs.TextInputProps, TextBox>,
+		TextInput: Types.Constructor<Inputs.TextInputProps, TextBox | Frame>,
 	},
 	surfaces: Nav.Surfaces
 ): ()
@@ -1300,7 +1300,7 @@ return function(
 			spec.text:set(label(spec.value:peek()))
 			errorText:set("")
 		end
-		local editor = UI.TextInput "Editor" {
+		local created = UI.TextInput "Editor" {
 			value = spec.text,
 			placeholder = spec.placeholder,
 			enabled = spec.enabled,
@@ -1324,6 +1324,9 @@ return function(
 				editing:set(false)
 			end,
 		}
+		assert(created:IsA("TextBox"), "Facet ComboBox: the editor is a TextBox")
+		local editor = created
+
 		local function open()
 			if read(spec.enabled) ~= false then
 				opened:set(true)

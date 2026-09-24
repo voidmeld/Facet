@@ -119,6 +119,7 @@ controls(runtime).Label : function
 controls(runtime).LevelPicker : function
 controls(runtime).Menu : function
 controls(runtime).NavigationStack : function
+controls(runtime).NumberInput : function
 controls(runtime).PageView : function
 controls(runtime).Picker : function
 controls(runtime).ProgressView : function
@@ -175,6 +176,7 @@ type MenuSpec
 type NavigationDestination
 type NavigationEntry
 type NavigationStackSpec
+type NumberInputProps
 type Owner
 type PageViewSpec
 type PickerOption

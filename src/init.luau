@@ -16,6 +16,7 @@ local arithmetic = require("@self/ui/arithmetic")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
+export type NumberInputProps = InputTypes.NumberInputProps
 export type StepperProps = InputTypes.StepperProps
 export type SliderProps = InputTypes.SliderProps
 export type RatingProps = InputTypes.RatingProps

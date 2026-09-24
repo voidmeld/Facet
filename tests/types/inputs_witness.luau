@@ -20,15 +20,37 @@ return function(UI: Inputs.InputControls, action: InputAction): ()
 			checked:set(nextValue)
 		end,
 	})
-	local field: TextBox = UI.TextInput({
+	local field: GuiObject = UI.TextInput({
 		value = text,
-		presentation = "number" :: "number",
-		numericValue = value,
+		label = "Name",
+		requiredMark = "required" :: "required",
+		selectOnFocus = "all" :: "all",
 		onCommit = function(nextText, reason)
-			local commit: Inputs.CommitReason = reason
+			local commit: Inputs.TextCommitReason = reason
 			if commit == "submit" then
 				text:set(nextText)
 			end
+		end,
+	})
+	local laps = Compose.cell(3)
+	local number: GuiObject = UI.NumberInput({
+		value = text,
+		numericValue = laps,
+		stepButtons = true,
+		precision = 1,
+		onCommit = function(committed, reason)
+			local commit: Inputs.CommitReason = reason
+			if commit == "clamped" then
+				laps:set(committed)
+			end
+		end,
+	})
+	local numeric: GuiObject = UI.TextInput({
+		value = text,
+		presentation = "number" :: "number",
+		numericValue = laps,
+		onCommit = function(committed, _)
+			laps:set(committed)
 		end,
 	})
 	local stepper: Frame = UI.Stepper({ value = value, min = 0, max = 1, step = 0.1 })
@@ -60,7 +82,9 @@ return function(UI: Inputs.InputControls, action: InputAction): ()
 	})
 	button.Text = "Saved"
 	toggle.Selected = true
-	field.Text = "0.5"
+	field.Visible = true
+	number.Visible = true
+	numeric.Visible = true
 	stepper.Visible = true
 	slider.Visible = true
 	rating.Text = "Rating"

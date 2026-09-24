@@ -243,6 +243,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		TextInput = function()
 			return { value = Compose.cell("") }
 		end,
+		NumberInput = function()
+			return { value = Compose.cell("1"), numericValue = Compose.cell(1) }
+		end,
 		Toggle = function()
 			return { value = Compose.cell(false) }
 		end,
@@ -263,7 +266,12 @@ t.describe("native parity gaps", function()
 			table.insert(names, name :: string)
 		end
 		table.sort(names)
-		t.expect(#names).toBe(35)
+		local published: { string } = {}
+		for name in string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function") do
+			table.insert(published, name)
+		end
+		table.sort(published)
+		t.expect(table.concat(names, " ")).toBe(table.concat(published, " "))
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()
