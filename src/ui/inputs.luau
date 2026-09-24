@@ -41,6 +41,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 	local D, D2, V2, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 	local noKey: Enum.KeyCode = assert(E.KeyCode:FromValue(0))
 	local dialogOrder = 0
+	local unskinned = setmetatable({} :: { [unknown]: boolean }, { __mode = "k" })
 	local roles: { [string]: boolean } = { default = true, cancel = true, destructive = true, onIndicator = true }
 	local function dynamic(source: unknown): boolean
 		return Compose.isReadable(source) or type(source) == "function"
@@ -715,12 +716,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			})
 		end
 
-		ctx.skin(node, "control", {
-			selected = spec.selected,
-			disabled = function(use: ComposeTypes.Use)
-				return not enabled(spec, use)
-			end,
-		})
+		if not unskinned[spec] then
+			ctx.skin(node, "control", {
+				selected = spec.selected,
+				disabled = function(use: ComposeTypes.Use)
+					return not enabled(spec, use)
+				end,
+			})
+		end
 
 		local guiState = if iconState then ctx.observe(node, "GuiState") else nil
 		local previousTags: { [string]: boolean } = {}
@@ -1057,9 +1060,15 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				table.insert(p, indicator)
 			end
 		end
+		if presentation ~= "button" then
+			unskinned[p] = true
+		end
 		local toggle = ctx.styled(UI.Button(p), "toggle")
 		if presentation ~= "button" then
 			toggle:AddTag("facet-toggle-row")
+			if spec.row ~= nil or spec.hint ~= nil or spec.icon ~= nil then
+				toggle:AddTag("facet-toggle-settings")
+			end
 		end
 		return toggle
 	end)

@@ -217,6 +217,11 @@ the control updates the writable cell. `presentation` is `switch`, `checkbox` or
 `leading` or `trailing`. The label, row, hint, enabled and common button styling
 options apply.
 
+A switch or checkbox Toggle paints no plate and takes no `control` art from a
+theme package. A settings row (a Toggle with `row`, `hint` or `icon`) has the
+`facet-toggle-settings` tag. Its horizontal padding is the padding of a
+Button, so its content lines up with Button rows in each theme.
+
 ### TextInput
 
 `value` is the string model. Roblox TextBox owns editing, IME, the caret, the
