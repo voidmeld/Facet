@@ -17,7 +17,7 @@ where.
   still promises, but no candidate case tested it. The parity tests close
   837 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 56 cases remain.
-- 1,725 of the 3,131 covered cases have a weaker
+- 1,258 of the 3,131 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -85,25 +85,25 @@ last column names the candidate specs that the group cites most.
 | Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
 | Layout and geometry | 1,326 | 94 | 58 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 497 | 54 | 38 | 232 | 202 | 9 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
-| Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Focus and selection | 532 | 101 | 3 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
+| Input actions | 332 | 101 | 13 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
+| Pointer, touch and drag | 368 | 63 | 0 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 330 | 93 | 60 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 581 | 142 | 80 | 33 | 404 | 2 | `native_themes_media`, `native_navigation`, `native_inputs` |
 | Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
 | Theme packages | 379 | 146 | 68 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 251 | 110 | 66 | 37 | 98 | 6 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 394 | 94 | 57 | 1 | 297 | 2 | `native_inputs`, `native_navigation`, `native_themes_media` |
-| Value controls | 249 | 221 | 128 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
-| Text input | 119 | 69 | 26 | 28 | 21 | 1 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 141 | 103 | 58 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
-| Navigation containers | 72 | 64 | 36 | 1 | 2 | 5 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 287 | 124 | 81 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Action controls | 394 | 94 | 9 | 1 | 297 | 2 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Value controls | 249 | 221 | 8 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
+| Text input | 119 | 69 | 0 | 28 | 21 | 1 | `native_inputs`, `native_navigation`, `native_collections` |
+| Menus and pickers | 141 | 103 | 8 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Navigation containers | 72 | 64 | 4 | 1 | 2 | 5 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
+| Presented surfaces | 287 | 124 | 33 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 214 | 156 | 127 | 3 | 52 | 3 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 43 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
 | Row actions | 264 | 149 | 101 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 166 | 46 | 34 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 419 | 28 | 17 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| Adaptive environment | 419 | 28 | 3 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 11 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 425 | 237 | 133 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
@@ -499,6 +499,31 @@ change fixes it.
 | AE6 | `examples/gallery/scenarios/adaptive_controls.luau` | A grid layout set `LayoutOrder` from an undefined global. |
 | AE7 | `examples/gallery/client/init.client.luau` | An empty `Facet_Scenario` with `Facet_Example` loaded the example as a fixture. The boot choice is now `catalogue.boot` in `demo_picker.luau`. |
 | AD1 | `docs/guide/README.md` | The guide index linked one of the seven extension playbooks. |
+
+### Fixed with the strength tests
+
+The `tests/native_parity_strength_*.spec.luau` specs add the assertions
+that `main` made and the candidate did not make. They cover the value,
+action, text input, menu, focus, input, pointer, navigation, surface and
+adaptive groups. A test in these specs shows each of these defects. The
+same change fixes it.
+
+| ID | File | Defect |
+|---|---|---|
+| S1 | `src/ui/input_value.luau` | The default value format showed `-0` for a value between -0.005 and 0. |
+| S2 | `src/ui/media.luau` | Badge accepted an incorrect `iconPosition` and put the icon on the leading side. |
+| S3 | `src/ui/media.luau` | Badge and StatusIndicator read a `false` status as `neutral`. Now it causes an error. |
+| S4 | `src/ui/media.luau` | StatusIndicator ignored `name`. Now `name` sets the accessible label. |
+| S5 | `src/ui/inputs.luau` | The Rating and Slider value actions had a lower priority than the collection arrows. In a VirtualList or Table row, the arrow keys did not change the value. |
+| S6 | `src/ui/inputs.luau` | ShortcutHint raised an error when the native key service failed. Now it shows the key name. |
+| S7 | `src/ui/inputs.luau` | ShortcutHint accepted an unknown `over` option, and `separator` with `action`. |
+| S8 | `src/ui/inputs.luau` | The Stepper buttons and the TextInput clear button were less than 44 px high. |
+| S9 | `src/ui/nav_menu.luau` | The current cascade submenu level overlapped its parent level. |
+| S10 | `src/ui/nav_menu.luau` | Picker accepted incorrect callback, flag and option field types. |
+| S11 | `src/ui/nav_menu.luau` | A `navigationLink` Picker dropped the native properties of its trigger. |
+| S12 | `src/ui/nav_radial.luau` | RadialMenu Back left the selection on the removed child item. Now it selects the parent item. |
+| S13 | `src/ui/nav_radial.luau` | After a pointer press on the launcher with no native echo, the launcher ignored the next gamepad or keyboard activation. |
+| S14 | `src/ui/nav_pages.luau` | A TabView with `retention = "top"` lost the focus bookmark of an evicted page. |
 
 ## Gaps closed by this audit
 
