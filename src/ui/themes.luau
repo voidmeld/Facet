@@ -124,7 +124,12 @@ do
 		size = size,
 		font = {
 			family = "BuilderSans",
-			weight = if role == "strong" or role == "heading" or role == "title" then "Bold" else "Regular",
+			weight = if role == "heading"
+					or role == "title"
+					or role == "numeral"
+				then "Bold"
+				elseif role == "strong" then "SemiBold"
+				else "Regular",
 			style = "Normal",
 		},
 		lineHeight = 1.2,
