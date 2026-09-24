@@ -1,5 +1,5 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local Engine = require("./engine_types")
 
@@ -74,11 +74,11 @@ export type ImageStatusCallback = (state: ImageState, reason: unknown) -> ()
 export type AsyncImageProps = Engine.FrameProps & {
 	source: Types.Value<string?>?,
 	image: Types.Value<string?>?,
-	resource: Compose.AcquireSharedResource<ImageResource>?,
+	resource: ComposeTypes.AcquireSharedResource<ImageResource>?,
 	loader: ImageLoader?,
 	onStatus: ImageStatusCallback?,
 	failureLabel: Types.Value<string>?,
-	placeholder: ((state: Compose.Readable<ImageState>) -> Instance)?,
+	placeholder: ((state: ComposeTypes.Readable<ImageState>) -> Instance)?,
 	dimmed: Types.Value<boolean>?,
 	imageProperties: Types.ImageLabelProps?,
 }
@@ -87,7 +87,7 @@ export type AvatarProps = Types.TextButtonProps & {
 	name: Types.Value<string>,
 	image: Types.Value<string?>?,
 	userId: Types.Value<number>?,
-	resource: Compose.AcquireSharedResource<ImageResource>?,
+	resource: ComposeTypes.AcquireSharedResource<ImageResource>?,
 	loader: ImageLoader?,
 	onStatus: ImageStatusCallback?,
 	presence: Types.Value<Presence?>?,
@@ -104,7 +104,7 @@ export type AvatarMember = {
 	name: string,
 	image: string?,
 	userId: number?,
-	resource: Compose.AcquireSharedResource<ImageResource>?,
+	resource: ComposeTypes.AcquireSharedResource<ImageResource>?,
 	presence: Presence?,
 }
 export type AvatarGroupProps = Engine.FrameProps & {
@@ -119,7 +119,7 @@ export type AvatarGroupProps = Engine.FrameProps & {
 	onOverflow: (() -> ())?,
 }
 export type StageProps = Types.ViewportFrameProps & {
-	content: ((runtime: Compose.Runtime, world: WorldModel) -> (() -> ())?)?,
+	content: ((runtime: ComposeTypes.Runtime, world: WorldModel) -> (() -> ())?)?,
 	camera: Camera | Types.Value<CFrame>?,
 	fieldOfView: Types.Value<number>?,
 }

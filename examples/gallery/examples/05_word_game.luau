@@ -153,11 +153,8 @@ local function tileState(rows: { Row }, active: number, r: number, c: number): s
 end
 
 function example.build(ctx: any)
-	local UI, Compose = ctx.UI, ctx.Compose
-	local Host = ctx.Host
-	local Compose = ctx.Compose
-	local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Enum = Enum }
-	local UDim, UDim2, Vector2, Enum = nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Enum
+	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
+	local UDim, UDim2, Vector2, Enum = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 
 	local rowsSig = Compose.cell(emptyRows())
 	local activeSig = Compose.cell(1)
@@ -310,14 +307,14 @@ function example.build(ctx: any)
 					Size = UDim2.fromScale(1, 1),
 					Host.UICorner({}),
 					UI.Label "ch" {
-						Text = letter,
+						text = letter,
 						TextSize = 24,
 						Size = UDim2.new(1, 0, 1, -12),
 						TextXAlignment = Enum.TextXAlignment.Center,
 						TextYAlignment = Enum.TextYAlignment.Center,
 					},
 					UI.Label "mark" {
-						Text = mark,
+						text = mark,
 						TextSize = 12,
 						Position = UDim2.new(0, 0, 1, -14),
 						Size = UDim2.new(1, 0, 0, 14),
@@ -346,7 +343,7 @@ function example.build(ctx: any)
 			end
 		end
 		local board = Host.Frame "board" {
-			Size = UDim2.new(1, 0, 0, 0),
+			Size = UDim2.fromOffset(COLS * 48 + (COLS - 1) * 4, 0),
 			BackgroundTransparency = 1,
 			AutomaticSize = Enum.AutomaticSize.Y,
 			Host.UIGridLayout({
@@ -475,6 +472,7 @@ function example.build(ctx: any)
 					Host.UIListLayout({
 						FillDirection = Enum.FillDirection.Vertical,
 						SortOrder = Enum.SortOrder.LayoutOrder,
+						HorizontalAlignment = Enum.HorizontalAlignment.Center,
 						Padding = UDim.new(0, 8),
 					}),
 					UI.Label "Title" {
@@ -482,18 +480,18 @@ function example.build(ctx: any)
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = "Facet Wordle",
+						text = "Facet Wordle",
 						textRole = "title",
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
+						TextXAlignment = Enum.TextXAlignment.Center,
 					},
 					UI.Label "Status" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = statusSig,
+						text = statusSig,
 						TextXAlignment = Enum.TextXAlignment.Center,
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
@@ -504,11 +502,11 @@ function example.build(ctx: any)
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = "v correct   ~ present   x absent",
+						text = "v correct   ~ present   x absent",
 						textRole = "caption",
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
+						TextXAlignment = Enum.TextXAlignment.Center,
 					},
 					keyboard,
 					UI.Button "Restart" {

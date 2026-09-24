@@ -9,12 +9,9 @@ local function toCelsius(text: string): number?
 	return if n then (n - 32) * 5 / 9 else nil
 end
 function example.build(ctx: any)
-	local UI, Compose = ctx.UI, ctx.Compose
-	local Host = ctx.Host
-	local Compose = ctx.Compose
-	local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Color3 = Color3, Enum = Enum }
+	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
 	local UDim, UDim2, Vector2, Color3, Enum =
-		nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Color3, nativeTypes.Enum
+		ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
 	local fahrenheit = Compose.cell("")
 	local celsius = Compose.cell(nil :: number?)
 
@@ -65,7 +62,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Fahrenheit → Celsius",
+					text = "Fahrenheit → Celsius",
 					textRole = "title",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -78,7 +75,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Enter a temperature in °F:",
+					text = "Enter a temperature in °F:",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -100,7 +97,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = function(use)
+					text = function(use)
 						local c = use(liveCelsius)
 						return if c == nil
 							then "Preview: —"
@@ -118,7 +115,7 @@ function example.build(ctx: any)
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					textRole = "heading",
-					Text = function(use)
+					text = function(use)
 						local c = use(celsius)
 						return if c == nil then "Result: —" else string.format("Result: %g °C", c)
 					end,

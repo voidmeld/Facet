@@ -74,12 +74,24 @@ return function(ctx: Types.Context, UI: Controls): ()
 				following = false,
 				measured = 0,
 			} :: ComposeTypes.OrderedCollectionStatus)
+		local contentExtent = Compose.formula(function(use: ComposeTypes.Use): number
+			local current = use(status)
+			return if current then current.extent else 0
+		end)
 		local coordinator: ComposeTypes.Cell<{}?> = Compose.cell(nil :: {}?)
 		local queries: ComposeTypes.OrderedCollectionControls<K> = spec.controls or {}
 		local body: ScrollingFrame
 		local rowMeasures: ComposeTypes.Cell<{ [K]: number }> = Compose.cell({})
 		local headerMeasures: ComposeTypes.Cell<{ [string]: number }> = Compose.cell({})
 		local truncatedRows: ComposeTypes.Cell<{ [K]: { [string]: boolean } }> = Compose.cell({})
+		local editGutters: ComposeTypes.Cell<{ [K]: number }> = Compose.cell({})
+		local editGutter = Compose.formula(function(use: ComposeTypes.Use)
+			local widest = 0
+			for _, gutter in use(editGutters) do
+				widest = math.max(widest, gutter)
+			end
+			return widest
+		end)
 		local input = ctx.config.userInputService
 		local preferredInput: ComposeTypes.Readable<Enum.PreferredInput?> = if input
 			then ctx.observe(input, "PreferredInput")
@@ -430,9 +442,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return D2.fromOffset(0, use(headerHeight))
 			end,
 			Size = function(use: ComposeTypes.Use)
-				local current = use(status)
 				return if spec.scrolls == false
-					then D2.new(1, 0, 0, if current then current.extent else 0)
+					then D2.new(1, 0, 0, use(contentExtent))
 					else D2.new(1, 0, 1, -use(headerHeight))
 			end,
 			ScrollingEnabled = spec.scrolls ~= false,
@@ -440,8 +451,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			mode = if spec.scrolls == false then "all" :: ComposeTypes.OrderedCollectionMode else spec.mode,
 			ScrollingDirection = E.ScrollingDirection.XY,
 			CanvasSize = function(use: ComposeTypes.Use)
-				local current = use(status)
-				return D2.fromOffset(use(headerExtent).X + reorderGutter, if current then current.extent else 0)
+				return D2.fromOffset(use(headerExtent).X + reorderGutter + use(editGutter), use(contentExtent))
 			end,
 			from = ordered,
 			key = keyOf,
@@ -647,7 +657,31 @@ return function(ctx: Types.Context, UI: Controls): ()
 					actionSpec.Size = D2.fromScale(1, 1)
 					actionSpec.reducedMotion = spec.reducedMotion
 					actionSpec.editing = spec.editing
-					return UI.RowActions(actionSpec)
+					local wrapped = UI.RowActions(actionSpec)
+					local content = wrapped:FindFirstChild("Content")
+					if content and content:IsA("GuiObject") then
+						local size: ComposeTypes.Readable<UDim2> = ctx.observe(content, "Size")
+						Compose.watch(function(use: ComposeTypes.Use)
+							local gutter = math.max(0, -use(size).X.Offset)
+							if (editGutters:peek()[key] or 0) ~= gutter then
+								local gutters = table.clone(editGutters:peek())
+								if gutter > 0 then
+									gutters[key] = gutter
+								else
+									gutters[key] = nil
+								end
+								editGutters:set(gutters)
+							end
+						end)
+						Compose.cleanup(function()
+							if editGutters:peek()[key] ~= nil then
+								local gutters = table.clone(editGutters:peek())
+								gutters[key] = nil
+								editGutters:set(gutters)
+							end
+						end)
+					end
+					return wrapped
 				end
 				return row
 			end,
@@ -656,26 +690,31 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local position, window = ctx.observe(body, "CanvasPosition"), ctx.observe(body, "AbsoluteWindowSize")
 		Compose.watch(function(use: ComposeTypes.Use)
 			use(position)
-			viewportWidth:set(use(window).X - reorderGutter)
+			viewportWidth:set(use(window).X - reorderGutter - use(editGutter))
 			coordinator:set(nil)
+		end)
+		local scrolledX = Compose.formula(function(use: ComposeTypes.Use): number
+			return use(position).X
 		end)
 		runtime.decorate(header, {
 			Position = function(use: ComposeTypes.Use)
-				return D2.fromOffset(reorderGutter - use(position).X, 0)
+				return D2.fromOffset(reorderGutter + use(editGutter) - use(scrolledX), 0)
 			end,
 			Size = function(use: ComposeTypes.Use)
 				local width = use(window).X
 				return if width > 0
-					then D2.fromOffset(math.max(0, width - reorderGutter - use(disclosureWidth)), use(headerHeight))
-					else D2.new(1, -reorderGutter - use(disclosureWidth), 0, use(headerHeight))
+					then D2.fromOffset(
+						math.max(0, width - reorderGutter - use(editGutter) - use(disclosureWidth)),
+						use(headerHeight)
+					)
+					else D2.new(1, -reorderGutter - use(editGutter) - use(disclosureWidth), 0, use(headerHeight))
 			end,
 		})
 		return ctx.styled(
 			Host.Frame(ctx.props(spec, behavior, {
 				Size = function(use: ComposeTypes.Use)
-					local current = use(status)
 					return if spec.scrolls == false
-						then D2.new(1, 0, 0, (if current then current.extent else 0) + use(headerHeight))
+						then D2.new(1, 0, 0, use(contentExtent) + use(headerHeight))
 						else D2.fromScale(1, 1)
 				end,
 				BackgroundTransparency = 1,
@@ -693,7 +732,16 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return item
 			end)
 		end
-		return create(spec, spec.key)
+		local key: unknown = spec.key
+		if type(key) == "string" then
+			assert(key ~= "", "Facet UI.Table: key field must not be empty")
+			local fieldSpec = (spec :: unknown) :: CollectionTypes.KeyedTableSpec<V, string>
+			return create(fieldSpec, function(item: V, _index: number): string
+				return tostring(((item :: unknown) :: { [string]: unknown })[key])
+			end)
+		end
+		assert(type(key) == "function", "Facet UI.Table: key must be a function or a field name")
+		return create((spec :: unknown) :: CollectionTypes.KeyedTableSpec<V, K>, (key :: unknown) :: (V, number) -> K)
 	end
-	UI.Table = ctx.construct(constructor) :: CollectionTypes.TableConstructor
+	UI.Table = ctx.construct("Table", constructor) :: CollectionTypes.TableConstructor
 end

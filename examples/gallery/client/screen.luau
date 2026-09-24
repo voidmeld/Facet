@@ -12,6 +12,14 @@ function screen.configure(ctx)
 	ctx.previewScale = Compose.formula(function(use)
 		return if use(ctx.viewingDistance) == "ten-foot" then 1.5 else 1
 	end)
+	local display = ctx.viewport
+	if display then
+		ctx.sceneViewport = Compose.formula(function(use)
+			local size = use(display)
+			local scale = use(ctx.previewScale)
+			return { width = size.width / scale, height = size.height / scale }
+		end)
+	end
 	ctx.motionPreference = Compose.cell(nil)
 	local gui = ctx.guiService
 	local nativeReduced = Compose.cell(gui and gui.ReducedMotionEnabled == true or false)
@@ -160,8 +168,8 @@ function screen.build(ctx: any)
 		table.insert(tabs, { id = demo.id, label = demo.title, content = branches[demo.id] })
 	end
 	local themes = {}
-	for name in ctx.packages do
-		table.insert(themes, { value = name, label = name })
+	for name, package in ctx.packages do
+		table.insert(themes, { value = name, label = package.identity and package.identity.displayName or name })
 	end
 	table.sort(themes, function(a, b)
 		return if a.value == "Neutral" then true elseif b.value == "Neutral" then false else a.label < b.label

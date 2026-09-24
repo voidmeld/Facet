@@ -5,7 +5,7 @@ local Types = require("./types")
 local Radial = require("./radial_types")
 local Navigation = require("./navigation_types")
 local Inputs = require("./input_types")
-local Reactive = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 return function(
 	ctx: Types.Context,
 	UI: {
@@ -35,12 +35,12 @@ return function(
 		choice(spec.completion, "close", { "close", "back", "root", "stay" }, "completion")
 		choice(spec.buttonSurface, "native", { "native", "none" }, "buttonSurface")
 		local motionReduced = reducedMotion(ctx)
-		local function reduced(use: Reactive.Use?): boolean
+		local function reduced(use: ComposeTypes.Use?): boolean
 			return spec.transition == false or motionReduced(use)
 		end
 		local function validate(
 			items: { Radial.RadialItem<V> },
-			use: Reactive.Use,
+			use: ComposeTypes.Use,
 			ancestors: { [{ Radial.RadialItem<V> }]: boolean }
 		)
 			assert(type(items) == "table" and not ancestors[items], "RadialMenu requires an acyclic item tree")
@@ -62,12 +62,12 @@ return function(
 			end
 			ancestors[items] = nil
 		end
-		Compose.watch(function(use: Reactive.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			validate(read(spec.items, use), use, {})
 		end)
 		local opened = spec.isPresented or Compose.cell(spec.launcher == false)
-		local path: Reactive.Cell<{ string }> = Compose.cell({})
-		local candidate: Reactive.Cell<string?> = Compose.cell(nil :: string?)
+		local path: ComposeTypes.Cell<{ string }> = Compose.cell({})
+		local candidate: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
 		local interacting = Compose.cell(false)
 		local capture: InputObject?
 		local analog, held = false, false
@@ -212,7 +212,7 @@ return function(
 					Size = D2.fromScale(1, 1),
 					BackgroundTransparency = 1,
 					ZIndex = node.ZIndex - 1,
-					Image = function(use: Reactive.Use)
+					Image = function(use: ComposeTypes.Use)
 						local state = use(guiState)
 						return (
 							if state == E.GuiState.Press
@@ -300,7 +300,7 @@ return function(
 					then ctx.observe(anchor :: GuiObject, "AbsolutePosition")
 					else nil
 				local anchorSize = if nativeAnchor then ctx.observe(anchor :: GuiObject, "AbsoluteSize") else nil
-				local rawCenter = Compose.formula(function(use: Reactive.Use)
+				local rawCenter = Compose.formula(function(use: ComposeTypes.Use)
 					local size = use(viewport)
 					local live = read(spec.anchor, use)
 					if anchorPosition and anchorSize then
@@ -320,7 +320,7 @@ return function(
 							else size.Y / 2
 					)
 				end)
-				local rawInner = Compose.formula(function(use: Reactive.Use): number
+				local rawInner = Compose.formula(function(use: ComposeTypes.Use): number
 					local inner = math.max(
 						24,
 						if type(read(spec.clearance, use)) == "number" then read(spec.clearance, use) else 40
@@ -337,7 +337,7 @@ return function(
 				end)
 				local centerTarget = Compose.cell(rawCenter:peek())
 				local innerTarget = Compose.cell(rawInner:peek())
-				Compose.watch(function(use: Reactive.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local at, inner = use(rawCenter), use(rawInner)
 					if follow ~= "fixed" and (follow == "always" or not use(interacting)) then
 						centerTarget:set(at)
@@ -345,10 +345,10 @@ return function(
 					end
 				end)
 				local frozenCenter = Compose.cell(centerTarget:peek())
-				local movingCenter = runtime.spring(function(use: Reactive.Use)
+				local movingCenter = runtime.spring(function(use: ComposeTypes.Use)
 					return use(centerTarget)
 				end, { period = 0.18, damping = 1 })
-				local center = Compose.formula(function(use: Reactive.Use)
+				local center = Compose.formula(function(use: ComposeTypes.Use)
 					if use(interacting) and follow ~= "always" then
 						return use(frozenCenter)
 					end
@@ -357,7 +357,7 @@ return function(
 				freezeCenter = function()
 					frozenCenter:set(center:peek())
 				end
-				local layout = Compose.formula(function(use: Reactive.Use): Radial.Layout<V>
+				local layout = Compose.formula(function(use: ComposeTypes.Use): Radial.Layout<V>
 					local size, at, inner = use(viewport), use(centerTarget), use(innerTarget)
 					local start, sweep = geometry.arc(spec.preset or "donut")
 					local room = if sweep == 360
@@ -483,10 +483,10 @@ return function(
 					end
 					return { sectors = result, list = list, inner = inner, path = prefix }
 				end)
-				local sectors = Compose.formula(function(use: Reactive.Use)
+				local sectors = Compose.formula(function(use: ComposeTypes.Use)
 					return use(layout).sectors
 				end)
-				local fallback = Compose.formula(function(use: Reactive.Use)
+				local fallback = Compose.formula(function(use: ComposeTypes.Use)
 					return use(layout).list
 				end)
 				candidateSector = function()
@@ -500,10 +500,10 @@ return function(
 					return nil
 				end
 				local entry = runtime.timeline({ duration = 0.16 })
-				local fading = runtime.tween(function(use: Reactive.Use)
+				local fading = runtime.tween(function(use: ComposeTypes.Use)
 					return if phase and use(phase.exiting) then 1 else 0
 				end, { seconds = 0.12 })
-				local function transparency(use: Reactive.Use): number
+				local function transparency(use: ComposeTypes.Use): number
 					if reduced(use) then
 						return 0
 					end
@@ -525,30 +525,30 @@ return function(
 				})
 				local gui = surfaces.service("GuiService")
 				local attributes: Types.Attributes = {
-					Presentation = function(use: Reactive.Use)
+					Presentation = function(use: ComposeTypes.Use)
 						return if use(fallback) then "list" else "radial"
 					end,
 				}
 				local panelProps: Types.ScrollingFrameNativeProps = {
 					Name = "RadialPanel",
 					BackgroundTransparency = 1,
-					Size = function(use: Reactive.Use)
+					Size = function(use: ComposeTypes.Use)
 						return if use(fallback) then D2.new(1, -32, 1, -64) else D2.fromScale(1, 1)
 					end,
-					Position = function(use: Reactive.Use)
+					Position = function(use: ComposeTypes.Use)
 						return if use(fallback) then D2.fromOffset(16, 48) else D2.fromOffset(0, 0)
 					end,
-					Active = function(use: Reactive.Use)
+					Active = function(use: ComposeTypes.Use)
 						return use(fallback) or not spec.centerPassThrough
 					end,
 					Interactable = opened,
 					CanvasSize = D2.fromOffset(0, 0),
-					AutomaticCanvasSize = function(use: Reactive.Use)
+					AutomaticCanvasSize = function(use: ComposeTypes.Use)
 						return if use(fallback) then E.AutomaticSize.Y else E.AutomaticSize.None
 					end,
 					ScrollingEnabled = fallback,
 					ClipsDescendants = fallback,
-					ScrollBarThickness = function(use: Reactive.Use)
+					ScrollBarThickness = function(use: ComposeTypes.Use)
 						return if use(fallback) then 6 else 0
 					end,
 					Attributes = attributes,
@@ -559,7 +559,7 @@ return function(
 						})
 					end),
 					Compose.keyed({
-						from = function(use: Reactive.Use)
+						from = function(use: ComposeTypes.Use)
 							local entries: { string } = {}
 							local function visit(items: { Radial.RadialItem<V> }, prefix: string)
 								for _, item in items do
@@ -576,10 +576,10 @@ return function(
 							visit(read(spec.items, use), "")
 							return entries
 						end,
-						render = function(key: Reactive.Readable<string>)
-							local current: Reactive.Cell<Radial.Sector<V>?> = Compose.cell(nil :: Radial.Sector<V>?)
+						render = function(key: ComposeTypes.Readable<string>)
+							local current: ComposeTypes.Cell<Radial.Sector<V>?> = Compose.cell(nil :: Radial.Sector<V>?)
 							local painted = Compose.cell(false)
-							local present = Compose.formula(function(use: Reactive.Use): Radial.Sector<V>?
+							local present = Compose.formula(function(use: ComposeTypes.Use): Radial.Sector<V>?
 								local entries = use(sectors)
 								for sectorIndex = 1, #entries do
 									local sector = entries[sectorIndex]
@@ -589,7 +589,7 @@ return function(
 								end
 								return nil
 							end)
-							Compose.watch(function(use: Reactive.Use)
+							Compose.watch(function(use: ComposeTypes.Use)
 								local sector = use(present)
 								if sector then
 									current:set(sector)
@@ -599,21 +599,21 @@ return function(
 								Name = "SectorSlot" .. key:peek(),
 								BackgroundTransparency = 1,
 								Visible = painted,
-								Interactable = function(use: Reactive.Use)
+								Interactable = function(use: ComposeTypes.Use)
 									return use(present) ~= nil
 								end,
-								LayoutOrder = function(use: Reactive.Use)
+								LayoutOrder = function(use: ComposeTypes.Use)
 									local sector = use(current)
 									return if sector then sector.index else 0
 								end,
-								Size = function(use: Reactive.Use)
+								Size = function(use: ComposeTypes.Use)
 									local sector = use(current)
 									return if sector and sector.list then D2.new(1, 0, 0, 44) else D2.fromScale(1, 1)
 								end,
-								Compose.presence(function(use: Reactive.Use)
+								Compose.presence(function(use: ComposeTypes.Use)
 									return use(present)
 								end, function(branchPhase)
-									local function currentSector(use: Reactive.Use?): Radial.Sector<V>
+									local function currentSector(use: ComposeTypes.Use?): Radial.Sector<V>
 										return assert(if use then use(current) else current:peek())
 									end
 									painted:set(true)
@@ -621,14 +621,14 @@ return function(
 										painted:set(false)
 									end)
 									local entered = Compose.cell(false)
-									local opacity = runtime.tween(function(use: Reactive.Use)
+									local opacity = runtime.tween(function(use: ComposeTypes.Use)
 										return if use(entered) and not use(branchPhase.exiting) then 1 else 0
 									end, { seconds = 0.12 })
 									local sector = assert(currentSector())
 									local button = UI.Button({
 										Name = sector.id,
 										corners = if appearance == "buttons" then "pill" :: "pill" else nil,
-										label = function(use: Reactive.Use)
+										label = function(use: ComposeTypes.Use)
 											local live = currentSector(use)
 											return if not live.list
 													and (
@@ -640,14 +640,14 @@ return function(
 										end,
 										icon = sector.item.icon
 											or (sector.item.compactLabel and sector.item.compactLabel.icon),
-										AnchorPoint = function(use: Reactive.Use)
+										AnchorPoint = function(use: ComposeTypes.Use)
 											return if currentSector(use).list then V2.zero else V2.new(0.5, 0.5)
 										end,
 										BackgroundTransparency = if appearance == "wedges"
 												or spec.buttonSurface == "none"
 											then 1
 											else nil,
-										LayoutOrder = function(use: Reactive.Use)
+										LayoutOrder = function(use: ComposeTypes.Use)
 											return currentSector(use).index
 										end,
 										InputBegan = beginPointer,
@@ -662,7 +662,7 @@ return function(
 											end
 										end,
 										AutomaticSize = E.AutomaticSize.None,
-										Position = function(use: Reactive.Use)
+										Position = function(use: ComposeTypes.Use)
 											local at, live = use(center), currentSector(use)
 											if live.list then
 												return D2.fromOffset(0, 0)
@@ -670,7 +670,7 @@ return function(
 											local scale = if reduced(use) then 1 else 0.85 + 0.15 * use(entry.progress)
 											return D2.fromOffset(at.X + live.x * scale, at.Y + live.y * scale)
 										end,
-										Size = function(use: Reactive.Use)
+										Size = function(use: ComposeTypes.Use)
 											local live = currentSector(use)
 											if live.list then
 												return D2.new(1, -8, 0, 44)
@@ -683,10 +683,10 @@ return function(
 											return D2.fromOffset(math.max(40, bounds.w), math.max(36, bounds.h))
 										end,
 										TextWrapped = true,
-										enabled = function(use: Reactive.Use)
+										enabled = function(use: ComposeTypes.Use)
 											return read(currentSector(use).item.enabled, use) ~= false
 										end,
-										selected = function(use: Reactive.Use)
+										selected = function(use: ComposeTypes.Use)
 											local live = currentSector(use)
 											return use(candidate) == live.key
 												or use(focus.current) == live.key
@@ -709,7 +709,7 @@ return function(
 									Compose.cleanup(function()
 										buttons[sector.key] = nil
 									end)
-									skin(button, spec.skin and spec.skin.item, function(use: Reactive.Use)
+									skin(button, spec.skin and spec.skin.item, function(use: ComposeTypes.Use)
 										return use(candidate) == currentSector(use).key
 									end)
 									local measured = ctx.observe(button, "TextBounds")
@@ -722,16 +722,16 @@ return function(
 									local wrapper = Host.CanvasGroup({
 										Name = "Sector-" .. sector.id,
 										BackgroundTransparency = 1,
-										GroupTransparency = function(use: Reactive.Use)
+										GroupTransparency = function(use: ComposeTypes.Use)
 											return if reduced(use)
 												then transparency(use)
 												else 1 - (1 - transparency(use)) * use(opacity)
 										end,
 										ClipsDescendants = false,
-										LayoutOrder = function(use: Reactive.Use)
+										LayoutOrder = function(use: ComposeTypes.Use)
 											return currentSector(use).index
 										end,
-										Size = function(use: Reactive.Use)
+										Size = function(use: ComposeTypes.Use)
 											return if currentSector(use).list
 												then D2.new(1, 0, 0, 44)
 												else D2.fromScale(1, 1)
@@ -740,13 +740,13 @@ return function(
 									})
 									local shape = Host.Frame "Paint" {
 										BackgroundTransparency = 1,
-										Visible = function(use: Reactive.Use)
+										Visible = function(use: ComposeTypes.Use)
 											return appearance == "wedges" and not currentSector(use).list
 										end,
 										paint,
 									}
 									surfaces.attach(wrapper, { shape })
-									Compose.watch(function(use: Reactive.Use)
+									Compose.watch(function(use: ComposeTypes.Use)
 										local live, at = currentSector(use), use(center)
 										local text = use(measured)
 										local label = geometry.labelBounds(live, 40)
@@ -801,23 +801,23 @@ return function(
 					surfaces.attach(panel, {
 						UI.Button "Center" {
 							LayoutOrder = -1,
-							label = spec.centerLabel or function(use: Reactive.Use): string
+							label = spec.centerLabel or function(use: ComposeTypes.Use): string
 								return if spec.center == "root"
 									then "Home"
 									elseif spec.center == "close" or #use(path) == 0 then "Close"
 									else "Back"
 							end,
-							Visible = function(use: Reactive.Use)
+							Visible = function(use: ComposeTypes.Use)
 								return not (use(fallback) and (spec.center == "root" or spec.center == "close"))
 							end,
-							Position = function(use: Reactive.Use)
+							Position = function(use: ComposeTypes.Use)
 								local at = use(center)
 								return if use(fallback) then D2.fromOffset(0, 0) else D2.fromOffset(at.X, at.Y)
 							end,
-							AnchorPoint = function(use: Reactive.Use)
+							AnchorPoint = function(use: ComposeTypes.Use)
 								return if use(fallback) then V2.zero else V2.new(0.5, 0.5)
 							end,
-							Size = function(use: Reactive.Use)
+							Size = function(use: ComposeTypes.Use)
 								return if use(fallback) then D2.new(1, -8, 0, 44) else D2.fromOffset(72, 40)
 							end,
 							ZIndex = 105,
@@ -829,7 +829,7 @@ return function(
 						then spec.centerContent()
 						else spec.centerContent
 					runtime.decorate(node, {
-						Position = function(use: Reactive.Use)
+						Position = function(use: ComposeTypes.Use)
 							local at = use(center)
 							return D2.fromOffset(at.X, at.Y)
 						end,
@@ -851,7 +851,7 @@ return function(
 						AnchorPoint = V2.new(0.5, 1),
 						LayoutOrder = 10000,
 						TextWrapped = true,
-						Text = function(use: Reactive.Use)
+						Text = function(use: ComposeTypes.Use)
 							local key = use(candidate) or use(focus.current)
 							local entries = use(sectors)
 							for sectorIndex = 1, #entries do
@@ -1005,7 +1005,7 @@ return function(
 					cancel()
 					aimPointer, aimAnalog, candidateSector, freezeCenter = nil, nil, nil, nil
 				end)
-				Compose.watch(function(use: Reactive.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local entries = use(sectors)
 					local validPath = use(layout).path
 					if #validPath < #path:peek() then
@@ -1031,13 +1031,13 @@ return function(
 						{ priority = 2200 }
 					)
 					runtime.decorate(axis, { Type = E.InputActionType.Direction2D, StateChanged = aimAnalog })
-					ctx.action(panel, "RadialCommit", { "ButtonA", "Return" }, function(use: Reactive.Use)
+					ctx.action(panel, "RadialCommit", { "ButtonA", "Return" }, function(use: ComposeTypes.Use)
 						return use(opened) and use(candidate) ~= nil
 					end, function()
 						local selected = assert(candidateSector)()
 						nativeActivate(selected, nil, "action")
 					end, { priority = 2200 })
-					local directionalKeys: { [Reactive.FocusDirection]: { Types.ActionBinding } } = {
+					local directionalKeys: { [ComposeTypes.FocusDirection]: { Types.ActionBinding } } = {
 						left = { "Left", "DPadLeft" },
 						right = { "Right", "DPadRight" },
 						up = { "Up", "DPadUp" },
@@ -1047,7 +1047,7 @@ return function(
 						ctx.action(panel, "Radial-" .. direction, keys, opened, function()
 							analog = false
 							interacting:set(false)
-							local key = focus.move(direction :: Reactive.FocusDirection)
+							local key = focus.move(direction :: ComposeTypes.FocusDirection)
 							candidate:set(key)
 							if gui and key and buttons[key] then
 								gui.SelectedObject = buttons[key]
@@ -1063,7 +1063,7 @@ return function(
 				end
 				local bounds = ctx.observe(modal, "AbsoluteSize")
 				local position = ctx.observe(modal, "AbsolutePosition")
-				Compose.watch(function(use: Reactive.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					origin:set(use(position))
 				end)
 				if spec.centerPassThrough and (spec.center == "empty" or spec.center == "content") then
@@ -1072,7 +1072,7 @@ return function(
 						runtime.decorate(outside, { Visible = fallback })
 					end
 					for _, edge in { "Top", "Bottom", "Left", "Right" } do
-						local rectangle = Compose.formula(function(use: Reactive.Use)
+						local rectangle = Compose.formula(function(use: ComposeTypes.Use)
 							local size, at, radius = use(viewport), use(center), use(layout).inner
 							local left, right =
 								math.clamp(at.X - radius, 0, size.X), math.clamp(at.X + radius, 0, size.X)
@@ -1096,14 +1096,14 @@ return function(
 								BackgroundTransparency = 1,
 								Selectable = false,
 								ZIndex = 100,
-								Visible = function(use: Reactive.Use)
+								Visible = function(use: ComposeTypes.Use)
 									return not use(fallback) and use(opened)
 								end,
-								Position = function(use: Reactive.Use)
+								Position = function(use: ComposeTypes.Use)
 									local r = use(rectangle)
 									return D2.fromOffset(r[1], r[2])
 								end,
-								Size = function(use: Reactive.Use)
+								Size = function(use: ComposeTypes.Use)
 									local r = use(rectangle)
 									return D2.fromOffset(r[3], r[4])
 								end,
@@ -1112,7 +1112,7 @@ return function(
 						})
 					end
 				end
-				Compose.watch(function(use: Reactive.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local size = use(bounds)
 					if size.X > 0 and size.Y > 0 then
 						if viewport:peek() ~= size then
@@ -1133,7 +1133,7 @@ return function(
 				},
 			}),
 		})
-		Compose.watch(function(use: Reactive.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local anchor = read(spec.anchor, use)
 			if not use(opened) then
 				cancel()
@@ -1166,5 +1166,5 @@ return function(
 		end
 		return root
 	end
-	UI.RadialMenu = ctx.construct(build)
+	UI.RadialMenu = ctx.construct("RadialMenu", build)
 end

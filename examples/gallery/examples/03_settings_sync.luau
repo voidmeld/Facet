@@ -56,7 +56,7 @@ function example.build(ctx: any)
 	local function text(name, value, role)
 		return UI.Label({
 			Name = name,
-			Text = value,
+			text = value,
 			textRole = role,
 			TextWrapped = true,
 			TextXAlignment = Enum.TextXAlignment.Left,

@@ -1793,7 +1793,7 @@ t.describe("native parity navigation", function()
 		t.expect(refuses("Callout requires onRetire", function(UI, Host)
 			return UI.Callout({ anchor = Host.TextButton({}), content = page(Host, "tip") })
 		end)).toBe(true)
-		t.expect(refuses("Unknown Facet option persist", function(UI, Host)
+		t.expect(refuses("unknown option 'persist'", function(UI, Host)
 			return UI.Callout({
 				anchor = Host.TextButton({}),
 				content = page(Host, "tip"),
@@ -1930,7 +1930,7 @@ t.describe("native parity navigation", function()
 	t.it(
 		"refuses misspelled alert fields, duplicate action ids, two cancel actions and malformed transitions",
 		function()
-			t.expect(refuses("Unknown Facet option paddding", function(UI)
+			t.expect(refuses("unknown option 'paddding'", function(UI)
 				return UI.Alert({ isPresented = Compose.cell(false), title = "T", paddding = 12 })
 			end)).toBe(true)
 			t.expect(refuses("Alert.transition supports source, seconds, ease", function(UI)
@@ -2030,6 +2030,7 @@ t.describe("native parity navigation", function()
 		find(world.screen, "Actions").AbsoluteSize = V2(world, 320, 44)
 		local content = find(world.screen, "AlertContent")
 		local scroll = find(world.screen, "AlertMessage")
+		t.expect(find(scroll, "UIListLayout") ~= nil).toBe(true)
 		content.AbsoluteSize = V2(world, 320, 120)
 		t.expect(scroll.Size.Y.Offset).toBe(120)
 		content.AbsoluteSize = V2(world, 320, 2000)

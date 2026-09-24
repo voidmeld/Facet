@@ -33,6 +33,20 @@ local colors = {
 	{ r = 0.54, g = 0.38, b = 0.20 },
 }
 local CREATOR_HEADSHOTS = { 1, 156, 261 }
+local FRIENDS = {
+	{ id = "ada", name = "Ada Quill", presence = "online" },
+	{ id = "bo", name = "Bo Lane", presence = "online" },
+	{ id = "noel", name = "Noel Park", presence = "away" },
+	{ id = "ivy", name = "Ivy Moss", presence = "online" },
+	{ id = "kai", name = "Kai North", presence = "busy" },
+}
+local function friendsFor(index: number): { any }
+	local list = {}
+	for offset = 0, (index * 7) % 6 - 1 do
+		table.insert(list, FRIENDS[(index + offset) % #FRIENDS + 1])
+	end
+	return list
+end
 local studios = {
 	"Lumen Works",
 	"Northbridge Games",
@@ -67,6 +81,7 @@ function catalog.new(Compose: any)
 					stars = 4 + index % 2,
 					playing = (index * 137) % 24 + 1 + (index % 10) / 10,
 					creator = studios[(index - 1) % #studios + 1],
+					friends = friendsFor(index),
 
 					creatorImage = `rbxthumb://type=AvatarHeadShot&id={CREATOR_HEADSHOTS[(index - 1) % #CREATOR_HEADSHOTS + 1]}&w=48&h=48`,
 				})

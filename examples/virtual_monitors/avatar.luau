@@ -160,12 +160,21 @@ return function(ctx)
 			}),
 		}
 		preview:AddTag("facet-panel")
-		local settings = Host.ScrollingFrame "AvatarSettings" {
+		local function page(name, content)
+			return Host.ScrollingFrame(name)({
+				BorderSizePixel = 0,
+				BackgroundTransparency = 1,
+				Size = D2.fromScale(1, 1),
+				CanvasSize = D2.fromOffset(0, 0),
+				AutomaticCanvasSize = E.AutomaticSize.Y,
+				ScrollingDirection = E.ScrollingDirection.Y,
+				ScrollBarThickness = 5,
+				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
+				content,
+			})
+		end
+		local settings = Host.Frame "AvatarSettings" {
 			BorderSizePixel = 0,
-			CanvasSize = D2.fromOffset(0, 0),
-			AutomaticCanvasSize = E.AutomaticSize.Y,
-			ScrollingDirection = E.ScrollingDirection.Y,
-			ScrollBarThickness = 5,
 			SelectionGroup = true,
 			SelectionBehaviorUp = E.SelectionBehavior.Stop,
 			SelectionBehaviorDown = E.SelectionBehavior.Stop,
@@ -182,130 +191,185 @@ return function(ctx)
 					else D2.new(1, 0, 1, -previewHeight(use) - 16)
 			end,
 			Host.UICorner({ CornerRadius = D.new(0, 12) }),
-			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
-			column("Settings", {
-				text("Heading", "Explorer", 28),
-				text("Subtitle", "Choose a palette and accessories.", 16, {}, "facet-secondary"),
-				UI.DisclosureGroup "SettingsDisclosure" {
-					label = "Appearance",
-					expanded = model.avatarSettingsExpanded,
-					Size = D2.new(1, 0, 0, 0),
+			padding(12),
+			UI.NavigationStack "SettingsStack" {
+				path = model.avatarPath,
+				root = {
+					title = "Explorer",
 					content = function()
-						return column("AppearanceSettings", {
-							text("PaletteLabel", "Palette", 18),
-							UI.Picker "Palette" {
-								selected = model.palette,
-								style = "segmented",
-								options = {
-									{ value = "sage", label = "Sage" },
-									{ value = "clay", label = "Clay" },
-									{ value = "iris", label = "Iris" },
+						return page(
+							"SettingsPage",
+							column("Settings", {
+								text("Subtitle", "Choose a palette and accessories.", 16, {}, "facet-secondary"),
+								UI.DisclosureGroup "SettingsDisclosure" {
+									label = "Appearance",
+									expanded = model.avatarSettingsExpanded,
+									Size = D2.new(1, 0, 0, 0),
+									content = function()
+										return column("AppearanceSettings", {
+											text("PaletteLabel", "Palette", 18),
+											UI.Picker "Palette" {
+												selected = model.palette,
+												style = "segmented",
+												options = {
+													{ value = "sage", label = "Sage" },
+													{ value = "clay", label = "Clay" },
+													{ value = "iris", label = "Iris" },
+												},
+												Size = D2.new(1, 0, 0, 44),
+												AutomaticSize = E.AutomaticSize.None,
+											},
+											UI.Toggle "Hat" {
+												label = "Explorer hat",
+												value = model.hat,
+												Size = D2.new(1, 0, 0, 44),
+												AutomaticSize = E.AutomaticSize.None,
+											},
+											UI.RadialMenu "QuickPalette" {
+												label = "Quick palette",
+												appearance = "buttons",
+												Size = D2.new(1, 0, 0, 44),
+												items = {
+													{
+														id = "sage",
+														label = "Sage",
+														selected = model.palette,
+														value = "sage",
+													},
+													{
+														id = "clay",
+														label = "Clay",
+														selected = model.palette,
+														value = "clay",
+													},
+													{
+														id = "iris",
+														label = "Iris",
+														selected = model.palette,
+														value = "iris",
+													},
+												},
+											},
+										})
+									end,
 								},
-								Size = D2.new(1, 0, 0, 44),
-								AutomaticSize = E.AutomaticSize.None,
-							},
-							UI.Toggle "Hat" {
-								label = "Explorer hat",
-								value = model.hat,
-								Size = D2.new(1, 0, 0, 44),
-								AutomaticSize = E.AutomaticSize.None,
-							},
-							UI.RadialMenu "QuickPalette" {
-								label = "Quick palette",
-								appearance = "buttons",
-								Size = D2.new(1, 0, 0, 44),
-								items = {
-									{ id = "sage", label = "Sage", selected = model.palette, value = "sage" },
-									{ id = "clay", label = "Clay", selected = model.palette, value = "clay" },
-									{ id = "iris", label = "Iris", selected = model.palette, value = "iris" },
+								UI.Button "MotionRow" {
+									row = { title = "Motion & turning" },
+									onActivate = function()
+										model.avatarPath:set({ { id = "motion", value = true } })
+									end,
 								},
-							},
-						})
+								row("SummaryActions", {
+									button(
+										"Summary",
+										"Summary",
+										openSummary,
+										{ Size = D2.new(0.5, -4, 0, 44), AutomaticSize = E.AutomaticSize.None }
+									),
+									UI.CollapsibleView "Tips" {
+										label = "Tips",
+										icon = "edit",
+										expanded = model.avatarTipsExpanded,
+										Size = D2.new(0.5, -4, 0, 44),
+										AutomaticSize = E.AutomaticSize.None,
+										content = function()
+											return column("PreviewTips", {
+												text(
+													"TurnTips",
+													"Turn step sets the increment for Rotation and both Turn buttons. Use the stepper to choose 15°, 30°, 45° or 90°.",
+													17,
+													{},
+													"facet-secondary"
+												),
+												text(
+													"SpinTips",
+													"Auto-spin keeps turning the preview until you pick Off, or your device asks for reduced motion. Your choices survive switching screens.",
+													17,
+													{},
+													"facet-secondary"
+												),
+											})
+										end,
+									},
+								}, { Size = D2.new(1, 0, 0, 44) }),
+								button("Reset", "Reset look", function()
+									model.resetAvatarPresented:set(true)
+								end, { Size = D2.new(1, 0, 0, 44), AutomaticSize = E.AutomaticSize.None }),
+							}, { Size = D2.new(1, -8, 0, 0), padding(16) })
+						)
 					end,
 				},
-				text("TurnStepLabel", "Turn step", 18),
-				UI.Stepper "TurnStep" {
-					min = 1,
-					max = #turnSteps,
-					step = 1,
-					value = function(use)
-						return table.find(turnSteps, use(model.turnStep)) or 2
-					end,
-					onChange = function(index)
-						model.turnStep:set(turnSteps[index])
-					end,
-					format = function(index)
-						return `{turnSteps[index]}°`
-					end,
-					Size = D2.new(1, 0, 0, 44),
-				},
-				text("RotationLabel", "Rotation", 18),
-				UI.Slider "Rotation" {
-					value = model.angle,
-					min = -180,
-					max = 180,
-					step = model.turnStep,
-					format = function(value)
-						return `{math.round(value)}°`
-					end,
-					Size = D2.new(1, 0, 0, 44),
-				},
-				row("TurnButtons", {
-					button("TurnLeft", "Turn left", function()
-						model.turn(-1)
-					end, { Size = D2.new(0.5, -4, 0, 44), AutomaticSize = E.AutomaticSize.None }),
-					button("TurnRight", "Turn right", function()
-						model.turn(1)
-					end, { Size = D2.new(0.5, -4, 0, 44), AutomaticSize = E.AutomaticSize.None }),
-				}, { Size = D2.new(1, 0, 0, 44) }),
-				text("SpinLabel", "Auto-spin", 18),
-				row("AutoSpinRow", {
-					text("SpinValue", spin, 16, { Size = D2.new(1, -164, 0, 0) }, "facet-secondary"),
-					UI.LevelPicker "AutoSpin" {
-						value = model.autoSpin,
-						count = 3,
-						allowZero = true,
-						Size = D2.fromOffset(156, 44),
-						AutomaticSize = E.AutomaticSize.None,
-					},
-				}, { Size = D2.new(1, 0, 0, 44) }),
-				row("SummaryActions", {
-					button(
-						"Summary",
-						"Summary",
-						openSummary,
-						{ Size = D2.new(0.5, -4, 0, 44), AutomaticSize = E.AutomaticSize.None }
-					),
-					UI.CollapsibleView "Tips" {
-						label = "Tips",
-						icon = "edit",
-						expanded = model.avatarTipsExpanded,
-						Size = D2.new(0.5, -4, 0, 44),
-						AutomaticSize = E.AutomaticSize.None,
+				destinations = {
+					motion = {
+						title = "Motion & turning",
 						content = function()
-							return column("PreviewTips", {
-								text(
-									"TurnTips",
-									"Turn step sets the increment for Rotation and both Turn buttons. Use the stepper to choose 15°, 30°, 45° or 90°.",
-									17,
-									{},
-									"facet-secondary"
-								),
-								text(
-									"SpinTips",
-									"Auto-spin keeps turning the preview until you pick Off, or your device asks for reduced motion. Your choices survive switching screens.",
-									17,
-									{},
-									"facet-secondary"
-								),
-							})
+							return page(
+								"MotionPage",
+								column("MotionSettings", {
+									text("TurnStepLabel", "Turn step", 18),
+									UI.Stepper "TurnStep" {
+										min = 1,
+										max = #turnSteps,
+										step = 1,
+										value = function(use)
+											return table.find(turnSteps, use(model.turnStep)) or 2
+										end,
+										onChange = function(index)
+											model.turnStep:set(turnSteps[index])
+										end,
+										format = function(index)
+											return `{turnSteps[index]}°`
+										end,
+										Size = D2.new(1, 0, 0, 44),
+									},
+									text("RotationLabel", "Rotation", 18),
+									UI.Slider "Rotation" {
+										value = model.angle,
+										min = -180,
+										max = 180,
+										step = model.turnStep,
+										format = function(value)
+											return `{math.round(value)}°`
+										end,
+										Size = D2.new(1, 0, 0, 44),
+									},
+									row("TurnButtons", {
+										button("TurnLeft", "Turn left", function()
+											model.turn(-1)
+										end, {
+											Size = D2.new(0.5, -4, 0, 44),
+											AutomaticSize = E.AutomaticSize.None,
+										}),
+										button("TurnRight", "Turn right", function()
+											model.turn(1)
+										end, {
+											Size = D2.new(0.5, -4, 0, 44),
+											AutomaticSize = E.AutomaticSize.None,
+										}),
+									}, { Size = D2.new(1, 0, 0, 44) }),
+									text("SpinLabel", "Auto-spin", 18),
+									row("AutoSpinRow", {
+										text(
+											"SpinValue",
+											spin,
+											16,
+											{ Size = D2.new(1, -164, 0, 0) },
+											"facet-secondary"
+										),
+										UI.LevelPicker "AutoSpin" {
+											value = model.autoSpin,
+											count = 3,
+											allowZero = true,
+											Size = D2.fromOffset(156, 44),
+											AutomaticSize = E.AutomaticSize.None,
+										},
+									}, { Size = D2.new(1, 0, 0, 44) }),
+								}, { Size = D2.new(1, -8, 0, 0), padding(16) })
+							)
 						end,
 					},
-				}, { Size = D2.new(1, 0, 0, 44) }),
-				button("Reset", "Reset look", function()
-					model.resetAvatarPresented:set(true)
-				end, { Size = D2.new(1, 0, 0, 44), AutomaticSize = E.AutomaticSize.None }),
-			}, { Size = D2.new(1, -8, 0, 0), padding(16) }),
+				},
+			},
 		}
 		settings:AddTag("facet-panel")
 		return {

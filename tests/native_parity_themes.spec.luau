@@ -886,6 +886,7 @@ t.describe("native parity themes", function()
 		local neutral = themes.neutralPackage()
 		local alpha = themes.neutralPackage()
 		alpha.identity.id = "alpha"
+		alpha.identity.displayName = "Alpha"
 		alpha.style.defaultTheme = "Dawn"
 		alpha.style.themes[1].name = "Dawn"
 		local dusk = table.clone(alpha.style.themes[1])
@@ -893,6 +894,7 @@ t.describe("native parity themes", function()
 		table.insert(alpha.style.themes, dusk)
 		local zeta = themes.neutralPackage()
 		zeta.identity.id = "zeta"
+		zeta.identity.displayName = "Zeta"
 		local ctx: any = {
 			Facet = Facet,
 			Compose = Compose,
@@ -957,7 +959,7 @@ t.describe("native parity themes", function()
 		end
 		find(root, "Settings").Activated.fire()
 		local picker = find(root, "Theme")
-		t.expect(choices(picker)).toEqual({ "Neutral", "Alpha", "Zeta" })
+		t.expect(choices(picker)).toEqual({ "Facet Neutral", "Alpha", "Zeta" })
 		t.expect(find(root, "Mode")).toBe(nil)
 		local initialWrites = writes
 		find(picker, "Alpha").Activated.fire()

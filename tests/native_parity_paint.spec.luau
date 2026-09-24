@@ -1170,6 +1170,25 @@ t.describe("native parity paint", function()
 		end
 	)
 
+	t.it("keeps a selected toggle row label on the content color over its clear row", function()
+		local h = harness()
+		for _, name in SHIPPED do
+			local package = shipped(name)
+			for _, palette in package.style.themes do
+				local colors = paletteOf(package, palette)
+				local sheet, stop = sheetFor(h, package, { theme = palette.name })
+				local row = style(sheet, ".facet-toggle-row")
+				t.expect(row.BackgroundTransparency).toBe(1)
+				t.expect(style(sheet, ".facet-toggle-row.facet-selected").TextColor3)
+					.toBe(color(h.engine, colors.content))
+				t.expect(style(sheet, ".facet-toggle-row.facet-selected >> .facet-text").TextColor3)
+					.toBe(color(h.engine, colors.content))
+				stop()
+			end
+		end
+		h.dispose()
+	end)
+
 	t.it("treats a garbage transparency preference as the identity", function()
 		local h = harness()
 		local preference = Compose.cell(1 :: any)

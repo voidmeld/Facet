@@ -354,6 +354,10 @@ return function(ctx: Types.Context, UI: Controls): ()
 				end,
 			})
 			else orderedRows(followOf())
+		local contentExtent = Compose.formula(function(use: ComposeTypes.Use): number
+			local current = use(status)
+			return if current then current.extent else 0
+		end)
 		local native = props(spec, behavior, {
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
@@ -363,8 +367,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			ScrollBarThickness = 6,
 			SelectionGroup = true,
 			CanvasSize = function(use: ComposeTypes.Use)
-				local current = use(status)
-				local extent = if current then current.extent else 0
+				local extent = use(contentExtent)
 				return if horizontal then D2.fromOffset(extent, 0) else D2.fromOffset(0, extent)
 			end,
 		})
@@ -673,7 +676,20 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return value
 			end)
 		end
-		return collection(spec, kind, spec.key)
+		local key: unknown = spec.key
+		if type(key) == "string" then
+			assert(key ~= "", "Facet collection: key field must not be empty")
+			local fieldSpec = (spec :: unknown) :: CollectionTypes.KeyedCollectionSpec<V, string>
+			return collection(fieldSpec, kind, function(value: V, _index: number): string
+				return tostring(((value :: unknown) :: { [string]: unknown })[key])
+			end)
+		end
+		assert(type(key) == "function", "Facet collection: key must be a function or a field name")
+		return collection(
+			(spec :: unknown) :: CollectionTypes.KeyedCollectionSpec<V, K>,
+			kind,
+			(key :: unknown) :: (V, number) -> K
+		)
 	end
 	local function list<V, K>(spec: CollectionTypes.CollectionSpec<V, K>): ScrollingFrame
 		return construct(spec, "list")
@@ -682,6 +698,6 @@ return function(ctx: Types.Context, UI: Controls): ()
 		return construct(spec, "grid")
 	end
 
-	UI.VirtualList = ctx.construct(list) :: CollectionTypes.CollectionConstructor
-	UI.VirtualGrid = ctx.construct(grid) :: CollectionTypes.CollectionConstructor
+	UI.VirtualList = ctx.construct("VirtualList", list) :: CollectionTypes.CollectionConstructor
+	UI.VirtualGrid = ctx.construct("VirtualGrid", grid) :: CollectionTypes.CollectionConstructor
 end
