@@ -31,7 +31,7 @@
     "error-handling": {
       "mainCases": 220,
       "a": 69,
-      "aWeaker": 16,
+      "aWeaker": 0,
       "b": 2,
       "c": 146,
       "d": 3,
@@ -73,7 +73,7 @@
     "performance": {
       "mainCases": 792,
       "a": 84,
-      "aWeaker": 34,
+      "aWeaker": 6,
       "b": 4,
       "c": 704,
       "d": 0,
@@ -143,7 +143,7 @@
     "public-surface-api": {
       "mainCases": 366,
       "a": 89,
-      "aWeaker": 59,
+      "aWeaker": 0,
       "b": 0,
       "c": 277,
       "d": 0,
@@ -185,7 +185,7 @@
     "reactive-core": {
       "mainCases": 63,
       "a": 23,
-      "aWeaker": 16,
+      "aWeaker": 0,
       "b": 4,
       "c": 36,
       "d": 0,
@@ -398,7 +398,7 @@
     "text-measure-fit": {
       "mainCases": 497,
       "a": 54,
-      "aWeaker": 38,
+      "aWeaker": 18,
       "b": 232,
       "c": 202,
       "d": 9,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1725
+    "coveredButWeaker": 1586
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2890,9 +2890,10 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
-        "native_gallery::native gallery::mounts motion_layout/labels"
+        "native_gallery::native gallery::mounts motion_layout/labels",
+        "native_parity_strength_textperf::compact text before truncation::the text degrade demo declares a compact sort label and binds each width stop"
       ],
-      "weaker": "Verified at Button level, not on the text_degrade rows at each width stop; the 'only the last stop files a finding' part is gone with the solver."
+      "weaker": "The demo now declares the compact sort label, and the test checks each width stop and the swap. Only a live Studio run can show that no label is cut before it shortens at each stop, because Roblox layout sets the widths."
     },
     {
       "id": "apps2-64",
@@ -3088,9 +3089,12 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_registration::native registration and package contract::registers every authored control and documents every public constructor"
-      ],
-      "weaker": "No negative controls (a missing file or undocumented export is not simulated), and documented-but-unexported ghosts are not checked."
+        "native_registration::native registration and package contract::registers every authored control and documents every public constructor",
+        "native_parity_strength_surface::public surface registration::the live registration, exports and api.md control entries agree in every direction",
+        "native_parity_strength_surface::public surface registration::reports a registered control file with no export or documentation",
+        "native_parity_strength_surface::public surface registration::reports an undocumented export and a documented control that is not exported",
+        "native_parity_strength_surface::public surface registration::the public entry point table matches the frozen Facet exports exactly"
+      ]
     },
     {
       "id": "apps2-77",
@@ -3193,9 +3197,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted"
+        "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted",
+        "native_parity_strength_surface::contained failures::warns once with the demo id when a gallery demo cannot build"
       ],
-      "weaker": "The test checks the stamped failure and the reported error. It does not capture the warn output.",
       "apiPromise": "examples/gallery/client/screen.luau:95-125 pcall around demo build, warn '[Facet Gallery] ...', errorMessage, DemoFailure label and dispatch().error",
       "gap": {
         "description": "Only the success path is tested (errorMessage nil for every demo).",
@@ -3963,9 +3967,9 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_perf_lab::native performance lab::drives all four native feedback arms and constructs nothing while disabled"
-      ],
-      "weaker": "Main also asserted a dense scroll with feedback ON moves no counter (event-driven) and that the status line says 'off'; candidate checks built/requests/presses per arm and zero construction while disabled."
+        "native_perf_lab::native performance lab::drives all four native feedback arms and constructs nothing while disabled",
+        "native_parity_strength_textperf::performance lab evidence::feedback is off by default, event driven, and says so in its status line"
+      ]
     },
     {
       "id": "apps2-138",
@@ -4060,9 +4064,10 @@
       "class": "a",
       "candidateCases": [
         "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection",
-        "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations"
-      ],
-      "weaker": "'selecting a scenario RESTORES the settings it does not declare' and 'the full resize pass leaves the workload MOUNTED' are not asserted."
+        "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations",
+        "native_parity_strength_textperf::performance lab evidence::selecting a workload restores the settings it does not declare",
+        "native_parity_strength_textperf::performance lab evidence::a full resize pass leaves the workload mounted"
+      ]
     },
     {
       "id": "apps2-145",
@@ -4075,9 +4080,10 @@
       "class": "a",
       "candidateCases": [
         "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations",
-        "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection"
-      ],
-      "weaker": "Main asserted one failing workload does not end Run all, the closing dump instruction text, and that reset PROVES the workload unmounted; candidate checks capture count, queue cleared, ramp rows and selected=idle-base..."
+        "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection",
+        "native_parity_strength_textperf::performance lab evidence::run all continues past a failing workload and ends with the dump instruction",
+        "native_parity_strength_textperf::performance lab evidence::stop halts run all between workloads and reset unmounts the workload"
+      ]
     },
     {
       "id": "apps2-146",
@@ -4292,9 +4298,10 @@
         "native_perf_runner::perf runner \u2014 budget enforcement (\u00a716.1)::passes an in-budget scene (and ignores non-reference devices)",
         "native_perf_runner::perf runner \u2014 shape determinism (\u00a715.2)::records the same field set and phase set across two runs",
         "native_perf_runner::perf runner \u2014 shape determinism (\u00a715.2)::run() covers the full scene\u00d7profile matrix with a stable key set",
-        "native_perf_runner::perf runner settle boundary::settles after each warmup and sample before the next event"
+        "native_perf_runner::perf runner settle boundary::settles after each warmup and sample before the next event",
+        "native_parity_strength_textperf::performance lab evidence::the perf runner counts live native connections for an engine scene"
       ],
-      "weaker": "Schema case: main required liveRegistry.registrations >= 1 and a numeric liveConnections; candidate records both as measured=false (no live instance/connection counters)."
+      "weaker": "liveRegistry.registrations is still measured = false. Compose owns reactive registrations, and it has no public census that the runner can read."
     },
     {
       "id": "apps2-162",
@@ -7900,9 +7907,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_registration::native registration and package contract::registers every authored control and documents every public constructor"
-      ],
-      "weaker": "Implicit only: lune requires ../src with no game/Players; no explicit assertion that no client service is touched at require time."
+        "native_registration::native registration and package contract::registers every authored control and documents every public constructor",
+        "native_parity_strength_surface::public surface registration::requiring the entry point touches no Roblox service or global"
+      ]
     },
     {
       "id": "apps-119",
@@ -7914,9 +7921,11 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime"
-      ],
-      "weaker": "Single Button binding; 'fresh state' only inferred from a second ref call."
+        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime",
+        "native_parity_strength_surface::component lifetime::mounts a component once, updates only its bindings and releases its cleanup and nodes",
+        "native_parity_strength_surface::component lifetime::show builds its branch on demand and releases it when the condition clears",
+        "native_parity_strength_surface::component lifetime::a remount builds fresh component state"
+      ]
     },
     {
       "id": "apps-120",
@@ -7928,9 +7937,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal"
-      ],
-      "weaker": "Uses an explicit child owner inside a mount rather than a nested mounted component."
+        "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
+        "native_parity_strength_surface::component lifetime::a watch in a nested component stops when that component unmounts and the surface stays",
+        "native_parity_strength_surface::component lifetime::a watch stopped by hand stays stopped, a second stop is safe and the surface still closes"
+      ]
     },
     {
       "id": "apps-121",
@@ -7992,9 +8002,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime"
-      ],
-      "weaker": "Phase-1 Facet.new API is gone (asserted nil); slice is Compose runtime + UI.Button."
+        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime",
+        "native_parity_strength_surface::public surface registration::loads headless and drives a public slice that mounts, binds, activates and tears down"
+      ]
     },
     {
       "id": "apps-126",
@@ -8203,8 +8213,7 @@
         "native_conformance::native constructor conformance::Button preserves caller properties refs events and cleanup in both constructor forms",
         "native_conformance::native constructor conformance::VirtualList preserves caller properties refs events and cleanup in both constructor forms",
         "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime"
-      ],
-      "weaker": "ref now receives the native root Instance (api.md 'Constructor contract'), not a frozen record; conformance asserts reference==node but not the call count (count asserted only for Button in native_public_surface, Togg..."
+      ]
     },
     {
       "id": "apps-141",
@@ -9564,9 +9573,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes"
-      ],
-      "weaker": "TextSize 28/40/16 swing on one field/button/list; theme swap changes a metric only; order-independence and 'born at Largest' equality not asserted."
+        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes",
+        "native_parity_strength_textperf::preferred text size and disclosure::a text size swing in any order matches a surface born at that size"
+      ]
     },
     {
       "id": "apps-248",
@@ -9649,9 +9658,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values"
-      ],
-      "weaker": "Table values only."
+        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
+        "native_parity_strength_textperf::preferred text size and disclosure::segmented pickers, tabs and menu triggers keep the full label available"
+      ]
     },
     {
       "id": "apps-255",
@@ -10404,9 +10413,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input",
-        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values"
-      ],
-      "weaker": "NC19 asserts a touch floor of 44, TextBounds growth and the header following it. With a pinned itemSize (which replaces the whole floor formula), no test checks that the row rises to one line of text."
+        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
+        "native_parity_strength_textperf::preferred text size and disclosure::a pinned table row still rises to fit one line of text"
+      ]
     },
     {
       "id": "collections-48",
@@ -12939,9 +12948,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows"
-      ],
-      "weaker": "List-based."
+        "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows",
+        "native_parity_strength_textperf::fine-grained cost at any collection size::one visible change, one off-window change and a burst cost the same at 200, 2000 and 20000 rows"
+      ]
     },
     {
       "id": "collections-230",
@@ -14944,9 +14953,11 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width",
+        "native_parity_strength_textperf::compact text before truncation::follows reactive full and compact labels and measures the full label only"
       ],
-      "weaker": "One size pair; single-line (TextWrapped=false on the node) and phrase-instead-of-wrap are not asserted on the node."
+      "weaker": "The measure node is single-line, but the button node gets its wrap and truncation from the StyleSheet. Only a live check can show that the visible caption stays on one line and does not wrap."
     },
     {
       "id": "inputs-64",
@@ -17287,9 +17298,10 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width",
+        "native_parity_strength_textperf::compact text before truncation::an author-pinned label without a compact form is never replaced"
       ],
-      "weaker": "Only Button compactLabel: one full-vs-compact swap at two widths; no nested-ladder or author-pinned-label cases.",
       "apiPromise": "Button compactLabel: 'The button uses it when a plain text button cannot fit its full label.'"
     },
     {
@@ -17563,9 +17575,9 @@
         "native_inputs::native input controls::keeps mixed checkbox geometry live and validates presentation-specific options",
         "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls",
         "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
-        "native_themes_media::native themes and media::rejects incompatible meter options before creating native nodes"
-      ],
-      "weaker": "Refusal tested for selected controls/options only (TextInput invalid/number, Toggle mixed+switch, value bounds, Badge/AvatarGroup/ProgressView); probes show Picker.selected, TabView.selection, Sheet detent, Button cor..."
+        "native_themes_media::native themes and media::rejects incompatible meter options before creating native nodes",
+        "native_parity_strength_surface::declaration refusals::refuses unknown options, missing required options and closed sets with a named error"
+      ]
     },
     {
       "id": "mech1-28",
@@ -17589,9 +17601,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
-        "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes"
-      ],
-      "weaker": "Only Badge label set to a number after mount and Button role; no general closed-enum-on-later-set check across controls."
+        "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes",
+        "native_parity_strength_surface::declaration refusals::a bound closed option refuses a later illegal value"
+      ]
     },
     {
       "id": "mech1-30",
@@ -17627,8 +17639,7 @@
       "candidateCases": [
         "native_conformance::native constructor conformance::requires a conformance fixture for every public control with no stale fixtures",
         "native_registration::native registration and package contract::registers every authored control and documents every public constructor"
-      ],
-      "weaker": "Grip/hit-floor registration is gone with the primitives."
+      ]
     },
     {
       "id": "mech1-33",
@@ -17651,9 +17662,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "tools/check_types.py with tests/types/*_witness.luau (not a lune case)"
+        "tools/check_types.py with tests/types/*_witness.luau (not a lune case)",
+        "native_parity_strength_surface::public surface registration::every registered control has a typed constructor field, an exported spec type and a witness"
       ],
-      "weaker": "Evidence is the type-check tool's positive/compile-fail witnesses, not a spec in the test runner.",
       "apiPromise": "api.md Types: exported Props and Spec contracts; 'Run python3 tools/check_types.py'."
     },
     {
@@ -18247,9 +18258,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::rejects incompatible meter options before creating native nodes",
         "native_inputs::native input controls::keeps mixed checkbox geometry live and validates presentation-specific options",
-        "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls"
-      ],
-      "weaker": "Partial-node release (engine.made unchanged) asserted only for ProgressView."
+        "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls",
+        "native_parity_strength_surface::declaration refusals::a refused declaration releases every partially built native node and connection"
+      ]
     },
     {
       "id": "mech1-82",
@@ -18277,8 +18288,7 @@
       "candidateCases": [
         "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows",
         "native_public_surface::native public surface::gates native actions through retained ancestors and detaches observations"
-      ],
-      "weaker": "Tint inheritance not asserted."
+      ]
     },
     {
       "id": "mech1-84",
@@ -18808,9 +18818,9 @@
         "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows",
         "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
         "native_perf_principles::native performance invariants::idle heartbeat and identical state perform no native writes",
-        "native_perf_principles::native performance invariants::toggle changes its row without mounting another node"
-      ],
-      "weaker": "Scales 100/800/3200 rows (main 200/2000/20000); off-screen-row write and 50-write burst not asserted."
+        "native_perf_principles::native performance invariants::toggle changes its row without mounting another node",
+        "native_parity_strength_textperf::fine-grained cost at any collection size::one visible change, one off-window change and a burst cost the same at 200, 2000 and 20000 rows"
+      ]
     },
     {
       "id": "mech1-125",
@@ -20343,9 +20353,11 @@
       "class": "a",
       "candidateCases": [
         "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
-        "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings"
-      ],
-      "weaker": "no self-disposal-during-run case"
+        "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings",
+        "native_parity_strength_surface::reactive recovery::an effect that disposes itself during its run is not subscribed again",
+        "native_parity_strength_surface::reactive recovery::an effect whose owner disposes during the run is not subscribed again",
+        "native_parity_strength_surface::reactive recovery::transaction reads stay fresh and unrelated writes replay no effect"
+      ]
     },
     {
       "id": "mech2-113",
@@ -20970,9 +20982,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
-      ],
-      "weaker": "Only Button.compactLabel; one width transition; no sibling/priority interaction"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width",
+        "native_parity_strength_textperf::compact text before truncation::follows reactive full and compact labels and measures the full label only"
+      ]
     },
     {
       "id": "mech3-49",
@@ -21200,9 +21213,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
-      ],
-      "weaker": "Button only; no 'spares a sibling' ordering or minMax floor"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width"
+      ]
     },
     {
       "id": "mech3-68",
@@ -21909,7 +21922,7 @@
       "candidateCases": [
         "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements"
       ],
-      "weaker": "One narrow measurement only. No theme packages, no largest preferred text, no viewport sweep."
+      "weaker": "No headless oracle solves native layout at the largest text size. A live Studio sweep across themes and viewports must check that the card and its actions stay inside the screen."
     },
     {
       "id": "navigation-1-18",
@@ -22136,9 +22149,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::contains failed alert factories and accepts a later valid presentation"
-      ],
-      "weaker": "Only the content-factory failure through item is tested. A title-factory failure and an initially bound isPresented=true failure are not, and neither is onError/FacetError reporting."
+        "native_navigation::native navigation controls::contains failed alert factories and accepts a later valid presentation",
+        "native_parity_strength_surface::contained failures::contains a failing alert title, reports it once and presents a later valid item",
+        "native_parity_strength_surface::contained failures::contains an initially presented failing alert without stranding its binding"
+      ]
     },
     {
       "id": "navigation-1-32",
@@ -22151,9 +22165,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::clears bound alert errors and turns native page animation off for reduced motion",
-        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork"
-      ],
-      "weaker": "The default 'Something went wrong' title and error message text are not asserted."
+        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork",
+        "native_parity_strength_surface::contained failures::shows default error copy with critical artwork and clears the error on Back"
+      ]
     },
     {
       "id": "navigation-1-33",
@@ -23960,9 +23974,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back"
-      ],
-      "weaker": "Does not assert FacetError clears (nil) after the next valid path write."
+        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back",
+        "native_parity_strength_surface::contained failures::quarantines an invalid path, keeps the page and clears the error on the next valid path"
+      ]
     },
     {
       "id": "navigation-3-14",
@@ -24050,9 +24064,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back"
-      ],
-      "weaker": "Does not assert the error stays recorded (FacetError) after Back."
+        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back",
+        "native_parity_strength_surface::contained failures::a destination fault releases partial content, records the failure and keeps Back"
+      ]
     },
     {
       "id": "navigation-3-19",
@@ -24757,9 +24771,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::retains model values and updates picker font bindings"
-      ],
-      "weaker": "One option; default-when-absent not asserted."
+        "native_navigation::native navigation controls::retains model values and updates picker font bindings",
+        "native_parity_strength_textperf::preferred text size and disclosure::picker textSize reaches every segment reactively and is left to the theme when absent"
+      ]
     },
     {
       "id": "navigation-3-70",
@@ -25145,9 +25159,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label"
-      ],
-      "weaker": "Identity is implied (same trigger instance relabels) rather than asserted via a build counter."
+        "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label",
+        "native_parity_strength_surface::reactive recovery::a menu picker keeps its trigger across selection and makes no trigger node"
+      ]
     },
     {
       "id": "navigation-4-07",
@@ -25444,9 +25458,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options"
-      ],
-      "weaker": "Option identity is asserted across axis/badge changes, not across a selection change."
+        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
+        "native_parity_strength_surface::reactive recovery::a picker selection change keeps its options and makes no native node"
+      ]
     },
     {
       "id": "navigation-4-29",
@@ -27303,9 +27317,9 @@
       "class": "a",
       "candidateCases": [
         "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings",
-        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes"
-      ],
-      "weaker": "Only function(use)/readable-in-row titles are exercised; a bare cell title is not."
+        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes",
+        "native_parity_strength_surface::reactive recovery::a Label follows a bare title cell and a function title"
+      ]
     },
     {
       "id": "paint-24",
@@ -27424,9 +27438,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error"
-      ],
-      "weaker": "Covers duplicate option values and unknown style only; empty options (now accepted), read-only selected and non-writable expanded refusals are not asserted."
+        "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error",
+        "native_parity_strength_surface::declaration refusals::refuses unknown options, missing required options and closed sets with a named error"
+      ]
     },
     {
       "id": "paint-32",
@@ -30166,9 +30180,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive",
-        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors"
-      ],
-      "weaker": "5 points at 180 deg, 9 at 360, 3 for the 90 deg indeterminate arc asserted; radius independence not."
+        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors",
+        "native_parity_strength_textperf::decoration cost::a circular arc uses the same control points at every diameter"
+      ]
     },
     {
       "id": "themes-P1-73",
@@ -31217,9 +31231,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::skips static empty skin graphs while retaining later reactive art and shadows",
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
-      ],
-      "weaker": "Main measured a census over the whole adaptive_controls fixture. The candidate asserts per skin: zero children and no watch or formula work for nil or native recipes, 3 images for fill plus two corners, and one slot i..."
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_strength_textperf::decoration cost::flat recipes add no decoration and a nine-slice recipe adds one image per skinned node"
+      ]
     },
     {
       "id": "themes-P2-18",
@@ -32926,9 +32940,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values"
-      ],
-      "weaker": "Nested depth is ~4 (rules[1].properties.Text), not the main's 15-level probe."
+        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values",
+        "native_parity_strength_surface::theme package boundaries::finds a callback nested fifteen levels deep and names its path",
+        "native_parity_strength_surface::theme package boundaries::refuses a non-table definition and a cycle with a report instead of an error"
+      ]
     },
     {
       "id": "themes-P4-36",
@@ -33010,9 +33025,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values"
-      ],
-      "weaker": "Depth ~4 in candidate vs 15 in main; scan is unbounded by construction."
+        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values",
+        "native_parity_strength_surface::theme package boundaries::finds a callback nested fifteen levels deep and names its path"
+      ]
     },
     {
       "id": "themes-P4-42",
@@ -33450,9 +33465,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)"
-      ],
-      "weaker": "Enforced by the native_verify architecture producer, not a spec case; the testOnly==nil check (a fixture posing as a package) is lost."
+        "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)",
+        "native_parity_strength_surface::theme package boundaries::reference packages use only the public themes surface and are not test fixtures"
+      ]
     },
     {
       "id": "themes-P5-17",

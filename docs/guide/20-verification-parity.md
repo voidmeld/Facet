@@ -17,7 +17,7 @@ where.
   still promises, but no candidate case tested it. The parity tests close
   837 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 56 cases remain.
-- 1,725 of the 3,131 covered cases have a weaker
+- 1,586 of the 3,131 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -81,10 +81,10 @@ last column names the candidate specs that the group cites most.
 
 | Group | Main cases | a | Weaker | b | c | d | Candidate coverage |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Reactive core | 63 | 23 | 16 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
+| Reactive core | 63 | 23 | 0 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
 | Layout and geometry | 1,326 | 94 | 58 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 497 | 54 | 38 | 232 | 202 | 9 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Text measurement and fit | 497 | 54 | 18 | 232 | 202 | 9 | `native_inputs`, `native_collections`, `native_parity_navigation` |
 | Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
 | Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
@@ -104,13 +104,13 @@ last column names the candidate specs that the group cites most.
 | Row actions | 264 | 149 | 101 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 166 | 46 | 34 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 28 | 17 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
-| Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
+| Public surface | 366 | 89 | 0 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 11 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 425 | 237 | 133 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 151 | 45 | 22 | 153 | 1 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
-| Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
+| Performance | 792 | 84 | 6 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 14 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
-| Error handling and refusals | 220 | 69 | 16 | 2 | 146 | 3 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
+| Error handling and refusals | 220 | 69 | 0 | 2 | 146 | 3 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
 
