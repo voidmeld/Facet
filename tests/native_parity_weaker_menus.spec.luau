@@ -202,7 +202,7 @@ local function extent(world: World, width: number, height: number): any
 	return modal
 end
 
-t.describe("native parity strength menus", function()
+t.describe("native parity weaker menus", function()
 	t.it(
 		"opens a radial menu from its launcher, runs only the chosen command and releases every native object",
 		function()
@@ -584,7 +584,7 @@ t.describe("native parity strength menus", function()
 			{ "Picker.required must be a boolean", { required = "false" } },
 			{ "Picker.enabled must be a boolean", { enabled = "false" } },
 			{ "Picker.enabled must be a boolean", { enabled = Compose.cell("false") } },
-			{ "Unknown Facet option misspelled", { misspelled = true } },
+			{ "unknown option 'misspelled'", { misspelled = true } },
 		}
 		for _, style in { "radioGroup", "menu", "navigationLink", "automatic" } do
 			for _, live in { false, true } do

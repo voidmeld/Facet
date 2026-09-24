@@ -190,7 +190,7 @@ local function mountGallery(name: string, kind: string?): (any, any, () -> (), a
 	end, ctx
 end
 
-t.describe("native parity strength actions", function()
+t.describe("native parity weaker actions", function()
 	t.it("shows the owner value and placeholder in a native TextBox and edits without optional services", function()
 		local value, placeholder = Compose.cell("Ada"), "Your name"
 		local world = setup(function(UI)
@@ -538,8 +538,8 @@ t.describe("native parity strength actions", function()
 				end
 				return shown
 			end
-			local picker = find(discover, "Genre")
-			find(picker, "Racing").Activated.fire()
+			local picker = find(discover, "Genres")
+			find(picker, "Genre_Racing").Activated.fire()
 			t.expect(model.genre:peek()).toBe("Racing")
 			t.expect(#model.visibleGames:peek() > 0).toBe(true)
 			for _, item in model.visibleGames:peek() do
@@ -549,20 +549,20 @@ t.describe("native parity strength actions", function()
 			for _, genre in shownGenres() do
 				t.expect(genre).toBe("Racing")
 			end
-			find(picker, "Building").Activated.fire()
+			find(picker, "Genre_Building").Activated.fire()
 			t.expect(model.genre:peek()).toBe("Building")
-			t.expect(find(picker, "Building"):HasTag("facet-selected")).toBe(true)
-			t.expect(find(picker, "Racing"):HasTag("facet-selected")).toBe(false)
-			find(picker, "all").Activated.fire()
+			t.expect(find(picker, "Genre_Building"):GetAttribute("selected")).toBe(true)
+			t.expect(find(picker, "Genre_Racing"):GetAttribute("selected")).toBe(false)
+			find(picker, "Genre_all").Activated.fire()
 			t.expect(model.genre:peek()).toBe("all")
 			t.expect(#model.visibleGames:peek()).toBe(total)
-			find(picker, "Adventure").Activated.fire()
+			find(picker, "Genre_Adventure").Activated.fire()
 			local editor = find(find(discover, "Search"), "Editor")
 			editor:CaptureFocus()
 			editor.Text = "Neon Harbor"
 			t.expect(model.query:peek()).toBe("Neon Harbor")
 			t.expect(#model.visibleGames:peek()).toBe(0)
-			find(picker, "all").Activated.fire()
+			find(picker, "Genre_all").Activated.fire()
 			local matches = model.visibleGames:peek()
 			t.expect(#matches > 0).toBe(true)
 			for _, item in matches do

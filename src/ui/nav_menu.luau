@@ -2,7 +2,7 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
-local Core = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 
 return function(
 	ctx: Types.Context,
@@ -46,7 +46,7 @@ return function(
 		end
 		return true
 	end
-	local function menuItems<V>(items: { Nav.MenuItem<V> }, use: Core.Use?): { Nav.MenuItem<V> }
+	local function menuItems<V>(items: { Nav.MenuItem<V> }, use: ComposeTypes.Use?): { Nav.MenuItem<V> }
 		assert(type(items) == "table", "Menu.items must be an array")
 		local result: { Nav.MenuItem<V> } = {}
 		local identifiers: { [string]: boolean } = {}
@@ -56,7 +56,7 @@ return function(
 			local id = copy.id or tostring(index)
 			copy.id = id
 			local item: Nav.MenuItem<V> = copy
-			assert(not identifiers[id], "Menu items require unique ids per level")
+			assert(not identifiers[id], `Facet UI.Menu: two items at one level share the id '{id}'`)
 			identifiers[id] = true
 			if not item.divider then
 				assert(
@@ -80,10 +80,10 @@ return function(
 	local function menuPanel<V>(spec: Nav.MenuSpec<V>, close: () -> (), anchor: GuiObject, nonmodal: boolean?): Frame
 		local path = Compose.cell({} :: { string })
 		local pendingFocus: string?
-		local rootItems = Compose.formula(function(use: Core.Use)
+		local rootItems = Compose.formula(function(use: ComposeTypes.Use)
 			return menuItems(read(spec.items, use), use)
 		end)
-		local current = Compose.formula(function(use: Core.Use)
+		local current = Compose.formula(function(use: ComposeTypes.Use)
 			local items = use(rootItems)
 			for _, id in use(path) do
 				local found: Nav.MenuAction<V>?
@@ -100,7 +100,7 @@ return function(
 			end
 			return items
 		end)
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local items, valid = use(rootItems), {}
 			for _, id in path:peek() do
 				local found: Nav.MenuAction<V>?
@@ -140,7 +140,7 @@ return function(
 					LayoutOrder = -2,
 				}
 			end),
-			Compose.show(function(use: Core.Use)
+			Compose.show(function(use: ComposeTypes.Use)
 				return #use(path) > 0
 			end, function()
 				return UI.Button "Back" {
@@ -154,7 +154,7 @@ return function(
 				key = function(item: Nav.MenuItem<V>, index: number)
 					return item.id or index
 				end,
-				render = function(source: Core.Readable<Nav.MenuItem<V>>, index: Core.Readable<number>)
+				render = function(source: ComposeTypes.Readable<Nav.MenuItem<V>>, index: ComposeTypes.Readable<number>)
 					local item = source:peek()
 					if item.divider then
 						return ctx.styled(
@@ -167,7 +167,7 @@ return function(
 						Name = rowKey,
 						LayoutOrder = index,
 						Size = D2.new(1, 0, 0, 44),
-						label = function(use: Core.Use)
+						label = function(use: ComposeTypes.Use)
 							return read(actionItem(use(source)).label, use)
 						end,
 						icon = item.icon,
@@ -176,13 +176,13 @@ return function(
 							then "chevron.trailing"
 							elseif item.checked ~= nil or item.selected ~= nil or item.marked ~= nil then "checkmark"
 							else nil,
-						subtitle = function(use: Core.Use)
+						subtitle = function(use: ComposeTypes.Use)
 							return read(actionItem(use(source)).description, use) or ""
 						end,
-						enabled = function(use: Core.Use)
+						enabled = function(use: ComposeTypes.Use)
 							return read(actionItem(use(source)).enabled, use) ~= false
 						end,
-						selected = function(use: Core.Use)
+						selected = function(use: ComposeTypes.Use)
 							local live = actionItem(use(source))
 							return if live.checked
 								then use(live.checked)
@@ -213,7 +213,7 @@ return function(
 					row:AddTag("facet-menu-item")
 					local check = if item.children then nil else row:FindFirstChild("TrailingIcon", true)
 					if check and check:IsA("GuiObject") then
-						Compose.watch(function(use: Core.Use)
+						Compose.watch(function(use: ComposeTypes.Use)
 							local live = actionItem(use(source))
 							check.Visible = if live.checked
 								then use(live.checked) == true
@@ -231,7 +231,7 @@ return function(
 							layout.HorizontalAlignment = E.HorizontalAlignment.Left
 						end
 						local natural = ctx.observe(content, "AbsoluteSize")
-						Compose.watch(function(use: Core.Use)
+						Compose.watch(function(use: ComposeTypes.Use)
 							local next = table.clone(widths:peek())
 							next[rowKey] = use(natural).X
 							widths:set(next)
@@ -249,7 +249,7 @@ return function(
 			ctx.corner(),
 		}, { Name = "MenuRows", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 		local rowSize = ctx.observe(rows, "AbsoluteSize")
-		local function panelWidth(use: Core.Use): number
+		local function panelWidth(use: ComposeTypes.Use): number
 			local widest = 0
 			for _, width in use(widths) do
 				widest = math.max(widest, width)
@@ -289,7 +289,7 @@ return function(
 		local measured = ctx.observe(panel, "AbsoluteSize")
 		local input = surfaces.service("UserInputService")
 		local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
-		local asSheet = Compose.formula(function(use: Core.Use)
+		local asSheet = Compose.formula(function(use: ComposeTypes.Use)
 			local presentation = read(spec.presentation, use)
 			if presentation and presentation ~= "automatic" then
 				return presentation == "sheet"
@@ -298,11 +298,11 @@ return function(
 				or use(preferred) == E.PreferredInput.Touch
 		end)
 		runtime.decorate(panel, {
-			Size = function(use: Core.Use)
+			Size = function(use: ComposeTypes.Use)
 				local height = math.min(use(rowSize).Y, math.max(44, use(extent).Y - 24))
 				return if use(asSheet) then D2.new(1, -24, 0, height) else D2.fromOffset(panelWidth(use), height)
 			end,
-			Position = function(use: Core.Use)
+			Position = function(use: ComposeTypes.Use)
 				local at, bounds, offer, panelSize, offset =
 					use(position), use(size), use(extent), use(measured), use(origin)
 				if use(asSheet) then
@@ -320,7 +320,7 @@ return function(
 		})
 		local gui = surfaces.service("GuiService")
 		local selected = if gui then ctx.observe(gui, "SelectedObject") else Compose.cell(nil)
-		local function selectedBranch(use: Core.Use?): Nav.MenuAction<V>?
+		local function selectedBranch(use: ComposeTypes.Use?): Nav.MenuAction<V>?
 			local node = read(selected, use)
 			for _, item in read(current, use) do
 				if
@@ -335,7 +335,7 @@ return function(
 			end
 			return nil
 		end
-		ctx.action(modal, "MenuRight", { E.KeyCode.Right, E.KeyCode.DPadRight }, function(use: Core.Use)
+		ctx.action(modal, "MenuRight", { E.KeyCode.Right, E.KeyCode.DPadRight }, function(use: ComposeTypes.Use)
 			return selectedBranch(use) ~= nil
 		end, function()
 			local item = selectedBranch()
@@ -345,11 +345,11 @@ return function(
 				path:set(nextPath)
 			end
 		end, { priority = 2100 })
-		ctx.action(modal, "MenuLeft", { E.KeyCode.Left, E.KeyCode.DPadLeft }, function(use: Core.Use)
+		ctx.action(modal, "MenuLeft", { E.KeyCode.Left, E.KeyCode.DPadLeft }, function(use: ComposeTypes.Use)
 			return #use(path) > 0
 		end, back, { priority = 2100 })
 		local focusIn = surfaces.selecting()
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local rows = use(current)
 			if gui and not nonmodal and focusIn(use) then
 				local target = if pendingFocus then surfaces.firstSelectable(panel, pendingFocus) else nil
@@ -370,7 +370,7 @@ return function(
 		end)
 		surfaces.attach(modal, {
 			Compose.keyed({
-				from = function(use: Core.Use)
+				from = function(use: ComposeTypes.Use)
 					if use(asSheet) then
 						return {}
 					end
@@ -403,18 +403,21 @@ return function(
 					return level.id
 				end,
 				render = function(
-					source: Core.Readable<{ id: string, items: { Nav.MenuItem<V> }, prefix: { string }, depth: number }>
+					source: ComposeTypes.Readable<{ id: string, items: { Nav.MenuItem<V> }, prefix: { string }, depth: number }>
 				)
 					return ctx.styled(
 						ctx.column({
 							Compose.keyed({
-								from = function(use: Core.Use)
+								from = function(use: ComposeTypes.Use)
 									return use(source).items
 								end,
 								key = function(item: Nav.MenuItem<V>, index: number)
 									return item.id or index
 								end,
-								render = function(row: Core.Readable<Nav.MenuItem<V>>, index: Core.Readable<number>)
+								render = function(
+									row: ComposeTypes.Readable<Nav.MenuItem<V>>,
+									index: ComposeTypes.Readable<number>
+								)
 									local item = row:peek()
 									if item.divider then
 										return ctx.styled(
@@ -459,7 +462,7 @@ return function(
 							ZIndex = 103,
 							Size = D2.fromOffset(280, 0),
 							AutomaticSize = E.AutomaticSize.Y,
-							Position = function(use: Core.Use)
+							Position = function(use: ComposeTypes.Use)
 								local at, bounds, offset = use(position), use(size), use(origin)
 								return D2.fromOffset(
 									math.max(8, at.X - offset.X + (use(source).depth - 1) * 288),
@@ -475,7 +478,7 @@ return function(
 		return modal
 	end
 
-	UI.Menu = ctx.construct(function<V>(spec: Nav.MenuSpec<V>): Frame
+	UI.Menu = ctx.construct("Menu", function<V>(spec: Nav.MenuSpec<V>): Frame
 		assert(spec.items ~= nil, "Menu requires items")
 		menuItems(read(spec.items))
 		local opened = spec.isPresented or Compose.cell(false)
@@ -508,7 +511,7 @@ return function(
 			}
 			if spec.Size ~= nil then
 				triggerProps.AutomaticSize = automatic
-				triggerProps.Size = function(use: Core.Use)
+				triggerProps.Size = function(use: ComposeTypes.Use)
 					local sizing = read(automatic, use)
 					local width = sizing == E.AutomaticSize.X or sizing == E.AutomaticSize.XY
 					local height = sizing == E.AutomaticSize.Y or sizing == E.AutomaticSize.XY
@@ -523,7 +526,7 @@ return function(
 				triggerProps.TextWrapped = false
 				triggerProps.ClipsDescendants = true
 				local attributes: Types.Attributes = {
-					FacetLabel = function(use: Core.Use)
+					FacetLabel = function(use: ComposeTypes.Use)
 						return read(triggerProps.label, use)
 					end,
 				}
@@ -573,7 +576,7 @@ return function(
 		}))
 		local available = surfaces.available(root)
 		local mounted = false
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local active = use(available)
 			if active then
 				mounted = true
@@ -608,7 +611,7 @@ return function(
 			table.insert(bindings, E.KeyCode.ButtonY)
 		end
 		if #bindings > 0 then
-			ctx.action(root, "Menu", bindings, function(use: Core.Use)
+			ctx.action(root, "Menu", bindings, function(use: ComposeTypes.Use)
 				return surfaces.within(use(selected), root)
 			end, open, { priority = 1200 })
 		end
@@ -648,9 +651,8 @@ return function(
 		badge = true,
 		enabled = true,
 	}
-	UI.Picker = ctx.construct(function<V>(spec: Nav.PickerSpec<V>): GuiObject
+	UI.Picker = ctx.construct("Picker", function<V>(spec: Nav.PickerSpec<V>): GuiObject
 		writable(spec.selected, "Picker.selected")
-		assert(spec.options ~= nil, "Picker requires options")
 		assert(spec.onChange == nil or type(spec.onChange) == "function", "Picker.onChange must be a function")
 		assert(spec.onChanging == nil or type(spec.onChanging) == "function", "Picker.onChanging must be a function")
 		assert(spec.required == nil or type(spec.required) == "boolean", "Picker.required must be a boolean")
@@ -658,7 +660,11 @@ return function(
 			spec.enabled == nil or type(read(spec.enabled)) == "boolean",
 			"Picker.enabled must be a boolean or a readable boolean"
 		)
-		local function isSelected(value: V, use: Core.Use?): boolean
+		assert(
+			type(spec.options) == "table" or type(spec.options) == "function",
+			"Facet UI.Picker: options must be an array of { value, label } entries, a Compose readable, or a function(use) that returns one"
+		)
+		local function isSelected(value: V, use: ComposeTypes.Use?): boolean
 			if spec.multiple then
 				return read(spec.selected, use)[value] == true
 			else
@@ -666,7 +672,7 @@ return function(
 			end
 		end
 		local function commitSelection<T>(
-			selected: Core.Cell<T>,
+			selected: ComposeTypes.Cell<T>,
 			value: T,
 			onChanging: ((T, T) -> boolean?)?,
 			onChange: ((T) -> ())?
@@ -707,7 +713,7 @@ return function(
 				end
 			end
 		end
-		local options = Compose.formula(function(use: Core.Use)
+		local options = Compose.formula(function(use: ComposeTypes.Use)
 			local query = string.lower(tostring(read(spec.query, use) or ""))
 			local result: { Nav.PickerOption<V> } = {}
 			local seen: { [V | string]: boolean } = {}
@@ -777,7 +783,7 @@ return function(
 			local opened = spec.isPresented or Compose.cell(false)
 			local width = Compose.cell(0)
 
-			local resolved = Compose.formula(function(use: Core.Use): Nav.PickerStyle
+			local resolved = Compose.formula(function(use: ComposeTypes.Use): Nav.PickerStyle
 				if spec.query then
 					return "navigationLink"
 				end
@@ -808,13 +814,13 @@ return function(
 			table.insert(
 				props,
 				Compose.keyed({
-					from = function(use: Core.Use)
+					from = function(use: ComposeTypes.Use)
 						return { use(resolved) }
 					end,
-					render = function(current: Core.Readable<Nav.PickerStyle>)
+					render = function(current: ComposeTypes.Readable<Nav.PickerStyle>)
 						local presentation: Nav.PickerStyle = current:peek()
 						local automatic = props.AutomaticSize
-						local size = function(use: Core.Use)
+						local size = function(use: ComposeTypes.Use)
 							local sizing = read(automatic, use)
 							return D2.fromScale(
 								if sizing == E.AutomaticSize.X or sizing == E.AutomaticSize.XY then 0 else 1,
@@ -875,7 +881,7 @@ return function(
 			)
 			local container = Host.Frame(props)
 			local measured = ctx.observe(container, "AbsoluteSize")
-			Compose.watch(function(use: Core.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				width:set(use(measured).X)
 			end)
 			return container
@@ -889,7 +895,7 @@ return function(
 			menuSpec.enabled = spec.enabled
 			menuSpec.isPresented = spec.isPresented
 			menuSpec.query = spec.query
-			menuSpec.label = function(use: Core.Use)
+			menuSpec.label = function(use: ComposeTypes.Use)
 				local labels = {}
 				for _, option in read(spec.options, use) do
 					if isSelected(option.value, use) then
@@ -901,7 +907,7 @@ return function(
 					else read(spec.placeholder, use) or read(spec.label, use) or "Choose"
 			end
 			menuSpec.disclosure = true
-			menuSpec.items = function(use: Core.Use)
+			menuSpec.items = function(use: ComposeTypes.Use)
 				local items = {}
 				for _, option in use(options) do
 					table.insert(items, {
@@ -910,7 +916,7 @@ return function(
 						icon = option.icon,
 						description = option.description,
 						dismiss = not spec.multiple,
-						marked = function(use: Core.Use)
+						marked = function(use: ComposeTypes.Use)
 							return isSelected(option.value, use)
 						end,
 						enabled = option.enabled,
@@ -940,7 +946,7 @@ return function(
 				row,
 				ctx.text({
 					Name = "Label",
-					Text = function(use: Core.Use)
+					Text = function(use: ComposeTypes.Use)
 						return read(spec.label, use) or ""
 					end,
 					Size = D2.new(1, -8, 0, 0),
@@ -961,7 +967,7 @@ return function(
 			triggerProps.Name = spec.Name or "Picker"
 			triggerProps.enabled = spec.enabled
 			triggerProps.label = spec.label
-				or function(use: Core.Use)
+				or function(use: ComposeTypes.Use)
 					for _, option in read(spec.options, use) do
 						if isSelected(option.value, use) then
 							local label: string = read(option.label, use)
@@ -1025,16 +1031,16 @@ return function(
 		end
 		assert(table.find({ "segmented", "inline", "radioGroup", "navigationLink" }, style), "Unknown Picker style")
 		local vertical = style ~= "segmented" or read(spec.axis) == "y"
-		local children: { Core.Child } = {
+		local children: { ComposeTypes.Child } = {
 			Host.UIListLayout({
-				FillDirection = function(use: Core.Use)
+				FillDirection = function(use: ComposeTypes.Use)
 					return if style ~= "segmented" or read(spec.axis, use) == "y"
 						then E.FillDirection.Vertical
 						else E.FillDirection.Horizontal
 				end,
 				SortOrder = E.SortOrder.LayoutOrder,
 				Padding = D.new(0, 4),
-				HorizontalFlex = function(use: Core.Use)
+				HorizontalFlex = function(use: ComposeTypes.Use)
 					return if style == "segmented"
 							and read(spec.axis, use) ~= "y"
 							and read(spec.sizing, use) ~= "hug"
@@ -1053,20 +1059,23 @@ return function(
 				key = function(option: Nav.PickerOption<V>)
 					return option.id or option.value
 				end,
-				render = function(source: Core.Readable<Nav.PickerOption<V>>, index: Core.Readable<number>)
-					local selected = function(use: Core.Use)
+				render = function(
+					source: ComposeTypes.Readable<Nav.PickerOption<V>>,
+					index: ComposeTypes.Readable<number>
+				)
+					local selected = function(use: ComposeTypes.Use)
 						return isSelected(use(source).value, use)
 					end
 					local button = UI.Button({
 						Name = tostring(source:peek().id or source:peek().value),
 						LayoutOrder = index,
-						Size = function(use: Core.Use)
+						Size = function(use: ComposeTypes.Use)
 							return if style ~= "segmented" or read(spec.axis, use) == "y"
 								then D2.new(1, 0, 0, 44)
 								else D2.fromOffset(0, 44)
 						end,
 						AutomaticSize = if style ~= "segmented" then E.AutomaticSize.Y else nil,
-						label = function(use: Core.Use)
+						label = function(use: ComposeTypes.Use)
 							if read(spec.iconOnly, use) then
 								return ""
 							end
@@ -1079,16 +1088,16 @@ return function(
 						subtitle = if source:peek().description ~= nil
 								or Compose.isReadable(spec.options)
 								or type(spec.options) == "function"
-							then function(use: Core.Use)
+							then function(use: ComposeTypes.Use)
 								return read(use(source).description, use) or ""
 							end
 							else nil,
 						icon = source:peek().icon,
 						TextSize = spec.textSize,
-						selected = function(use: Core.Use)
+						selected = function(use: ComposeTypes.Use)
 							return selected(use) and read(spec.indicator, use) ~= "underline"
 						end,
-						enabled = function(use: Core.Use)
+						enabled = function(use: ComposeTypes.Use)
 							return read(spec.enabled, use) ~= false and read(use(source).enabled, use) ~= false
 						end,
 						onActivate = function()
@@ -1097,7 +1106,7 @@ return function(
 					})
 					surfaces.attach(button, {
 						Host.UISizeConstraint({ MinSize = V2.new(44, 44) }),
-						Compose.show(function(use: Core.Use)
+						Compose.show(function(use: ComposeTypes.Use)
 							return read(spec.indicator, use) == "underline" and selected(use)
 						end, function()
 							return ctx.styled(
@@ -1111,7 +1120,7 @@ return function(
 							)
 						end),
 					})
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						button:SetAttribute("FacetLabel", read(use(source).label, use))
 					end)
 					local family = if style == "segmented" then "facet-segment" else "facet-choice"
@@ -1121,7 +1130,7 @@ return function(
 					if style ~= "segmented" and layout then
 						layout.HorizontalAlignment = E.HorizontalAlignment.Left
 					end
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						local current = selected(use) and read(spec.indicator, use) ~= "underline"
 						if current then
 							button:AddTag(family .. "-current")
@@ -1153,7 +1162,7 @@ return function(
 		picker.Name = "Options"
 		local label = ctx.text({
 			Name = "Label",
-			Text = function(use: Core.Use)
+			Text = function(use: ComposeTypes.Use)
 				return read(spec.label, use) or ""
 			end,
 			Size = D2.new(if vertical then 1 else 0, 0, 0, 0),
@@ -1183,14 +1192,14 @@ return function(
 		return row
 	end)
 
-	UI.SplitButton = ctx.construct(function<V>(spec: Nav.SplitButtonSpec<V>): Frame
+	UI.SplitButton = ctx.construct("SplitButton", function<V>(spec: Nav.SplitButtonSpec<V>): Frame
 		local input = surfaces.service("UserInputService")
 		local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
-		local touch = Compose.formula(function(use: Core.Use)
+		local touch = Compose.formula(function(use: ComposeTypes.Use)
 			return use(preferred) == E.PreferredInput.Touch
 		end)
 		local opened = Compose.cell(false)
-		local enabled = function(use: Core.Use)
+		local enabled = function(use: ComposeTypes.Use)
 			return read(spec.enabled, use) ~= false and read(spec.busy, use) ~= true
 		end
 		local function primary()
@@ -1258,7 +1267,7 @@ return function(
 		)
 	end)
 
-	UI.ComboBox = ctx.construct(function(spec: Nav.ComboBoxSpec): Frame
+	UI.ComboBox = ctx.construct("ComboBox", function(spec: Nav.ComboBoxSpec): Frame
 		writable(spec.value, "ComboBox.value")
 		writable(spec.text, "ComboBox.text")
 		assert(type(spec.value:peek()) == "string", "ComboBox.value must be a string")
@@ -1387,7 +1396,7 @@ return function(
 		local root = ctx.column(
 			{
 				row,
-				Compose.show(function(use: Core.Use)
+				Compose.show(function(use: ComposeTypes.Use)
 					return use(errorText) ~= ""
 				end, function()
 					return ctx.text({ Name = "Validation", Text = errorText, TextWrapped = true, LayoutOrder = 2 })
@@ -1409,12 +1418,12 @@ return function(
 			})
 		)
 		local available = surfaces.available(root)
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			if not use(available) or read(spec.enabled, use) == false then
 				close()
 			end
 		end)
-		local choices = function(use: Core.Use): { Nav.MenuItem<string> }
+		local choices = function(use: ComposeTypes.Use): { Nav.MenuItem<string> }
 			local result: { Nav.MenuItem<string> } = {}
 			local query = string.lower(use(spec.text))
 			for _, option in read(spec.options, use) do
@@ -1465,7 +1474,7 @@ return function(
 				end
 				return panel
 			end),
-			Compose.show(function(use: Core.Use)
+			Compose.show(function(use: ComposeTypes.Use)
 				return use(editing) or use(opened)
 			end, function()
 				ctx.action(root, "ComboSuggestions", { E.KeyCode.Down, E.KeyCode.DPadDown }, editing, function()

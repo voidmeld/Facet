@@ -203,7 +203,7 @@ local function journeyFixture(theme: any, input: string): (any, any, any, () -> 
 		end
 end
 
-t.describe("native parity strength navigation", function()
+t.describe("native parity weaker navigation", function()
 	t.it("places the empty-center ring Back in the south-west compass slot and closes from the root", function()
 		local opened = Compose.cell(true)
 		local world = setup(function(UI)

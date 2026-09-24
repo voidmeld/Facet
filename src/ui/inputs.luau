@@ -251,7 +251,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		"onPointerUp",
 		"onPointerCancel",
 	}
-	UI.Button = ctx.construct(function(spec: InputTypes.ButtonProps): TextButton
+	UI.Button = ctx.construct("Button", function(spec: InputTypes.ButtonProps): TextButton
 		assert(
 			spec.onActivate == nil or type(spec.onActivate) == "function",
 			"Facet.Button: onActivate must be a function"
@@ -606,6 +606,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					LineHeight = ctx.observeStyled(node, "LineHeight"),
 				}
 				local boundary = decoration(
+					Compose,
 					runtime,
 					ctx.types,
 					node,
@@ -848,7 +849,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		return node
 	end)
 
-	UI.Toggle = ctx.construct(function(spec: InputTypes.ToggleImplementationProps): TextButton
+	UI.Toggle = ctx.construct("Toggle", function(spec: InputTypes.ToggleImplementationProps): TextButton
 		assert(type(read(spec.value)) == "boolean", "Facet.Toggle: value must be boolean")
 		assert(writable(spec.value) or spec.onChange, "Facet.Toggle: read-only value requires onChange")
 		assert(
@@ -1031,7 +1032,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		"clearButton",
 		"clearButtonMode",
 	}
-	UI.TextInput = ctx.construct(function(spec: InputTypes.TextInputImplementationProps): TextBox
+	UI.TextInput = ctx.construct("TextInput", function(spec: InputTypes.TextInputImplementationProps): TextBox
 		assert(type(read(spec.value)) == "string", "Facet.TextInput: value must resolve to a string")
 		assert(
 			writable(spec.value) or type(spec.onChange) == "function",
@@ -1467,7 +1468,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		return node
 	end)
 
-	UI.Stepper = ctx.construct(function(spec: InputTypes.StepperImplementationProps): Frame
+	UI.Stepper = ctx.construct("Stepper", function(spec: InputTypes.StepperImplementationProps): Frame
 		requireValue(spec, "number", "Stepper")
 		local modelSpec = table.clone(spec) :: valueModel.Options
 		modelSpec.step = spec.step or 1
@@ -1600,7 +1601,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		return node
 	end
 
-	UI.Slider = ctx.construct(function(spec: InputTypes.SliderImplementationProps): Frame
+	UI.Slider = ctx.construct("Slider", function(spec: InputTypes.SliderImplementationProps): Frame
 		requireValue(spec, "number", "Slider")
 		local model = valueModel(spec :: valueModel.Options, read)
 		local track: Frame
@@ -2025,13 +2026,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		return root
 	end
 
-	UI.Rating = ctx.construct(function(spec: InputTypes.RatingProps): TextButton
+	UI.Rating = ctx.construct("Rating", function(spec: InputTypes.RatingProps): TextButton
 		return level(spec, true)
 	end)
-	UI.LevelPicker = ctx.construct(function(spec: InputTypes.LevelPickerProps): TextButton
+	UI.LevelPicker = ctx.construct("LevelPicker", function(spec: InputTypes.LevelPickerProps): TextButton
 		return level(spec, false)
 	end)
-	UI.Chip = ctx.construct(function(spec: InputTypes.ChipImplementationProps): TextButton | Frame
+	UI.Chip = ctx.construct("Chip", function(spec: InputTypes.ChipImplementationProps): TextButton | Frame
 		assert(
 			spec.selected == nil or writable(spec.selected) or type(spec.onToggle) == "function",
 			"Facet.Chip: read-only selected requires onToggle"
@@ -2170,166 +2171,172 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		return root
 	end)
 
-	UI.ShortcutHint = ctx.construct(function(spec: InputTypes.ShortcutHintImplementationProps): TextLabel | Frame
-		assert((spec.action == nil) ~= (spec.keys == nil), "Facet.ShortcutHint: supply action or keys")
-		assert(spec.action == nil or spec.separator == nil, "Facet.ShortcutHint: separator applies only to keys")
-		local semantic = { "action", "keys", "separator", "controlSize" }
-		if spec.keys then
-			return ctx.styled(
-				ctx.text(props(spec, semantic, {
-					Text = function(use: ComposeTypes.Use)
-						local chords: { { string } } = read(assert(spec.keys), use)
-						assert(
-							type(chords) == "table" and #chords > 0,
-							"Facet.ShortcutHint: keys must be a nonempty list of chords"
-						)
-						local parts: { string } = {}
-						for _, chord in chords do
-							assert(type(chord) == "table" and #chord > 0, "Facet.ShortcutHint: chords cannot be empty")
-							for _, key in chord do
+	UI.ShortcutHint = ctx.construct(
+		"ShortcutHint",
+		function(spec: InputTypes.ShortcutHintImplementationProps): TextLabel | Frame
+			assert((spec.action == nil) ~= (spec.keys == nil), "Facet.ShortcutHint: supply action or keys")
+			assert(spec.action == nil or spec.separator == nil, "Facet.ShortcutHint: separator applies only to keys")
+			local semantic = { "action", "keys", "separator", "controlSize" }
+			if spec.keys then
+				return ctx.styled(
+					ctx.text(props(spec, semantic, {
+						Text = function(use: ComposeTypes.Use)
+							local chords: { { string } } = read(assert(spec.keys), use)
+							assert(
+								type(chords) == "table" and #chords > 0,
+								"Facet.ShortcutHint: keys must be a nonempty list of chords"
+							)
+							local parts: { string } = {}
+							for _, chord in chords do
 								assert(
-									type(key) == "string" and key ~= "",
-									"Facet.ShortcutHint: key names must be nonempty strings"
+									type(chord) == "table" and #chord > 0,
+									"Facet.ShortcutHint: chords cannot be empty"
 								)
-							end
-							table.insert(parts, table.concat(chord, "+"))
-						end
-						local separator = read(spec.separator, use) or " / "
-						assert(
-							type(separator) == "string" and separator ~= "",
-							"Facet.ShortcutHint: separator must be a nonempty string"
-						)
-						if string.find(separator, "^%a+$") then
-							separator = ` {separator} `
-						end
-						return table.concat(parts, separator)
-					end,
-					Size = function(use: ComposeTypes.Use)
-						return D2.fromOffset(0, ctx.controlSize(spec.controlSize, "iconSize", use) + 8)
-					end,
-					AutomaticSize = E.AutomaticSize.X,
-					BackgroundTransparency = 0,
-					TextXAlignment = E.TextXAlignment.Center,
-				})),
-				"shortcut-hint"
-			)
-		end
-		local action = spec.action
-		assert(
-			action and action.IsA and action:IsA("InputAction"),
-			"Facet.ShortcutHint: action must be a native InputAction"
-		)
-		local binding = ctx.observe(action, "PreferredBinding")
-		local keyNames: { [string]: string } = {
-			Return = "Enter",
-			KeypadEnter = "Enter",
-			Escape = "Esc",
-			Space = "Space",
-			Backspace = "Delete",
-			Tab = "Tab",
-			LeftShift = "Shift",
-			RightShift = "Shift",
-			LeftControl = "Ctrl",
-			RightControl = "Ctrl",
-			LeftAlt = "Alt",
-			RightAlt = "Alt",
-		}
-		local p = props(
-			spec :: Shared.GuiObjectNativeProps,
-			semantic,
-			{ Size = D2.fromOffset(0, 0), AutomaticSize = E.AutomaticSize.XY, BackgroundTransparency = 0 }
-		)
-		table.insert(
-			p,
-			Compose.keyed({
-				from = function(use: ComposeTypes.Use)
-					local value = use(binding)
-					return if value then { value } else {}
-				end,
-				render = function(_, _, current: InputBinding)
-					local name, key = ctx.observe(current, "DisplayName"), ctx.observe(current, "KeyCode")
-					local primary, secondary =
-						ctx.observe(current, "PrimaryModifier"), ctx.observe(current, "SecondaryModifier")
-					local image = ctx.observe(current, "DisplayImage")
-					local input = ctx.config.services.UserInputService
-					local nativeImage = Compose.formula(function(use: ComposeTypes.Use): Content | string | nil
-						local content = use(image)
-						if content and content.SourceType and content.SourceType.Name ~= "None" then
-							return content
-						end
-						if input and input.GetImageForKeyCode then
-							local ok, asset = pcall(input.GetImageForKeyCode, input, use(key))
-							if ok and type(asset) == "string" and asset ~= "" then
-								return asset
-							end
-						end
-						return nil
-					end)
-					return Host.Frame "PreferredBinding" {
-						Size = D2.fromOffset(0, 0),
-						AutomaticSize = E.AutomaticSize.XY,
-						BackgroundTransparency = 1,
-						Compose.keyed({
-							from = function(use: ComposeTypes.Use)
-								local asset = use(nativeImage)
-								return {
-									if asset == nil
-										then "text"
-										elseif type(asset) == "string" then "Image"
-										else "ImageContent",
-								}
-							end,
-							render = function(_, _, kind)
-								if kind ~= "text" then
-									local native: Shared.ImageLabelNativeProps = {
-										Name = "Glyph",
-										BackgroundTransparency = 1,
-										Size = function(use: ComposeTypes.Use)
-											local size = ctx.controlSize(spec.controlSize, "iconSize", use)
-											return D2.fromOffset(size, size)
-										end,
-									}
-									if kind == "Image" then
-										native.Image = function(use: ComposeTypes.Use): string
-											return use(nativeImage) :: string
-										end
-									else
-										native.ImageContent = function(use: ComposeTypes.Use): Content
-											return use(nativeImage) :: Content
-										end
-									end
-									return Host.ImageLabel(native)
+								for _, key in chord do
+									assert(
+										type(key) == "string" and key ~= "",
+										"Facet.ShortcutHint: key names must be nonempty strings"
+									)
 								end
-								return ctx.text({
-									Name = "Key",
-									Text = function(use: ComposeTypes.Use)
-										local custom = use(name)
-										if custom and custom ~= "" then
-											return custom
-										end
-										local keys = {}
-										for _, code in { use(primary), use(secondary), use(key) } do
-											if code and code ~= noKey then
-												local ok, found = true, ""
-												if input and input.GetStringForKeyCode then
-													ok, found = pcall(input.GetStringForKeyCode, input, code)
-												end
-												local text = if ok and type(found) == "string" then found else ""
-												if text == "" then
-													text = keyNames[code.Name] or code.Name
-												end
-												table.insert(keys, text)
+								table.insert(parts, table.concat(chord, "+"))
+							end
+							local separator = read(spec.separator, use) or " / "
+							assert(
+								type(separator) == "string" and separator ~= "",
+								"Facet.ShortcutHint: separator must be a nonempty string"
+							)
+							if string.find(separator, "^%a+$") then
+								separator = ` {separator} `
+							end
+							return table.concat(parts, separator)
+						end,
+						Size = function(use: ComposeTypes.Use)
+							return D2.fromOffset(0, ctx.controlSize(spec.controlSize, "iconSize", use) + 8)
+						end,
+						AutomaticSize = E.AutomaticSize.X,
+						BackgroundTransparency = 0,
+						TextXAlignment = E.TextXAlignment.Center,
+					})),
+					"shortcut-hint"
+				)
+			end
+			local action = spec.action
+			assert(
+				action and action.IsA and action:IsA("InputAction"),
+				"Facet.ShortcutHint: action must be a native InputAction"
+			)
+			local binding = ctx.observe(action, "PreferredBinding")
+			local keyNames: { [string]: string } = {
+				Return = "Enter",
+				KeypadEnter = "Enter",
+				Escape = "Esc",
+				Space = "Space",
+				Backspace = "Delete",
+				Tab = "Tab",
+				LeftShift = "Shift",
+				RightShift = "Shift",
+				LeftControl = "Ctrl",
+				RightControl = "Ctrl",
+				LeftAlt = "Alt",
+				RightAlt = "Alt",
+			}
+			local p = props(
+				spec :: Shared.GuiObjectNativeProps,
+				semantic,
+				{ Size = D2.fromOffset(0, 0), AutomaticSize = E.AutomaticSize.XY, BackgroundTransparency = 0 }
+			)
+			table.insert(
+				p,
+				Compose.keyed({
+					from = function(use: ComposeTypes.Use)
+						local value = use(binding)
+						return if value then { value } else {}
+					end,
+					render = function(_, _, current: InputBinding)
+						local name, key = ctx.observe(current, "DisplayName"), ctx.observe(current, "KeyCode")
+						local primary, secondary =
+							ctx.observe(current, "PrimaryModifier"), ctx.observe(current, "SecondaryModifier")
+						local image = ctx.observe(current, "DisplayImage")
+						local input = ctx.config.services.UserInputService
+						local nativeImage = Compose.formula(function(use: ComposeTypes.Use): Content | string | nil
+							local content = use(image)
+							if content and content.SourceType and content.SourceType.Name ~= "None" then
+								return content
+							end
+							if input and input.GetImageForKeyCode then
+								local ok, asset = pcall(input.GetImageForKeyCode, input, use(key))
+								if ok and type(asset) == "string" and asset ~= "" then
+									return asset
+								end
+							end
+							return nil
+						end)
+						return Host.Frame "PreferredBinding" {
+							Size = D2.fromOffset(0, 0),
+							AutomaticSize = E.AutomaticSize.XY,
+							BackgroundTransparency = 1,
+							Compose.keyed({
+								from = function(use: ComposeTypes.Use)
+									local asset = use(nativeImage)
+									return {
+										if asset == nil
+											then "text"
+											elseif type(asset) == "string" then "Image"
+											else "ImageContent",
+									}
+								end,
+								render = function(_, _, kind)
+									if kind ~= "text" then
+										local native: Shared.ImageLabelNativeProps = {
+											Name = "Glyph",
+											BackgroundTransparency = 1,
+											Size = function(use: ComposeTypes.Use)
+												local size = ctx.controlSize(spec.controlSize, "iconSize", use)
+												return D2.fromOffset(size, size)
+											end,
+										}
+										if kind == "Image" then
+											native.Image = function(use: ComposeTypes.Use): string
+												return use(nativeImage) :: string
+											end
+										else
+											native.ImageContent = function(use: ComposeTypes.Use): Content
+												return use(nativeImage) :: Content
 											end
 										end
-										return table.concat(keys, "+")
-									end,
-								})
-							end,
-						}),
-					}
-				end,
-			})
-		)
-		return ctx.styled(Host.Frame(p :: Shared.FrameNativeProps), "shortcut-hint")
-	end)
+										return Host.ImageLabel(native)
+									end
+									return ctx.text({
+										Name = "Key",
+										Text = function(use: ComposeTypes.Use)
+											local custom = use(name)
+											if custom and custom ~= "" then
+												return custom
+											end
+											local keys = {}
+											for _, code in { use(primary), use(secondary), use(key) } do
+												if code and code ~= noKey then
+													local ok, found = true, ""
+													if input and input.GetStringForKeyCode then
+														ok, found = pcall(input.GetStringForKeyCode, input, code)
+													end
+													local text = if ok and type(found) == "string" then found else ""
+													if text == "" then
+														text = keyNames[code.Name] or code.Name
+													end
+													table.insert(keys, text)
+												end
+											end
+											return table.concat(keys, "+")
+										end,
+									})
+								end,
+							}),
+						}
+					end,
+				})
+			)
+			return ctx.styled(Host.Frame(p :: Shared.FrameNativeProps), "shortcut-hint")
+		end
+	)
 end

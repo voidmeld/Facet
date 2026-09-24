@@ -32,7 +32,7 @@ modules. A directory with a trailing slash owns each module in it.
 
 | Area | Owns | Responsibility | Public seam |
 |---|---|---|---|
-| **library root** | `src/init.luau`, `src/ui/init.luau` | Exports the public table and the public types. Assembles the control families into one frozen controls table for each runtime. | `Facet.VERSION`, `Facet.controls` |
+| **library root** | `src/init.luau`, `src/ui/init.luau` | Exports the public table and the public types. Assembles the control families into one frozen controls table for each runtime. | `Facet.VERSION`, `Facet.controls`, `Facet.bind` |
 | **Compose snapshot** | `src/vendor/compose/` | The pinned Compose reactive runtime and its Roblox host. Generated. Do not edit it. | `Facet.Compose`, `Facet.Roblox` |
 | **control context** | `src/ui/context.luau`, `src/ui/types.luau`, `src/ui/engine_types.luau`, `src/ui/control_types.luau`, `src/ui/help.luau`, `src/ui/native_decoration.luau` | The shared context for each runtime and the shared types. It also holds the help text and native decoration helpers. | None. The families receive it from the library root. |
 | **inputs** | `src/ui/inputs.luau`, `src/ui/input_value.luau`, `src/ui/input_types.luau` | Buttons, toggles, text input, steppers, sliders, ratings, level pickers, chips and shortcut hints. | None. Reach it through `Facet.controls`. |
@@ -54,7 +54,7 @@ covers the library root. To see the number of specs for each area, run
 
 | Area | Tests | Studio scenario | Extend via |
 |---|---|---|---|
-| **library root** | `tests/native_public_surface.spec.luau`, `tests/native_compose_contract.spec.luau`, `tests/native_navigation.spec.luau`, `tests/native_radial_controls.spec.luau` | `all_controls` | [Adding a control](extending/new-control.md) |
+| **library root** | `tests/native_public_surface.spec.luau`, `tests/native_compose_contract.spec.luau`, `tests/native_compose_binding.spec.luau`, `tests/native_navigation.spec.luau`, `tests/native_radial_controls.spec.luau` | `all_controls` | [Adding a control](extending/new-control.md) |
 | **Compose snapshot** | `tests/native_registration.spec.luau`, `tests/native_perf_runner.spec.luau` | `component_motion` | [Adopting an engine feature](extending/new-engine-feature.md). Change Compose upstream. Then run `python3 tools/sync_compose.py`. |
 | **control context** | `tests/native_registration.spec.luau`, `tests/native_inputs.spec.luau` | `all_controls` | [Native primitives](extending/new-primitive.md) |
 | **inputs** | `tests/native_inputs.spec.luau`, `tests/native_collections.spec.luau` | `action_controls`, `text_controls` | [Adding a control](extending/new-control.md) |

@@ -466,7 +466,7 @@ t.describe("native parity media", function()
 				{ { name = "" }, "Avatar name must be nonempty" },
 				{ { name = "A", form = "photo" }, "Avatar invalid form" },
 				{ { name = "A", presence = "wrong" }, "Avatar invalid presence" },
-				{ { name = "A", unexpected = true }, "Unknown Facet option unexpected" },
+				{ { name = "A", unexpected = true }, "unknown option 'unexpected'" },
 			}
 			for _, case in cases do
 				local spec = table.clone(case[1])
@@ -556,7 +556,7 @@ t.describe("native parity media", function()
 				{ { form = "line", lines = 0 }, "lines must be positive" },
 				{ { form = "line", lines = 1.5 }, "lines must be positive" },
 				{ { form = "circle", corners = "pill" }, "circle owns its corners" },
-				{ { form = "box", surprise = true }, "Unknown Facet option surprise" },
+				{ { form = "box", surprise = true }, "unknown option 'surprise'" },
 			}
 			for _, case in cases do
 				local refused = refusal(function(UI)
@@ -987,7 +987,7 @@ t.describe("native parity media", function()
 					{ { text = "A" }, "ComboBox.text requires a writable Compose cell" },
 					{ { acceptCustom = true }, "ComboBox requires acceptCustom" },
 					{ { acceptCustom = "nil" }, "ComboBox requires acceptCustom" },
-					{ { bogus = 1 }, "Unknown Facet option bogus" },
+					{ { bogus = 1 }, "unknown option 'bogus'" },
 				}
 				for _, case in cases do
 					local refused = refusal(function(UI)

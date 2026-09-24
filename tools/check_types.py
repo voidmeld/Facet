@@ -15,7 +15,8 @@ ARTIFACTS = ROOT / "artifacts/verify/types"
 LOCK = ROOT / "tools/typecheck/roblox.lock.json"
 WITNESS = ROOT / "tests/types/controls_witness.luau"
 FLAGS = []
-DIAGNOSTIC = re.compile(r"^(.+?\.lua(?:u)?)\((\d+),(\d+)\): (\w+): (.*)$", re.M)
+DIAGNOSTIC = re.compile(r"^(.+?\.lua(?:u)?)(?: \[[^\]]*\])?\((\d+),(\d+)\): (\w+): (.*)$", re.M)
+CONSUMER = ROOT / "examples/consumer"
 
 
 def definitions():
@@ -39,8 +40,8 @@ def relative(path):
         return str(resolved)
 
 
-def analyze(files, name):
-    command = ["luau-lsp", "analyze", "--platform", "roblox", "--definitions=" + str(definitions()), *["--flag:" + flag for flag in FLAGS], *files]
+def analyze(files, name, extra=()):
+    command = ["luau-lsp", "analyze", "--platform", "roblox", "--definitions=" + str(definitions()), *extra, *["--flag:" + flag for flag in FLAGS], *files]
     result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=180)
     output = result.stdout + result.stderr
     log = ARTIFACTS / f"{name}.log"
@@ -54,6 +55,14 @@ def analyze(files, name):
     if result.returncode not in (0, 1) or (result.returncode and not diagnostics):
         raise RuntimeError(f"Analyzer failed without usable diagnostics; see {log.relative_to(ROOT)}")
     return diagnostics, str(log.relative_to(ROOT))
+
+
+def consumer():
+    sourcemap = ARTIFACTS / "consumer.sourcemap.json"
+    subprocess.run(["rojo", "sourcemap", str(CONSUMER / "default.project.json"), "--absolute", "-o", str(sourcemap)], cwd=ROOT, capture_output=True, text=True, check=True)
+    files = [str(path.relative_to(ROOT)) for path in sorted((CONSUMER / "src").glob("*.luau"))]
+    diagnostics, _ = analyze(files, "consumer", ["--sourcemap=" + str(sourcemap)])
+    return files, diagnostics
 
 
 def is_owned(path):
@@ -174,6 +183,10 @@ def main():
     directives = [path for path in files if not (ROOT / path).read_text().startswith("--!strict\n")]
     name = "source" if not args.files else "focused-" + hashlib.sha256("\n".join([*FLAGS, *files]).encode()).hexdigest()[:10]
     diagnostics, log = analyze(files, name)
+    if public:
+        examples, found = consumer()
+        files.extend(examples)
+        diagnostics.extend(item for item in found if item not in diagnostics)
     targets = set(files)
     owned = [item for item in diagnostics if item["file"] in targets or (not args.files and is_owned(item["file"]))]
     external = [item for item in diagnostics if item not in owned]

@@ -277,7 +277,7 @@ t.describe("native parity gaps", function()
 				local node = UI[name](spec)
 				return if spec.anchor then Host.Frame({ Host.Frame({ spec.anchor }), node }) else node
 			end)
-			t.expect(refused ~= nil and string.find(refused, "Unknown Facet option definitelyNotAKey", 1, true) ~= nil)
+			t.expect(refused ~= nil and string.find(refused, "unknown option 'definitelyNotAKey'", 1, true) ~= nil)
 				.toBe(true)
 			local native = mountError(function(UI, Host)
 				local spec = minimalSpecs(Host)[name]()
@@ -287,6 +287,54 @@ t.describe("native parity gaps", function()
 			end)
 			t.expect(native).toBeNil()
 		end
+	end)
+
+	t.it("names the control and the nearest option in authoring errors", function()
+		local cases: { { any } } = {
+			{
+				"Facet UI.Button: unknown option 'lable'. Did you mean 'label'?",
+				function(UI)
+					return UI.Button({ lable = "Go" })
+				end,
+			},
+			{
+				"Facet UI.Label: unknown option 'zzzzzz'.",
+				function(UI)
+					return UI.Label({ text = "Go", zzzzzz = true })
+				end,
+			},
+			{
+				"Facet UI.Button: expected a property table, got number",
+				function(UI)
+					return UI.Button(42)
+				end,
+			},
+			{
+				"Facet UI.Menu: two items at one level share the id 'a'",
+				function(UI)
+					return UI.Menu({
+						items = {
+							{ id = "a", label = "A", onSelect = function() end },
+							{ id = "a", label = "B", onSelect = function() end },
+						},
+					})
+				end,
+			},
+			{
+				"Facet UI.Picker: options must be an array of { value, label } entries",
+				function(UI)
+					return UI.Picker({ selected = Compose.cell("a") })
+				end,
+			},
+		}
+		for _, case in cases do
+			local message = mountError(case[2])
+			t.expect(message ~= nil and string.find(message, case[1], 1, true) ~= nil).toBe(true)
+		end
+		local unrelated = mountError(function(UI)
+			return UI.Label({ text = "Go", zzzzzz = true })
+		end)
+		t.expect(unrelated ~= nil and string.find(unrelated, "Did you mean", 1, true) == nil).toBe(true)
 	end)
 
 	t.it("refuses malformed documented options with a named error", function()
@@ -316,7 +364,7 @@ t.describe("native parity gaps", function()
 				end,
 			},
 			{
-				"Menu items require unique ids per level",
+				"Facet UI.Menu: two items at one level share the id 'a'",
 				function(UI)
 					return UI.Menu({
 						items = {

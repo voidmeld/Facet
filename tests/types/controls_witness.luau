@@ -125,6 +125,20 @@ local tableView: GuiObject = UI.Table({
 		},
 	},
 })
+local fieldList: ScrollingFrame = UI.VirtualList({ from = rows, key = "id", render = guiContent })
+local fieldTable: GuiObject = UI.Table({
+	from = rows,
+	key = "id",
+	columns = {
+		{
+			id = "title",
+			label = "Title",
+			value = function(row: { id: string, title: string }): string
+				return row.title
+			end,
+		},
+	},
+})
 local actions: GuiObject =
 	UI.RowActions({ content = guiContent, trailing = { { id = "save", label = "Save", onActivate = nothing } } })
 local mounted: { GuiObject } = {
@@ -163,6 +177,8 @@ local mounted: { GuiObject } = {
 	callout,
 	list,
 	grid,
+	fieldList,
+	fieldTable,
 	tableView,
 	actions,
 }

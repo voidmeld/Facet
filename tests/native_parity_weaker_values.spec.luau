@@ -145,7 +145,7 @@ local function press(world: World, node: any, input: string)
 	end
 end
 
-t.describe("native parity strength values", function()
+t.describe("native parity weaker values", function()
 	t.it("level picker read-only is not selectable and refuses pointer scrub and adjust input", function()
 		for _, name in { "LevelPicker", "Rating" } do
 			local value = Compose.cell(2)
@@ -1084,6 +1084,7 @@ t.describe("native parity strength values", function()
 			})
 			local stopAvatar, avatar = runtime.mount(views.Avatar, target)
 			find(find(avatar, "SettingsDisclosure"), "Header").Activated.fire()
+			find(avatar, "MotionRow").Activated.fire()
 			local levels = find(avatar, "AutoSpin")
 			t.expect(levels.ClassName).toBe("TextButton")
 			local function advance(): number

@@ -122,7 +122,7 @@ local function V2(world: World, x: number, y: number): any
 	return world.engine.types.Vector2.new(x, y)
 end
 
-t.describe("native parity strength focus", function()
+t.describe("native parity weaker focus", function()
 	t.it("dismisses a sheet with Back and returns selection to the control that opened it", function()
 		local presented = Compose.cell(false)
 		local world = setup(function(UI, Host)
