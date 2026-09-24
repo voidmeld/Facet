@@ -1,5 +1,5 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Engine = require("./engine_types")
 
 export type RGB = { r: number, g: number, b: number }
@@ -221,12 +221,12 @@ export type Themes = {
 	checkCoverage: (package: ThemePackage, needs: { CoverageNeed }) -> CoverageReport,
 	resolveIcon: (package: IconRegistry, name: string, state: SkinState?) -> string?,
 	createStyleSheet: (
-		runtime: Compose.Runtime,
+		runtime: ComposeTypes.Runtime,
 		packageOrReadable: Engine.Value<ThemePackage>?,
 		options: ThemeOptions?
 	) -> StyleSheet,
 	skin: (
-		runtime: Compose.Runtime,
+		runtime: ComposeTypes.Runtime,
 		packageOrReadable: Engine.Value<ThemePackage>?,
 		slot: string,
 		options: SkinOptions?

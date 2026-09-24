@@ -2,7 +2,7 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
-local Core = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 
 type Controls = {
 	DisclosureGroup: Types.Constructor<Nav.DisclosureGroupSpec, Frame>,
@@ -18,7 +18,7 @@ type Controls = {
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Host, Compose, runtime, read = ctx.Host, ctx.Compose, ctx.runtime, ctx.read
 	local E, D2, V2 = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2
-	type CalloutRegistration = { id: number, eligible: Core.Readable<boolean>, priority: number }
+	type CalloutRegistration = { id: number, eligible: ComposeTypes.Readable<boolean>, priority: number }
 	local callouts = Compose.cell({} :: { CalloutRegistration })
 	local nextCallout = 0
 	local function body<P, R>(content: R | ((P) -> R), payload: P): R
@@ -29,15 +29,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			ctx.props(spec, keys, { Name = name, BackgroundTransparency = 1, Size = D2.fromOffset(0, 0) })
 		)
 	end
-	local function presented<P>(spec: { isPresented: Core.Cell<boolean>?, item: Core.Cell<P?>? }): Core.Body<boolean>
+	local function presented<P>(
+		spec: { isPresented: ComposeTypes.Cell<boolean>?, item: ComposeTypes.Cell<P?>? }
+	): ComposeTypes.Body<boolean>
 		assert(spec.isPresented or spec.item, "A presented control requires isPresented or item")
-		return function(use: Core.Use)
+		return function(use: ComposeTypes.Use)
 			return if spec.item then use(spec.item) ~= nil else use(assert(spec.isPresented))
 		end
 	end
-	local function dismiss<P>(
-		spec: { isPresented: Core.Cell<boolean>?, item: Core.Cell<P?>?, error: Core.Cell<string?>? }
-	): ()
+	local function dismiss<P>(spec: {
+		isPresented: ComposeTypes.Cell<boolean>?,
+		item: ComposeTypes.Cell<P?>?,
+		error: ComposeTypes.Cell<string?>?,
+	}): ()
 		if spec.item then
 			spec.item:set(nil)
 		end
@@ -58,7 +62,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			spec.appearance == nil or table.find({ "plain", "contained", "divided" }, spec.appearance),
 			"Invalid DisclosureGroup.appearance"
 		)
-		local function chevron(use: Core.Use): string
+		local function chevron(use: ComposeTypes.Use): string
 			return if use(spec.expanded) then "chevron.down" else "chevron.trailing"
 		end
 		local header = UI.Button "Header" {
@@ -132,7 +136,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		assert(spec.expanded and spec.expanded.set, "CollapsibleView.expanded requires a writable Compose cell")
 		local buttonSpec: Inputs.ButtonProps & {
 			content: Nav.Content?,
-			expanded: Core.Cell<boolean>?,
+			expanded: ComposeTypes.Cell<boolean>?,
 			initialFocus: string?,
 			dismissButton: Nav.Value<boolean>?,
 		} =
@@ -158,7 +162,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							ctx.column({
 								ctx.text({ Text = spec.label }),
 								body(spec.content, nil),
-								Compose.show(function(use: Core.Use)
+								Compose.show(function(use: ComposeTypes.Use)
 									return read(spec.dismissButton, use) ~= false
 										or use(preferred) == E.PreferredInput.Gamepad
 								end, function()
@@ -224,7 +228,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 		local gui = surfaces.service("GuiService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
-		local function reduce(use: Core.Use?): boolean
+		local function reduce(use: ComposeTypes.Use?): boolean
 			return read(reduced, use) or read(ctx.config.reducedMotion, use) == true
 		end
 		local condition = presented(spec)
@@ -270,7 +274,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				local offer = Compose.cell(V2.new(720, 720))
 				local padding = spec.padding or 20
 				local labelWidths = Compose.cell(0)
-				local stacked = Compose.formula(function(use: Core.Use)
+				local stacked = Compose.formula(function(use: ComposeTypes.Use)
 					return #actions > 2
 						or use(offer).X < 480
 						or use(labelWidths) > math.min(use(offer).X - 32, spec.maxWidth or 440) - padding * 2
@@ -287,7 +291,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local titleOrder = #contents + 1
 					table.insert(
 						contents,
-						Compose.show(function(use: Core.Use)
+						Compose.show(function(use: ComposeTypes.Use)
 							return string.find(tostring(read(title, use)), "%S") ~= nil
 						end, function()
 							local heading = ctx.text({
@@ -342,17 +346,17 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					Host.UIListLayout({
-						FillDirection = function(use: Core.Use)
+						FillDirection = function(use: ComposeTypes.Use)
 							return if use(stacked) then E.FillDirection.Vertical else E.FillDirection.Horizontal
 						end,
-						HorizontalFlex = function(use: Core.Use)
+						HorizontalFlex = function(use: ComposeTypes.Use)
 							return if use(stacked) then E.UIFlexAlignment.None else E.UIFlexAlignment.Fill
 						end,
 						SortOrder = E.SortOrder.LayoutOrder,
 						Padding = ctx.types.UDim.new(0, 8),
 					}),
 				}
-				local textBounds: { Core.Readable<Vector2> } = {}
+				local textBounds: { ComposeTypes.Readable<Vector2> } = {}
 				for index, action in actions do
 					local button = UI.Button({
 						Name = action.id,
@@ -363,11 +367,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							then { keyCode = "Return" }
 							elseif type(action.shortcut) == "table" then action.shortcut
 							else nil,
-						Size = function(use: Core.Use)
+						Size = function(use: ComposeTypes.Use)
 							return if use(stacked) then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
 						end,
 						AutomaticSize = E.AutomaticSize.None,
-						LayoutOrder = function(use: Core.Use)
+						LayoutOrder = function(use: ComposeTypes.Use)
 							return if action.role == "cancel" then (if use(stacked) then #actions + 1 else 0) else index
 						end,
 						onActivate = function()
@@ -377,7 +381,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					table.insert(actionProps, button)
 					table.insert(textBounds, ctx.observe(button, "TextBounds"))
 				end
-				Compose.watch(function(use: Core.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local total = (#actions - 1) * 8
 					for _, bounds in textBounds do
 						total += use(bounds).X + 24
@@ -393,7 +397,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					AutomaticCanvasSize = E.AutomaticSize.Y,
 					ScrollingDirection = E.ScrollingDirection.Y,
 					ScrollBarThickness = 4,
-					Size = function(use: Core.Use)
+					Size = function(use: ComposeTypes.Use)
 						if fullScreen then
 							return D2.new(1, 0, 1, -use(actionSize).Y - 12)
 						end
@@ -453,17 +457,17 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local phase = assert(phase)
 					local ready = Compose.cell(false)
 					local source = read(transition.source)
-					local sourcePosition: Core.Readable<Vector2> = if source
+					local sourcePosition: ComposeTypes.Readable<Vector2> = if source
 						then ctx.observe(source, "AbsolutePosition")
 						else Compose.cell(V2.zero)
-					local sourceSize: Core.Readable<Vector2> = if source
+					local sourceSize: ComposeTypes.Readable<Vector2> = if source
 						then ctx.observe(source, "AbsoluteSize")
 						else Compose.cell(V2.zero)
 					local origin = ctx.observe(modal, "AbsolutePosition")
-					local progress = runtime.tween(function(use: Core.Use)
+					local progress = runtime.tween(function(use: ComposeTypes.Use)
 						return if use(phase.exiting) then 0 elseif use(ready) then 1 else 0
 					end, { seconds = transition.seconds or 0.2, ease = transition.ease })
-					local function amount(use: Core.Use): number
+					local function amount(use: ComposeTypes.Use): number
 						return if reduce(use) then 1 else use(progress)
 					end
 					if fullScreen then
@@ -530,10 +534,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									Size = D2.fromScale(1, 1),
 									Interactable = false,
 									ZIndex = 2,
-									Visible = function(use: Core.Use)
+									Visible = function(use: ComposeTypes.Use)
 										return use(sourceParent) ~= nil and amount(use) < 0.65
 									end,
-									GroupTransparency = function(use: Core.Use)
+									GroupTransparency = function(use: ComposeTypes.Use)
 										return math.clamp((amount(use) - 0.15) / 0.5, 0, 1)
 									end,
 									snapshot,
@@ -541,10 +545,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							})
 						end
 						runtime.decorate(layout, {
-							Interactable = function(use: Core.Use)
+							Interactable = function(use: ComposeTypes.Use)
 								return not use(phase.exiting) and amount(use) >= 0.65
 							end,
-							GroupTransparency = function(use: Core.Use)
+							GroupTransparency = function(use: ComposeTypes.Use)
 								return if snapshot then 1 - math.clamp((amount(use) - 0.15) / 0.5, 0, 1) else 0
 							end,
 						})
@@ -552,12 +556,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							AnchorPoint = V2.zero,
 							AutomaticSize = E.AutomaticSize.None,
 							ClipsDescendants = true,
-							Position = function(use: Core.Use)
+							Position = function(use: ComposeTypes.Use)
 								local t = amount(use)
 								local at = if use(sourceParent) then use(sourcePosition) - use(origin) else V2.zero
 								return D2.fromOffset(at.X * (1 - t), at.Y * (1 - t))
 							end,
-							Size = function(use: Core.Use)
+							Size = function(use: ComposeTypes.Use)
 								local t, destination = amount(use), use(offer)
 								local size = if use(sourceParent) then use(sourceSize) else destination
 								return D2.fromOffset(
@@ -565,12 +569,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									size.Y + (destination.Y - size.Y) * t
 								)
 							end,
-							GroupTransparency = function(use: Core.Use)
+							GroupTransparency = function(use: ComposeTypes.Use)
 								return if use(sourceParent) then 0 else 1 - amount(use)
 							end,
 						})
 						runtime.decorate(corner, {
-							CornerRadius = function(use: Core.Use)
+							CornerRadius = function(use: ComposeTypes.Use)
 								return ctx.types.UDim.new(0, radius * (1 - amount(use)))
 							end,
 						})
@@ -578,16 +582,16 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						local backdrop = modal:FindFirstChild("DismissOutside")
 						local preferred = surfaces.preference()
 						runtime.decorate(backdrop, {
-							BackgroundTransparency = function(use: Core.Use)
+							BackgroundTransparency = function(use: ComposeTypes.Use)
 								return 1 - amount(use) * (1 - 0.35 * preferred(use))
 							end,
 						})
 					else
 						runtime.decorate(panel, {
-							GroupTransparency = function(use: Core.Use)
+							GroupTransparency = function(use: ComposeTypes.Use)
 								return 1 - amount(use)
 							end,
-							Position = function(use: Core.Use)
+							Position = function(use: ComposeTypes.Use)
 								local size, at, box, offset, t =
 									use(offer), use(sourcePosition), use(sourceSize), use(origin), amount(use)
 								local x, y = size.X / 2, size.Y / 2
@@ -600,7 +604,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						})
 						surfaces.attach(panel, {
 							Host.UIScale "PresentationScale" {
-								Scale = function(use: Core.Use)
+								Scale = function(use: ComposeTypes.Use)
 									if not source then
 										return 1
 									end
@@ -612,19 +616,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						})
 					end
 					local parent = ctx.observe(modal, "Parent")
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						if use(parent) then
 							ready:set(true)
 						end
 					end)
 					runtime.decorate(modal, {
-						Interactable = function(use: Core.Use)
+						Interactable = function(use: ComposeTypes.Use)
 							return not use(phase.exiting)
 						end,
 					})
 				end
 				local bounds = ctx.observe(modal, "AbsoluteSize")
-				Compose.watch(function(use: Core.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local size = use(bounds)
 					if size.X > 0 and size.Y > 0 then
 						offer:set(size)
@@ -697,14 +701,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end
 				local available = Compose.cell(720)
 				local availableWidth = Compose.cell(0)
-				local dragHeight: Core.Cell<number?> = Compose.cell(nil :: number?)
-				local function height(detent: Detent, use: Core.Use?): number
+				local dragHeight: ComposeTypes.Cell<number?> = Compose.cell(nil :: number?)
+				local function height(detent: Detent, use: ComposeTypes.Use?): number
 					return math.min(
 						read(available, use),
 						detent.height or read(available, use) * assert(detent.fraction)
 					)
 				end
-				local function current(use: Core.Use?): number
+				local function current(use: ComposeTypes.Use?): number
 					local selected = read(spec.detent, use)
 					for _, detent in detents do
 						if detent.id == selected then
@@ -715,10 +719,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end
 				local gui = surfaces.service("GuiService")
 				local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
-				local motion = runtime.tween(function(use: Core.Use)
+				local motion = runtime.tween(function(use: ComposeTypes.Use)
 					return use(dragHeight) or current(use)
 				end, { seconds = 0.2 })
-				local function painted(use: Core.Use?): number
+				local function painted(use: ComposeTypes.Use?): number
 					return if read(ctx.config.reducedMotion, use) == true or read(reduced, use)
 						then read(dragHeight, use) or current(use)
 						else read(motion, use)
@@ -831,7 +835,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					AnchorPoint = V2.new(0.5, 1),
 					Position = D2.fromScale(0.5, 1),
 					AutomaticSize = E.AutomaticSize.None,
-					Size = function(use: Core.Use)
+					Size = function(use: ComposeTypes.Use)
 						local height = math.min(use(available), math.max(220, use(dragHeight) or painted(use)))
 						local width = use(availableWidth)
 						return if width > 0
@@ -856,13 +860,13 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					end,
 					close,
 					{
-						canDismiss = function(use: Core.Use)
+						canDismiss = function(use: ComposeTypes.Use)
 							return read(spec.interactiveDismissDisabled, use) ~= true
 						end,
 					}
 				)
 				local size = ctx.observe(overlay, "AbsoluteSize")
-				Compose.watch(function(use: Core.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local value = use(size)
 					if value.Y > 0 then
 						available:set(value.Y)
@@ -880,7 +884,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		assert(spec.anchor, "Callout requires a native anchor")
 		local retired = Compose.cell(false)
 		local anchorAvailable = surfaces.available(spec.anchor)
-		local eligible = Compose.formula(function(use: Core.Use)
+		local eligible = Compose.formula(function(use: ComposeTypes.Use)
 			return use(anchorAvailable)
 				and not use(retired)
 				and read(spec.isPresented, use) ~= false
@@ -903,7 +907,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			callouts:set(next)
 		end)
-		local visible = Compose.formula(function(use: Core.Use)
+		local visible = Compose.formula(function(use: ComposeTypes.Use)
 			local active: CalloutRegistration?
 			for _, entry in use(callouts) do
 				if use(entry.eligible) and (not active or entry.priority > active.priority) then
@@ -936,7 +940,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			retired:set(true)
 			spec.onRetire(reason)
 		end
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			if read(spec.featureUsed, use) == true then
 				retire("featureUsed")
 			elseif read(spec.seen, use) == true then
@@ -981,7 +985,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				local extent = ctx.observe(layer, "AbsoluteSize")
 				local origin = ctx.observe(layer, "AbsolutePosition")
 				local measured = ctx.observe(panel, "AbsoluteSize")
-				local placement = Compose.formula(function(use: Core.Use)
+				local placement = Compose.formula(function(use: ComposeTypes.Use)
 					local at, bounds, offer, offset, box =
 						use(position), use(size), use(extent), use(origin), use(measured)
 					local x = at.X - offset.X
@@ -1000,10 +1004,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					}
 				end)
 				runtime.decorate(panel, {
-					Size = function(use: Core.Use)
+					Size = function(use: ComposeTypes.Use)
 						return D2.fromOffset(math.min(280, math.max(44, use(extent).X - 16)), 0)
 					end,
-					Position = function(use: Core.Use)
+					Position = function(use: ComposeTypes.Use)
 						local at = use(placement)
 						return D2.fromOffset(at.left, at.top)
 					end,
@@ -1017,7 +1021,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Rotation = 45,
 							BorderSizePixel = 0,
 							ZIndex = 109,
-							Position = function(use: Core.Use)
+							Position = function(use: ComposeTypes.Use)
 								local at, bounds, offset, box, place =
 									use(position), use(size), use(origin), use(measured), use(placement)
 								local x = math.clamp(

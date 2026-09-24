@@ -24,7 +24,7 @@ local function setup(build, options)
 		return nil
 	end
 	local runtime = Roblox.createRuntime(engine)
-	local UI = controls(runtime, {
+	local UI = controls(Compose, runtime, {
 		types = engine.types,
 		services = { GuiService = gui, UserInputService = input },
 		theme = options and options.theme,
@@ -2053,7 +2053,7 @@ t.describe("native navigation controls", function()
 	end)
 
 	t.it("keeps panel art outside native layout and exposes alert artwork", function()
-		local package = require("../src/ui/themes").neutralPackage()
+		local package = require("../src/ui/themes")(Compose).neutralPackage()
 		package.assets.panel = { content = "rbxassetid://42" }
 		package.chrome.panel = { kind = "layered", layers = { { kind = "fill", asset = "panel" } } }
 		local alert, sheet = Compose.cell(true), Compose.cell(false)

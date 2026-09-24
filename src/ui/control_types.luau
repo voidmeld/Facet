@@ -42,9 +42,10 @@ export type Controls = {
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
 }
+export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime
 export type Config = Shared.Config
 export type Context = Shared.Context
-export type Factory = (Shared.Runtime, Config?) -> Controls
+export type Factory = (Shared.ComposeModule, Shared.Runtime, Config?) -> Controls
 
 return {}

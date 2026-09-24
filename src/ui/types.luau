@@ -1,15 +1,16 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Engine = require("./engine_types")
 local Theme = require("./theme_types")
 
-export type Runtime = Compose.Runtime
-export type Source<T> = Compose.Source<T>
-export type Readable<T> = Compose.Readable<T>
-export type Cell<T> = Compose.Cell<T>
-export type Use = Compose.Use
-export type Child = Compose.Child
-export type Dispose = Compose.Dispose
+export type ComposeModule = typeof(ComposeTypes)
+export type Runtime = ComposeTypes.Runtime
+export type Source<T> = ComposeTypes.Source<T>
+export type Readable<T> = ComposeTypes.Readable<T>
+export type Cell<T> = ComposeTypes.Cell<T>
+export type Use = ComposeTypes.Use
+export type Child = ComposeTypes.Child
+export type Dispose = ComposeTypes.Dispose
 export type Value<T> = Engine.Value<T>
 export type Constructor<P, N> = Engine.Constructor<P, N>
 export type Host = Engine.Host
@@ -115,10 +116,10 @@ export type Config = {
 }
 export type ResolvedConfig = Config & { services: Services }
 export type Read =
-	(<T>(Compose.Cell<T>, Use?) -> T)
-	& (<T>(Compose.Formula<T>, Use?) -> T)
-	& (<T>(Compose.Readable<T>, Use?) -> T)
-	& (<T>(Compose.Body<T>, Use?) -> T)
+	(<T>(ComposeTypes.Cell<T>, Use?) -> T)
+	& (<T>(ComposeTypes.Formula<T>, Use?) -> T)
+	& (<T>(ComposeTypes.Readable<T>, Use?) -> T)
+	& (<T>(ComposeTypes.Body<T>, Use?) -> T)
 	& (<T>(Value<T>, Use?) -> T)
 export type ModalPortal = { node: Instance, anchor: Instance }
 export type ActionBinding = string | Enum.KeyCode | InputBindingNativeProps
@@ -127,7 +128,7 @@ export type SkinStateOptions = { disabled: Value<boolean>?, selected: Value<bool
 export type Context = {
 	runtime: Runtime,
 	Host: Host,
-	Compose: typeof(Compose),
+	Compose: ComposeModule,
 	types: RobloxTypes,
 	config: ResolvedConfig,
 	metrics: { textSize: number, controlHeight: number, gap: number, cornerRadius: number },
