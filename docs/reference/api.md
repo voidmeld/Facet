@@ -47,9 +47,8 @@ sources keep their native types.
 
 Run `python3 tools/check_types.py` to check the Facet runtime source and the
 positive and compile-fail public API witnesses. The checker uses pinned Roblox
-definitions. It raises the `LuauTarjanChildLimit` analyzer flag to 100000,
-because the old Luau solver stops at its default limit of 10000 on the full
-`Facet` type and reports "Code is too complex to typecheck". It reports vendor diagnostics separately. It does not accept a
+definitions and the default analyzer limits, so the full `Facet` type checks
+the same way in a consumer's editor. It reports vendor diagnostics separately. It does not accept a
 `--!strict` directive alone as proof of a typed API.
 
 ### Mounting

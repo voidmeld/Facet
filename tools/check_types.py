@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / "artifacts/verify/types"
 LOCK = ROOT / "tools/typecheck/roblox.lock.json"
 WITNESS = ROOT / "tests/types/controls_witness.luau"
-DEFAULT_FLAGS = ["LuauTarjanChildLimit=100000"]
+DEFAULT_FLAGS = []
 FLAGS = list(DEFAULT_FLAGS)
 DIAGNOSTIC = re.compile(r"^(.+?\.lua(?:u)?)(?: \[[^\]]*\])?\((\d+),(\d+)\): (\w+): (.*)$", re.M)
 CONSUMER = ROOT / "examples/consumer"
