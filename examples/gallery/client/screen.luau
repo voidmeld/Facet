@@ -12,6 +12,14 @@ function screen.configure(ctx)
 	ctx.previewScale = Compose.formula(function(use)
 		return if use(ctx.viewingDistance) == "ten-foot" then 1.5 else 1
 	end)
+	local display = ctx.viewport
+	if display then
+		ctx.sceneViewport = Compose.formula(function(use)
+			local size = use(display)
+			local scale = use(ctx.previewScale)
+			return { width = size.width / scale, height = size.height / scale }
+		end)
+	end
 	ctx.motionPreference = Compose.cell(nil)
 	local gui = ctx.guiService
 	local nativeReduced = Compose.cell(gui and gui.ReducedMotionEnabled == true or false)

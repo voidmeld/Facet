@@ -6,6 +6,8 @@ function chat.new(Compose: any)
 	local messages = Compose.cell({})
 	local draft = Compose.cell("")
 	local streaming = Compose.cell(false)
+	local active = Compose.cell(nil)
+	local feedback = Compose.cell({})
 
 	local streamedChars, totalChars = Compose.cell(0), Compose.cell(0)
 	local serial, elapsed, cursor = 0, 0, 0
@@ -37,6 +39,7 @@ function chat.new(Compose: any)
 	end
 	local function stop()
 		activeId = nil
+		active:set(nil)
 		streaming:set(false)
 		streamedChars:set(0)
 		totalChars:set(0)
@@ -71,6 +74,7 @@ function chat.new(Compose: any)
 			append("user", prompt)
 			response = reply(prompt)
 			activeId = append("assistant", "")
+			active:set(activeId)
 			draft:set("")
 			elapsed, cursor = 0, 0
 			totalChars:set(#response)
@@ -78,6 +82,68 @@ function chat.new(Compose: any)
 			streaming:set(true)
 		end
 		return true
+	end
+	local function retry(id)
+		if disposed then
+			return false
+		end
+		local list, prompt = messages:peek(), nil
+		for index, item in list do
+			if item.id == id and item.role == "assistant" then
+				for back = index - 1, 1, -1 do
+					if list[back].role == "user" then
+						prompt = list[back].content
+						break
+					end
+				end
+				break
+			end
+		end
+		if prompt == nil then
+			return false
+		end
+		stop()
+		response = reply(prompt)
+		activeId = id
+		active:set(id)
+		messages:update(function(current)
+			local nextMessages = table.clone(current)
+			for i, item in nextMessages do
+				if item.id == id then
+					nextMessages[i] = { id = item.id, role = item.role, content = "" }
+				end
+			end
+			return nextMessages
+		end)
+		feedback:update(function(current)
+			local nextFeedback = table.clone(current)
+			nextFeedback[id] = nil
+			return nextFeedback
+		end)
+		elapsed, cursor = 0, 0
+		totalChars:set(#response)
+		streamedChars:set(0)
+		streaming:set(true)
+		return true
+	end
+	local function edit(id)
+		local list = messages:peek()
+		for index, item in list do
+			if item.id == id and item.role == "user" then
+				stop()
+				draft:set(item.content)
+				messages:set(table.move(list, 1, index - 1, 1, {}))
+				return true
+			end
+		end
+		return false
+	end
+	local function rate(id, value)
+		feedback:update(function(current)
+			local nextFeedback = table.clone(current)
+			nextFeedback[id] = if nextFeedback[id] == value then nil else value
+			return nextFeedback
+		end)
 	end
 	local function step(dt)
 		if disposed or activeId == nil or dt <= 0 then
@@ -108,6 +174,11 @@ function chat.new(Compose: any)
 		messages = messages,
 		draft = draft,
 		streaming = streaming,
+		active = active,
+		feedback = feedback,
+		retry = retry,
+		edit = edit,
+		rate = rate,
 		streamedChars = streamedChars,
 		totalChars = totalChars,
 		send = send,

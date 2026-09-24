@@ -12,7 +12,7 @@ local function world(build, configure)
 	local UI = {}
 	local options = if configure then configure(engine) else {}
 	options.types = engine.types
-	local ctx = context(runtime, options)
+	local ctx = context(Compose, runtime, options)
 	register(ctx, UI)
 	local stop, node = runtime.mount(function()
 		return build(UI, engine, runtime)
@@ -1687,7 +1687,7 @@ t.describe("native input controls", function()
 		t.expect(node.Text).toBe("Music and effects")
 		t.expect(padding.PaddingLeft.Offset).toBe(46)
 		stop()
-		local themes = require("../src/ui/themes")
+		local themes = require("../src/ui/themes")(Compose)
 		local package = themes.neutralPackage()
 		package.chrome.control = { kind = "native", contentInsets = { left = 24, right = 28 } }
 		local selected = Compose.cell(package)

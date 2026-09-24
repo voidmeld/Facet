@@ -63,33 +63,136 @@ return function(ctx)
 			path,
 		}
 	end
+	local function reduced(use)
+		local value = ctx.actions.reducedMotion
+		if Compose.isReadable(value) then
+			return use(value)
+		elseif type(value) == "function" then
+			return value(use)
+		end
+		return value == true
+	end
+	local spin = runtime.timeline({ duration = 1.6, repeats = math.huge, autoplay = false })
+	Compose.watch(function(use)
+		if use(chat.streaming) and not reduced(use) then
+			spin:play()
+		else
+			spin:pause()
+		end
+	end)
+	local function tool(name, icon, label, activate, selected)
+		return UI.Button(name)({
+			icon = icon,
+			name = label,
+			appearance = "utility",
+			controlSize = "compact",
+			selected = selected,
+			onActivate = activate,
+		})
+	end
 	local function message(current)
 		local id = current:peek().id
-		local card = column("Message_" .. id, {
-			text("Role", function(use)
-				return if use(current).role == "user" then "You" else "Assistant"
-			end, 16, {}, "facet-secondary"),
-			text("Message", function(use)
-				local value = use(current).content
-				return if value == "" then "Thinking…" else value
-			end, 18),
-		}, {
-			Size = function(use)
-				return D2.new(1, if use(current).role == "assistant" then -32 else 0, 0, 0)
-			end,
-			Position = function(use)
-				return D2.fromOffset(if use(current).role == "assistant" then 32 else 0, 0)
-			end,
-			BackgroundTransparency = function(use)
-				return if use(current).role == "user" then 0 else 1
-			end,
-			ctx.padding(14),
-			ctx.rounded(),
-		})
-		card:AddTag("facet-track")
+		local isUser = current:peek().role == "user"
+		local streamingHere = Compose.formula(function(use)
+			return use(chat.active) == id
+		end)
+		local function content(props)
+			props.Visible = function(use)
+				return use(current).content ~= ""
+			end
+			return text("Message", function(use)
+				return use(current).content
+			end, 18, props)
+		end
+		local card
+		if isUser then
+			card = column("Message_" .. id, {
+				content({
+					Size = D2.new(0, 0, 0, 0),
+					AutomaticSize = E.AutomaticSize.XY,
+					Host.UISizeConstraint({
+						MaxSize = function(use)
+							return V2.new(math.max(96, math.floor(use(width) * 0.78) - 32), math.huge)
+						end,
+					}),
+				}),
+			}, {
+				Size = D2.new(0, 0, 0, 0),
+				AutomaticSize = E.AutomaticSize.XY,
+				BackgroundTransparency = 0,
+				ctx.padding(14),
+				ctx.rounded(18),
+			})
+			card:AddTag("facet-track")
+		else
+			card = column("Message_" .. id, {
+				Compose.show(function(use)
+					return use(current).content == ""
+				end, function()
+					return UI.ProgressView "Thinking" {
+						LayoutOrder = 1,
+						presentation = "spinner",
+						label = "Thinking",
+						diameter = 18,
+					}
+				end),
+				content({}),
+				Compose.show(function(use)
+					return use(current).content ~= "" and not use(streamingHere)
+				end, function()
+					return row("MessageTools", {
+						tool("Like", "vote.up", "Good response", function()
+							chat.rate(id, "up")
+						end, function(use)
+							return use(chat.feedback)[id] == "up"
+						end),
+						tool("Dislike", "vote.down", "Bad response", function()
+							chat.rate(id, "down")
+						end, function(use)
+							return use(chat.feedback)[id] == "down"
+						end),
+						button("Retry", "Retry", function()
+							chat.retry(id)
+						end, { appearance = "utility", controlSize = "compact", TextSize = 14 }),
+					}, { Size = D2.new(1, 0, 0, 36), LayoutOrder = 3 })
+				end),
+			}, {
+				Size = D2.new(1, -34, 0, 0),
+				Position = D2.fromOffset(34, 0),
+				BackgroundTransparency = 1,
+			})
+		end
+		local rowSpec: { [any]: any } = {
+			Name = "MessageRow_" .. id,
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+			BackgroundTransparency = 1,
+		}
+		if isUser then
+			table.insert(
+				rowSpec,
+				Host.UIListLayout({
+					FillDirection = E.FillDirection.Vertical,
+					HorizontalAlignment = E.HorizontalAlignment.Right,
+					SortOrder = E.SortOrder.LayoutOrder,
+				})
+			)
+			table.insert(rowSpec, card)
+		else
+			local icon = sparkle(22)
+			runtime.decorate(icon, {
+				Position = D2.fromOffset(0, 2),
+				Rotation = function(use)
+					return if use(streamingHere) and not reduced(use) then use(spin.progress) * 360 else 0
+				end,
+			})
+			table.insert(rowSpec, card)
+			table.insert(rowSpec, icon)
+		end
+		local rowFrame = Host.Frame(rowSpec)
 		local observation = runtime.host.observation
 		local function updateSize()
-			local height = observation.readProperty(card, "AbsoluteSize").Y
+			local height = observation.readProperty(rowFrame, "AbsoluteSize").Y
 			if height > 0 and measured:peek()[id] ~= height then
 				measured:update(function(currentSizes)
 					local nextSizes = table.clone(currentSizes)
@@ -98,37 +201,34 @@ return function(ctx)
 				end)
 			end
 		end
-		Compose.cleanup(observation.observeProperty(card, "AbsoluteSize", updateSize))
+		Compose.cleanup(observation.observeProperty(rowFrame, "AbsoluteSize", updateSize))
 		updateSize()
+		local trailing = {
+			{
+				id = "DeleteMessage",
+				label = "Delete",
+				role = "destructive",
+				onActivate = function()
+					chat.remove(id)
+				end,
+			},
+		}
+		if isUser then
+			table.insert(trailing, 1, {
+				id = "EditMessage",
+				label = "Edit",
+				onActivate = function()
+					chat.edit(id)
+				end,
+			})
+		end
 		return UI.RowActions({
 			Name = "MessageActions_" .. id,
 			Size = D2.fromScale(1, 1),
 			content = function()
-				return Host.Frame({
-					Name = "MessageRow_" .. id,
-					Size = D2.new(1, 0, 0, 0),
-					AutomaticSize = E.AutomaticSize.Y,
-					BackgroundTransparency = 1,
-					card,
-					Compose.show(function(use)
-						return use(current).role == "assistant"
-					end, function()
-						local icon = sparkle(20)
-						runtime.decorate(icon, { Position = D2.fromOffset(0, 14) })
-						return icon
-					end),
-				})
+				return rowFrame
 			end,
-			trailing = {
-				{
-					id = "DeleteMessage",
-					label = "Delete",
-					role = "destructive",
-					onActivate = function()
-						chat.remove(id)
-					end,
-				},
-			},
+			trailing = trailing,
 		})
 	end
 	local conversationItems = {
@@ -172,7 +272,7 @@ return function(ctx)
 		end, { Size = D2.fromOffset(160, 40), AutomaticSize = E.AutomaticSize.Y, TextWrapped = true, LayoutOrder = 2 })
 		local prompts = Host.Frame "Suggestions" {
 			Visible = function(use)
-				return not use(short)
+				return not use(short) and #use(chat.messages) == 0
 			end,
 			Size = D2.new(1, 0, 0, 0),
 			AutomaticSize = E.AutomaticSize.Y,
@@ -186,55 +286,56 @@ return function(ctx)
 			findGame,
 			buildSomething,
 		}
+		local composeBox = row("ComposeMessage", {
+			UI.TextInput "Draft" {
+				value = chat.draft,
+				placeholder = "Reply to Assistant…",
+				onChange = function(value)
+					chat.draft:set(value)
+				end,
+				onCommit = function(_, reason)
+					if reason == "submit" then
+						chat.send()
+					end
+				end,
+				BackgroundTransparency = 1,
+				Size = D2.new(1, -52, 0, 44),
+				Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+			},
+			UI.Button "Send" {
+				name = function(use)
+					return if use(chat.streaming) then "Stop" else "Send"
+				end,
+				icon = function(use)
+					return if use(chat.streaming) then "close" else "chevron.up"
+				end,
+				shape = "circle",
+				appearance = function(use)
+					return if use(chat.streaming) or use(chat.draft):match("%S") then "emphasis" else "soft"
+				end,
+				onActivate = function()
+					if chat.streaming:peek() then
+						chat.stop()
+					else
+						chat.send()
+					end
+				end,
+			},
+		}, {
+			Size = D2.new(1, 0, 0, 56),
+			BackgroundTransparency = 0,
+			ctx.padding(6),
+			ctx.rounded(28),
+		})
+		composeBox:AddTag("facet-track")
 		local footer = column("Composer", {
 			prompts,
-			row("ComposeMessage", {
-				UI.TextInput "Draft" {
-					value = chat.draft,
-					placeholder = "Message assistant",
-					onChange = function(value)
-						chat.draft:set(value)
-					end,
-					onCommit = function(_, reason)
-						if reason == "submit" then
-							chat.send()
-						end
-					end,
-					Size = D2.new(1, -156, 0, 44),
-				},
-				UI.SplitButton "Send" {
-					menuLabel = "More",
-					Size = D2.fromOffset(148, 44),
-					AutomaticSize = E.AutomaticSize.None,
-					label = function(use)
-						return if use(chat.streaming) then "Stop" else "Send"
-					end,
-					onActivate = function()
-						if chat.streaming:peek() then
-							chat.stop()
-						else
-							chat.send()
-						end
-					end,
-					items = {
-						{
-							id = "Fresh",
-							label = "Send in a new conversation",
-							onSelect = function()
-								local kept = chat.draft:peek()
-								chat.clear()
-								chat.draft:set(kept)
-								chat.send()
-							end,
-						},
-						{ id = "Clear", label = "Clear conversation", role = "destructive", onSelect = chat.clear },
-					},
-				},
-			}, { Size = D2.new(1, 0, 0, 44) }),
+			composeBox,
 			text("Disclaimer", "Simulated responses · No messages leave this device", 12, {
 				Visible = function(use)
 					return not use(short)
 				end,
+				TextXAlignment = E.TextXAlignment.Center,
 			}, "facet-secondary"),
 		}, { AnchorPoint = V2.new(0, 1), Position = D2.fromScale(0, 1), Size = D2.new(1, 0, 0, 0) })
 		local observation = runtime.host.observation
@@ -266,11 +367,25 @@ return function(ctx)
 						15,
 						{
 							Size = D2.new(1, -154, 0, 22),
+							Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 							AutomaticSize = E.AutomaticSize.None,
 							TextTruncate = E.TextTruncate.AtEnd,
 						},
 						"facet-secondary"
 					),
+					button("NewChat", "New chat", function()
+						local kept = chat.draft:peek()
+						chat.clear()
+						chat.draft:set(kept)
+					end, {
+						icon = "edit",
+						appearance = "utility",
+						Size = D2.fromOffset(0, 40),
+						AutomaticSize = E.AutomaticSize.X,
+						Visible = function(use)
+							return #use(chat.messages) > 0
+						end,
+					}),
 					UI.Menu "Conversation" {
 						trigger = button("ConversationMenu", "Conversation", function() end, {
 							compactLabel = "Thread",
@@ -393,17 +508,6 @@ return function(ctx)
 						return text("PromptTip", "Start from a prompt, then edit it before you send.", 16)
 					end,
 				},
-				Compose.show(chat.streaming, function()
-					return UI.ProgressView "ReplyProgress" {
-						value = function(use)
-							return use(chat.streamedChars) / math.max(1, use(chat.totalChars))
-						end,
-						Position = function(use)
-							return D2.new(0, 0, 1, -footerExtent(use) - 8)
-						end,
-						Size = D2.new(1, 0, 0, 4),
-					}
-				end),
 			},
 		}
 	end, body)

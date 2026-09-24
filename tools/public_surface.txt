@@ -1,4 +1,5 @@
 VERSION 0.12.0
+COMPOSE_COMMIT : string
 Compose : table
   Compose.LayerStack : function
   Compose.MountBudget : function
@@ -67,6 +68,7 @@ Roblox : table
   Roblox.preferredInputSpec : function
   Roblox.usableViewportSize : function
 VERSION : string
+bind : function
 controls : function
 themes : table
   themes.REQUIRED_TYPE_ROLES : table(frozen)
@@ -127,9 +129,12 @@ type ChipProps
 type CollapsibleViewSpec
 type CollectionSpec
 type ComboBoxSpec
+type ComposeModule
+type ComposeRobloxModule
 type ControlOptions
 type Controls
 type DisclosureGroupSpec
+type Facet
 type IdentityCollectionSpec
 type IdentityTableSpec
 type ImageResource
@@ -147,6 +152,8 @@ type PageViewSpec
 type PickerOption
 type PickerSpec
 type ProgressViewProps
+type RadialItem
+type RadialMenuSpec
 type RatingProps
 type Readable
 type RowAction

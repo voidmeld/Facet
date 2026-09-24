@@ -5,6 +5,7 @@ return {
 	build = function(ctx)
 		local UI, Compose = ctx.UI, ctx.Compose
 		local Host = ctx.Host
+		local sceneViewport = ctx.sceneViewport or ctx.viewport
 		local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Color3 = Color3, Enum = Enum }
 		local UDim, UDim2, Vector2, Color3, Enum =
 			nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Color3, nativeTypes.Enum
@@ -23,7 +24,7 @@ return {
 			return Host.Frame(properties)
 		end
 		local function wide(use)
-			return use(ctx.viewport).width >= 1000
+			return use(sceneViewport).width >= 1000
 		end
 		local function sectionWidth(use)
 			return if wide(use) then UDim2.new(0.5, -12, 0, 0) else UDim2.new(1, 0, 0, 0)
@@ -427,7 +428,7 @@ return {
 				AutomaticSize = Enum.AutomaticSize.Y,
 				Host.UIGridLayout({
 					CellSize = function(use)
-						local columns = if use(ctx.viewport).width < 650 then 1 else 2
+						local columns = if use(sceneViewport).width < 650 then 1 else 2
 						return UDim2.new(1 / columns, if columns == 1 then 0 else -8, 0, 240)
 					end,
 					CellPadding = UDim2.fromOffset(16, 16),
@@ -567,7 +568,7 @@ return {
 					AutomaticSize = Enum.AutomaticSize.Y,
 					Host.UIGridLayout({
 						CellSize = function(use)
-							local width = use(ctx.viewport).width
+							local width = use(sceneViewport).width
 							local columns = if width < 650 or (wide(use) and width < 1080) then 1 else 2
 							return UDim2.new(1 / columns, if columns == 1 then 0 else -8, 0, 260)
 						end,
