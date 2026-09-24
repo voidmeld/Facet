@@ -6,10 +6,24 @@ local ThemeTypes = require("./theme_types")
 local Engine = require("./engine_types")
 
 export type Component = () -> ComposeTypes.Child
-export type AppOptions = Types.Config & {
+export type AppOptions = {
+	types: Types.RobloxTypes?,
+	services: Types.Services?,
+	guiService: GuiService?,
+	userInputService: UserInputService?,
+	inputParent: Instance?,
+	overlayParent: Instance?,
+	controlSize: Types.Value<Types.ControlSize>?,
+	theme: Types.Value<ThemeTypes.ThemePackage>?,
+	icons: Types.Value<{ [string]: ThemeTypes.IconEntry }>?,
+	reducedMotion: Types.Value<boolean>?,
+	pressHaptic: HapticEffect?,
+	onError: ((unknown) -> ())?,
 	runtime: Types.Runtime?,
 	parent: Instance?,
 	name: string?,
+	screen: Engine.ScreenGuiNativeProps?,
+	sheet: ThemeTypes.ThemeOptions?,
 }
 export type App = {
 	runtime: Types.Runtime,
@@ -40,7 +54,7 @@ return function(
 	local settings: AppOptions = options or {}
 	local owned = settings.runtime == nil
 	local runtime = settings.runtime or roblox.createRuntime()
-	local UI = controls(Compose, runtime, settings)
+	local UI = controls(Compose, runtime, (settings :: unknown) :: Types.Config)
 	local Host = (runtime.constructors :: unknown) :: Engine.Host
 	local Links = (runtime.constructors :: unknown) :: StyleLinkHost
 	local stops: { () -> () } = {}
@@ -50,17 +64,26 @@ return function(
 		assert(type(component) == "function", "Facet app.mount: expected a component function")
 		local target = parent or settings.parent or playerGui()
 		local stop, root = runtime.mount(function(): ComposeTypes.Child
-			local sheet = themes.createStyleSheet(runtime, settings.theme, {
-				types = settings.types,
-				reducedMotion = settings.reducedMotion,
-			})
-			local props: { [unknown]: unknown } = {
-				Name = settings.name or "Facet",
-				ResetOnSpawn = false,
-				sheet,
-				Links.StyleLink({ StyleSheet = Compose.static(sheet) }),
-				component(),
-			}
+			local sheetOptions: ThemeTypes.ThemeOptions = table.clone(settings.sheet or {})
+			if sheetOptions.types == nil then
+				sheetOptions.types = settings.types
+			end
+			if sheetOptions.reducedMotion == nil then
+				sheetOptions.reducedMotion = settings.reducedMotion
+			end
+			local sheet = themes.createStyleSheet(runtime, settings.theme, sheetOptions)
+			local props: { [unknown]: unknown } = {}
+			for key, value in ((settings.screen or {}) :: unknown) :: { [unknown]: unknown } do
+				assert(type(key) == "string", "Facet app: screen takes native ScreenGui properties only")
+				props[key] = value
+			end
+			props.Name = props.Name or settings.name or "Facet"
+			if props.ResetOnSpawn == nil then
+				props.ResetOnSpawn = false
+			end
+			props[1] = sheet
+			props[2] = Links.StyleLink({ StyleSheet = Compose.static(sheet) })
+			props[3] = component()
 			return Host.ScreenGui((props :: unknown) :: Engine.ScreenGuiNativeProps)
 		end, target)
 		local stopped = false

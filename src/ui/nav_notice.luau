@@ -1,0 +1,501 @@
+--!strict
+local Types = require("./types")
+local Nav = require("./navigation_types")
+local Overlay = require("./overlay_types")
+local Inputs = require("./input_types")
+local ComposeTypes = require("../vendor/compose/core")
+local parts = require("./overlay_parts")
+local reservations = require("./reservations")
+
+type Controls = {
+	Notice: Types.Constructor<Overlay.NoticeSpec, Frame>,
+	NavBar: Types.Constructor<Overlay.NavBarSpec, Frame>,
+	Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
+}
+
+local NOTICE_KEYS = {
+	"message",
+	"title",
+	"severity",
+	"appearance",
+	"placement",
+	"icon",
+	"link",
+	"actions",
+	"onDismiss",
+	"controlSize",
+}
+local NAV_KEYS = {
+	"onBack",
+	"backLabel",
+	"title",
+	"titleSize",
+	"leading",
+	"center",
+	"trailing",
+	"gap",
+	"padding",
+}
+local SEVERITIES = table.freeze({
+	info = "status.info",
+	success = "status.success",
+	warning = "status.warning",
+	error = "status.error",
+})
+
+local ICON_TAGS = table.freeze({
+	info = "facet-icon-info",
+	success = "facet-icon-success",
+	warning = "facet-icon-warning",
+	error = "facet-icon-error",
+})
+
+return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
+	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
+	local E, D2, UD = ctx.types.Enum, ctx.types.UDim2, ctx.types.UDim
+
+	local function space(value: (number | string)?, fallback: string, use: ComposeTypes.Use?): number
+		if type(value) == "number" then
+			return value
+		end
+		return ctx.metric("space." .. (value or fallback), use)
+	end
+
+	UI.Notice = ctx.construct("Notice", function(spec: Overlay.NoticeSpec): Frame
+		local where = "UI.Notice"
+		if not parts.bound(ctx, spec.message, "string") then
+			error(`Facet {where}: message is required; it is a string or a bound string`, 0)
+		end
+		if spec.title ~= nil and not parts.bound(ctx, spec.title, "string") then
+			error(`Facet {where}: title must be a string or a bound string`, 0)
+		end
+		local severity = spec.severity or "info"
+		if SEVERITIES[severity] == nil then
+			error(`Facet {where}: severity must be info, success, warning or error`, 0)
+		end
+		local appearance = spec.appearance or "standard"
+		if appearance ~= "standard" and appearance ~= "emphasis" then
+			error(`Facet {where}: appearance must be standard or emphasis`, 0)
+		end
+		local placement = spec.placement or "inline"
+		if placement ~= "inline" and placement ~= "affixed" then
+			error(`Facet {where}: placement must be inline or affixed`, 0)
+		end
+		if spec.icon ~= nil and type(spec.icon) ~= "boolean" and (type(spec.icon) ~= "string" or spec.icon == "") then
+			error(`Facet {where}: icon must be true, false, or an icon name or image source`, 0)
+		end
+		local link = spec.link
+		if link ~= nil then
+			if type(link) ~= "table" then
+				error(`Facet {where}: link must be \{ label, onActivate }`, 0)
+			end
+			parts.known(where, (link :: unknown) :: { [string]: unknown }, { "label", "onActivate" }, "link")
+			if not parts.bound(ctx, link.label, "string") or type(link.onActivate) ~= "function" then
+				error(`Facet {where}: link needs a label and an onActivate function`, 0)
+			end
+		end
+		if spec.onDismiss ~= nil and type(spec.onDismiss) ~= "function" then
+			error(`Facet {where}: onDismiss must be a function`, 0)
+		end
+		local size = ctx.read(spec.controlSize)
+		if size ~= nil and size ~= "compact" and size ~= "regular" and size ~= "large" then
+			error(`Facet {where}: controlSize must be compact, regular or large`, 0)
+		end
+		local actions: { Overlay.Action } = spec.actions or {}
+		parts.checkActions(ctx, where, spec.actions, 2, { "Link", "Close" })
+		local emphasis = appearance == "emphasis"
+		local status = "facet-status-" .. severity
+		local offered = Compose.cell(0)
+		local copyNatural = Compose.cell(0)
+		local accessoryWidth = Compose.cell(0)
+		local beside = Compose.formula(function(use: ComposeTypes.Use): boolean
+			if link == nil and #actions == 0 then
+				return true
+			end
+			local chrome = ctx.metric("targetSizes.minimum", use) * 2 + 4 * 8
+			return use(copyNatural) + use(accessoryWidth) + chrome <= use(offered)
+		end)
+		local function lettering<N>(node: N & Instance): N & Instance
+			if emphasis then
+				node:AddTag(status)
+			end
+			return node
+		end
+		local copy: { Types.Child } = {}
+		if spec.title ~= nil then
+			local title = spec.title
+			local heading = lettering(ctx.text({
+				Name = "Title",
+				Text = function(use: ComposeTypes.Use)
+					return read(title, use) or ""
+				end,
+				TextWrapped = true,
+				Size = D2.new(1, 0, 0, 0),
+				AutomaticSize = E.AutomaticSize.Y,
+			}))
+			heading:AddTag("facet-type-label")
+			heading:AddTag("facet-strong")
+			table.insert(copy, heading)
+		end
+		local message = lettering(ctx.text({
+			Name = "Message",
+			Text = function(use: ComposeTypes.Use)
+				return read(spec.message, use) or ""
+			end,
+			TextWrapped = true,
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+		}))
+		table.insert(copy, message)
+		local measure = ctx.text({
+			Name = "MessageMeasure",
+			Text = function(use: ComposeTypes.Use)
+				return read(spec.message, use) or ""
+			end,
+			TextWrapped = false,
+			TextTransparency = 1,
+			Size = D2.fromOffset(0, 0),
+			AutomaticSize = E.AutomaticSize.None,
+			Visible = false,
+		})
+		local natural = ctx.observe(measure, "TextBounds")
+		Compose.watch(function(use: ComposeTypes.Use)
+			copyNatural:set(math.ceil(use(natural).X))
+		end)
+		table.insert(copy, measure)
+		local copyFrame = ctx.column(copy, {
+			Name = "Copy",
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+			Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }) :: Instance,
+		})
+		local bodyChildren: { Types.Child } = { copyFrame }
+		if link ~= nil or #actions > 0 then
+			local accessories: { Types.Child } = {}
+			if link then
+				table.insert(
+					accessories,
+					UI.Button "Link" {
+						label = link.label,
+						appearance = if emphasis then nil else "link",
+						controlSize = spec.controlSize,
+						onActivate = link.onActivate,
+					}
+				)
+			end
+			for _, action in actions do
+				table.insert(
+					accessories,
+					UI.Button({
+						Name = action.id,
+						label = action.label,
+						enabled = action.enabled,
+						busy = action.busy,
+						role = if action.role == "destructive" then "destructive" :: "destructive" else nil,
+						appearance = if action.role == "default" and not emphasis then "emphasis" else nil,
+						controlSize = spec.controlSize,
+						onActivate = action.onActivate,
+					})
+				)
+			end
+			local row = ctx.row(accessories, { Name = "Accessories" })
+			local list = row:FindFirstChildWhichIsA("UIListLayout") :: UIListLayout?
+			if list then
+				list.Wraps = true
+				list.VerticalAlignment = E.VerticalAlignment.Center
+			end
+			local rowSize = ctx.observe(row, "AbsoluteSize")
+			Compose.watch(function(use: ComposeTypes.Use)
+				accessoryWidth:set(use(rowSize).X)
+			end)
+			table.insert(bodyChildren, row)
+		end
+		local bodyProps: Types.FrameNativeProps = {
+			Name = "Body",
+			BackgroundTransparency = 1,
+			Size = D2.new(0, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+		}
+		table.insert(bodyProps, Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }))
+		table.insert(
+			bodyProps,
+			Host.UIListLayout({
+				FillDirection = function(use: ComposeTypes.Use)
+					return if use(beside) then E.FillDirection.Horizontal else E.FillDirection.Vertical
+				end,
+				VerticalAlignment = E.VerticalAlignment.Center,
+				SortOrder = E.SortOrder.LayoutOrder,
+				Padding = UD.new(0, 8),
+			})
+		)
+		for index, child in bodyChildren do
+			runtime.decorate(child :: Instance, { LayoutOrder = index })
+			table.insert(bodyProps, child)
+		end
+		local rowChildren: { Types.Child } = {}
+		if spec.icon ~= false then
+			local mark = ctx.icon(if type(spec.icon) == "string" then spec.icon else SEVERITIES[severity], {
+				Name = "Icon",
+				LayoutOrder = 1,
+			})
+			if not emphasis then
+				mark:AddTag(ICON_TAGS[severity])
+			end
+			table.insert(rowChildren, mark)
+		end
+		table.insert(rowChildren, Host.Frame(bodyProps))
+		if spec.onDismiss then
+			local dismiss = spec.onDismiss
+			table.insert(
+				rowChildren,
+				UI.Button "Close" {
+					name = "Close",
+					icon = "close",
+					controlSize = spec.controlSize,
+					Size = D2.fromOffset(44, 44),
+					AutomaticSize = E.AutomaticSize.None,
+					LayoutOrder = 3,
+					onActivate = function()
+						dismiss()
+					end,
+				}
+			)
+		end
+		local defaults: Types.FrameNativeProps = {
+			Name = "Notice",
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+			BackgroundTransparency = 0,
+			BorderSizePixel = 0,
+			ZIndex = if placement == "affixed" then 50 else nil,
+		}
+		local root = Host.Frame(ctx.props(spec, NOTICE_KEYS, defaults))
+		surfaces.attach(root, {
+			ctx.padding(8, 8),
+			ctx.corner(),
+			Host.UIListLayout({
+				FillDirection = E.FillDirection.Horizontal,
+				VerticalAlignment = E.VerticalAlignment.Top,
+				SortOrder = E.SortOrder.LayoutOrder,
+				Padding = UD.new(0, 8),
+			}),
+		})
+		surfaces.attach(root, rowChildren)
+		ctx.styled(root, "notice")
+		ctx.styled(root, if emphasis then "status-" .. severity else "panel")
+		root:SetAttribute("NoticeSeverity", severity)
+		local extent = ctx.observe(root, "AbsoluteSize")
+		Compose.watch(function(use: ComposeTypes.Use)
+			offered:set(use(extent).X)
+		end)
+		Compose.watch(function(use: ComposeTypes.Use)
+			root:SetAttribute("NoticeAccessories", if use(beside) then "beside" else "below")
+		end)
+		if placement == "affixed" then
+			local owner = assert(Compose.currentOwner())
+			local token = {}
+			local at = ctx.observe(root, "AbsolutePosition")
+			local layerOwner: ComposeTypes.Owner? = nil
+			local current: Instance? = nil
+			local function locate()
+				if owner.isDisposed() then
+					return
+				end
+				if layerOwner then
+					layerOwner.dispose()
+				end
+				if current then
+					reservations.clear(current, token)
+					current = nil
+				end
+				local child = owner.createChild()
+				layerOwner = child
+				Compose.withOwner(child, function()
+					local layer = root:FindFirstAncestorWhichIsA("LayerCollector")
+					if layer == nil then
+						return
+					end
+					current = layer
+					local origin = ctx.observe(layer, "AbsolutePosition")
+					local height = ctx.observe(layer, "AbsoluteSize")
+					Compose.watch(function(use: ComposeTypes.Use)
+						use(height)
+						local box = use(extent)
+						local paints = box.X > 0 and box.Y > 0 and root.Visible
+						reservations.set(
+							layer,
+							token,
+							"top",
+							if paints then use(at).Y - use(origin).Y else nil,
+							if paints then box.Y else nil
+						)
+					end)
+				end)
+			end
+			runtime.connect(root, "AncestryChanged", locate)
+			locate()
+			Compose.cleanup(function()
+				if current then
+					reservations.clear(current, token)
+				end
+			end)
+		end
+		return root
+	end)
+
+	UI.NavBar = ctx.construct("NavBar", function(spec: Overlay.NavBarSpec): Frame
+		local where = "UI.NavBar"
+		if spec.onBack ~= nil and type(spec.onBack) ~= "function" then
+			error(`Facet {where}: onBack must be a function`, 0)
+		end
+		if spec.trailing ~= nil and not parts.instance(spec.trailing) then
+			error(`Facet {where}: trailing is one GuiObject; put a cluster in a frame`, 0)
+		end
+		for _, key in { "leading", "center" } do
+			local slot = (spec :: { [string]: unknown })[key]
+			if slot ~= nil and not parts.instance(slot) then
+				error(`Facet {where}: {key} must be a GuiObject`, 0)
+			end
+		end
+		if spec.title ~= nil and not parts.bound(ctx, spec.title, "string") then
+			error(`Facet {where}: title must be a string or a bound string`, 0)
+		end
+		local gap = function(use: ComposeTypes.Use?): number
+			return space(spec.gap, "s", use)
+		end
+		local primary: { Types.Child } = {}
+		if spec.onBack then
+			table.insert(
+				primary,
+				UI.Button "Back" {
+					label = spec.backLabel or "Back",
+					icon = "chevron.leading",
+					appearance = "link",
+					onActivate = spec.onBack,
+				}
+			)
+		end
+		if spec.leading then
+			table.insert(primary, ctx.row({ spec.leading }, { Name = "Leading" }))
+		end
+		local center: Instance? = spec.center
+		if center == nil and spec.title ~= nil then
+			local title = spec.title
+			local label = ctx.text({
+				Name = "Title",
+				Text = function(use: ComposeTypes.Use)
+					return read(title, use) or ""
+				end,
+				TextWrapped = false,
+				TextTruncate = E.TextTruncate.AtEnd,
+				Size = D2.new(1, 0, 0, 0),
+				AutomaticSize = E.AutomaticSize.Y,
+			})
+			label:AddTag("facet-type-" .. (spec.titleSize or "title"))
+			center = label
+		end
+		local centerProps: Types.FrameNativeProps = {
+			Name = "Center",
+			BackgroundTransparency = 1,
+			Size = D2.new(0, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+		}
+		table.insert(centerProps, Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }))
+		table.insert(
+			centerProps,
+			Host.UIListLayout({
+				FillDirection = E.FillDirection.Horizontal,
+				VerticalAlignment = E.VerticalAlignment.Center,
+				SortOrder = E.SortOrder.LayoutOrder,
+			})
+		)
+		if center then
+			table.insert(centerProps, center)
+		end
+		local centerFrame = Host.Frame(centerProps)
+		table.insert(primary, centerFrame)
+		local primaryFrame = ctx.row(primary, {
+			Name = "Primary",
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+		})
+		local stacked = Compose.cell(false)
+		local rootChildren: { Types.Child } = { primaryFrame }
+		local trailingFrame: Frame? = nil
+		if spec.trailing then
+			local trailing = ctx.row({ spec.trailing }, { Name = "Trailing" })
+			trailingFrame = trailing
+			table.insert(rootChildren, trailing)
+		end
+		local root = ctx.row(
+			rootChildren,
+			ctx.props(spec, NAV_KEYS, {
+				Name = "NavBar",
+				Size = D2.new(1, 0, 0, 0),
+				AutomaticSize = E.AutomaticSize.Y,
+			})
+		)
+		local list = root:FindFirstChildWhichIsA("UIListLayout") :: UIListLayout?
+		if list then
+			runtime.decorate(list, {
+				FillDirection = function(use: ComposeTypes.Use)
+					return if use(stacked) then E.FillDirection.Vertical else E.FillDirection.Horizontal
+				end,
+				HorizontalAlignment = E.HorizontalAlignment.Right,
+				VerticalAlignment = E.VerticalAlignment.Center,
+				Padding = function(use: ComposeTypes.Use)
+					return UD.new(0, gap(use))
+				end,
+			})
+		end
+		local rows: { Frame } = { primaryFrame }
+		if trailingFrame then
+			table.insert(rows, trailingFrame)
+		end
+		for _, frame in rows do
+			local layout = frame:FindFirstChildWhichIsA("UIListLayout") :: UIListLayout?
+			if layout then
+				runtime.decorate(layout, {
+					VerticalAlignment = E.VerticalAlignment.Center,
+					Padding = function(use: ComposeTypes.Use)
+						return UD.new(0, gap(use))
+					end,
+				})
+			end
+		end
+		local primaryFlex = Host.UIFlexItem({
+			FlexMode = function(use: ComposeTypes.Use)
+				return if use(stacked) then E.UIFlexMode.None else E.UIFlexMode.Fill
+			end,
+		})
+		surfaces.attach(primaryFrame, { primaryFlex })
+		runtime.decorate(primaryFrame, {
+			Size = function(use: ComposeTypes.Use)
+				return if use(stacked) then D2.new(1, 0, 0, 0) else D2.new(0, 0, 0, 0)
+			end,
+		})
+		if spec.padding ~= nil then
+			surfaces.attach(root, { ctx.padding(space(spec.padding, "s"), space(spec.padding, "s")) })
+		end
+		if trailingFrame then
+			local box = ctx.observe(root, "AbsoluteSize")
+			local sides = ctx.observe(trailingFrame, "AbsoluteSize")
+			local main = ctx.observe(primaryFrame, "AbsoluteSize")
+			local middle = ctx.observe(centerFrame, "AbsoluteSize")
+			Compose.watch(function(use: ComposeTypes.Use)
+				local width = use(box).X
+				if width <= 0 then
+					return
+				end
+				local fixed = use(main).X - use(middle).X
+				local room = width - fixed - use(sides).X - gap(use)
+				local floor = math.min(ctx.metric("controls.popup.panelWidth", use), width - fixed)
+				local next = room < floor
+				if next ~= stacked:peek() then
+					stacked:set(next)
+				end
+			end)
+		end
+		return root
+	end)
+end

@@ -413,7 +413,15 @@ t.describe("native parity themes", function()
 		}
 		local package, report = themes.define(definition :: any)
 		t.expect(report.ok).toBe(true)
-		local derived, derivedReport = themes.define({ base = package, identity = { id = "derived-two" } })
+		local inherited, inheritedReport = themes.define({ base = package, identity = { id = "derived-one" } })
+		t.expect(inheritedReport.ok).toBe(true)
+		t.expect(#inherited.style.themes).toBe(1)
+		t.expect(inherited.style.themes[1].name).toBe("Dark")
+		local derived, derivedReport = themes.define({
+			base = package,
+			identity = { id = "derived-two" },
+			style = { themes = package.style.themes },
+		} :: any)
 		t.expect(derivedReport.ok).toBe(true)
 		t.expect(#derived.style.themes).toBe(2)
 		local h = harness()
@@ -892,7 +900,7 @@ t.describe("native parity themes", function()
 		alpha.style.themes[1].name = "Dawn"
 		local dusk = table.clone(alpha.style.themes[1])
 		dusk.name = "Dusk"
-		table.insert(alpha.style.themes, dusk)
+		alpha.style.themes = { alpha.style.themes[1], dusk }
 		local zeta = themes.neutralPackage()
 		zeta.identity.id = "zeta"
 		zeta.identity.displayName = "Zeta"
@@ -961,7 +969,7 @@ t.describe("native parity themes", function()
 		find(root, "Settings").Activated.fire()
 		local picker = find(root, "Theme")
 		t.expect(choices(picker)).toEqual({ "Facet Neutral", "Alpha", "Zeta" })
-		t.expect(find(root, "Mode")).toBe(nil)
+		t.expect(choices(find(root, "Mode"))).toEqual({ "Dark", "Light" })
 		local initialWrites = writes
 		find(picker, "Alpha").Activated.fire()
 		t.expect(ctx.theme:peek()).toBe(alpha)
@@ -980,7 +988,10 @@ t.describe("native parity themes", function()
 		find(find(root, "Theme"), "Zeta").Activated.fire()
 		t.expect(ctx.theme:peek()).toBe(zeta)
 		t.expect(ctx.themeMode:peek()).toBe("Dark")
-		t.expect(find(root, "Mode")).toBe(nil)
+		t.expect(choices(find(root, "Mode"))).toEqual({ "Dark", "Light" })
+		find(find(root, "Mode"), "Light").Activated.fire()
+		t.expect(ctx.themeMode:peek()).toBe("Light")
+		t.expect(ctx.theme:peek()).toBe(zeta)
 		stop()
 		runtime:dispose()
 	end)

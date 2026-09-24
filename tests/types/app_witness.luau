@@ -2,7 +2,12 @@
 local Facet = require("../../src")
 local Compose = Facet.Compose
 local package: Facet.ThemePackage = Facet.themes.neutralPackage()
-local app: Facet.App = Facet.app({ theme = package, name = "Counter" })
+local app: Facet.App = Facet.app({
+	theme = package,
+	name = "Counter",
+	screen = { DisplayOrder = 10, IgnoreGuiInset = true },
+	sheet = { theme = "Dark", transition = false },
+})
 local UI = app.UI
 local function Counter(): Frame
 	local count = Compose.cell(0)

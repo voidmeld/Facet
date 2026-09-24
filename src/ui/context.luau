@@ -4,9 +4,10 @@ local bindThemes = require("./themes")
 local Shared = require("./types")
 local Theme = require("./theme_types")
 local layoutKit = require("./layout_kit")
+local selection = require("./selection")
 
 type ModalPortal = { node: Instance, anchor: Instance }
-type ActionSettings = { onReleased: (() -> ())?, priority: number?, sink: boolean? }
+type ActionSettings = { onReleased: (() -> ())?, priority: number?, sink: boolean?, capture: boolean? }
 return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, options: Shared.Config?): Shared.Context
 	assert(runtime.host.name == "roblox", "Facet.controls requires a Compose Roblox runtime")
 	local config: Shared.Config = table.clone(options or {})
@@ -29,6 +30,7 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			Path2DControlPoint = Path2DControlPoint,
 			FloatCurveKey = FloatCurveKey,
 			TweenInfo = TweenInfo,
+			BrickColor = BrickColor,
 		}
 	assert(types.UDim2 and types.Enum, "Facet.controls requires Roblox datatypes")
 	local services: Shared.Services = table.clone(config.services or {})
@@ -55,6 +57,7 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		metrics = { textSize = 16, controlHeight = 36, gap = 8, cornerRadius = 8 },
 	}
 	local building: string? = nil
+	local track: ((Instance) -> ())? = nil
 	local metatableOf = (getmetatable :: unknown) :: (unknown) -> unknown
 	local native: { [unknown]: boolean } = {}
 	native[metatableOf(Compose.cell(nil))] = true
@@ -276,6 +279,9 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			end
 			local node = apply(fields)
 			building = outer
+			if track and (type(node) == "userdata" or type(node) == "table") then
+				track(node :: Instance)
+			end
 			if fields.ref then
 				assert(type(fields.ref) == "function")
 				local ref = fields.ref :: (unknown) -> ()
@@ -493,22 +499,97 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			)
 		end
 		local action = Host.InputAction(p)
+		local function enabled(use: ComposeTypes.Use): boolean
+			if selection then
+				use(selection)
+			end
+			return use(parent) ~= nil
+				and use(available)
+				and ctx.read(enabledSource, use) ~= false
+				and ctx.available(node, use)
+		end
 		local context = Host.InputContext({
 			Name = "Facet" .. name,
 			Parent = parent,
 			Priority = settings.priority or 2000,
 			Sink = settings.sink ~= false,
-			Enabled = function(use: ComposeTypes.Use)
-				if selection then
-					use(selection)
-				end
-				return use(parent) ~= nil
-					and use(available)
-					and ctx.read(enabledSource, use) ~= false
-					and ctx.available(node, use)
-			end,
+			Enabled = enabled,
 			action,
 		})
+		local inputService = config.userInputService
+		if settings.capture and gui and selection and inputService then
+			local steering: { [string]: string } = {}
+			for _, binding in keyCodes do
+				local code = if type(binding) == "string"
+					then ((Enum.KeyCode :: unknown) :: { [string]: Enum.KeyCode })[binding]
+					elseif type(binding) == "table" then (binding :: Shared.InputBindingNativeProps).KeyCode
+					else binding
+				for _, direction in { "Up", "Down", "Left", "Right" } do
+					local keys = (Enum.KeyCode :: unknown) :: { [string]: Enum.KeyCode }
+					if code == keys[direction] or code == keys["DPad" .. direction] then
+						steering[(code :: Enum.KeyCode).Name] = direction
+					end
+				end
+			end
+			local directions: { string } = {}
+			if next(steering) == nil then
+				return action, context
+			end
+			for _, direction in steering do
+				if not table.find(directions, direction) then
+					table.insert(directions, direction)
+				end
+			end
+			local steerable = Compose.formula(function(use: ComposeTypes.Use): boolean
+				return enabled(use) and use(selection) ~= nil
+			end)
+			local pinned: GuiObject? = nil
+			local previous: { [string]: GuiObject? } = {}
+			local function release(): ()
+				local target = pinned
+				if target then
+					for _, direction in directions do
+						local property = "NextSelection" .. direction
+						if (target :: any)[property] == target then
+							(target :: any)[property] = previous[direction]
+						end
+					end
+				end
+				pinned = nil
+				table.clear(previous)
+			end
+			Compose.watch(function(use: ComposeTypes.Use)
+				local target = if use(steerable) then use(selection) :: GuiObject? else nil
+				if target == pinned then
+					return
+				end
+				release()
+				if target then
+					pinned = target
+					for _, direction in directions do
+						local property = "NextSelection" .. direction
+						previous[direction] = (target :: any)[property];
+						(target :: any)[property] = target
+					end
+				end
+			end)
+			Compose.cleanup(release)
+			runtime.connect(inputService, "InputBegan", function(event: InputObject)
+				if event.KeyCode and steering[event.KeyCode.Name] and steerable:peek() then
+					if available:peek() and ctx.available(node) and ctx.read(enabledSource) ~= false then
+						onPressed()
+					end
+				end
+			end)
+			if settings.onReleased then
+				local released = settings.onReleased
+				runtime.connect(inputService, "InputEnded", function(event: InputObject)
+					if event.KeyCode and steering[event.KeyCode.Name] then
+						released()
+					end
+				end)
+			end
+		end
 		return action, context
 	end
 
@@ -554,5 +635,6 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		end, node)
 	end
 
+	track = selection(ctx)
 	return ctx
 end

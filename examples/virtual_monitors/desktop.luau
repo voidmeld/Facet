@@ -10,7 +10,18 @@ function desktop.create(Facet: any, runtime: any, views: any, model: any, progre
 		local tabs = {}
 		local icons = { Discover = "facet:search", Avatar = "person", Chat = "edit" }
 		for _, name in { "Discover", "Avatar", "Chat" } do
-			table.insert(tabs, { id = name, label = name, icon = icons[name], content = views[name] })
+			table.insert(tabs, {
+				id = name,
+				label = name,
+				icon = icons[name],
+				content = views[name],
+				badge = if name == "Chat"
+					then function(use)
+						local unread = use(model.chatUnread)
+						return if unread > 0 then unread else nil
+					end
+					else nil,
+			})
 		end
 		local root = Host.CanvasGroup "Desktop" {
 			Size = UDim2.fromScale(1, 1),

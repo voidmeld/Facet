@@ -3,6 +3,7 @@ local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local Radial = require("./radial_types")
 local Inputs = require("./input_types")
+local Overlay = require("./overlay_types")
 
 export type Value<T> = Types.Value<T>
 export type Content = Instance | (() -> Instance)
@@ -11,17 +12,31 @@ export type Placement = "automatic" | "topBar" | "sidebar" | "bottomBar" | "bott
 export type Transition = ComposeTypes.TweenOptions
 export type SourceTransition = { seconds: Value<number>?, ease: ComposeTypes.Easing?, source: Value<GuiObject?>? }
 export type MenuTrigger = "activate" | "secondary" | "longPress" | "keyboard" | "gamepad"
+export type OptionAvatar = MenuAvatar
+export type OptionIndicator = {
+	status: Value<"neutral" | "info" | "success" | "warning" | "error" | "accent">?,
+	form: ("dot" | "ring" | "square" | "dash")?,
+	count: Value<number>?,
+}
 export type MenuItemBase = {
 	role: Value<"default" | "cancel" | "destructive" | "onIndicator">?,
 	id: string?,
 	label: Value<string>,
 	description: Value<string>?,
 	icon: Value<string>?,
+	meta: Value<string>?,
 	enabled: Value<boolean>?,
 	marked: Value<boolean>?,
 	dismiss: boolean?,
 	divider: false?,
+	badge: Value<string | number>?,
+	avatar: MenuAvatar?,
+	sectionTitle: Value<string>?,
+	shortcutLabel: Value<string>?,
 }
+export type MenuAvatar = { name: string, image: string?, userId: number? }
+export type MenuEdge = "top" | "bottom" | "leading" | "trailing"
+export type MenuAlign = "start" | "center" | "end"
 export type MenuAction<V = string> =
 	(MenuItemBase & {
 		children: Value<{ MenuItem<V> }>,
@@ -60,6 +75,10 @@ export type MenuSpec<V = string> = Types.FrameProps & {
 	onClose: (() -> ())?,
 	enabled: Value<boolean>?,
 	isPresented: ComposeTypes.Cell<boolean>?,
+	edge: MenuEdge?,
+	align: MenuAlign?,
+	width: Value<number>?,
+	maxHeight: number?,
 }
 export type PickerOption<V = string> = {
 	id: string?,
@@ -68,9 +87,13 @@ export type PickerOption<V = string> = {
 	description: Value<string>?,
 	icon: Value<string>?,
 	badge: Value<string | number>?,
+	meta: Value<string>?,
+	avatar: OptionAvatar?,
+	sectionTitle: Value<string>?,
+	indicator: OptionIndicator?,
 	enabled: Value<boolean>?,
 }
-export type PickerStyle = "automatic" | "menu" | "navigationLink" | "segmented" | "inline" | "radioGroup"
+export type PickerStyle = "automatic" | "menu" | "navigationLink" | "segmented" | "inline" | "radioGroup" | "cards"
 export type PickerCommon<V> = Types.GuiObjectProps & {
 	Style: Value<Enum.FrameStyle>?,
 	options: Value<{ PickerOption<V> }>,
@@ -86,6 +109,14 @@ export type PickerCommon<V> = Types.GuiObjectProps & {
 	iconOnly: Value<boolean>?,
 	textSize: Value<number>?,
 	isPresented: ComposeTypes.Cell<boolean>?,
+	requiredMark: ("required" | "optional")?,
+	hint: Value<string>?,
+	errorText: Value<string>?,
+	controlSize: Value<Types.ControlSize>?,
+	appearance: Value<string>?,
+	corners: ("pill" | "square")?,
+	maxHeight: number?,
+	indicatorPosition: ("leading" | "trailing")?,
 }
 export type SinglePickerSpec<V = string> = PickerCommon<V> & {
 	multiple: false?,
@@ -167,6 +198,7 @@ export type AlertSpec<P = unknown> = Types.FrameProps & {
 export type SheetDetent =
 	"medium"
 	| "large"
+	| "hug"
 	| { id: string, fraction: number, height: nil }
 	| { id: string, fraction: nil, height: number }
 export type SheetSpec = Types.FrameProps & {
@@ -176,12 +208,28 @@ export type SheetSpec = Types.FrameProps & {
 	title: Value<string>?,
 	content: Content,
 	interactiveDismissDisabled: Value<boolean>?,
-	dragIndicator: "visible" | "hidden"?,
+	dragIndicator: ("automatic" | "visible" | "hidden")?,
+	placement: ("automatic" | "bottom" | "side" | "center")?,
+	edge: ("left" | "right")?,
+	width: Overlay.WidthPreset?,
+	closeButton: (boolean | Value<string>)?,
+	header: (Content | false)?,
+	hero: Overlay.Hero?,
+	actions: { Overlay.Action }?,
+	actionLayout: Overlay.ActionLayout?,
+	contentInset: ("standard" | "none")?,
+	scrollPolicy: ("always" | "atLargestDetent")?,
 }
-export type CalloutRetirement = "featureUsed" | "seen" | "dismissed" | "tapAway"
+export type SheetRequest = (string) -> boolean
+export type CalloutRetirement = "featureUsed" | "seen" | "dismissed" | "tapAway" | "action"
 export type CalloutSpec = Types.FrameProps & {
 	anchor: GuiObject,
-	content: Content,
+	content: Content?,
+	title: Value<string>?,
+	media: Overlay.Media?,
+	steps: { index: number, count: number }?,
+	actions: { Overlay.Action }?,
+	closeButton: boolean?,
 	dismissLabel: Value<string>?,
 	edge: Value<"top" | "bottom">?,
 	align: Value<"leading" | "center" | "trailing">?,
@@ -204,6 +252,14 @@ export type Tab = {
 	content: Content,
 	section: string?,
 	required: boolean?,
+	indicator: TabIndicator?,
+	enabled: Value<boolean>?,
+}
+export type TabIndicator = {
+	form: ("dot" | "ring" | "square" | "dash")?,
+	status: ("neutral" | "info" | "success" | "warning" | "error" | "accent")?,
+	count: Value<number?>?,
+	max: number?,
 }
 export type TabViewSpec = Types.FrameProps & {
 	selection: ComposeTypes.Cell<string>,
@@ -227,7 +283,7 @@ export type TabViewSpec = Types.FrameProps & {
 	shoulderNavigation: "strip" | "content"?,
 	indicator: Value<Indicator>?,
 	iconOnly: Value<boolean>?,
-	textSize: Value<number>?,
+	textSize: Value<number | "fit">?,
 	enabled: Value<boolean>?,
 	onChange: ((string) -> ())?,
 }
@@ -285,6 +341,7 @@ export type Surfaces = {
 	overlay: (GuiObject, Value<boolean>, (PresencePhase?) -> Instance, OverlayOptions?) -> Types.Child,
 	appearance: (PresencePhase?, MotionTiming) -> Appearance,
 	popover: (GuiObject, Appearance, (ComposeTypes.Use) -> (Vector2, Vector2)) -> (),
+	sheetModal: ((SheetSpec, SheetRequest) -> Frame)?,
 }
 export type PickerConstructor = (<V>(PickerSpec<V>) -> GuiObject) & ((string) -> <V>(PickerSpec<V>) -> GuiObject)
 export type MenuConstructor = (<V>(MenuSpec<V>) -> Frame) & ((string) -> <V>(MenuSpec<V>) -> Frame)

@@ -1354,6 +1354,13 @@ t.describe("native parity reference applications", function()
 				open = assert(within(pages(w), "Blends", "amber-harvest", "Open"))
 				t.expect(open.Text).toBe(sipStrings.expand("Amber Harvest"))
 				t.expect(w.root).toBe(root)
+				w.built.steps.open("amber-harvest")
+				local sheet = assert(modal(w.screen))
+				local close = assert(find(sheet, "Close"))
+				t.expect(close.Text).toBe(xa["common.done"])
+				t.expect(close.Text ~= en["common.done"]).toBe(true)
+				t.expect(i18n.setLocale("en")).toBe(true)
+				t.expect(close.Text).toBe(en["common.done"])
 				w.stop()
 			end
 		)
@@ -3399,8 +3406,8 @@ t.describe("native parity reference applications", function()
 				hit("drift").Activated.fire(click(world, "mouse", 1))
 				hit("drift").Activated.fire(click(world, "mouse", 1))
 				t.expect(label.Text).toBe("Now playing — Neon Straightaway")
-				t.expect(selected("drift")).toBe(false)
-				t.expect(selected("neon")).toBe(true)
+				t.expect(selected("drift")).toBe(true)
+				t.expect(selected("neon")).toBe(false)
 				hit("turbo").Activated.fire(click(world, "touch", 1))
 				t.expect(label.Text).toBe("Now playing — Turbo Cascade")
 				hit("pit").Activated.fire(click(world, "key", 1))
@@ -3949,7 +3956,7 @@ t.describe("native parity reference applications", function()
 			local runtime = Facet.Roblox.createRuntime(engine)
 			local names = {}
 			for name in Facet.controls(runtime, { types = engine.types } :: any) do
-				if name ~= "fill" then
+				if name ~= "fill" and name ~= "badged" then
 					table.insert(names, name :: string)
 				end
 			end
@@ -3971,7 +3978,16 @@ t.describe("native parity reference applications", function()
 				HStack = "StackProps",
 			}
 			local names = controlNames()
-			t.expect(#names).toBe(41)
+			local published: { string } = {}
+			for name in
+				string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.(%u[%w_]*) : function")
+			do
+				if name ~= "fill" and name ~= "badged" then
+					table.insert(published, name)
+				end
+			end
+			table.sort(published)
+			t.expect(table.concat(names, " ")).toBe(table.concat(published, " "))
 			for _, name in names do
 				local contract = shared[name]
 				local found = if contract

@@ -8,6 +8,7 @@ function chat.new(Compose: any)
 	local streaming = Compose.cell(false)
 	local active = Compose.cell(nil)
 	local feedback = Compose.cell({})
+	local completed = Compose.cell(0)
 
 	local streamedChars, totalChars = Compose.cell(0), Compose.cell(0)
 	local serial, elapsed, cursor = 0, 0, 0
@@ -48,14 +49,30 @@ function chat.new(Compose: any)
 		if id == activeId then
 			stop()
 		end
+		local removed, at
 		messages:update(function(current)
 			local kept = {}
-			for _, message in current do
+			for index, message in current do
 				if message.id ~= id then
 					table.insert(kept, message)
+				else
+					removed, at = message, index
 				end
 			end
 			return kept
+		end)
+		return removed, at
+	end
+	local function restore(message, index)
+		messages:update(function(current)
+			for _, item in current do
+				if item.id == message.id then
+					return current
+				end
+			end
+			local nextMessages = table.clone(current)
+			table.insert(nextMessages, math.clamp(index, 1, #nextMessages + 1), message)
+			return nextMessages
 		end)
 	end
 	local function clear()
@@ -141,7 +158,7 @@ function chat.new(Compose: any)
 	local function rate(id, value)
 		feedback:update(function(current)
 			local nextFeedback = table.clone(current)
-			nextFeedback[id] = if nextFeedback[id] == value then nil else value
+			nextFeedback[id] = if value == "none" or nextFeedback[id] == value then nil else value
 			return nextFeedback
 		end)
 	end
@@ -168,6 +185,7 @@ function chat.new(Compose: any)
 		end)
 		if cursor == #response then
 			stop()
+			completed:set(completed:peek() + 1)
 		end
 	end
 	return {
@@ -176,6 +194,8 @@ function chat.new(Compose: any)
 		streaming = streaming,
 		active = active,
 		feedback = feedback,
+		completed = completed,
+		restore = restore,
 		retry = retry,
 		edit = edit,
 		rate = rate,

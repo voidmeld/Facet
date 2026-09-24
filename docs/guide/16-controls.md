@@ -8,10 +8,14 @@ callbacks.
 | Family | Controls |
 |---|---|
 | Actions | Button, SplitButton, Menu, RadialMenu |
-| Input | TextInput, Toggle, Slider, Stepper, Rating, LevelPicker, Chip |
+| Input | TextInput, Toggle, Slider, Stepper, Rating, LevelPicker, Chip, Vote |
 | Choices | Picker, ComboBox |
-| Navigation | TabView, NavigationStack, PageView |
+| Navigation | TabView, NavigationStack, PageView, Pagination, StepIndicator |
 | Presentation | Alert, Sheet, DisclosureGroup, CollapsibleView, Callout |
+| Data | VirtualList, VirtualGrid, Table, RowActions, Card |
+| Navigation | TabView, NavigationStack, PageView, NavBar |
+| Presentation | Alert, Dialog, Sheet, Popover, DisclosureGroup, CollapsibleView, Callout |
+| Feedback | Notice, Snackbar |
 | Data | VirtualList, VirtualGrid, Table, RowActions |
 | Information | Label, Badge, StatusIndicator, ProgressView, Skeleton, ShortcutHint |
 | Media | AsyncImage, Avatar, AvatarGroup, Stage |

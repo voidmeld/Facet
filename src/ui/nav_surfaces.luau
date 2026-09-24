@@ -4,12 +4,13 @@ local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
 local ComposeTypes = require("../vendor/compose/core")
+local parts = require("./overlay_parts")
+local Overlay = require("./overlay_types")
 
 type Controls = {
 	DisclosureGroup: Types.Constructor<Nav.DisclosureGroupSpec, Frame>,
 	CollapsibleView: Types.Constructor<Nav.CollapsibleViewSpec, TextButton>,
 	Alert: Nav.AlertConstructor,
-	Sheet: Types.Constructor<Nav.SheetSpec, Frame>,
 	Callout: Types.Constructor<Nav.CalloutSpec, Frame>,
 	Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
 	Toggle: Types.Constructor<Inputs.ToggleProps, TextButton>,
@@ -24,7 +25,6 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local callouts = Compose.cell({} :: { CalloutRegistration })
 	local POPOVER: Nav.MotionTiming = { enter = 0.15, exit = 0.1 }
 	local DIALOG: Nav.MotionTiming = { enter = 0.2, exit = 0.15 }
-	local SHEET: Nav.MotionTiming = { enter = 0.3, exit = 0.2 }
 	local nextCallout = 0
 	local function body<P, R>(content: R | ((P) -> R), payload: P): R
 		return if type(content) == "function" then content(payload) else content
@@ -406,6 +406,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				local actionBar = Host.Frame(actionProps)
 				local actionSize = ctx.observe(actionBar, "AbsoluteSize")
 				local scroll = Host.ScrollingFrame "AlertMessage" {
+					Selectable = false,
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					CanvasSize = D2.fromOffset(0, 0),
@@ -703,241 +704,38 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	end
 	UI.Alert = ctx.construct("Alert", alert)
 
-	UI.Sheet = ctx.construct("Sheet", function(spec: Nav.SheetSpec): Frame
-		assert(type(spec.detent) == "table" and spec.detent.set, "Sheet.detent requires a writable Compose cell")
-		assert(
-			type(spec.isPresented) == "table" and spec.isPresented.set,
-			"Sheet.isPresented requires a writable Compose cell"
-		)
-		type Detent = { id: string, fraction: number?, height: number? }
-		local detents: { Detent } = {}
-		local seenDetents: { [string]: boolean } = {}
-		local entries: { Nav.SheetDetent } = spec.detents or { "medium", "large" }
-		for _, entry in entries do
-			local d: Detent
-			if entry == "medium" then
-				d = { id = "medium", fraction = 0.5 }
-			elseif entry == "large" then
-				d = { id = "large", fraction = 0.95 }
-			else
-				assert(type(entry) == "table", "Invalid Sheet detent")
-				d = entry
-			end
-			assert(type(d) == "table" and type(d.id) == "string" and (d.fraction or d.height), "Invalid Sheet detent")
-			assert(not seenDetents[d.id], "Sheet detents require unique ids")
-			assert((d.fraction == nil) ~= (d.height == nil), "Sheet detent requires exactly one of fraction or height")
-			assert(
-				if d.fraction
-					then type(d.fraction) == "number" and d.fraction > 0 and d.fraction <= 1
-					else type(d.height) == "number" and d.height > 0 and d.height < math.huge,
-				"Invalid Sheet detent extent"
-			)
-			seenDetents[d.id] = true
-			table.insert(detents, d)
-		end
-		local root = empty(
-			spec,
-			{ "title", "content", "detent", "detents", "isPresented", "interactiveDismissDisabled", "dragIndicator" },
-			"Sheet"
-		)
-		surfaces.attach(root, {
-			surfaces.overlay(root, spec.isPresented, function(phase: Nav.PresencePhase?)
-				local shown = surfaces.appearance(phase, SHEET)
-				local function close()
-					spec.isPresented:set(false)
-				end
-				local available = Compose.cell(720)
-				local availableWidth = Compose.cell(0)
-				local dragHeight: ComposeTypes.Cell<number?> = Compose.cell(nil :: number?)
-				local function height(detent: Detent, use: ComposeTypes.Use?): number
-					return math.min(
-						read(available, use),
-						detent.height or read(available, use) * assert(detent.fraction)
-					)
-				end
-				local function current(use: ComposeTypes.Use?): number
-					local selected = read(spec.detent, use)
-					for _, detent in detents do
-						if detent.id == selected then
-							return height(detent, use)
-						end
-					end
-					error("Sheet.detent must name a declared detent")
-				end
-				local gui = surfaces.service("GuiService")
-				local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
-				local motion = runtime.tween(function(use: ComposeTypes.Use)
-					return use(dragHeight) or current(use)
-				end, { seconds = 0.2 })
-				local function painted(use: ComposeTypes.Use?): number
-					return if read(ctx.config.reducedMotion, use) == true or read(reduced, use)
-						then read(dragHeight, use) or current(use)
-						else read(motion, use)
-				end
-				local dragging, origin, startHeight = false, 0, 0
-				local detector = Host.UIDragDetector({
-					DragStyle = E.UIDragDetectorDragStyle.TranslateLine,
-					DragAxis = V2.new(0, 1),
-					ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
-					DragStart = function(position: Vector2)
-						dragging, origin, startHeight = true, position.Y, painted()
-						dragHeight:set(startHeight)
-					end,
-					DragContinue = function(position: Vector2)
-						if dragging then
-							dragHeight:set(math.clamp(startHeight + origin - position.Y, 0, available:peek()))
-						end
-					end,
-					DragEnd = function()
-						if not dragging then
-							return
-						end
-						dragging = false
-						local wanted = dragHeight:peek() or current()
-						local nearest: Detent?
-						local distance, minimum = math.huge, math.huge
-						for _, detent in detents do
-							local extent = height(detent)
-							minimum = math.min(minimum, extent)
-							if math.abs(extent - wanted) < distance then
-								nearest, distance = detent, math.abs(extent - wanted)
-							end
-						end
-						dragHeight:set(nil)
-						if wanted < minimum * 0.7 and read(spec.interactiveDismissDisabled) ~= true then
-							close()
-						else
-							spec.detent:set(assert(nearest).id)
-						end
-					end,
-				})
-				local function cycle()
-					local index = 1
-					for position, detent in detents do
-						if detent.id == spec.detent:peek() then
-							index = position
-						end
-					end
-					spec.detent:set(detents[index % #detents + 1].id)
-				end
-				local panel = ctx.column({
-					Host.Frame "DragHandle" {
-						BackgroundTransparency = 1,
-						Size = D2.new(1, 0, 0, 20),
-						Visible = spec.dragIndicator ~= "hidden",
-						detector :: Instance,
-						Host.TextButton "Grabber" {
-							AnchorPoint = V2.new(0.5, 0.5),
-							Position = D2.fromScale(0.5, 0.5),
-							Size = D2.fromOffset(88, 44),
-							BackgroundTransparency = 1,
-							ZIndex = 2,
-							Text = "",
-							AutoButtonColor = false,
-							Selectable = #detents > 1,
-							Activated = cycle,
-							ctx.styled(
-								Host.Frame "Pill" {
-									AnchorPoint = V2.new(0.5, 0.5),
-									Position = D2.fromScale(0.5, 0.5),
-									Size = D2.fromOffset(36, 5),
-									BorderSizePixel = 0,
-									Host.UICorner({ CornerRadius = ctx.types.UDim.new(1, 0) }),
-								},
-								"grabber"
-							) :: Types.Child,
-						},
-					},
-					ctx.row({
-						ctx.styled(
-							ctx.text({
-								Name = "Title",
-								Text = spec.title,
-								Size = D2.fromOffset(0, 0),
-								AutomaticSize = E.AutomaticSize.XY,
-								Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-							}),
-							"type-heading"
-						),
-						UI.Button "Close" { label = "Done", appearance = "link", onActivate = close },
-					}, { Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }),
-					Host.ScrollingFrame "SheetContent" {
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						CanvasSize = D2.fromOffset(0, 0),
-						AutomaticCanvasSize = E.AutomaticSize.Y,
-						ScrollingDirection = E.ScrollingDirection.Y,
-						ScrollBarThickness = 6,
-						Size = D2.new(1, 0, 0, 0),
-						ClipsDescendants = true,
-						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }) :: Instance,
-						lists.list({}, true) :: Instance,
-						body(spec.content, nil),
-					},
-					ctx.padding(16, 12),
-					ctx.corner(),
-				}, {
-					Name = "SheetPanel",
-					BackgroundTransparency = 0,
-					AnchorPoint = V2.new(0.5, 1),
-					Position = function(use: ComposeTypes.Use)
-						local travel = 1 - shown(use)
-						if travel <= 0 then
-							return D2.fromScale(0.5, 1)
-						end
-						local height = math.min(use(available), math.max(220, use(dragHeight) or painted(use)))
-						return D2.new(0.5, 0, 1, math.ceil(height * travel))
-					end,
-					AutomaticSize = E.AutomaticSize.None,
-					Size = function(use: ComposeTypes.Use)
-						local height = math.min(use(available), math.max(220, use(dragHeight) or painted(use)))
-						local width = use(availableWidth)
-						return if width > 0
-							then D2.fromOffset(math.min(width, 720), height)
-							else D2.new(1, 0, 0, height)
-					end,
-				})
-				local header = panel:FindFirstChild("Header")
-				local headerLayout = if header then header:FindFirstChildWhichIsA("UIListLayout") else nil
-				if headerLayout then
-					headerLayout.VerticalAlignment = E.VerticalAlignment.Center
-				end
-				local grabber = panel:FindFirstChild("Grabber", true)
-				if grabber then
-					grabber:SetAttribute("AccessibleLabel", "Resize")
-				end
-				ctx.styled(panel, "sheet")
-				surfaces.skin(panel)
-				local overlay = surfaces.modal(
-					function()
-						return panel
-					end,
-					close,
-					{
-						canDismiss = function(use: ComposeTypes.Use)
-							return read(spec.interactiveDismissDisabled, use) ~= true
-						end,
-						exiting = if phase then phase.exiting else nil,
-						appearance = shown,
-					}
-				)
-				local size = ctx.observe(overlay, "AbsoluteSize")
-				Compose.watch(function(use: ComposeTypes.Use)
-					local value = use(size)
-					if value.Y > 0 then
-						available:set(value.Y)
-						availableWidth:set(value.X)
-					end
-				end)
-				return overlay
-			end, { motion = SHEET }),
-		})
-		return root
-	end)
-
 	UI.Callout = ctx.construct("Callout", function(spec: Nav.CalloutSpec): Frame
 		assert(type(spec.onRetire) == "function", "Callout requires onRetire")
 		assert(spec.anchor, "Callout requires a native anchor")
+		local where = "UI.Callout"
+		parts.checkMedia(where, spec.media)
+		local actionCount = parts.checkActions(ctx, where, spec.actions, 2)
+		if spec.closeButton ~= nil and type(spec.closeButton) ~= "boolean" then
+			error(`Facet {where}: closeButton must be true or false`, 0)
+		end
+		if spec.title ~= nil and not parts.bound(ctx, spec.title, "string") then
+			error(`Facet {where}: title must be a string or a bound string`, 0)
+		end
+		local steps = spec.steps
+		if steps ~= nil then
+			local index = if type(steps) == "table" then steps.index else nil
+			local count = if type(steps) == "table" then steps.count else nil
+			local function whole(value: unknown): boolean
+				return type(value) == "number" and value == math.floor(value) and value < math.huge
+			end
+			if
+				not whole(index)
+				or not whole(count)
+				or (index :: number) < 1
+				or (index :: number) > (count :: number)
+			then
+				error(`Facet {where}: steps must be \{ index, count } with whole numbers 1 <= index <= count`, 0)
+			end
+		end
+		if spec.content == nil and spec.title == nil and spec.media == nil and steps == nil and actionCount == 0 then
+			error(`Facet {where}: nothing to show. Supply content, or a title, media, steps or actions`, 0)
+		end
+		local calloutOwner = assert(Compose.currentOwner())
 		local retired = Compose.cell(false)
 		local anchorAvailable = surfaces.available(spec.anchor)
 		local eligible = Compose.formula(function(use: ComposeTypes.Use)
@@ -988,9 +786,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"onShow",
 			"onHide",
 			"isPresented",
+			"title",
+			"media",
+			"steps",
+			"actions",
+			"closeButton",
 		}, "Callout")
 		local function retire(reason: Nav.CalloutRetirement): ()
-			if retired:peek() then
+			if retired:peek() or calloutOwner.isDisposed() then
 				return
 			end
 			retired:set(true)
@@ -1007,7 +810,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			surfaces.overlay(spec.anchor, visible, function(phase: Nav.PresencePhase?)
 				local amount = surfaces.appearance(phase, POPOVER)
 				if spec.onShow then
-					spec.onShow()
+					local ok: boolean, failure: unknown = pcall(spec.onShow)
+					if not ok then
+						if ctx.config.onError then
+							ctx.config.onError(failure)
+						else
+							warn(`Facet UI.Callout: onShow failed: {tostring(failure)}`)
+						end
+					end
 				end
 				Compose.cleanup(function()
 					if spec.onHide then
@@ -1016,21 +826,116 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end)
 				local position, size =
 					ctx.observe(spec.anchor, "AbsolutePosition"), ctx.observe(spec.anchor, "AbsoluteSize")
+				local rows: { Types.Child } = {}
+				if spec.title ~= nil or spec.closeButton == true then
+					local header: { Types.Child } = {}
+					if spec.title ~= nil then
+						local title = spec.title
+						local heading = ctx.text({
+							Name = "Title",
+							Text = function(use: ComposeTypes.Use)
+								return read(title, use) or ""
+							end,
+							TextWrapped = true,
+							Size = D2.new(1, 0, 0, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+							Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+						})
+						heading:AddTag("facet-type-heading")
+						table.insert(header, heading)
+					end
+					if spec.closeButton == true then
+						table.insert(
+							header,
+							UI.Button "Close" {
+								name = "Close",
+								icon = "close",
+								Size = D2.fromOffset(44, 44),
+								AutomaticSize = E.AutomaticSize.None,
+								onActivate = function()
+									retire("dismissed")
+								end,
+							}
+						)
+					end
+					local row = ctx.row(
+						header,
+						{ Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }
+					)
+					table.insert(rows, row)
+				end
+				if spec.media then
+					table.insert(rows, parts.media(ctx, spec.media))
+				end
+				if spec.content ~= nil then
+					table.insert(rows, body(spec.content, nil))
+				end
+				if steps then
+					table.insert(
+						rows,
+						ctx.styled(
+							ctx.text({
+								Name = "Steps",
+								Text = `{steps.index} of {steps.count}`,
+							}),
+							"secondary"
+						)
+					)
+				end
+				local actions: { Overlay.Action } = spec.actions or {}
+				if #actions > 0 then
+					local buttons: Types.FrameNativeProps = {
+						Name = "Actions",
+						BackgroundTransparency = 1,
+						Size = D2.new(1, 0, 0, 0),
+						AutomaticSize = E.AutomaticSize.Y,
+					}
+					table.insert(
+						buttons,
+						Host.UIListLayout({
+							FillDirection = E.FillDirection.Horizontal,
+							HorizontalFlex = E.UIFlexAlignment.Fill,
+							SortOrder = E.SortOrder.LayoutOrder,
+							Padding = ctx.types.UDim.new(0, 8),
+						})
+					)
+					for index, action in actions do
+						table.insert(
+							buttons,
+							UI.Button({
+								Name = action.id,
+								label = action.label,
+								role = action.role,
+								enabled = action.enabled,
+								busy = action.busy,
+								LayoutOrder = index,
+								onActivate = function()
+									parts.call(action.onActivate, function()
+										retire("action")
+									end)
+								end,
+							})
+						)
+					end
+					table.insert(rows, Host.Frame(buttons))
+				else
+					table.insert(
+						rows,
+						UI.Button "Dismiss" {
+							label = spec.dismissLabel or "Got it",
+							onActivate = function()
+								retire("dismissed")
+							end,
+						}
+					)
+				end
+				table.insert(rows, ctx.padding(12, 12))
 				local panel = ctx.styled(
 					Host.CanvasGroup "CalloutPanel" {
 						Size = D2.fromOffset(280, 0),
 						AutomaticSize = E.AutomaticSize.Y,
 						ctx.corner() :: Types.Child,
-						ctx.column({
-							body(spec.content, nil),
-							UI.Button "Dismiss" {
-								label = spec.dismissLabel or "Got it",
-								onActivate = function()
-									retire("dismissed")
-								end,
-							},
-							ctx.padding(12, 12),
-						}, {
+						ctx.column(rows, {
 							Name = "CalloutContent",
 							Size = D2.new(1, 0, 0, 0),
 							AutomaticSize = E.AutomaticSize.Y,

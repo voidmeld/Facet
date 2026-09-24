@@ -270,6 +270,38 @@ t.describe("Facet on the consumer's Compose instance", function()
 				1,
 				true
 			) ~= nil).toBe(true)
+			local palette = surface.Compose.cell("Dark")
+			local styled = surface.app({
+				runtime = runtime,
+				types = engine.types,
+				parent = playerGui,
+				theme = surface.themes.neutralPackage(),
+				sheet = { theme = palette, transition = false },
+				screen = { Name = "Desk", DisplayOrder = 7, ResetOnSpawn = true },
+			})
+			local stopStyled, desk = styled.mount(function()
+				return styled.UI.Label({ text = "Desk" })
+			end)
+			t.expect(desk.Name).toBe("Desk")
+			t.expect(desk.DisplayOrder).toBe(7)
+			t.expect(desk.ResetOnSpawn).toBe(true)
+			local referencePalette
+			local stopPalette = runtime.mount(function()
+				referencePalette = surface.themes.createStyleSheet(
+					runtime,
+					surface.themes.neutralPackage(),
+					{ types = engine.types, theme = palette, transition = false }
+				)
+				return referencePalette
+			end, engine.new("Folder"))
+			t.expect(rules(desk:FindFirstChildWhichIsA("StyleSheet"))).toEqual(rules(referencePalette))
+			local dark = table.concat(rules(desk:FindFirstChildWhichIsA("StyleSheet")), "\n")
+			palette:set("Light")
+			t.expect(rules(desk:FindFirstChildWhichIsA("StyleSheet"))).toEqual(rules(referencePalette))
+			t.expect(table.concat(rules(desk:FindFirstChildWhichIsA("StyleSheet")), "\n") ~= dark).toBe(true)
+			stopPalette()
+			stopStyled()
+			styled.dispose()
 			runtime:dispose()
 		end
 	end)
@@ -281,6 +313,6 @@ t.describe("Facet on the consumer's Compose instance", function()
 			Facet.bind(partial, Roblox)
 		end)
 		t.expect(string.find(message, "presence", 1, true) ~= nil).toBe(true)
-		t.expect(string.find(message, "cbab6e0", 1, true) ~= nil).toBe(true)
+		t.expect(string.find(message, "869d260", 1, true) ~= nil).toBe(true)
 	end)
 end)

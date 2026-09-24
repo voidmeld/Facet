@@ -131,6 +131,27 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 				actions = { { id = "ok", label = "OK", role = "default" } },
 			}
 		end,
+		Dialog = function()
+			return { isPresented = Compose.cell(false), closeButton = false, title = "Title" }
+		end,
+		Snackbar = function()
+			return { isPresented = Compose.cell(false), message = "Saved", closeButton = false }
+		end,
+		Notice = function()
+			return { message = "Saved" }
+		end,
+		NavBar = function()
+			return { title = "Tracks" }
+		end,
+		Popover = function()
+			return {
+				isPresented = Compose.cell(false),
+				source = { rect = { x = 0, y = 0, w = 10, h = 10 } },
+				content = function()
+					return Host.Frame({})
+				end,
+			}
+		end,
 		AsyncImage = function()
 			return { image = "rbxassetid://1" }
 		end,
@@ -159,6 +180,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		CollapsibleView = function()
 			return { expanded = Compose.cell(false), content = content }
 		end,
+		ColorPicker = function()
+			return { value = Compose.cell(require("@lune/roblox").Color3.new(1, 0, 0)) }
+		end,
 		ComboBox = function()
 			return {
 				value = Compose.cell(""),
@@ -168,6 +192,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 					return nil
 				end,
 			}
+		end,
+		DateTimePicker = function()
+			return { value = Compose.cell(nil), onChange = function() end }
 		end,
 		DisclosureGroup = function()
 			return { expanded = Compose.cell(false), content = content }
@@ -229,6 +256,30 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		Stage = function()
 			return {}
 		end,
+		ErrorBoundary = function()
+			return { view = content, fallback = content }
+		end,
+		Pagination = function()
+			return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
+		end,
+		Card = function()
+			return {
+				image = "rbxassetid://1",
+				title = "Card",
+				onActivate = function() end,
+				primaryAction = { label = "Play", onActivate = function() end },
+			}
+		end,
+		Vote = function()
+			return { value = Compose.cell("none"), onChange = function() end }
+		end,
+		StepIndicator = function()
+			return {
+				steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+				current = "a",
+				onSelect = function() end,
+			}
+		end,
 		StatusIndicator = function()
 			return { status = "info" }
 		end,
@@ -261,6 +312,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		TextInput = function()
 			return { value = Compose.cell("") }
 		end,
+		NumberInput = function()
+			return { value = Compose.cell("1"), numericValue = Compose.cell(1) }
+		end,
 		Toggle = function()
 			return { value = Compose.cell(false) }
 		end,
@@ -278,12 +332,19 @@ t.describe("native parity gaps", function()
 		local probe: any = engineLib.new()
 		local names: { string } = {}
 		for name in Facet.controls(Facet.Roblox.createRuntime(probe), { types = probe.types } :: any) do
-			if name ~= "fill" then
+			if name ~= "fill" and name ~= "badged" then
 				table.insert(names, name :: string)
 			end
 		end
 		table.sort(names)
-		t.expect(#names).toBe(41)
+		local published: { string } = {}
+		for name in string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function") do
+			if name ~= "fill" and name ~= "badged" then
+				table.insert(published, name)
+			end
+		end
+		table.sort(published)
+		t.expect(table.concat(names, " ")).toBe(table.concat(published, " "))
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()

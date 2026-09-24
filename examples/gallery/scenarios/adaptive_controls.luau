@@ -7,6 +7,11 @@ return {
 		local volume, brightness, quality = Compose.cell(6), Compose.cell(40), Compose.cell("balanced")
 		local advanced, vsync, telemetry = Compose.cell(false), Compose.cell(true), Compose.cell(false)
 		local progress, section, saved = Compose.cell(0.35), Compose.cell("browse"), Compose.cell(false)
+		local TILT_ANGLES = { 0, 45, 90, 135, 180, 225, 270, 315 }
+		local lapWindow = Compose.cell({ lower = 4, upper = 12 })
+		local tiltBand = Compose.cell({ lower = 20, upper = 70 })
+		local tilt, balance, boost = Compose.cell(0), Compose.cell(50), Compose.cell(35)
+		local camera, steer = Compose.cell(60), Compose.cell(50)
 		local function wide(use)
 			return use(ctx.viewport).width >= 900
 		end
@@ -40,6 +45,129 @@ return {
 			telemetry:set(false)
 			progress:set(0.35)
 			saved:set(false)
+			lapWindow:set({ lower = 4, upper = 12 })
+			tiltBand:set({ lower = 20, upper = 70 })
+			tilt:set(0)
+			balance:set(50)
+			boost:set(35)
+			camera:set(60)
+			steer:set(50)
+		end
+		local function sliderShapes()
+			return Host.Frame "SliderShapes" {
+				Size = UDim2.new(1, 0, 0, 0),
+				AutomaticSize = Enum.AutomaticSize.Y,
+				BackgroundTransparency = 1,
+				Host.UIListLayout({ Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
+				label("SlidersHeading", "Slider shapes", "heading"),
+				UI.Slider "LapWindow" {
+					LayoutOrder = 2,
+					label = "Laps",
+					value = lapWindow,
+					min = 1,
+					max = 20,
+					step = 1,
+					range = true,
+					minGap = 2,
+				},
+				UI.Label "TiltCaption" {
+					LayoutOrder = 3,
+					label = "Tilt (a turned range)",
+					textRole = "caption",
+					role = "secondary",
+				},
+				Host.Frame "TiltStage" {
+					LayoutOrder = 4,
+					Size = UDim2.new(1, 0, 0, 0),
+					BackgroundTransparency = 1,
+					Host.UIAspectRatioConstraint({ AspectRatio = 1 }),
+					Host.UISizeConstraint({ MaxSize = Vector2.new(320, 320) }),
+					UI.Slider "Tilt" {
+						AnchorPoint = Vector2.new(0.5, 0.5),
+						Position = UDim2.fromScale(0.5, 0.5),
+						Size = UDim2.new(0.8, 0, 0, 0),
+						value = tiltBand,
+						min = 0,
+						max = 100,
+						step = 10,
+						range = true,
+						minGap = 10,
+						rotation = tilt,
+					},
+				},
+				Host.Frame "BalanceRow" {
+					LayoutOrder = 5,
+					Size = UDim2.new(1, 0, 0, 180),
+					BackgroundTransparency = 1,
+					Host.UIListLayout({
+						FillDirection = Enum.FillDirection.Horizontal,
+						Padding = UDim.new(0, 16),
+						VerticalAlignment = Enum.VerticalAlignment.Center,
+						SortOrder = Enum.SortOrder.LayoutOrder,
+					}),
+					UI.Slider "Balance" {
+						LayoutOrder = 1,
+						label = "Rear",
+						value = balance,
+						min = 0,
+						max = 100,
+						step = 5,
+						axis = "y",
+					},
+					UI.Label "BalanceNote" {
+						LayoutOrder = 2,
+						label = "Rear bias runs bottom to top, and Up raises it.",
+						textRole = "caption",
+						role = "secondary",
+						TextWrapped = true,
+						Size = UDim2.new(1, -80, 0, 0),
+						AutomaticSize = Enum.AutomaticSize.Y,
+					},
+				},
+				UI.Slider "Boost" {
+					LayoutOrder = 6,
+					label = "Boost",
+					value = boost,
+					min = 0,
+					max = 100,
+					step = 5,
+					thumb = "auto",
+					controlSize = "compact",
+				},
+				UI.Slider "Camera" {
+					LayoutOrder = 7,
+					label = "Camera",
+					value = camera,
+					min = 0,
+					max = 100,
+					step = 5,
+					thumb = "none",
+				},
+				UI.Slider "Steer" {
+					LayoutOrder = 8,
+					label = "Steer",
+					value = steer,
+					min = 0,
+					max = 100,
+					step = 10,
+					thumbContent = function()
+						return Host.Frame "Knob" {
+							Size = UDim2.fromOffset(24, 24),
+							BackgroundTransparency = 1,
+							Host.Frame "Plate" {
+								Size = UDim2.fromScale(1, 1),
+								Host.UICorner({ CornerRadius = UDim.new(1, 0) }),
+							},
+							UI.Label "Mark" {
+								label = "▲",
+								textRole = "caption",
+								AnchorPoint = Vector2.new(0.5, 0.5),
+								Position = UDim2.fromScale(0.5, 0.5),
+							},
+						}
+					end,
+				},
+			}
 		end
 		local function noop() end
 		local navOptions = {
@@ -134,6 +262,7 @@ return {
 								max = 100,
 								step = 5,
 							},
+							sliderShapes(),
 							UI.Picker "Quality" {
 								label = "Quality",
 								selected = quality,
@@ -415,6 +544,22 @@ return {
 		return {
 			screen = screen,
 			reset = reset,
+			steps = {
+				sliderBand = function()
+					local current = lapWindow:peek()
+					lapWindow:set(if current.lower == 4 then { lower = 2, upper = 18 } else { lower = 4, upper = 12 })
+					return { band = `{lapWindow:peek().lower}-{lapWindow:peek().upper}` }
+				end,
+				sliderTilt = function()
+					local at = table.find(TILT_ANGLES, tilt:peek()) or 1
+					tilt:set(TILT_ANGLES[(at % #TILT_ANGLES) + 1])
+					return { degrees = tilt:peek() }
+				end,
+				sliderAxis = function()
+					balance:set(if balance:peek() >= 90 then 10 else 90)
+					return { rear = balance:peek() }
+				end,
+			},
 			report = function()
 				return {
 					volume = volume:peek(),
@@ -426,6 +571,13 @@ return {
 					telemetry = telemetry:peek(),
 					saved = saved:peek(),
 					nav = section:peek(),
+					band = lapWindow:peek(),
+					tiltBand = tiltBand:peek(),
+					tilt = tilt:peek(),
+					rear = balance:peek(),
+					boost = boost:peek(),
+					camera = camera:peek(),
+					steer = steer:peek(),
 				}
 			end,
 		}

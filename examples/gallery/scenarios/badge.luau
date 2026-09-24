@@ -129,6 +129,23 @@ return {
 						{ value = "large", label = "Large" },
 					},
 				},
+				Host.Frame({
+					LayoutOrder = 6,
+					Name = "Hosts",
+					BackgroundTransparency = 1,
+					Size = UDim2.new(0, 0, 0, 0),
+					AutomaticSize = Enum.AutomaticSize.XY,
+					Host.UIListLayout({
+						FillDirection = Enum.FillDirection.Horizontal,
+						SortOrder = Enum.SortOrder.LayoutOrder,
+						Padding = UDim.new(0, 24),
+						VerticalAlignment = Enum.VerticalAlignment.Center,
+						Wraps = true,
+					}),
+					UI.badged(UI.Button({ Name = "Inbox", LayoutOrder = 1, label = "Inbox" }), 120),
+					UI.badged(UI.Button({ Name = "Alerts", LayoutOrder = 2, label = "Alerts", icon = "menu" }), true),
+					UI.badged(UI.Avatar({ Name = "Friend", LayoutOrder = 3, name = "Alder" }), 3),
+				}),
 			}
 			return root
 		end

@@ -4,7 +4,11 @@ local Inputs = require("./input_types")
 local Navigation = require("./navigation_types")
 local Collections = require("./collection_types")
 local Media = require("./media_types")
+local Content = require("./content_types")
 local Layout = require("./layout_types")
+local Overlay = require("./overlay_types")
+local Dates = require("./date_time_picker_types")
+local Colors = require("./color_picker_types")
 
 export type Controls = {
 	Screen: typeof(((nil :: unknown) :: Layout.LayoutControls).Screen),
@@ -13,10 +17,12 @@ export type Controls = {
 	ZStack: typeof(((nil :: unknown) :: Layout.LayoutControls).ZStack),
 	ScrollView: typeof(((nil :: unknown) :: Layout.LayoutControls).ScrollView),
 	Grid: typeof(((nil :: unknown) :: Layout.LayoutControls).Grid),
+	ErrorBoundary: typeof(((nil :: unknown) :: Layout.LayoutControls).ErrorBoundary),
 	fill: typeof(((nil :: unknown) :: Layout.LayoutControls).fill),
 	Button: typeof(((nil :: unknown) :: Inputs.InputControls).Button),
 	Toggle: typeof(((nil :: unknown) :: Inputs.InputControls).Toggle),
 	TextInput: typeof(((nil :: unknown) :: Inputs.InputControls).TextInput),
+	NumberInput: typeof(((nil :: unknown) :: Inputs.InputControls).NumberInput),
 	Stepper: typeof(((nil :: unknown) :: Inputs.InputControls).Stepper),
 	Slider: typeof(((nil :: unknown) :: Inputs.InputControls).Slider),
 	Rating: typeof(((nil :: unknown) :: Inputs.InputControls).Rating),
@@ -49,6 +55,18 @@ export type Controls = {
 	Avatar: typeof(((nil :: unknown) :: Media.MediaControls).Avatar),
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
+	Pagination: typeof(((nil :: unknown) :: Content.ContentControls).Pagination),
+	StepIndicator: typeof(((nil :: unknown) :: Content.ContentControls).StepIndicator),
+	Vote: typeof(((nil :: unknown) :: Content.ContentControls).Vote),
+	Card: typeof(((nil :: unknown) :: Content.ContentControls).Card),
+	badged: typeof(((nil :: unknown) :: Content.ContentControls).badged),
+	Dialog: typeof(((nil :: unknown) :: Overlay.OverlayControls).Dialog),
+	Popover: typeof(((nil :: unknown) :: Overlay.OverlayControls).Popover),
+	Notice: typeof(((nil :: unknown) :: Overlay.OverlayControls).Notice),
+	NavBar: typeof(((nil :: unknown) :: Overlay.OverlayControls).NavBar),
+	Snackbar: typeof(((nil :: unknown) :: Overlay.OverlayControls).Snackbar),
+	DateTimePicker: typeof(((nil :: unknown) :: Dates.DateTimePickerControls).DateTimePicker),
+	ColorPicker: typeof(((nil :: unknown) :: Colors.ColorPickerControls).ColorPicker),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

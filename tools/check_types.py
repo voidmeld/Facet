@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / "artifacts/verify/types"
 LOCK = ROOT / "tools/typecheck/roblox.lock.json"
 WITNESS = ROOT / "tests/types/controls_witness.luau"
-FLAGS = []
+DEFAULT_FLAGS = []
+FLAGS = list(DEFAULT_FLAGS)
 DIAGNOSTIC = re.compile(r"^(.+?\.lua(?:u)?)(?: \[[^\]]*\])?\((\d+),(\d+)\): (\w+): (.*)$", re.M)
 CONSUMER = ROOT / "examples/consumer"
 
@@ -100,6 +101,9 @@ def negative_probes():
         ("Slider controlled callback", 'UI.Slider({value=0.5})'),
         ("Toggle controlled callback", 'UI.Toggle({value=Facet.Compose.formula(function() return false end)})'),
         ("TextInput numeric model", 'UI.TextInput({value=Facet.Compose.cell("1"),presentation="number"})'),
+        ("TextInput controlled callback", 'UI.TextInput({value=Facet.Compose.formula(function() return "" end)})'),
+        ("NumberInput numeric model", 'UI.NumberInput({value=Facet.Compose.cell("1")})'),
+        ("Civil date parse", 'local civilDay: number = Facet.civilDate.parse("09/03/2026")'),
         ("Shortcut neither source", 'UI.ShortcutHint({})'),
         ("Shortcut both sources", 'UI.ShortcutHint({keys={{"Ctrl","K"}},action=Instance.new("InputAction")})'),
         ("Progress presentation", 'UI.ProgressView({presentation="pie"})'),
@@ -128,6 +132,8 @@ def negative_probes():
         ("App theme", 'Facet.app({ theme = "dark" })'),
         ("App component", 'Facet.app().mount(42)'),
         ("App mount return", 'local wrong: number = Facet.app().mount(function() return UI.Label({ text = "Hi" }) end)'),
+        ("App screen property", 'Facet.app({ screen = { DisplayOrder = "top" } })'),
+        ("App sheet option", 'Facet.app({ sheet = { transition = "slow" } })'),
         ("App dispose argument", 'local wrong: string = Facet.app().dispose()'),
     ])
     named = []
@@ -179,7 +185,7 @@ def main():
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument("--source-only", action="store_true", help="Check owned source without public witnesses")
     args = parser.parse_args()
-    FLAGS[:] = args.flag
+    FLAGS[:] = DEFAULT_FLAGS + args.flag
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     if not shutil.which("luau-lsp"):
         raise RuntimeError("Pinned luau-lsp is missing; run rokit install")

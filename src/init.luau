@@ -9,12 +9,20 @@ local NavigationTypes = require("@self/ui/navigation_types")
 local RadialTypes = require("@self/ui/radial_types")
 local CollectionTypes = require("@self/ui/collection_types")
 local MediaTypes = require("@self/ui/media_types")
+local ContentTypes = require("@self/ui/content_types")
 local ThemeTypes = require("@self/ui/theme_types")
 local LayoutTypes = require("@self/ui/layout_types")
 local createApp = require("@self/ui/app")
+local OverlayTypes = require("@self/ui/overlay_types")
+local civilDate = require("@self/ui/civil_date")
+local CivilTypes = require("@self/ui/civil_date_types")
+local DateTimePickerTypes = require("@self/ui/date_time_picker_types")
+local ColorPickerTypes = require("@self/ui/color_picker_types")
+local arithmetic = require("@self/ui/arithmetic")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
+export type NumberInputProps = InputTypes.NumberInputProps
 export type StepperProps = InputTypes.StepperProps
 export type SliderProps = InputTypes.SliderProps
 export type RatingProps = InputTypes.RatingProps
@@ -61,6 +69,13 @@ export type AvatarProps = MediaTypes.AvatarProps
 export type AvatarMember = MediaTypes.AvatarMember
 export type AvatarGroupProps = MediaTypes.AvatarGroupProps
 export type StageProps = MediaTypes.StageProps
+export type PaginationSpec = ContentTypes.PaginationSpec
+export type StepIndicatorSpec = ContentTypes.StepIndicatorSpec
+export type Step = ContentTypes.Step
+export type VoteSpec = ContentTypes.VoteSpec
+export type CardSpec = ContentTypes.CardSpec
+export type CardControls = ContentTypes.CardControls
+export type BadgeValue = ContentTypes.BadgeValue
 export type Space = LayoutTypes.Space
 export type Padding = LayoutTypes.Padding
 export type Extent = LayoutTypes.Extent
@@ -69,12 +84,27 @@ export type ScreenProps = LayoutTypes.ScreenProps
 export type ZStackProps = LayoutTypes.ZStackProps
 export type ScrollViewProps = LayoutTypes.ScrollViewProps
 export type GridProps = LayoutTypes.GridProps
+export type ErrorBoundaryProps = LayoutTypes.ErrorBoundaryProps
+export type OverlayAction = OverlayTypes.Action
+export type OverlayMedia = OverlayTypes.Media
+export type OverlayHero = OverlayTypes.Hero
+export type DialogSpec = OverlayTypes.DialogSpec
+export type PopoverSpec = OverlayTypes.PopoverSpec
+export type NoticeSpec = OverlayTypes.NoticeSpec
+export type NavBarSpec = OverlayTypes.NavBarSpec
+export type SnackbarSpec = OverlayTypes.SnackbarSpec
+export type DateTimePickerProps = DateTimePickerTypes.DateTimePickerProps
+export type ColorPickerProps = ColorPickerTypes.ColorPickerProps
 export type Controls = ControlTypes.Controls
 export type App = createApp.App
 export type AppOptions = createApp.AppOptions
 export type Component = createApp.Component
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
+export type CivilDate = CivilTypes.CivilDate
+export type CivilRange = CivilTypes.Range
+export type CivilLocale = CivilTypes.Locale
+export type CivilDateModule = CivilTypes.Module
 export type Cell<T> = Compose.Cell<T>
 export type Readable<T> = Compose.Readable<T>
 export type Runtime = Compose.Runtime
@@ -90,11 +120,13 @@ export type Facet = {
 	controls: (Runtime, ControlOptions?) -> Controls,
 	app: (AppOptions?) -> App,
 	themes: ThemeTypes.Themes,
+	civilDate: CivilTypes.Module,
+	recipes: { arithmetic: { parse: (unknown) -> number? } },
 	bind: (ComposeModule, ComposeRobloxModule) -> Facet,
 }
 
 local VERSION = "0.12.0"
-local COMPOSE_COMMIT = "cbab6e0f828b68faaf676ee718cb0036c20ed935"
+local COMPOSE_COMMIT = "869d26020a304ff8c3e5e18ff0eaf803b875a083"
 local USED = {
 	"boundary",
 	"cell",
@@ -116,6 +148,9 @@ local USED = {
 	"watch",
 	"withOwner",
 }
+
+local recipes: { arithmetic: { parse: (unknown) -> number? } } =
+	table.freeze({ arithmetic = table.freeze({ parse = arithmetic.parse }) })
 
 local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 	local fields = (core :: unknown) :: { [string]: unknown }
@@ -145,6 +180,8 @@ local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 			return createApp(core, roblox, createControls, themes, options)
 		end,
 		themes = themes,
+		civilDate = civilDate,
+		recipes = recipes,
 		bind = bind,
 	})
 	return surface

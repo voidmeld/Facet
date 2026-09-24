@@ -8,6 +8,16 @@ local COPY = {
 	join = "Join the club event",
 	start = "Start practice",
 	status = "Ready for practice.",
+	openLobby = "Open lobby",
+	lobby = "Harbor sprint lobby",
+	lobbyBody = "Eight drivers, three laps. The grid fills in joining order; the host starts the countdown once everyone is ready.",
+	joinLobby = "Join lobby",
+	notNow = "Not now",
+	openFilters = "Filters",
+	filters = "Race filters",
+	filtersBody = "Show only races that match these settings.",
+	apply = "Apply",
+	clear = "Clear",
 }
 return {
 	title = "Detent sheets",
@@ -25,6 +35,9 @@ return {
 		local membership = Compose.cell(false)
 		local status = Compose.cell(copy.status)
 		local presented = Compose.cell(false)
+		local lobbyShown, lobbyDetent = Compose.cell(false), Compose.cell("hug")
+		local filtersShown, filtersDetent = Compose.cell(false), Compose.cell("large")
+		local nightOnly = Compose.cell(false)
 		local function open()
 			presented:set(true)
 			return true
@@ -40,6 +53,10 @@ return {
 			detent:set("medium")
 			membership:set(false)
 			status:set(copy.status)
+			lobbyShown:set(false)
+			lobbyDetent:set("hug")
+			filtersShown:set(false)
+			nightOnly:set(false)
 		end
 		local function Briefing()
 			return Host.Frame "Sheet" {
@@ -103,6 +120,125 @@ return {
 						label = copy.open,
 						onActivate = open,
 					}),
+					UI.Button({
+						LayoutOrder = 5,
+						Name = "OpenLobby",
+						label = copy.openLobby,
+						onActivate = function()
+							lobbyShown:set(true)
+						end,
+					}),
+					UI.Button({
+						LayoutOrder = 6,
+						Name = "OpenFilters",
+						label = copy.openFilters,
+						onActivate = function()
+							filtersShown:set(true)
+						end,
+					}),
+				},
+				UI.Sheet "Lobby" {
+					title = copy.lobby,
+					header = false,
+					isPresented = lobbyShown,
+					detent = lobbyDetent,
+					detents = { "hug", "large" },
+					scrollPolicy = "atLargestDetent",
+					hero = {
+						height = 140,
+						background = Color3.fromRGB(44, 98, 210),
+						content = UI.Label({
+							Name = "Banner",
+							BackgroundTransparency = 1,
+							Size = UDim2.new(1, 0, 0, 0),
+							AutomaticSize = Enum.AutomaticSize.Y,
+							Text = copy.lobby,
+							textRole = "title",
+							TextWrapped = true,
+							TextXAlignment = Enum.TextXAlignment.Left,
+						}),
+					},
+					content = function()
+						return UI.Label({
+							Name = "LobbyBody",
+							BackgroundTransparency = 1,
+							Size = UDim2.new(1, 0, 0, 0),
+							AutomaticSize = Enum.AutomaticSize.Y,
+							Text = copy.lobbyBody,
+							TextWrapped = true,
+							TextXAlignment = Enum.TextXAlignment.Left,
+						})
+					end,
+					actions = {
+						{
+							id = "NotNow",
+							label = copy.notNow,
+							role = "cancel",
+							onActivate = function()
+								lobbyShown:set(false)
+							end,
+						},
+						{
+							id = "Join",
+							label = copy.joinLobby,
+							role = "default",
+							onActivate = function()
+								status:set("Joined the harbor sprint.")
+								lobbyShown:set(false)
+							end,
+						},
+					},
+				},
+				UI.Sheet "Filters" {
+					title = copy.filters,
+					placement = "side",
+					width = "narrow",
+					isPresented = filtersShown,
+					detent = filtersDetent,
+					detents = { "medium", "large" },
+					content = function()
+						return Host.Frame "FilterList" {
+							BackgroundTransparency = 1,
+							Size = UDim2.new(1, 0, 0, 0),
+							AutomaticSize = Enum.AutomaticSize.Y,
+							Host.UIListLayout({
+								FillDirection = Enum.FillDirection.Vertical,
+								SortOrder = Enum.SortOrder.LayoutOrder,
+								Padding = UDim.new(0, 16),
+							}),
+							UI.Label({
+								LayoutOrder = 1,
+								BackgroundTransparency = 1,
+								Size = UDim2.new(1, 0, 0, 0),
+								AutomaticSize = Enum.AutomaticSize.Y,
+								Text = copy.filtersBody,
+								TextWrapped = true,
+								TextXAlignment = Enum.TextXAlignment.Left,
+							}),
+							UI.Toggle({
+								LayoutOrder = 2,
+								Name = "Night",
+								label = "Night races only",
+								value = nightOnly,
+							}),
+							UI.Button({
+								LayoutOrder = 3,
+								Name = "Clear",
+								label = copy.clear,
+								onActivate = function()
+									nightOnly:set(false)
+								end,
+							}),
+							UI.Button({
+								LayoutOrder = 4,
+								Name = "Apply",
+								label = copy.apply,
+								onActivate = function()
+									filtersShown:set(false)
+								end,
+							}),
+						}
+					end,
 				},
 				UI.Sheet "Briefing" {
 					title = copy.briefing,
@@ -187,6 +323,12 @@ return {
 				large = function()
 					setDetent("large")
 				end,
+				lobby = function()
+					lobbyShown:set(true)
+				end,
+				filters = function()
+					filtersShown:set(true)
+				end,
 			},
 			states = function()
 				return {
@@ -204,6 +346,8 @@ return {
 			report = function()
 				return {
 					sheet = { presented = presented:peek(), detent = detent:peek() },
+					lobby = { presented = lobbyShown:peek(), detent = lobbyDetent:peek() },
+					filters = { presented = filtersShown:peek(), nightOnly = nightOnly:peek() },
 					membership = membership:peek(),
 					status = status:peek(),
 				}
