@@ -41,7 +41,7 @@ local function setup(options)
 		config.userInputService = service
 		config.services.UserInputService = service
 	end
-	local ctx = context(runtime, config)
+	local ctx = context(Compose, runtime, config)
 	local UI = {}
 	registerInputs(ctx, UI)
 	local surfaces = require("../src/ui/nav_modal")(ctx)
@@ -148,6 +148,60 @@ t.describe("Compose native collections", function()
 				t.expect(made.isDestroyed()).toBe(true)
 			end
 		end
+		runtime.dispose()
+	end)
+
+	t.it("accepts a field name as the collection key", function()
+		local engine, runtime, UI, target = setup()
+		local source = Compose.cell({ { id = 7, label = "Seven" }, { id = 9, label = "Nine" } })
+		local keys = {}
+		local stopList, list = runtime.mount(function()
+			return UI.VirtualList({
+				from = source,
+				key = "id",
+				itemSize = 20,
+				render = function(current, _placement, rowKey)
+					table.insert(keys, rowKey)
+					return button(UI, current)
+				end,
+			})
+		end, target)
+		list.AbsoluteWindowSize = engine.types.Vector2.new(200, 100)
+		t.expect(list:FindFirstChild("7", true) ~= nil).toBe(true)
+		t.expect(keys[1]).toBe("7")
+		stopList()
+		local stopTable, tableNode = runtime.mount(function()
+			return UI.Table({
+				from = source,
+				key = "id",
+				columns = {
+					{
+						id = "label",
+						label = "Name",
+						render = function(current)
+							return button(UI, current)
+						end,
+					},
+				},
+			})
+		end, target)
+		tableNode:FindFirstChild("Body").AbsoluteWindowSize = engine.types.Vector2.new(200, 100)
+		t.expect(tableNode:FindFirstChild("Body"):FindFirstChild("9", true) ~= nil).toBe(true)
+		stopTable()
+		local ok, message = pcall(function()
+			local stopBad = runtime.mount(function()
+				return UI.VirtualList({
+					from = source,
+					key = 3,
+					render = function(current)
+						return button(UI, current)
+					end,
+				})
+			end, target)
+			stopBad()
+		end)
+		t.expect(ok).toBe(false)
+		t.expect(string.find(tostring(message), "key must be a function or a field name", 1, true) ~= nil).toBe(true)
 		runtime.dispose()
 	end)
 

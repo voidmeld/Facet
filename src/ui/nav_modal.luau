@@ -1,7 +1,7 @@
 --!strict
 local Types = require("./types")
 local Nav = require("./navigation_types")
-local Core = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local help = require("./help")
 
 return function(ctx: Types.Context): Nav.Surfaces
@@ -17,17 +17,17 @@ return function(ctx: Types.Context): Nav.Surfaces
 	local gui = service("GuiService") :: GuiService?
 	local input = service("UserInputService") :: UserInputService?
 
-	local function selecting(): (Core.Use) -> boolean
+	local function selecting(): (ComposeTypes.Use) -> boolean
 		local active = gui ~= nil and gui.SelectedObject ~= nil
 		local preferred = if input and input.GetPropertyChangedSignal then ctx.observe(input, "PreferredInput") else nil
-		return function(use: Core.Use): boolean
+		return function(use: ComposeTypes.Use): boolean
 			return active or (preferred ~= nil and use(preferred) == E.PreferredInput.Gamepad)
 		end
 	end
 
-	local function preference(): (Core.Use) -> number
+	local function preference(): (ComposeTypes.Use) -> number
 		local source = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "PreferredTransparency") else nil
-		return function(use: Core.Use): number
+		return function(use: ComposeTypes.Use): number
 			local value = if source then use(source) else 1
 			return if type(value) == "number" and value == value then math.clamp(value, 0, 1) else 1
 		end
@@ -108,7 +108,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 				Text = "",
 				BackgroundTransparency = if spec.backgroundTransparency == nil
 					then nil
-					else function(use: Core.Use)
+					else function(use: ComposeTypes.Use)
 						local authored = ctx.read(spec.backgroundTransparency, use)
 						local value = if type(authored) == "number" then math.clamp(authored, 0, 1) else 1
 						return if value >= 1 then 1 else value * preferred(use)
@@ -170,7 +170,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		)
 		if gui then
 			local mounted = ctx.observe(root, "Parent")
-			Compose.watch(function(use: Core.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				if use(mounted) and focusIn(use) and not within(gui.SelectedObject, root) then
 					gui.SelectedObject = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
 				end
@@ -194,10 +194,10 @@ return function(ctx: Types.Context): Nav.Surfaces
 		attach(panel, { Host.UISizeConstraint({ MaxSize = V2.new(width or 440, math.huge) }) })
 		return panel
 	end
-	local function available(anchor: GuiObject): Core.Readable<boolean>
+	local function available(anchor: GuiObject): ComposeTypes.Readable<boolean>
 		local owner = assert(Compose.currentOwner())
 		local value = Compose.cell(false)
-		local ancestryOwner: Core.Owner?
+		local ancestryOwner: ComposeTypes.Owner?
 		local function locate()
 			if owner.isDisposed() then
 				return
@@ -208,7 +208,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 			local nextOwner = owner.createChild()
 			ancestryOwner = nextOwner
 			Compose.withOwner(nextOwner, function()
-				local sources: { Core.Readable<boolean> } = {}
+				local sources: { ComposeTypes.Readable<boolean> } = {}
 				local at: Instance? = anchor
 				local attached = false
 				while at do
@@ -223,7 +223,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 					end
 					at = at.Parent
 				end
-				Compose.watch(function(use: Core.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local enabled = attached
 					for _, source in sources do
 						if not use(source) then
@@ -247,7 +247,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 	): Types.Child
 		local owner = assert(Compose.currentOwner())
 		local enabled = available(anchor)
-		local condition = function(use: Core.Use): boolean
+		local condition = function(use: ComposeTypes.Use): boolean
 			return use(enabled) and ctx.read(presented, use)
 		end
 		local destination = Compose.cell(nil :: Instance?)
@@ -272,7 +272,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		runtime.connect(anchor, "AncestryChanged", locate)
 		locate()
 		return Compose.keyed({
-			from = function(use: Core.Use)
+			from = function(use: ComposeTypes.Use)
 				local target = use(destination)
 				return if target then { target } else {}
 			end,
@@ -305,7 +305,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		local state = ctx.observe(anchor, "GuiState")
 		local selection = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "SelectedObject") else nil
 		local preferred = if input and input.GetPropertyChangedSignal then ctx.observe(input, "PreferredInput") else nil
-		local wanted = Compose.formula(function(use: Core.Use): boolean
+		local wanted = Compose.formula(function(use: ComposeTypes.Use): boolean
 			local kind = if preferred then use(preferred) else nil
 			if kind == E.PreferredInput.Touch then
 				return false
@@ -313,7 +313,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 			return use(state) == E.GuiState.Hover or (selection ~= nil and use(selection) == anchor)
 		end)
 		local rest = runtime.timeline({ duration = 0.45, autoplay = false })
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			if use(wanted) then
 				rest:restart()
 			else
@@ -321,7 +321,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 				rest:seek(0)
 			end
 		end)
-		local armed = Compose.formula(function(use: Core.Use): boolean
+		local armed = Compose.formula(function(use: ComposeTypes.Use): boolean
 			return use(wanted) and use(rest.progress) >= 1
 		end)
 		attach(anchor, {
@@ -331,7 +331,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 				local extent, origin = ctx.observe(layer, "AbsoluteSize"), ctx.observe(layer, "AbsolutePosition")
 				local measure = ctx.text({
 					Name = "HelpMeasure",
-					Text = function(use: Core.Use)
+					Text = function(use: ComposeTypes.Use)
 						return ctx.read(text, use) or ""
 					end,
 					TextWrapped = false,
@@ -343,11 +343,11 @@ return function(ctx: Types.Context): Nav.Surfaces
 				local natural = ctx.observe(measure, "TextBounds")
 				local label = ctx.text({
 					Name = "HelpText",
-					Text = function(use: Core.Use)
+					Text = function(use: ComposeTypes.Use)
 						return ctx.read(text, use) or ""
 					end,
 					TextWrapped = true,
-					Size = function(use: Core.Use)
+					Size = function(use: ComposeTypes.Use)
 						return D2.fromOffset(math.min(math.ceil(use(natural).X) + 1, 264), 0)
 					end,
 					AutomaticSize = E.AutomaticSize.Y,
@@ -363,7 +363,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 				}
 				local measured = ctx.observe(panel, "AbsoluteSize")
 				runtime.decorate(panel, {
-					Position = function(use: Core.Use)
+					Position = function(use: ComposeTypes.Use)
 						local anchorAt, anchorSize, offer, offset, box =
 							use(at), use(bounds), use(extent), use(origin), use(measured)
 						local x = anchorAt.X - offset.X + (anchorSize.X - box.X) / 2

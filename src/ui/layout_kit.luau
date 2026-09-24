@@ -1,18 +1,25 @@
 --!strict
-local Compose = require("../vendor/compose/core")
-local themes = require("./themes")
+local ComposeTypes = require("../vendor/compose/core")
+local bindThemes = require("./themes")
 local Shared = require("./types")
 local Theme = require("./theme_types")
 
 export type Place = (GuiObject, number) -> ()
 export type Kit = {
-	spacing: (Shared.Value<Shared.Space>?, Compose.Use?) -> number,
+	spacing: (Shared.Value<Shared.Space>?, ComposeTypes.Use?) -> number,
 	insets: (Shared.Value<Shared.Padding>?) -> UIPadding?,
 	extent: (Shared.Box, Shared.Extent, Shared.Extent) -> (Shared.Value<UDim2>, Shared.Value<Enum.AutomaticSize>),
 	list: (Shared.Flow, boolean) -> UIListLayout,
-	ordered: ({ Compose.Child }, Place?) -> { Compose.Child },
-	assemble: <P>(P, unknown?, { Instance? }, { Compose.Child }, Place?) -> P,
-	stack: ({ Compose.Child }, Shared.FrameNativeProps?, Shared.Flow, boolean, Shared.Extent?, Shared.Extent?) -> Frame,
+	ordered: ({ ComposeTypes.Child }, Place?) -> { ComposeTypes.Child },
+	assemble: <P>(P, unknown?, { Instance? }, { ComposeTypes.Child }, Place?) -> P,
+	stack: (
+		{ ComposeTypes.Child },
+		Shared.FrameNativeProps?,
+		Shared.Flow,
+		boolean,
+		Shared.Extent?,
+		Shared.Extent?
+	) -> Frame,
 }
 
 local registry = setmetatable({} :: { [Shared.Context]: Kit }, { __mode = "k" })
@@ -23,17 +30,18 @@ function layoutKit.of(ctx: Shared.Context): Kit
 end
 
 function layoutKit.attach(ctx: Shared.Context): Kit
-	local Host, read, types, config = ctx.Host, ctx.read, ctx.types, ctx.config
+	local Host, read, types, config, Compose = ctx.Host, ctx.read, ctx.types, ctx.config, ctx.Compose
+	local themes = bindThemes(Compose)
 	local Enum = types.Enum
 	local defaultMetrics = themes.neutralPackage().metrics
 	local kit = {} :: Kit
 	local function live(value: unknown): boolean
 		return Compose.isReadable(value) or type(value) == "function"
 	end
-	local function derive<T>(compute: (Compose.Use?) -> T, ...: unknown): Shared.Value<T>
+	local function derive<T>(compute: (ComposeTypes.Use?) -> T, ...: unknown): Shared.Value<T>
 		for index = 1, select("#", ...) do
 			if live((select(index, ...))) then
-				return function(use: Compose.Use): T
+				return function(use: ComposeTypes.Use): T
 					return compute(use)
 				end
 			end
@@ -41,7 +49,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 		return compute(nil)
 	end
 	local steps: { [string]: number } = defaultMetrics.space
-	function kit.spacing(value: Shared.Value<Shared.Space>?, use: Compose.Use?): number
+	function kit.spacing(value: Shared.Value<Shared.Space>?, use: ComposeTypes.Use?): number
 		local step = read(value, use)
 		if step == nil then
 			return 0
@@ -72,7 +80,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 			return nil
 		end
 		local function side(name: "top" | "right" | "bottom" | "left"): Shared.Value<UDim>
-			local function pick(use: Compose.Use?): Shared.Space?
+			local function pick(use: ComposeTypes.Use?): Shared.Space?
 				local value = read(padding, use)
 				return if type(value) == "table" then (value :: Shared.Sides)[name] else value
 			end
@@ -103,7 +111,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 		width: Shared.Extent,
 		height: Shared.Extent
 	): (Shared.Value<UDim2>, Shared.Value<Enum.AutomaticSize>)
-		local function resolve(use: Compose.Use?): (Shared.Extent, Shared.Extent)
+		local function resolve(use: ComposeTypes.Use?): (Shared.Extent, Shared.Extent)
 			local w: Shared.Extent? = read(box.width, use)
 			local h: Shared.Extent? = read(box.height, use)
 			return checked(if w == nil then width else w), checked(if h == nil then height else h)
@@ -144,7 +152,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 		end
 		local H, V = Enum.HorizontalAlignment, Enum.VerticalAlignment
 		if flow.align ~= nil then
-			local function align(use: Compose.Use?): Shared.Align
+			local function align(use: ComposeTypes.Use?): Shared.Align
 				local value: Shared.Align? = read(flow.align, use)
 				assert(
 					value == nil or valid(value, { start = true, center = true, ["end"] = true, stretch = true }),
@@ -175,7 +183,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 				spaceAround = Enum.UIFlexAlignment.SpaceAround,
 				spaceEvenly = Enum.UIFlexAlignment.SpaceEvenly,
 			}
-			local function distribute(use: Compose.Use?): Shared.Distribute
+			local function distribute(use: ComposeTypes.Use?): Shared.Distribute
 				local value: Shared.Distribute? = read(flow.distribute, use)
 				assert(
 					value == nil
@@ -185,7 +193,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 				)
 				return if value == nil then "start" else value
 			end
-			local function flex(use: Compose.Use?): Enum.UIFlexAlignment
+			local function flex(use: ComposeTypes.Use?): Enum.UIFlexAlignment
 				return spread[distribute(use)] or Enum.UIFlexAlignment.None
 			end
 			if vertical then
@@ -206,8 +214,8 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 		end
 		return Host.UIListLayout(native)
 	end
-	function kit.ordered(children: { Compose.Child }, place: ((GuiObject, number) -> ())?): { Compose.Child }
-		local result: { Compose.Child } = {}
+	function kit.ordered(children: { ComposeTypes.Child }, place: ((GuiObject, number) -> ())?): { ComposeTypes.Child }
+		local result: { ComposeTypes.Child } = {}
 		for index, child in children do
 			local function stamp(node: Instance)
 				if node:IsA("GuiObject") then
@@ -219,8 +227,8 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 				end
 			end
 			if type(child) == "function" then
-				local directive = child :: Compose.Directive
-				result[index] = function(mountPoint: Compose.MountPoint)
+				local directive = child :: ComposeTypes.Directive
+				result[index] = function(mountPoint: ComposeTypes.MountPoint)
 					directive({
 						parent = mountPoint.parent,
 						host = mountPoint.host,
@@ -245,7 +253,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 		native: P,
 		properties: unknown?,
 		helpers: { Instance? },
-		children: { Compose.Child },
+		children: { ComposeTypes.Child },
 		place: ((GuiObject, number) -> ())?
 	): P
 		local fields = (native :: unknown) :: { [unknown]: unknown }
@@ -268,7 +276,7 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 		return native
 	end
 	function kit.stack(
-		children: { Compose.Child },
+		children: { ComposeTypes.Child },
 		properties: Shared.FrameNativeProps?,
 		flow: Shared.Flow,
 		vertical: boolean,

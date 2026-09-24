@@ -88,9 +88,8 @@ end
 
 local function build(ctx: any)
 	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
-	local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Color3 = Color3, Enum = Enum }
 	local UDim, UDim2, Vector2, Color3, Enum =
-		nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Color3, nativeTypes.Enum
+		ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
 	local reducedMotion = Compose.cell(ctx.guiService ~= nil and ctx.guiService.ReducedMotionEnabled == true)
 	if ctx.guiService then
 		local connection = ctx.guiService:GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(function()
@@ -813,7 +812,7 @@ local function build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Facet Match-3",
+					text = "Facet Match-3",
 					textRole = "title",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -824,7 +823,7 @@ local function build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = hint,
+					text = hint,
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -846,7 +845,7 @@ local function build(ctx: any)
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = scoreText,
+						text = scoreText,
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
@@ -858,7 +857,7 @@ local function build(ctx: any)
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = movesText,
+						text = movesText,
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
@@ -870,7 +869,7 @@ local function build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = artStatus,
+					text = artStatus,
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,

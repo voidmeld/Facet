@@ -52,7 +52,7 @@ t.describe("native public surface", function()
 		local engine = engineLib.new()
 		local runtime = Facet.Roblox.createRuntime(engine)
 		local Host = runtime.constructors
-		local ctx = context(runtime, { types = engine.types })
+		local ctx = context(Facet.Compose, runtime, { types = engine.types })
 		local root = engine.new("ScreenGui")
 		local action, input, button, activated = nil, nil, nil, 0
 		local stop, panel = runtime.mount(function()
@@ -88,7 +88,7 @@ t.describe("native public surface", function()
 		local first = Facet.themes.neutralPackage()
 		first.icons = { test = "rbxassetid://1" }
 		local package = Compose.cell(first)
-		local ctx = context(runtime, { types = engine.types, theme = package })
+		local ctx = context(Facet.Compose, runtime, { types = engine.types, theme = package })
 		local stop, icon = runtime.mount(function()
 			return ctx.icon("test")
 		end, engine.new("ScreenGui"))

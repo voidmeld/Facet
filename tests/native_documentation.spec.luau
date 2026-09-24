@@ -22,6 +22,18 @@ end
 t.describe("native documentation", function()
 	for _, entry in entries do
 		t.it(`executes {entry.file} snippet {entry.index}`, function()
+			if string.find(entry.code, 'require("./lib/native_engine")', 1, true) then
+				local modules = { ["../src"] = Facet, ["./lib/native_engine"] = engineLib }
+				luau.load(entry.code, {
+					debugName = entry.file,
+					environment = {
+						require = function(path: string)
+							return assert(modules[path], path)
+						end,
+					},
+				})()
+				return
+			end
 			local engine = engineLib.new()
 			local runtime = Facet.Roblox.createRuntime(engine)
 			local Compose, Host = Facet.Compose, runtime.constructors
@@ -36,6 +48,10 @@ t.describe("native documentation", function()
 				opt = table.clone(opt or {})
 				opt.types = engine.types
 				return Facet.controls(rt, opt)
+			end
+			facade.bind = function(core, roblox)
+				Facet.bind(core, roblox)
+				return facade
 			end
 			local sheets = {}
 			facade.themes.createStyleSheet = function(rt, pkg, opt)
@@ -93,6 +109,7 @@ t.describe("native documentation", function()
 			env.game = {
 				ReplicatedStorage = {
 					Facet = "Facet",
+					Packages = { Facet = "Facet", Compose = { core = "ComposeCore", roblox = "ComposeRoblox" } },
 					WaitForChild = function()
 						return "Facet"
 					end,
@@ -113,6 +130,8 @@ t.describe("native documentation", function()
 							return Facet.themes.neutralPackage()
 						end,
 					}
+					elseif id == "ComposeCore" then Compose
+					elseif id == "ComposeRoblox" then facade.Roblox
 					else facade
 			end
 			local bindings = {}

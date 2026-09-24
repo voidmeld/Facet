@@ -1,10 +1,11 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Engine = require("./engine_types")
 type Insets = { [string]: UDim }
 
 return function(
-	runtime: Compose.Runtime,
+	Compose: typeof(ComposeTypes),
+	runtime: ComposeTypes.Runtime,
 	types: Engine.RobloxTypes,
 	target: GuiObject?,
 	node: GuiObject,

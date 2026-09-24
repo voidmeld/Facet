@@ -1,6 +1,6 @@
 --!strict
 local policy = require("./collection_policy")
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local CollectionTypes = require("./collection_types")
 return function<V, K>(
@@ -8,8 +8,8 @@ return function<V, K>(
 	spec: CollectionTypes.SelectionOptions<V, K>,
 	source: Types.Value<{ V }>,
 	keyOf: (V, number) -> K,
-	controls: Compose.OrderedCollectionControls<K>,
-	selection: Compose.Cell<CollectionTypes.Selection<K>>,
+	controls: ComposeTypes.OrderedCollectionControls<K>,
+	selection: ComposeTypes.Cell<CollectionTypes.Selection<K>>,
 	defaultMode: "none" | "single" | "multi"
 ): (K, V) -> ()
 	local Compose, read, E = ctx.Compose, ctx.read, ctx.types.Enum
@@ -22,7 +22,7 @@ return function<V, K>(
 			selection:set(value)
 		end
 	end
-	Compose.watch(function(use: Compose.Use)
+	Compose.watch(function(use: ComposeTypes.Use)
 		local existing = read(selection, use)
 		if next(existing) == nil then
 			return

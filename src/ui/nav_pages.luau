@@ -2,7 +2,7 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
-local Core = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 
 type Controls = {
 	TabView: Types.Constructor<Nav.TabViewSpec, Frame>,
@@ -35,14 +35,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	end
 	local function layer(
 		properties: Types.CanvasGroupNativeProps & Types.FrameNativeProps,
-		state: Core.Readable<Core.LayerStackState>,
+		state: ComposeTypes.Readable<ComposeTypes.LayerStackState>,
 		transition: Nav.Transition | false?,
 		hidden: (() -> ())?
 	): GuiObject
 		if transition == nil or transition == false then
 			local node = Host.Frame(properties)
 			if hidden then
-				Compose.watch(function(use: Core.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					if not use(state).top then
 						hidden()
 					end
@@ -54,25 +54,25 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local mounted = Compose.cell(false)
 		local gui = surfaces.service("GuiService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
-		local opacity = runtime.tween(function(use: Core.Use)
+		local opacity = runtime.tween(function(use: ComposeTypes.Use)
 			return if use(mounted) and use(state).top then 1 else 0
 		end, transition)
-		properties.GroupTransparency = function(use: Core.Use)
+		properties.GroupTransparency = function(use: ComposeTypes.Use)
 			return if use(reduced) or read(ctx.config.reducedMotion, use) then 0 else 1 - use(opacity)
 		end
-		properties.Visible = function(use: Core.Use)
+		properties.Visible = function(use: ComposeTypes.Use)
 			return use(state).top or not use(reduced) and use(opacity) > 0
 		end
-		properties.Interactable = function(use: Core.Use)
+		properties.Interactable = function(use: ComposeTypes.Use)
 			return use(state).top
 		end
 		local panel = Host.CanvasGroup(properties)
 		local parent = ctx.observe(panel, "Parent")
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			mounted:set(use(parent) ~= nil)
 		end)
 		if hidden then
-			Compose.watch(function(use: Core.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				if not use(state).top and (use(reduced) or use(opacity) == 0) then
 					hidden()
 				end
@@ -82,7 +82,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	end
 
 	local function checkedSelection(
-		selection: Core.Cell<string>,
+		selection: ComposeTypes.Cell<string>,
 		entries: { Nav.Tab },
 		label: string
 	): { [string]: Nav.Tab }
@@ -97,7 +97,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		return byId
 	end
 
-	UI.TabView = ctx.construct(function(spec: Nav.TabViewSpec): Frame
+	UI.TabView = ctx.construct("TabView", function(spec: Nav.TabViewSpec): Frame
 		assert(
 			spec.retention == nil or spec.retention == "all" or spec.retention == "top",
 			"TabView.retention uses Compose all or top"
@@ -117,7 +117,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			sectionLabels[section.id] = section.label
 		end
 		local byId = checkedSelection(spec.selection, read(spec.tabs), "TabView")
-		local tabMap = Compose.formula(function(use: Core.Use)
+		local tabMap = Compose.formula(function(use: ComposeTypes.Use)
 			local result: { [string]: Nav.Tab } = {}
 			for _, tab in read(spec.tabs, use) do
 				assert(type(tab.id) == "string" and result[tab.id] == nil, "TabView tabs require unique string ids")
@@ -153,7 +153,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local dimensions = ctx.observe(root, "AbsoluteSize")
 		local input = surfaces.service("UserInputService")
 		local primaryInput = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
-		local function resolvePlacement(use: Core.Use): Nav.Placement
+		local function resolvePlacement(use: ComposeTypes.Use): Nav.Placement
 			if spec.style == "collapsible" then
 				return "topBar"
 			end
@@ -175,12 +175,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return if size.Y > 0 and size.X / size.Y > 1.4 then "bottomBarCompact" else "bottomBar"
 		end
 		local placement = Compose.formula(resolvePlacement)
-		local function railWidth(use: Core.Use): number
+		local function railWidth(use: ComposeTypes.Use): number
 			return read(spec.railWidth, use) or math.clamp(math.floor(use(dimensions).X * 0.2), 200, 280)
 		end
 
 		local COMPACT_HEIGHT = 480
-		local collapsed = Compose.formula(function(use: Core.Use): boolean
+		local collapsed = Compose.formula(function(use: ComposeTypes.Use): boolean
 			if spec.style == "collapsible" then
 				return true
 			end
@@ -196,7 +196,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end)
 		local headHeight, footHeight, trailingWidth, aboveHeight =
 			Compose.cell(0), Compose.cell(0), Compose.cell(0), Compose.cell(0)
-		local visibleTabs = Compose.formula(function(use: Core.Use)
+		local visibleTabs = Compose.formula(function(use: ComposeTypes.Use)
 			local customized = read(spec.customization, use)
 			local byId = use(tabMap)
 			if not customized then
@@ -227,12 +227,13 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local panels: { [string]: GuiObject } = {}
 		local bookmarks: { [string]: GuiObject? } = {}
 		local tabButtons: { [string]: TextButton } = {}
-		local tabMeasures: { [string]: { position: Core.Readable<Vector2>, size: Core.Readable<Vector2> } } = {}
+		local tabMeasures: { [string]: { position: ComposeTypes.Readable<Vector2>, size: ComposeTypes.Readable<Vector2> } } =
+			{}
 		local gui = surfaces.service("GuiService")
 		local selectedObject = if gui then ctx.observe(gui, "SelectedObject") else Compose.cell(nil)
 		local previous: string?
 		local handoff: string?
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local id = use(spec.selection)
 			byId = use(tabMap)
 			local allowed = false
@@ -305,25 +306,25 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			BorderSizePixel = 0,
 			ScrollBarThickness = 2,
 			CanvasSize = D2.fromOffset(0, 0),
-			AutomaticCanvasSize = function(use: Core.Use)
+			AutomaticCanvasSize = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar" then E.AutomaticSize.Y else E.AutomaticSize.X
 			end,
-			ScrollingDirection = function(use: Core.Use)
+			ScrollingDirection = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar" then E.ScrollingDirection.Y else E.ScrollingDirection.X
 			end,
-			Size = function(use: Core.Use)
+			Size = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar"
 					then D2.new(0, railWidth(use), 1, -use(headHeight) - use(footHeight))
 					else D2.new(1, -use(trailingWidth), 0, 44)
 			end,
-			Position = function(use: Core.Use)
+			Position = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar"
 					then D2.fromOffset(0, use(headHeight))
 					elseif string.find(use(placement), "bottom") then D2.new(0, 0, 1, -44)
 					else D2.fromOffset(0, 0)
 			end,
 			Host.UIListLayout({
-				FillDirection = function(use: Core.Use)
+				FillDirection = function(use: ComposeTypes.Use)
 					return if use(placement) == "sidebar" then E.FillDirection.Vertical else E.FillDirection.Horizontal
 				end,
 				SortOrder = E.SortOrder.LayoutOrder,
@@ -334,11 +335,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				key = function(tab: Nav.Tab): string
 					return tab.id
 				end,
-				render = function(current: Core.Readable<Nav.Tab>, index: Core.Readable<number>): Instance
+				render = function(
+					current: ComposeTypes.Readable<Nav.Tab>,
+					index: ComposeTypes.Readable<number>
+				): Instance
 					local tab = current:peek()
 					local button = UI.Button({
 						Name = tab.id,
-						label = function(use: Core.Use)
+						label = function(use: ComposeTypes.Use)
 							local tab = use(current)
 							if read(spec.iconOnly, use) then
 								return ""
@@ -350,20 +354,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						icon = tab.icon,
 						TextSize = spec.textSize,
 						LayoutOrder = index,
-						Size = function(use: Core.Use)
+						Size = function(use: ComposeTypes.Use)
 							return if use(placement) == "sidebar" then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
 						end,
-						AutomaticSize = function(use: Core.Use)
+						AutomaticSize = function(use: ComposeTypes.Use)
 							return if use(placement) == "sidebar" then E.AutomaticSize.None else E.AutomaticSize.X
 						end,
-						TextXAlignment = function(use: Core.Use)
+						TextXAlignment = function(use: ComposeTypes.Use)
 							return if use(placement) == "sidebar"
 								then E.TextXAlignment.Left
 								else E.TextXAlignment.Center
 						end,
 						TextTruncate = E.TextTruncate.AtEnd,
 						enabled = spec.enabled,
-						selected = function(use: Core.Use)
+						selected = function(use: ComposeTypes.Use)
 							return use(spec.selection) == tab.id and read(spec.indicator, use) == "pill"
 						end,
 						onActivate = function()
@@ -371,7 +375,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end,
 					})
 					button:AddTag("facet-tab-item")
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						local current = use(spec.selection) == tab.id
 						local place = use(placement)
 						local filled = current
@@ -389,7 +393,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					end)
 					surfaces.attach(button, {
 						Host.UISizeConstraint({ MinSize = V2.new(44, 44) }),
-						Compose.show(function(use: Core.Use)
+						Compose.show(function(use: ComposeTypes.Use)
 							return use(spec.selection) == tab.id
 								and read(spec.indicator, use) ~= "none"
 								and read(spec.indicator, use) ~= "pill"
@@ -405,7 +409,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							)
 						end),
 					})
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						button:SetAttribute("FacetLabel", read(use(current).label, use) or tab.id)
 					end)
 					tabButtons[tab.id] = button
@@ -418,7 +422,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					end)
 					if next(sectionLabels) then
 						return ctx.column({
-							Compose.show(function(use: Core.Use)
+							Compose.show(function(use: ComposeTypes.Use)
 								local at = use(index)
 								local tabs = use(visibleTabs)
 								return use(placement) == "sidebar"
@@ -427,7 +431,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							end, function()
 								return ctx.text({
 									Name = "Section",
-									Text = function(use: Core.Use)
+									Text = function(use: ComposeTypes.Use)
 										return sectionLabels[assert(use(current).section)]
 									end,
 									Size = D2.new(1, 0, 0, 28),
@@ -438,10 +442,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						}, {
 							Name = "TabRow-" .. tab.id,
 							LayoutOrder = index,
-							Size = function(use: Core.Use)
+							Size = function(use: ComposeTypes.Use)
 								return if use(placement) == "sidebar" then D2.new(1, 0, 0, 0) else D2.fromOffset(0, 44)
 							end,
-							AutomaticSize = function(use: Core.Use)
+							AutomaticSize = function(use: ComposeTypes.Use)
 								return if use(placement) == "sidebar" then E.AutomaticSize.Y else E.AutomaticSize.X
 							end,
 						})
@@ -451,7 +455,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			}),
 		}
 		local barSize, barPosition = ctx.observe(bar, "AbsoluteSize"), ctx.observe(bar, "AbsolutePosition")
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local selected = use(spec.selection)
 			local measure = tabMeasures[selected]
 			if not measure then
@@ -476,14 +480,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			BackgroundTransparency = 1,
 
 			ClipsDescendants = true,
-			Position = function(use: Core.Use)
+			Position = function(use: ComposeTypes.Use)
 				local place = use(placement)
 				return if place == "sidebar"
 					then D2.fromOffset(railWidth(use), 0)
 					elseif place == "topBar" then D2.fromOffset(0, 52)
 					else D2.fromOffset(0, 0)
 			end,
-			Size = function(use: Core.Use)
+			Size = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar"
 					then D2.new(1, -(railWidth(use)), 1, 0)
 					else D2.new(1, 0, 1, -52 - use(aboveHeight))
@@ -492,8 +496,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				from = visited,
 				retention = "all",
 				render = function(
-					current: Core.Readable<string>,
-					state: Core.Readable<Core.LayerStackState>,
+					current: ComposeTypes.Readable<string>,
+					state: ComposeTypes.Readable<ComposeTypes.LayerStackState>,
 					id: string
 				): Instance
 					tabDepth += 1
@@ -509,7 +513,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Name = id,
 							BackgroundTransparency = 1,
 							Size = D2.fromScale(1, 1),
-							Visible = function(use: Core.Use)
+							Visible = function(use: ComposeTypes.Use)
 								return use(state).top
 							end,
 							SelectionGroup = true,
@@ -534,7 +538,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					)
 					panels[id] = panel
 					local shown = ctx.observe(panel, "Visible")
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						if not use(shown) or handoff ~= id or not gui then
 							return
 						end
@@ -561,7 +565,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		}
 		surfaces.attach(root, { bar, layers })
 		runtime.decorate(bar, {
-			Visible = function(use: Core.Use)
+			Visible = function(use: ComposeTypes.Use)
 				return not use(collapsed)
 			end,
 		})
@@ -571,18 +575,18 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					Size = D2.fromOffset(0, 44),
 					AutomaticSize = E.AutomaticSize.X,
 					disclosure = true,
-					label = function(use: Core.Use)
+					label = function(use: ComposeTypes.Use)
 						local tab = use(tabMap)[use(spec.selection)]
 						return read(tab.label, use) or tab.id
 					end,
-					items = function(use: Core.Use)
+					items = function(use: ComposeTypes.Use)
 						local items: { Nav.MenuItem<string> } = {}
 						for _, tab in use(visibleTabs) do
 							table.insert(items, {
 								id = tab.id,
 								label = tab.label or tab.id,
 								icon = tab.icon,
-								marked = function(use: Core.Use)
+								marked = function(use: ComposeTypes.Use)
 									return use(spec.selection) == tab.id
 								end,
 								onSelect = function()
@@ -612,7 +616,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			surfaces.attach(root, {
 				Compose.keyed({
-					from = function(use: Core.Use): { Nav.Placement }
+					from = function(use: ComposeTypes.Use): { Nav.Placement }
 						local place = use(placement) :: Nav.Placement
 						local result: { Nav.Placement } = {}
 						if slots[slot][place] then
@@ -620,7 +624,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 						return result
 					end,
-					render = function(current: Core.Readable<Nav.Placement>): Instance
+					render = function(current: ComposeTypes.Readable<Nav.Placement>): Instance
 						local built = build(current:peek())
 						if built == nil then
 							return Host.Folder({})
@@ -629,7 +633,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Name = "Accessory-" .. slot,
 							BackgroundTransparency = 1,
 							ClipsDescendants = true,
-							Size = function(use: Core.Use)
+							Size = function(use: ComposeTypes.Use)
 								return if slot == "head" or slot == "foot"
 									then D2.fromOffset(railWidth(use), 0)
 									elseif slot == "trailing" then D2.fromOffset(0, 44)
@@ -639,12 +643,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							built,
 						})
 						local measure = ctx.observe(accessory, "AbsoluteSize")
-						local metric: Core.Cell<number> = if slot == "head"
+						local metric: ComposeTypes.Cell<number> = if slot == "head"
 							then headHeight
 							elseif slot == "foot" then footHeight
 							elseif slot == "trailing" then trailingWidth
 							else aboveHeight
-						Compose.watch(function(use: Core.Use)
+						Compose.watch(function(use: ComposeTypes.Use)
 							local size = use(measure)
 							metric:set(if slot == "trailing" then size.X else size.Y)
 						end)
@@ -654,7 +658,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						runtime.decorate(accessory, {
 							Name = "Accessory-" .. slot,
 							ZIndex = 5,
-							Position = function(use: Core.Use)
+							Position = function(use: ComposeTypes.Use)
 								local place = use(placement)
 								if slot == "head" then
 									return D2.fromOffset(0, 0)
@@ -693,7 +697,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			select(list[nextIndex].id)
 		end
 		if ctx.action then
-			local active = function(use: Core.Use)
+			local active = function(use: ComposeTypes.Use)
 				return read(spec.enabled, use) ~= false
 					and gui ~= nil
 					and surfaces.within(use(selectedObject), if spec.shoulderNavigation == "content" then root else bar)
@@ -718,7 +722,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local selectedObject = if gui then ctx.observe(gui, "SelectedObject") else Compose.cell(nil)
 		local depth = navigationDepth
 		local rootEntry: Nav.NavigationEntry<P> = { id = "@root" }
-		local errorText: Core.Cell<string?> = Compose.cell(nil :: string?)
+		local errorText: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
 		local accepted = { rootEntry }
 		local function validate(path: { Nav.NavigationEntry<P> }): { Nav.NavigationEntry<P> }
 			assert(type(path) == "table", "NavigationStack.path must contain an array")
@@ -733,7 +737,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return list
 		end
 		validate(spec.path:peek())
-		local entries = Compose.formula(function(use: Core.Use)
+		local entries = Compose.formula(function(use: ComposeTypes.Use)
 			local ok, list = pcall(validate, use(spec.path))
 			if ok then
 				accepted = list
@@ -758,8 +762,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				from = entries,
 				retention = "all",
 				render = function(
-					current: Core.Readable<Nav.NavigationEntry<P>>,
-					state: Core.Readable<Core.LayerStackState>
+					current: ComposeTypes.Readable<Nav.NavigationEntry<P>>,
+					state: ComposeTypes.Readable<ComposeTypes.LayerStackState>
 				): Instance
 					local entry = current:peek()
 					local destination = if entry == rootEntry then spec.root else spec.destinations[entry.id]
@@ -768,7 +772,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						Name = entry.id,
 						BackgroundTransparency = 1,
 						Size = D2.fromScale(1, 1),
-						Visible = function(use: Core.Use)
+						Visible = function(use: ComposeTypes.Use)
 							return use(state).top
 						end,
 						Host.Frame "NavigationBar" {
@@ -781,7 +785,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									Text = destination.title or "",
 									Size = D2.fromScale(1, 1),
 									TextTruncate = E.TextTruncate.AtEnd,
-									TextXAlignment = function(use: Core.Use)
+									TextXAlignment = function(use: ComposeTypes.Use)
 										return if use(state).index > 1
 											then E.TextXAlignment.Center
 											else E.TextXAlignment.Left
@@ -789,7 +793,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								}),
 								if entry == rootEntry then "type-title" else "type-heading"
 							) :: Types.Child,
-							Compose.show(function(use: Core.Use)
+							Compose.show(function(use: ComposeTypes.Use)
 								return use(state).index > 1
 							end, function()
 								return UI.Button "Back" {
@@ -829,13 +833,13 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local remembered: GuiObject?
 					local previousTop: boolean?
 					local focusing = surfaces.selecting()
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						local selected = use(selectedObject)
 						if selected and selected:IsA("GuiObject") and surfaces.within(selected, panel) then
 							remembered = selected :: GuiObject
 						end
 					end)
-					Compose.watch(function(use: Core.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						local top = use(state).top
 						if not use(parent) then
 							return
@@ -863,19 +867,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			}),
 		}))
 		if ctx.action then
-			ctx.action(root, "NavigationBack", { "Escape", "ButtonB" }, function(use: Core.Use)
+			ctx.action(root, "NavigationBack", { "Escape", "ButtonB" }, function(use: ComposeTypes.Use)
 				return #use(spec.path) > 0 and (depth == 0 or surfaces.within(use(selectedObject), root))
 			end, pop, { priority = 1000 + depth })
 		end
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			root:SetAttribute("FacetError", use(errorText))
 		end)
 		return root
 	end
 
-	UI.NavigationStack = ctx.construct(navigationStack)
+	UI.NavigationStack = ctx.construct("NavigationStack", navigationStack)
 
-	UI.PageView = ctx.construct(function(spec: Nav.PageViewSpec): Frame
+	UI.PageView = ctx.construct("PageView", function(spec: Nav.PageViewSpec): Frame
 		local byId = checkedSelection(spec.selection, spec.pages, "PageView")
 		local indexById: { [string]: number } = {}
 		for index, page in spec.pages do
@@ -888,7 +892,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local gui = surfaces.service("GuiService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
 		local layout = Host.UIPageLayout "PagesLayout" {
-			Animated = function(use: Core.Use)
+			Animated = function(use: ComposeTypes.Use)
 				return read(ctx.config.reducedMotion, use) ~= true and not use(reduced)
 			end,
 			Circular = false,
@@ -918,7 +922,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		surfaces.attach(pages, children)
 		local changing = false
 		local parent = ctx.observe(pages, "Parent")
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local id = use(spec.selection)
 			assert(byId[id], "PageView.selection must name a declared page")
 			if use(parent) then
@@ -929,7 +933,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end)
 		local gui = surfaces.service("GuiService")
 		local current = ctx.observe(layout, "CurrentPage")
-		Compose.watch(function(use: Core.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local page = use(current)
 			if
 				gui
@@ -954,7 +958,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				footer,
 				ctx.text({
 					Name = "Summary",
-					Text = function(use: Core.Use)
+					Text = function(use: ComposeTypes.Use)
 						return `Page {indexById[use(spec.selection)]} of {#spec.pages}`
 					end,
 				})
@@ -981,7 +985,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				ctx.row({
 					UI.Button "Previous" {
 						label = "Previous",
-						enabled = function(use: Core.Use)
+						enabled = function(use: ComposeTypes.Use)
 							return indexById[use(spec.selection)] > 1
 						end,
 						onActivate = function()
@@ -990,7 +994,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					},
 					UI.Button "Next" {
 						label = "Next",
-						enabled = function(use: Core.Use)
+						enabled = function(use: ComposeTypes.Use)
 							return indexById[use(spec.selection)] < #spec.pages
 						end,
 						onActivate = function()

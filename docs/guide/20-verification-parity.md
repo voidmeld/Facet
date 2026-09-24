@@ -17,7 +17,7 @@ where.
   still promises, but no candidate case tested it. The parity tests close
   837 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 56 cases remain.
-- 1,914 of the 3,320 covered cases have a weaker
+- 1,479 of the 3,320 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -36,8 +36,8 @@ where.
   gate evidence. `tools/package.sh publish` reads the `release` file and
   refuses anything but a clean, passing run of the same source.
 - The audit found 10 defects in `src` and 3 in the examples. All of them
-  are fixed. The parity tests found and fixed 11 more defects in `src` and
-  2 more in the examples. [Fixed after the audit](#fixed-after-the-audit)
+  are fixed. The parity tests found and fixed 16 more defects in `src` and
+  4 more in the examples. [Fixed after the audit](#fixed-after-the-audit)
   names the test for each fix.
 
 ## Method
@@ -94,7 +94,7 @@ last column names the candidate specs that the group cites most.
 | Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
 | Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
-| Scrolling | 330 | 93 | 60 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
+| Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 581 | 142 | 80 | 33 | 404 | 2 | `native_themes_media`, `native_navigation`, `native_inputs` |
 | Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
 | Theme packages | 379 | 149 | 71 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
@@ -105,17 +105,17 @@ last column names the candidate specs that the group cites most.
 | Menus and pickers | 141 | 103 | 58 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
 | Navigation containers | 72 | 64 | 36 | 1 | 2 | 5 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
 | Presented surfaces | 287 | 124 | 81 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
-| Virtual collections | 214 | 156 | 127 | 3 | 52 | 3 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
-| Tables | 156 | 97 | 43 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
-| Row actions | 264 | 149 | 101 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 166 | 46 | 34 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| Virtual collections | 214 | 156 | 6 | 3 | 52 | 3 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
+| Tables | 156 | 97 | 9 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
+| Row actions | 264 | 149 | 19 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
+| HUD and world targets | 166 | 46 | 30 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 28 | 17 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
-| Docs, examples and tooling | 498 | 51 | 11 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
-| Gallery and examples | 425 | 237 | 133 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
-| Reference apps | 327 | 151 | 45 | 22 | 153 | 1 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
+| Docs, examples and tooling | 498 | 51 | 0 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
+| Gallery and examples | 425 | 237 | 58 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
+| Reference apps | 327 | 151 | 2 | 22 | 153 | 1 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
-| Replication and server state | 55 | 31 | 14 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
+| Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
 | Error handling and refusals | 220 | 69 | 16 | 2 | 146 | 3 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
@@ -506,6 +506,21 @@ change fixes it.
 | AE7 | `examples/gallery/client/init.client.luau` | An empty `Facet_Scenario` with `Facet_Example` loaded the example as a fixture. The boot choice is now `catalogue.boot` in `demo_picker.luau`. |
 | AD1 | `docs/guide/README.md` | The guide index linked one of the seven extension playbooks. |
 
+### Fixed with the stronger assertion tests
+
+A case in a `tests/native_parity_weaker_*.spec.luau` file shows each of these
+defects. The same change fixes it.
+
+| ID | File | Defect |
+|---|---|---|
+| `WA1` | `examples/gallery/examples/02_playlist_table.luau` | The Rating column showed a resize grip and took resize keys, but the readout said that Rating is locked. The column now sets `resizable = false`. |
+| `WA2` | `src/ui/collection_table.luau` | With editing on and a destructive row action, the row cells moved right by the edit gutter, but the header did not. The Table now adds the widest row edit gutter to the header position and width, the collapse room and the canvas width. |
+| `WA3` | `src/ui/collection_snap.luau` | A flick without a pointer press (wheel, trackpad or engine momentum) started from a stale offset. A fast flick up from row 8 went to the top, and a flick down after a snap did not advance. A scroll from rest now starts at the resting offset. |
+| `WA4` | `src/ui/collection_row_actions.luau` | A row stayed open and kept the shared open-row claim when the actions of its open side became empty. When the actions came back, the tray opened again without a swipe. The row now closes when its open side has no actions. |
+| `WA5` | `examples/gallery/scenarios/action_controls.luau` | The Distant TV preview scales the gallery by 1.5, but the action controls demo read the unscaled viewport width. At 1440 px the Showroom and Race Setup sections stayed side by side under the preview. The gallery now gives demos `ctx.sceneViewport`, the viewport divided by the preview scale, and the demo reads it. |
+| `WA6` | `src/ui/collections.luau` | VirtualList and VirtualGrid wrote an equal CanvasSize again on each scroll and on each edit to a row outside the window. Table wrote its outer Size, body Size, body CanvasSize and header Position again on each vertical scroll. These properties now bind to the numeric extent and the horizontal scroll offset, so only a real change writes. |
+| `WA7` | `src/ui/media.luau` | AvatarGroup kept the old resource lease and image when the resource of a member changed under the same id. A member with a resource is now keyed by its id and its resource, so only that face mounts again with a new lease. |
+
 ## Gaps closed by this audit
 
 [`tests/native_parity_gaps.spec.luau`](../../tests/native_parity_gaps.spec.luau)
@@ -727,6 +742,30 @@ close these contracts. The data file names the case for each contract.
 | `native_parity_media` | icon coverage | paint-53, paint-54, themes-P2-54 | 14 |
 | `native_parity_apps` | Collections | collections-21, collections-128, collections-129, collections-134, collections-136, collections-139, collections-184, collections-207, collections-216, collections-302, collections-225, collections-230, collections-232, collections-244, collections-234, collections-245, collections-250, collections-255, collections-253, collections-263, collections-270, mech1-130 | 39 |
 | `native_parity_apps` | NavigationStack and CollapsibleView | navigation-3-04, navigation-3-24, navigation-3-15, navigation-3-16, navigation-3-17, navigation-3-23, navigation-2-04 | 12 |
+
+### Stronger assertions for weaker contracts
+
+These specs add sibling cases for covered contracts whose candidate
+assertion was weaker than the main assertion. "Equal" lists the
+contracts that now assert all that main asserted and that is still
+promised. The `weaker` field of these contracts is removed. "Still
+weaker" lists the contracts that get more assertions, but that still
+need a Roblox layout result from a live Studio check, or that keep a
+product difference from main. Their `weaker` field names the missing
+assertion. A contract that gets no new case is not in this table. Its
+`weaker` field tells why.
+
+| Spec | Group | Equal | Main cases | Still weaker | Main cases |
+|---|---|---|---:|---|---:|
+| `native_parity_weaker_apps` | Docs, examples and tooling | `apps2-78`, `mech1-76`, `paint-139` | 11 | - | 0 |
+| `native_parity_weaker_apps` | Reference apps | `apps-01`, `apps-03`, `apps-34`, `apps-35`, `apps-40`, `apps-43`, `apps-51`, `apps-69`, `apps-77`, `apps-79`, `apps-81`, `apps-85`, `apps-93`, `apps-94`, `apps-97`, `apps-99`, `apps-103`, `apps-106`, `apps-107` | 43 | `apps-82` | 2 |
+| `native_parity_weaker_gallery` | Gallery and examples | `apps2-17`, `apps2-66`, `apps2-102`, `apps2-114`, `apps2-195`, `apps2-261`, `apps2-285`, `collections-109`, `mech2-26`, `navigation-2-50`, `navigation-3-32`, `navigation-3-36`, `navigation-5-45`, `paint-47`, `paint-125` | 75 | `apps2-01`, `apps2-86`, `apps-193`, `collections-101`, `inputs-77`, `mech2-25`, `mech3-20`, `navigation-1-65` | 45 |
+| `native_parity_weaker_hud` | HUD and world targets | `apps2-130`, `apps-215`, `themes-P1-102` | 4 | `apps-206`, `apps-210`, `apps-214`, `apps-218`, `apps-221`, `apps-234`, `themes-P1-11`, `themes-P1-14` | 30 |
+| `native_parity_weaker_hud` | Replication and server state | `apps2-41`, `apps2-127` | 14 | - | 0 |
+| `native_parity_weaker_rows` | Row actions | `apps2-38`, `apps2-40`, `apps2-265`, `collections-57`, `collections-61`, `collections-65`, `collections-67`, `collections-76`, `collections-88`, `collections-116`, `collections-120`, `collections-122`, `collections-145`, `collections-168`, `collections-281`, `collections-284`, `inputs-58` | 82 | `apps2-39`, `collections-11`, `collections-53` | 19 |
+| `native_parity_weaker_scrolling` | Scrolling | `apps2-267`, `apps-225`, `apps-231`, `collections-03`, `collections-15`, `collections-32`, `collections-125`, `collections-127`, `collections-176`, `collections-183`, `collections-231`, `collections-242`, `navigation-5-05` | 50 | `collections-262`, `navigation-1-18` | 7 |
+| `native_parity_weaker_tables` | Tables | `apps2-168`, `apps2-171`, `apps2-173`, `apps-242`, `collections-36`, `collections-37`, `collections-137`, `collections-142`, `collections-144`, `collections-151`, `collections-164`, `inputs-06` | 34 | `apps2-175`, `collections-133`, `collections-134`, `collections-203`, `collections-207` | 9 |
+| `native_parity_weaker_virtual` | Virtual collections | `apps2-141`, `apps2-243`, `apps-122`, `collections-07`, `collections-09`, `collections-19`, `collections-20`, `collections-208`, `collections-222`, `collections-223`, `collections-240`, `collections-249`, `collections-258`, `collections-274`, `collections-296`, `collections-299`, `collections-300`, `collections-305`, `mech1-72`, `mech1-96`, `mech2-30`, `mech3-03`, `mech3-97`, `themes-P1-35` | 121 | `apps2-57`, `apps2-231`, `navigation-4-68` | 6 |
 
 ## Proposed tests for the largest gaps
 

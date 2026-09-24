@@ -13,10 +13,13 @@ and styling. This reference describes the `0.12.0` surface.
 | `Roblox` | The pinned Compose Roblox module, by reference. `createRuntime(engine?)` makes the native runtime. `createHost(engine?)` makes its host. |
 | `controls(runtime, options?)` | Returns the control constructor table for that native runtime. |
 | `themes` | Theme package definitions, native StyleSheet compilation, icons and skins. |
+| `COMPOSE_COMMIT` | The full Compose commit of the pinned copy. The Facet tests use this commit. |
+| `bind(Compose, Roblox)` | Returns a Facet table whose `controls` and `themes` use the Compose core module and the Compose Roblox module that you give. See [Your own Compose](#your-own-compose). |
 
 ### Types
 
-The exported Luau types include `Controls`, `ControlOptions`, `ThemePackage`,
+The exported Luau types include `Facet`, `ComposeModule`, `ComposeRobloxModule`,
+`Controls`, `ControlOptions`, `ThemePackage`,
 and the `Props` and `Spec` contracts of each control. The layout types include
 `Space`, `Padding` and `Extent`. `Cell<T>`, `Readable<T>`,
 `Runtime`, `Owner` and `Use` are the Compose types. Collection, menu and picker
@@ -76,6 +79,43 @@ local stop = runtime.mount(function()
 end, game.Players.LocalPlayer.PlayerGui)
 ```
 
+### Your own Compose
+
+A game that already uses Compose must use one Compose instance for its state
+and for Facet. Two instances make two reactive graphs. A value from one graph
+does not reliably update a reader in the other graph.
+
+`Facet.bind(Compose, Roblox)` returns a table with the same fields as `Facet`.
+Its `Compose` and `Roblox` fields are the modules that you give. Its `controls`
+and `themes` use only those modules. The default `Facet` table is
+`bind` applied to the pinned copy.
+
+```luau
+local Compose = require(game.ReplicatedStorage.Packages.Compose.core)
+local ComposeRoblox = require(game.ReplicatedStorage.Packages.Compose.roblox)
+local Facet = require(game.ReplicatedStorage.Packages.Facet).bind(Compose, ComposeRoblox)
+local runtime = ComposeRoblox.createRuntime()
+local UI = Facet.controls(runtime)
+```
+
+Give both modules from the same Compose copy. Make the runtime with that
+`Roblox` module.
+
+`bind` rules:
+
+- The Facet tests use the Compose commit in `COMPOSE_COMMIT`. Facet supports a
+  later Compose commit when it keeps the functions that Facet uses and their
+  behavior.
+- `bind` stops with an error when the Compose module does not have a function
+  that Facet uses. The error names the function and the tested commit. `bind`
+  cannot find a change in behavior. Run your tests when you change Compose.
+- A control stops with an error that names the control when no owner of its
+  Compose instance is active. This occurs when you build a control outside
+  `runtime.mount`, or when the runtime comes from a different Compose instance.
+- A control stops with an error that names the control and the option when an
+  option is a cell or formula from a different Compose instance. `read` of a
+  value from a different Compose instance also stops with an error.
+
 ## Constructor contract
 
 `UI.Button(spec)` and `UI.Button("Name")(spec)` are equivalent construction
@@ -91,7 +131,10 @@ Roblox names: `Size`, `Position`, `AutomaticSize`, `LayoutOrder`, `Visible`,
 `TextSize` and the others. The control forwards native events, Compose property
 and event keys, `Attributes` and numeric children to the host. To add native
 tags, use `node:AddTag(name)`. An unsupported control option causes an error.
-It does not become inert metadata.
+It does not become inert metadata. The error names the control and, when an
+option is close, suggests it:
+`Facet UI.Button: unknown option 'lable'. Did you mean 'label'?`. A spec that is
+not a table gives `Facet UI.Button: expected a property table, got number`.
 
 ### State
 
@@ -527,7 +570,9 @@ not a second application presenter.
 ### VirtualList and VirtualGrid
 
 Required: `from` (an array, readable or body) and
-`render(current, placement, key)`. `key` is a function. If you omit it, Compose
+`render(current, placement, key)`. `key` is a function `(item, index) -> key`
+or the name of the field that holds the identity, for example `key = "id"`. A
+field name gives `tostring(item[field])` as the key. If you omit `key`, Compose
 uses item identity. Render receives readables for the current item and its
 placement, and returns native content. Keep durable row state outside that
 render owner.
@@ -585,7 +630,7 @@ Native properties and children stay available.
 local rows = Compose.cell({ { id = "a", title = "Amber" } })
 local list = UI.VirtualList {
     from = rows,
-    key = function(item) return item.id end,
+    key = "id",
     itemSize = 52,
     Size = UDim2.fromScale(1, 1),
     render = function(current)
@@ -600,7 +645,8 @@ local list = UI.VirtualList {
 
 ### Table
 
-`from`, `key` and `columns` define the rows. A column has:
+`from`, `key` and `columns` define the rows. `key` has the same forms as for
+VirtualList. A column has:
 
 - `id` and `label`,
 - an optional pixel `width` (otherwise flex),

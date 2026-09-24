@@ -3,6 +3,7 @@ local Compose = require("@self/vendor/compose/core")
 local Roblox = require("@self/vendor/compose/roblox")
 local ControlTypes = require("@self/ui/control_types")
 local createControls: ControlTypes.Factory = require("@self/ui")
+local bindThemes = require("@self/ui/themes")
 local InputTypes = require("@self/ui/input_types")
 local NavigationTypes = require("@self/ui/navigation_types")
 local RadialTypes = require("@self/ui/radial_types")
@@ -75,10 +76,69 @@ export type Readable<T> = Compose.Readable<T>
 export type Runtime = Compose.Runtime
 export type Owner = Compose.Owner
 export type Use = Compose.Use
-return table.freeze({
-	VERSION = "0.12.0",
-	Compose = Compose,
-	Roblox = Roblox,
-	controls = createControls,
-	themes = require("@self/ui/themes"),
-})
+export type ComposeModule = typeof(Compose)
+export type ComposeRobloxModule = typeof(Roblox)
+export type Facet = {
+	VERSION: string,
+	COMPOSE_COMMIT: string,
+	Compose: ComposeModule,
+	Roblox: ComposeRobloxModule,
+	controls: (Runtime, ControlOptions?) -> Controls,
+	themes: ThemeTypes.Themes,
+	bind: (ComposeModule, ComposeRobloxModule) -> Facet,
+}
+
+local VERSION = "0.12.0"
+local COMPOSE_COMMIT = "974b7527709a4db61024cc8994cdce30adc49790"
+local USED = {
+	"boundary",
+	"cell",
+	"cleanup",
+	"createFocusScope",
+	"createPool",
+	"createSharedResource",
+	"currentOwner",
+	"formula",
+	"fragment",
+	"isReadable",
+	"keyed",
+	"portal",
+	"presence",
+	"sharedCell",
+	"show",
+	"static",
+	"switch",
+	"watch",
+	"withOwner",
+}
+
+local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
+	local fields = (core :: unknown) :: { [string]: unknown }
+	for _, name in USED do
+		if type(fields[name]) ~= "function" then
+			error(
+				`Facet.bind: this Compose has no function '{name}'. Facet {VERSION} supports Compose `
+					.. `{string.sub(COMPOSE_COMMIT, 1, 7)} and later commits that keep the functions Facet uses.`,
+				2
+			)
+		end
+	end
+	if type(roblox) ~= "table" or type(roblox.createRuntime) ~= "function" then
+		error("Facet.bind: pass the Compose Roblox module from the same Compose copy as the second argument", 2)
+	end
+	local surface: Facet
+	surface = table.freeze({
+		VERSION = VERSION,
+		COMPOSE_COMMIT = COMPOSE_COMMIT,
+		Compose = core,
+		Roblox = roblox,
+		controls = function(runtime: Runtime, options: ControlOptions?): Controls
+			return createControls(core, runtime, options)
+		end,
+		themes = bindThemes(core),
+		bind = bind,
+	})
+	return surface
+end
+
+return bind(Compose, Roblox)

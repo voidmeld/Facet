@@ -1,5 +1,5 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local Engine = require("./engine_types")
 local Layout = require("./layout_types")
@@ -7,22 +7,22 @@ local layoutKit = require("./layout_kit")
 export type LayoutControls = Layout.LayoutControls
 
 return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.LayoutControls
-	local Host, read = ctx.Host, ctx.read
+	local Host, read, Compose = ctx.Host, ctx.read, ctx.Compose
 	local kit = layoutKit.of(ctx)
 	local E, D2, V2 = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2
 	local UI: Layout.LayoutControls = controls or ({} :: Layout.LayoutControls)
 	local flowKeys = { "gap", "padding", "align", "distribute", "wrap", "width", "height" }
-	local function split(spec: unknown, keys: { string }): ({ [unknown]: unknown }, { Compose.Child })
+	local function split(spec: unknown, keys: { string }): ({ [unknown]: unknown }, { ComposeTypes.Child })
 		local fields = spec :: { [unknown]: unknown }
 		local named: { [unknown]: unknown } = {}
-		local children: { Compose.Child } = {}
+		local children: { ComposeTypes.Child } = {}
 		for key, value in fields do
 			if type(key) ~= "number" then
 				named[key] = value
 			end
 		end
 		for index = 1, #fields do
-			children[index] = fields[index] :: Compose.Child
+			children[index] = fields[index] :: ComposeTypes.Child
 		end
 		return ctx.props(named, keys), children
 	end
@@ -31,15 +31,15 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		return kit.stack(children, (properties :: unknown) :: Engine.FrameNativeProps, spec, vertical)
 	end
 
-	UI.VStack = ctx.construct(function(spec: Layout.StackProps): Frame
+	UI.VStack = ctx.construct("VStack", function(spec: Layout.StackProps): Frame
 		return stack(spec, true)
 	end)
 
-	UI.HStack = ctx.construct(function(spec: Layout.StackProps): Frame
+	UI.HStack = ctx.construct("HStack", function(spec: Layout.StackProps): Frame
 		return stack(spec, false)
 	end)
 
-	UI.Screen = ctx.construct(function(spec: Layout.ScreenProps): Frame
+	UI.Screen = ctx.construct("Screen", function(spec: Layout.ScreenProps): Frame
 		local properties, children = split(spec, { "gap", "padding", "align", "distribute", "width", "height" })
 		local flow: Types.Flow = {
 			gap = spec.gap,
@@ -52,7 +52,7 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		return kit.stack(children, (properties :: unknown) :: Engine.FrameNativeProps, flow, true, "fill", "fill")
 	end)
 
-	UI.ZStack = ctx.construct(function(spec: Layout.ZStackProps): Frame
+	UI.ZStack = ctx.construct("ZStack", function(spec: Layout.ZStackProps): Frame
 		local properties, children = split(spec, { "padding", "width", "height", "alignH", "alignV" })
 		local size, automatic = kit.extent(spec, "hug", "hug")
 		local aligned = spec.alignH ~= nil or spec.alignV ~= nil
@@ -64,13 +64,13 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 			return if value == "center" then 0.5 elseif value == "end" then 1 else 0
 		end
 		local placed = (setmetatable({}, { __mode = "k" }) :: unknown) :: { [GuiObject]: boolean }
-		local function align(node: GuiObject, use: Compose.Use?)
+		local function align(node: GuiObject, use: ComposeTypes.Use?)
 			local x, y = fraction(read(spec.alignH, use)), fraction(read(spec.alignV, use))
 			node.AnchorPoint = V2.new(x, y)
 			node.Position = D2.fromScale(x, y)
 		end
 		if aligned then
-			Compose.watch(function(use: Compose.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				local x, y = read(spec.alignH, use), read(spec.alignV, use)
 				if x == nil and y == nil then
 					return
@@ -97,7 +97,7 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		end))
 	end)
 
-	UI.ScrollView = ctx.construct(function(spec: Layout.ScrollViewProps): ScrollingFrame
+	UI.ScrollView = ctx.construct("ScrollView", function(spec: Layout.ScrollViewProps): ScrollingFrame
 		local properties, children = split(spec, { "axis", "gap", "padding", "align", "distribute", "width", "height" })
 		local axis = spec.axis or "y"
 		assert(axis == "x" or axis == "y" or axis == "xy", "Facet ScrollView axis must be x, y or xy")
@@ -129,13 +129,13 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		)
 	end)
 
-	UI.Grid = ctx.construct(function(spec: Layout.GridProps): Frame
+	UI.Grid = ctx.construct("Grid", function(spec: Layout.GridProps): Frame
 		local properties, children = split(
 			spec,
 			{ "columns", "gap", "rowGap", "cellHeight", "aspectRatio", "align", "padding", "width", "height" }
 		)
 		local size, automatic = kit.extent(spec, "fill", "hug")
-		local function columns(use: Compose.Use?): number
+		local function columns(use: ComposeTypes.Use?): number
 			local count = read(spec.columns, use)
 			assert(
 				type(count) == "number" and count >= 1 and count % 1 == 0,
@@ -146,14 +146,14 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		local layout: Engine.UIGridLayoutNativeProps = {
 			SortOrder = E.SortOrder.LayoutOrder,
 			FillDirection = E.FillDirection.Horizontal,
-			FillDirectionMaxCells = function(use: Compose.Use): number
+			FillDirectionMaxCells = function(use: ComposeTypes.Use): number
 				return columns(use)
 			end,
-			CellPadding = function(use: Compose.Use): UDim2
+			CellPadding = function(use: ComposeTypes.Use): UDim2
 				local gap = kit.spacing(spec.gap, use)
 				return D2.fromOffset(gap, if spec.rowGap == nil then gap else kit.spacing(spec.rowGap, use))
 			end,
-			CellSize = function(use: Compose.Use): UDim2
+			CellSize = function(use: ComposeTypes.Use): UDim2
 				local count = columns(use)
 				local gap = kit.spacing(spec.gap, use)
 				local height = read(spec.cellHeight, use)
@@ -166,7 +166,7 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 			end,
 		}
 		if spec.align ~= nil then
-			layout.HorizontalAlignment = function(use: Compose.Use): Enum.HorizontalAlignment
+			layout.HorizontalAlignment = function(use: ComposeTypes.Use): Enum.HorizontalAlignment
 				local value = read(spec.align, use)
 				assert(
 					value == "start" or value == "center" or value == "end",

@@ -1,12 +1,12 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Shared = require("./types")
 
 type Value<T> = Shared.Value<T>
 type Constructor<P, N> = Shared.Constructor<P, N>
 
 export type ValueBinding<T> =
-	{ value: Compose.Cell<T>, onChange: ((T) -> ())? }
+	{ value: ComposeTypes.Cell<T>, onChange: ((T) -> ())? }
 	| { value: Value<T>, onChange: (T) -> () }
 export type EnabledOptions = { enabled: Value<boolean>?, disabled: Value<boolean>?, busy: Value<boolean>? }
 export type Row = { title: Value<string>?, description: Value<string>?, value: string?, icon: string? }
@@ -63,7 +63,7 @@ export type TextInputOptions = {
 	multiline: boolean?,
 	validate: ((string) -> string?)?,
 	maxLength: number?,
-	invalid: Compose.Readable<boolean>?,
+	invalid: ComposeTypes.Readable<boolean>?,
 	clearButton: boolean?,
 	clearButtonMode: ClearButtonMode?,
 	onCommit: ((string, CommitReason) -> ())?,
@@ -75,12 +75,12 @@ export type TextInputOptions = {
 }
 export type TextInputPresentation =
 	{ presentation: ("plain" | "search")?, numericValue: nil? }
-	| { presentation: "number", numericValue: Compose.Cell<number> }
+	| { presentation: "number", numericValue: ComposeTypes.Cell<number> }
 export type TextInputImplementationProps = Shared.TextBoxProps & TextInputOptions & {
 	value: Value<string>,
 	onChange: ((string) -> ())?,
 	presentation: ("plain" | "search" | "number")?,
-	numericValue: Compose.Cell<number>?,
+	numericValue: ComposeTypes.Cell<number>?,
 }
 export type TextInputProps = TextInputImplementationProps & ValueBinding<string> & TextInputPresentation
 export type ValueOptions = {
@@ -111,7 +111,7 @@ export type Glyphs = { filled: string, empty: string }
 export type Images = { filled: string, empty: string }
 export type Tint = { filled: Value<Color3>?, empty: Value<Color3>? }
 export type LevelBinding =
-	{ value: Compose.Cell<number>, onChange: ((number) -> ())?, readOnly: boolean? }
+	{ value: ComposeTypes.Cell<number>, onChange: ((number) -> ())?, readOnly: boolean? }
 	| { value: Value<number>, onChange: (number) -> (), readOnly: boolean? }
 	| { value: Value<number>, readOnly: true, onChange: ((number) -> ())? }
 export type LevelOptions = {
@@ -153,7 +153,7 @@ export type LevelPickerProps = Shared.TextButtonProps & {
 	tint: Tint?,
 } & LevelBinding
 export type ChipSelection =
-	{ selected: Compose.Cell<boolean>, onToggle: ((boolean) -> ())? }
+	{ selected: ComposeTypes.Cell<boolean>, onToggle: ((boolean) -> ())? }
 	| { selected: Value<boolean>, onToggle: (boolean) -> () }
 	| { selected: nil?, onToggle: nil?, onRemove: () -> () }
 export type ChipImplementationProps = Shared.TextButtonNativeProps & ButtonVisualOptions & ButtonInputOptions & {

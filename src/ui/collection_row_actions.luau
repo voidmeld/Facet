@@ -32,7 +32,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		"onActivate",
 		"editing",
 	}
-	UI.RowActions = ctx.construct(function(spec: CollectionTypes.RowActionsSpec): Frame
+	UI.RowActions = ctx.construct("RowActions", function(spec: CollectionTypes.RowActionsSpec): Frame
 		local leading: Types.Value<{ RowAction }> = spec.leading or {}
 		local trailing: Types.Value<{ RowAction }> = spec.trailing or {}
 		local content = if type(spec.content) == "function" then spec.content() else spec.content
@@ -73,6 +73,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 				open:set(edge)
 			end
 		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			local edge = read(open, use) :: RowEdge?
+			if edge ~= nil and #actions(edge, use) == 0 then
+				setOpen(nil)
+			end
+		end)
 		if spec.coordinator then
 			Compose.watch(function(use: ComposeTypes.Use)
 				if read(open, use) ~= nil and spec.coordinator:peek() ~= rowToken then

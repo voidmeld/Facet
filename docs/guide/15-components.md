@@ -81,7 +81,7 @@ local function Settings()
             value = enabled,
             onChange = function(nextValue) enabled:set(nextValue) end,
         },
-        UI.Label { label = status },
+        UI.Label { text = status },
     }
 end
 ```
@@ -111,7 +111,7 @@ return UI.VStack {
     gap = "s",
     UI.Toggle { label = "Show details", value = detailsOpen },
     Compose.show(detailsOpen, function()
-        return UI.Label { label = "Changes are saved to this session." }
+        return UI.Label { text = "Changes are saved to this session." }
     end),
 }
 ```

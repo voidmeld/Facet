@@ -71,7 +71,7 @@ t.describe("native registration and package contract", function()
 		})()
 		local engine = engineLib.new()
 		local runtime = Facet.Roblox.createRuntime(engine)
-		local UI = createControls(runtime, { types = engine.types })
+		local UI = createControls(Facet.Compose, runtime, { types = engine.types })
 		t.expect(table.isfrozen(UI)).toBe(true)
 		local stop, node = runtime.mount(function()
 			return UI.ProofControl "Proof" { Size = engine.types.UDim2.fromOffset(60, 40) }

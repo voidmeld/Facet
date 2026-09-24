@@ -5273,7 +5273,7 @@ t.describe("native parity reference applications", function()
 					mutate = function(spec)
 						spec.unknown = true
 					end,
-					expected = "Unknown Facet option unknown",
+					expected = "unknown option 'unknown'",
 				},
 				{
 					mutate = function(spec)
