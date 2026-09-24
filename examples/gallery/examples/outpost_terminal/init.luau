@@ -225,7 +225,7 @@ function terminal.build(ctx, options)
 	local function label(name, text, height, size)
 		return UI.Label({
 			Name = name,
-			label = text,
+			text = text,
 			TextSize = size or 16,
 			TextWrapped = true,
 			Size = UDim2.new(1, 0, 0, height),

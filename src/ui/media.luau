@@ -159,6 +159,15 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 
 	UI.Label = ctx.construct("Label", function(spec: Media.LabelProps): GuiObject
 		local keys = { "text", "label", "icon", "iconPosition", "textRole", "role", "gap", "truncate", "textSize" }
+		if
+			(
+				(if spec.text ~= nil then 1 else 0)
+				+ (if spec.label ~= nil then 1 else 0)
+				+ (if spec.Text ~= nil then 1 else 0)
+			) > 1
+		then
+			error("Facet UI.Label: set the text one time. Use text, and remove label and Text.", 0)
+		end
 		local truncate = spec.truncate
 		assert(
 			truncate == nil or truncate == "end" or truncate == "middle",
@@ -826,7 +835,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if presentation == "bar" and spec.label and #trailing > 0 then
 			local header: { ComposeTypes.Child } = {
 				UI.Label({
-					label = spec.label,
+					text = spec.label,
 					LayoutOrder = 1,
 					Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 				}),
@@ -840,7 +849,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			)
 			trailing = {}
 		elseif spec.label then
-			table.insert(children, UI.Label({ label = spec.label }))
+			table.insert(children, UI.Label({ text = spec.label }))
 		end
 		table.insert(children, content)
 		for _, node in trailing do

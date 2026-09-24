@@ -76,6 +76,7 @@ local function world(options: any?): any
 		} :: any
 	)
 	return {
+		reducedMotion = if opts.reducedMotion == nil then true else opts.reducedMotion,
 		engine = engine,
 		runtime = runtime,
 		target = target,
@@ -89,6 +90,8 @@ end
 local function mountBuilt(w: any, definition: any): (any, any, () -> ())
 	local built
 	local stop, node = w.runtime.mount(function()
+		gallery.configure(w.ctx)
+		w.ctx.motionPreference:set(w.reducedMotion)
 		built = definition.build(w.ctx)
 		if built.dispose then
 			Compose.cleanup(built.dispose)
@@ -165,7 +168,7 @@ local function galleryWorld(options: any?): any
 		types = engine.types,
 		stop = function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end,
 	}
 end
@@ -214,7 +217,10 @@ t.describe("native parity weaker gallery", function()
 		local baseline = w.engine.census()
 		local roots = Compose.outstandingMounts()
 		local stop, node = w.runtime.mount(function()
-			return require("../examples/consumer/src/screen").build(Facet, w.runtime, { types = w.types })
+			return require("../examples/consumer/src/screen").build(
+				Facet,
+				Facet.controls(w.runtime, { types = w.types })
+			)
 		end, w.target)
 		local panel = find(node, "Panel")
 		for _, name in { "Title", "Blurb", "Count", "Sound", "Bump", "Close" } do

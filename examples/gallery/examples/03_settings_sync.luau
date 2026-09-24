@@ -1,13 +1,12 @@
 --!strict
 local example = { title = "Settings Sync" }
 function example.build(ctx: any)
-	local Host, UI, Compose = ctx.Host, ctx.UI, ctx.Compose
-	local UDim, UDim2, Enum = ctx.types.UDim, ctx.types.UDim2, ctx.types.Enum
+	local UI, Compose = ctx.UI, ctx.Compose
 	local server = Compose.cell({ music = false, volume = 10, revision = 1 })
 	local draft = Compose.cell({ music = false, volume = 10 })
 	local status = Compose.cell("idle")
 	local history = Compose.cell({ "Ready. Nothing sent yet." })
-	local pending = nil
+	local pending: { music: boolean, volume: number }? = nil
 	local function log(message)
 		local lines = { message }
 		for _, old in history:peek() do
@@ -54,30 +53,14 @@ function example.build(ctx: any)
 		history:set({ "Reset. Nothing sent yet." })
 	end
 	local function text(name, value, role)
-		return UI.Label({
-			Name = name,
-			text = value,
-			textRole = role,
-			TextWrapped = true,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			Size = UDim2.new(1, 0, 0, 0),
-			AutomaticSize = Enum.AutomaticSize.Y,
-			BackgroundTransparency = 1,
-		})
+		return UI.Label(name)({ text = value, textRole = role, TextWrapped = true })
 	end
 	return {
 		screen = function()
-			return Host.ScrollingFrame "SettingsSync" {
-				Size = UDim2.fromScale(1, 1),
-				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				CanvasSize = UDim2.new(),
-				BackgroundTransparency = 1,
-				Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 12) }),
-				Host.UIPadding({
-					PaddingLeft = UDim.new(0, 16),
-					PaddingTop = UDim.new(0, 16),
-					PaddingRight = UDim.new(0, 16),
-				}),
+			return UI.ScrollView "SettingsSync" {
+				gap = 12,
+				padding = "m",
+				align = "stretch",
 				text("Title", "Settings sync", "title"),
 				text(
 					"Explanation",
@@ -95,7 +78,6 @@ function example.build(ctx: any)
 				UI.Toggle "Music" {
 					label = "Music",
 					indicatorPosition = "trailing",
-					Size = UDim2.new(1, 0, 0, 44),
 					value = function(use)
 						return use(draft).music
 					end,

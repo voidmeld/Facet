@@ -2,6 +2,8 @@
 
 local words = require("./words")
 
+type Use = (any) -> any
+
 local example = {}
 example.title = "Crossword (Scrabble-style)"
 
@@ -85,7 +87,7 @@ rules.DISTRIBUTION = table.freeze({
 	{ "X", 1 },
 	{ "Y", 2 },
 	{ "Z", 1 },
-})
+} :: { { string | number } })
 
 rules.SAY = table.freeze({
 	centre = "Your first word has to cover the starred centre square.",
@@ -515,8 +517,7 @@ local CELL_MARK: { [string]: string } = {
 
 function example.build(ctx: any)
 	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
-	local UDim, UDim2, Vector2, Color3, Enum =
-		ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
+	local UDim2, Vector2, Color3, Enum = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
 	local function paletteColor(use: any, role: string): Color3
 		local package = if ctx.theme then use(ctx.theme) else ctx.Facet.themes.neutralPackage()
 		local mode = if ctx.themeMode then use(ctx.themeMode) else package.style.defaultTheme
@@ -713,7 +714,7 @@ function example.build(ctx: any)
 	local hintText: any
 	local cellStateOf: { [string]: any } = {}
 	local function Crossword()
-		turnsLeft = Compose.formula(function(use)
+		turnsLeft = Compose.formula(function(use: Use)
 			return math.max(0, TURNS - (use(turnSig) - 1))
 		end)
 		scoreText = Compose.formula(function(use)
@@ -723,25 +724,25 @@ function example.build(ctx: any)
 			local left = use(turnsLeft)
 			return `{left} {if left == 1 then "turn" else "turns"} left`
 		end)
-		verdictSig = Compose.formula(function(use)
+		verdictSig = Compose.formula(function(use: Use): Verdict?
 			local pending = use(pendingSig)
 			if next(pending) == nil then
 				return nil
 			end
 			return rules.validate(use(boardSig), pending, use(turnSig))
 		end)
-		wordText = Compose.formula(function(use)
+		wordText = Compose.formula(function(use: Use)
 			local notice = use(noticeSig)
 			if notice ~= "" then
 				return notice
 			end
-			local verdict = use(verdictSig)
+			local verdict: Verdict? = use(verdictSig)
 			if verdict == nil then
 				return "No tiles placed this turn."
 			end
 			return verdict.message
 		end)
-		hintText = Compose.formula(function(use)
+		hintText = Compose.formula(function(use: Use)
 			local phase = use(phaseSig)
 			if phase == "won" then
 				return `You reached {use(scoreSig)} points in {use(turnSig) - 1} of {TURNS} turns — you win! `
@@ -758,12 +759,15 @@ function example.build(ctx: any)
 			end
 			return "Pick a letter from your rack, then choose a square."
 		end)
-		local cells: { any } = { columns = SIZE, itemSizing = "uniform", gap = "xs", rowGap = "xs" }
+		local function narrow()
+			return Host.UISizeConstraint({ MaxSize = Vector2.new(360, math.huge) })
+		end
+		local cells: { any } = { columns = SIZE, gap = "xs", aspectRatio = 1, narrow() }
 		for r = 1, SIZE do
 			for c = 1, SIZE do
 				local rr, cc = r, c
 				local key = rules.key(r, c)
-				local state = Compose.formula(function(use)
+				local state = Compose.formula(function(use: Use)
 					if use(pendingSig)[key] ~= nil then
 						return "pending"
 					end
@@ -790,34 +794,13 @@ function example.build(ctx: any)
 				end)
 				table.insert(
 					cells,
-					Host.Frame({
-						Name = `cell{r}_{c}`,
-						BackgroundTransparency = 1,
-						Size = function(use)
-							return UDim2.new(0, 44, 0, 44)
-						end,
-						Host.Frame "plate" {
-							BackgroundTransparency = 1,
-							Size = function(use)
-								return UDim2.new(1, 0, 1, 0)
-							end,
-						},
-						UI.Label "mark" {
-							BackgroundTransparency = 1,
-							BorderSizePixel = 0,
-							Size = UDim2.new(1, 0, 0, 0),
-							AutomaticSize = Enum.AutomaticSize.Y,
-							text = mark,
-							TextSize = 12,
-							TextWrapped = true,
-							TextYAlignment = Enum.TextYAlignment.Top,
-							TextXAlignment = Enum.TextXAlignment.Left,
-						},
+					UI.ZStack(`cell{r}_{c}`)({
+						width = 44,
+						height = 44,
+						UI.Label "mark" { text = mark, textRole = "caption" },
 						UI.Button "tap" {
-							Size = function(use)
-								return UDim2.new(1, 0, 1, 0)
-							end,
-							label = function(use)
+							Size = UDim2.fromScale(1, 1),
+							label = function(use: Use)
 								return use(label) .. use(mark)
 							end,
 							name = function(use)
@@ -855,30 +838,13 @@ function example.build(ctx: any)
 									return use(surface) == CELL_SURFACE.pending
 								end,
 							},
-							Host.UIPadding({
-								PaddingTop = UDim.new(0, 0),
-								PaddingBottom = UDim.new(0, 0),
-								PaddingLeft = UDim.new(0, 0),
-								PaddingRight = UDim.new(0, 0),
-							}),
+							Host.UIPadding {},
 						},
 					})
 				)
 			end
 		end
-		local board = Host.Frame "board" {
-			Size = UDim2.new(1, 0, 0, 0),
-			BackgroundTransparency = 1,
-			AutomaticSize = Enum.AutomaticSize.Y,
-			Host.UIGridLayout({
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				CellSize = UDim2.fromOffset(48, 48),
-				CellPadding = UDim2.fromOffset(4, 4),
-				FillDirectionMaxCells = cells.columns or 4,
-			}),
-			table.unpack(cells),
-		}
-		local rackTiles: { any } = { columns = RACK_SIZE, itemSizing = "uniform", gap = "xs" }
+		local rackTiles: { any } = { columns = RACK_SIZE, gap = "xs", cellHeight = 48, narrow() }
 		for i = 1, RACK_SIZE do
 			local slot = i
 			local letter = Compose.formula(function(use)
@@ -893,159 +859,42 @@ function example.build(ctx: any)
 			local isSelected = Compose.formula(function(use)
 				return use(selectedSig) == slot
 			end)
-			rackTiles[i] = UI.Button({
-				Name = "rt" .. i,
-				Size = UDim2.fromOffset(0, 48),
-				AutomaticSize = Enum.AutomaticSize.None,
-				LayoutOrder = i,
-				label = label,
-				enabled = enabled,
-				selected = isSelected,
-				TextSize = 16,
-				onActivate = function()
-					selectSlot(slot)
-				end,
-			})
+			table.insert(
+				rackTiles,
+				UI.Button("rt" .. i)({
+					AutomaticSize = Enum.AutomaticSize.None,
+					label = label,
+					enabled = enabled,
+					selected = isSelected,
+					TextSize = 16,
+					onActivate = function()
+						selectSlot(slot)
+					end,
+				})
+			)
 		end
-		local rack = Host.Frame "rack" {
-			Size = UDim2.new(1, 0, 0, 0),
-			Host.UISizeConstraint({ MaxSize = Vector2.new(360, math.huge) }),
-			BackgroundTransparency = 1,
-			AutomaticSize = Enum.AutomaticSize.Y,
-			Host.UIGridLayout({
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				CellSize = UDim2.new(1 / RACK_SIZE, -4, 0, 48),
-				CellPadding = UDim2.fromOffset(4, 4),
-				FillDirectionMaxCells = rackTiles.columns or 4,
-			}),
-			table.unpack(rackTiles),
-		}
-		return Host.Frame "TileGame" {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 1, 0),
-			Host.UIPadding({
-				PaddingTop = UDim.new(0, 16),
-				PaddingBottom = UDim.new(0, 16),
-				PaddingLeft = UDim.new(0, 16),
-				PaddingRight = UDim.new(0, 16),
-			}),
-			Host.ScrollingFrame "Page" {
-				BackgroundTransparency = 1,
-				Size = function(use)
-					return UDim2.new(1, 0, 1, 0)
-				end,
-				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				CanvasSize = UDim2.new(),
-				ScrollBarThickness = 6,
-				Host.UIListLayout({
-					FillDirection = Enum.FillDirection.Vertical,
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					Padding = UDim.new(0, 8),
-				}),
-				UI.Label "Title" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = "Facet Crossword",
-					textRole = "title",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
+		return UI.Screen "TileGame" {
+			UI.ScrollView "Page" {
+				gap = "s",
+				align = "stretch",
+				UI.Label "Title" { text = "Facet Crossword", textRole = "title", TextWrapped = true },
+				UI.HStack "Stats" {
+					wrap = true,
+					gap = "m",
+					width = "fill",
+					UI.Label "Score" { text = scoreText },
+					UI.Label "Progress" { text = progressText },
 				},
-				Host.Frame "Stats" {
-					BackgroundTransparency = 1,
-					Size = function(use)
-						return UDim2.new(1, 0, 0, 0)
-					end,
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Host.UIListLayout({
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						FillDirection = Enum.FillDirection.Horizontal,
-						Wraps = true,
-						Padding = UDim.new(0, 16),
-					}),
-					UI.Label({
-						LayoutOrder = 1,
-						Name = "Score",
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						Size = UDim2.fromOffset(0, 0),
-						AutomaticSize = Enum.AutomaticSize.XY,
-						text = scoreText,
-						TextWrapped = true,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-					UI.Label({
-						LayoutOrder = 2,
-						Name = "Progress",
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						Size = UDim2.fromOffset(0, 0),
-						AutomaticSize = Enum.AutomaticSize.XY,
-						text = progressText,
-						TextWrapped = true,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-				},
-				UI.Label "Hint" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = hintText,
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				UI.Label "Word" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = wordText,
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				board,
-				UI.Label "RackLabel" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = "Your rack",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				rack,
-				Host.Frame "Actions" {
-					BackgroundTransparency = 1,
-					Size = function(use)
-						return UDim2.new(1, 0, 0, 0)
-					end,
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Host.UIListLayout({
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						FillDirection = Enum.FillDirection.Horizontal,
-						HorizontalFlex = Enum.UIFlexAlignment.Fill,
-						Padding = UDim.new(0, 8),
-					}),
-					UI.Button({
-						LayoutOrder = 1,
-						Name = "Submit",
-						label = "Submit word",
-						onActivate = submit,
-					}),
-					UI.Button({
-						LayoutOrder = 2,
-						Name = "Undo",
-						label = "Undo turn",
-						onActivate = undo,
-					}),
+				UI.Label "Hint" { text = hintText, TextWrapped = true },
+				UI.Label "Word" { text = wordText, TextWrapped = true },
+				UI.Grid "board"(cells),
+				UI.Label "RackLabel" { text = "Your rack", TextWrapped = true },
+				UI.Grid "rack"(rackTiles),
+				UI.HStack "Actions" {
+					gap = "s",
+					width = "fill",
+					UI.Button "Submit" { label = "Submit word", onActivate = submit, UI.fill() },
+					UI.Button "Undo" { label = "Undo turn", onActivate = undo, UI.fill() },
 				},
 				UI.Button "Reset" {
 					label = "Start over",

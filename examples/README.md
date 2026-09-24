@@ -8,14 +8,15 @@ Facet supplies UI controls.
 Every example uses the entry path from
 [Getting started](../docs/guide/03-getting-started.md):
 
-1. Make a runtime with `Facet.Roblox.createRuntime()`.
-2. Set `Host = runtime.constructors`.
-3. Get the controls with `Facet.controls(runtime)`.
-4. Write a component that returns native Instances. Mount it with
-   `runtime.mount`.
-5. Install a theme with `Facet.themes.createStyleSheet` and a native
-   `Host.StyleLink`.
-6. Stop the mount before you dispose the runtime.
+1. Make an app with `Facet.app({ theme = package })`. The theme is optional.
+2. Get the controls from `app.UI`.
+3. Write a component that returns the controls and the layout constructors.
+   Mount it with `app.mount`. The app adds the ScreenGui, the StyleSheet and
+   the StyleLink.
+4. Call `app.dispose()` when the client ends.
+
+The gallery examples get the same controls from their page context. Their
+host mounts them with the runtime pieces that `Facet.app` uses.
 
 | Task | Example |
 |---|---|

@@ -12,6 +12,7 @@ local MediaTypes = require("@self/ui/media_types")
 local ContentTypes = require("@self/ui/content_types")
 local ThemeTypes = require("@self/ui/theme_types")
 local LayoutTypes = require("@self/ui/layout_types")
+local createApp = require("@self/ui/app")
 local OverlayTypes = require("@self/ui/overlay_types")
 local civilDate = require("@self/ui/civil_date")
 local CivilTypes = require("@self/ui/civil_date_types")
@@ -95,6 +96,9 @@ export type SnackbarSpec = OverlayTypes.SnackbarSpec
 export type DateTimePickerProps = DateTimePickerTypes.DateTimePickerProps
 export type ColorPickerProps = ColorPickerTypes.ColorPickerProps
 export type Controls = ControlTypes.Controls
+export type App = createApp.App
+export type AppOptions = createApp.AppOptions
+export type Component = createApp.Component
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
 export type CivilDate = CivilTypes.CivilDate
@@ -114,6 +118,7 @@ export type Facet = {
 	Compose: ComposeModule,
 	Roblox: ComposeRobloxModule,
 	controls: (Runtime, ControlOptions?) -> Controls,
+	app: (AppOptions?) -> App,
 	themes: ThemeTypes.Themes,
 	civilDate: CivilTypes.Module,
 	recipes: { arithmetic: { parse: (unknown) -> number? } },
@@ -161,6 +166,7 @@ local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 	if type(roblox) ~= "table" or type(roblox.createRuntime) ~= "function" then
 		error("Facet.bind: pass the Compose Roblox module from the same Compose copy as the second argument", 2)
 	end
+	local themes = bindThemes(core)
 	local surface: Facet
 	surface = table.freeze({
 		VERSION = VERSION,
@@ -170,7 +176,10 @@ local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 		controls = function(runtime: Runtime, options: ControlOptions?): Controls
 			return createControls(core, runtime, options)
 		end,
-		themes = bindThemes(core),
+		app = function(options: AppOptions?): App
+			return createApp(core, roblox, createControls, themes, options)
+		end,
+		themes = themes,
 		civilDate = civilDate,
 		recipes = recipes,
 		bind = bind,

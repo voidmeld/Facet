@@ -33,11 +33,6 @@ ALLOWLIST = (
     },
     {
         "file": "examples/gallery/examples/06_tile_game.luau",
-        "match": "TextSize = 12,",
-        "why": "the premium mark of a fixed 44 px board cell, sized with the cell",
-    },
-    {
-        "file": "examples/gallery/examples/06_tile_game.luau",
         "match": "TextSize = 16,",
         "why": "the letter of a fixed 44 to 48 px board cell or rack tile, sized with the cell",
     },

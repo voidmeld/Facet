@@ -58,7 +58,7 @@ local function mount(name, size)
 		node,
 		function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end,
 		engine,
 		{

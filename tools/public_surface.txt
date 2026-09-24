@@ -68,6 +68,7 @@ Roblox : table
   Roblox.preferredInputSpec : function
   Roblox.usableViewportSize : function
 VERSION : string
+app : function
 bind : function
 civilDate : table(frozen)
   civilDate.ENGLISH : table(frozen)
@@ -162,6 +163,8 @@ controls(runtime).badged : function
 controls(runtime).fill : function
 type AlertAction
 type AlertSpec
+type App
+type AppOptions
 type AsyncImageProps
 type AvatarGroupProps
 type AvatarMember
@@ -182,6 +185,7 @@ type CollapsibleViewSpec
 type CollectionSpec
 type ColorPickerProps
 type ComboBoxSpec
+type Component
 type ComposeModule
 type ComposeRobloxModule
 type ControlOptions

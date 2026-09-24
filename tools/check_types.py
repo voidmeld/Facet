@@ -128,6 +128,13 @@ def negative_probes():
         ("Fill weight", 'UI.fill("wide")'),
         ("Fill return", 'local wrong: Frame = UI.fill()'),
         ("Unknown control", 'UI.ThisControlDoesNotExist({})'),
+        ("App parent", 'Facet.app({ parent = 42 })'),
+        ("App theme", 'Facet.app({ theme = "dark" })'),
+        ("App component", 'Facet.app().mount(42)'),
+        ("App mount return", 'local wrong: number = Facet.app().mount(function() return UI.Label({ text = "Hi" }) end)'),
+        ("App screen property", 'Facet.app({ screen = { DisplayOrder = "top" } })'),
+        ("App sheet option", 'Facet.app({ sheet = { transition = "slow" } })'),
+        ("App dispose argument", 'local wrong: string = Facet.app().dispose()'),
     ])
     named = []
     for label, code in probes:
@@ -198,6 +205,7 @@ def main():
     if public:
         files.append(str(WITNESS.relative_to(ROOT)))
         files.extend(str(path.relative_to(ROOT)) for path in sorted((ROOT / "tests/types").glob("*_witness.luau")) if path != WITNESS)
+        files.extend(str(path.relative_to(ROOT)) for path in sorted((ROOT / "examples/gallery/examples").glob("0*.luau")))
     missing = [path for path in files if not (ROOT / path).is_file()]
     if missing:
         raise RuntimeError("Missing type targets: " + ", ".join(missing))

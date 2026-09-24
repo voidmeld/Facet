@@ -2,6 +2,8 @@
 
 local assets = require("./assets")
 
+type Use = (any) -> any
+
 local ROWS = 6
 local COLS = 6
 local KINDS = { "a", "b", "c", "d", "e" }
@@ -88,17 +90,8 @@ end
 
 local function build(ctx: any)
 	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
-	local UDim, UDim2, Vector2, Color3, Enum =
-		ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
-	local reducedMotion = Compose.cell(ctx.guiService ~= nil and ctx.guiService.ReducedMotionEnabled == true)
-	if ctx.guiService then
-		local connection = ctx.guiService:GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(function()
-			reducedMotion:set(ctx.guiService.ReducedMotionEnabled == true)
-		end)
-		Compose.cleanup(function()
-			connection:Disconnect()
-		end)
-	end
+	local UDim2, Vector2, Color3, Enum = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
+	local reducedMotion = ctx.reducedMotion
 	local seed = DEFAULT_SEED
 
 	local rng = makeRng(seed)
@@ -323,7 +316,7 @@ local function build(ctx: any)
 		})
 		local marked = Compose.cell(false)
 
-		local dragOrigin, dragDelta
+		local dragOrigin: Vector2?, dragDelta: Vector2?
 		local dragMoved = false
 		function tile.setKind(value)
 			kind:set(value)
@@ -355,7 +348,7 @@ local function build(ctx: any)
 			local ready = use(kindHandle[current].state) == "ready"
 			return if ready then "" else assets.match3Tiles[current].label
 		end)
-		local picked = Compose.formula(function(use)
+		local picked = Compose.formula(function(use: Use)
 			if use(marked) then
 				return true
 			end
@@ -363,7 +356,7 @@ local function build(ctx: any)
 			local at = use(position)
 			return sel ~= nil and sel[1] == at.row and sel[2] == at.col
 		end)
-		local targetPosition = Compose.formula(function(use)
+		local targetPosition = Compose.formula(function(use: Use)
 			local at = use(position)
 			return UDim2.fromOffset((at.col - 1) * 48, (at.row - 1) * 48)
 		end)
@@ -381,17 +374,13 @@ local function build(ctx: any)
 			GroupTransparency = function(use)
 				return if use(reducedMotion) then use(targetTransparency) else use(fading)
 			end,
-			Size = function(use)
-				return UDim2.new(0, 44, 0, 44)
-			end,
-			AnchorPoint = Vector2.new(0, 0),
+			Size = UDim2.fromOffset(44, 44),
 			Position = function(use)
 				return if use(reducedMotion) then use(targetPosition) else use(movingPosition)
 			end,
 			(function()
 				local art = Host.ImageLabel "img" {
 					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
 					AnchorPoint = Vector2.new(0.5, 0.5),
 					Position = UDim2.fromScale(0.5, 0.5),
 					Size = UDim2.fromScale(0.7, 0.7),
@@ -415,7 +404,7 @@ local function build(ctx: any)
 				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				AutomaticSize = Enum.AutomaticSize.None,
-				Size = UDim2.new(1, 0, 1, 0),
+				Size = UDim2.fromScale(1, 1),
 				label = fallbackLabel,
 				name = function(use)
 					return assets.match3Tiles[use(kind)].name
@@ -447,18 +436,19 @@ local function build(ctx: any)
 					Enabled = function(use)
 						return not use(resolving)
 					end,
-					DragStart = function(at)
+					DragStart = function(at: Vector2)
 						dragOrigin = if resolving:peek() then nil else at
 						dragDelta = nil
 						dragMoved = false
 					end,
-					DragContinue = function(at)
+					DragContinue = function(at: Vector2)
 						if dragOrigin then
-							dragDelta = at - dragOrigin
-							dragMoved = dragMoved or dragDelta.Magnitude >= 16
+							local delta = at - dragOrigin
+							dragDelta = delta
+							dragMoved = dragMoved or delta.Magnitude >= 16
 						end
 					end,
-					DragEnd = function(at)
+					DragEnd = function(at: Vector2?)
 						local origin = dragOrigin
 						local delta = if origin and at then at - origin else dragDelta
 						dragOrigin, dragDelta = nil, nil
@@ -492,11 +482,9 @@ local function build(ctx: any)
 		return plate
 	end
 	local function boardView()
-		local node = Host.Frame "board" {
-			BackgroundTransparency = 1,
-			Size = function(use)
-				return UDim2.new(0, COLS * 48, 0, ROWS * 48)
-			end,
+		local node = UI.ZStack "board" {
+			width = COLS * 48,
+			height = ROWS * 48,
 			Compose.OrderedCollection({
 				from = items,
 				key = function(item)
@@ -787,111 +775,26 @@ local function build(ctx: any)
 		local movesText = Compose.formula(function(use)
 			return `{use(moves)} swaps`
 		end)
-		return Host.Frame "Match3" {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 1, 0),
-			Host.UIPadding({
-				PaddingTop = UDim.new(0, 16),
-				PaddingBottom = UDim.new(0, 16),
-				PaddingLeft = UDim.new(0, 16),
-				PaddingRight = UDim.new(0, 16),
-			}),
-			Host.ScrollingFrame "Page" {
-				BackgroundTransparency = 1,
-				Size = UDim2.new(1, 0, 1, 0),
-				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				CanvasSize = UDim2.new(),
-				ScrollBarThickness = 6,
-				Host.UIListLayout({
-					FillDirection = Enum.FillDirection.Vertical,
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					Padding = UDim.new(0, 8),
-				}),
-				UI.Label "Title" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = "Facet Match-3",
-					textRole = "title",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				UI.Label "Hint" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = hint,
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				Host.Frame "Stats" {
-					BackgroundTransparency = 1,
-					Size = UDim2.new(0, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.XY,
-					Host.UIListLayout({
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 16),
-						Wraps = true,
-					}),
-					UI.Label({
-						LayoutOrder = 1,
-						Name = "Score",
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						Size = UDim2.new(1, 0, 0, 0),
-						AutomaticSize = Enum.AutomaticSize.Y,
-						text = scoreText,
-						TextWrapped = true,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-					UI.Label({
-						LayoutOrder = 2,
-						Name = "Moves",
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						Size = UDim2.new(1, 0, 0, 0),
-						AutomaticSize = Enum.AutomaticSize.Y,
-						text = movesText,
-						TextWrapped = true,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
+		return UI.Screen "Match3" {
+			UI.ScrollView "Page" {
+				gap = "s",
+				align = "stretch",
+				UI.Label "Title" { text = "Facet Match-3", textRole = "title", TextWrapped = true },
+				UI.Label "Hint" { text = hint, TextWrapped = true },
+				UI.HStack "Stats" {
+					gap = "m",
+					wrap = true,
+					UI.Label "Score" { text = scoreText },
+					UI.Label "Moves" { text = movesText },
 				},
 				boardView(),
-				UI.Label "ArtStatus" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = artStatus,
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				Host.Frame "Art" {
-					BackgroundTransparency = 1,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Host.UIGridLayout({
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						CellSize = UDim2.new(1 / 2, -8, 0, 120),
-						CellPadding = UDim2.fromOffset(8, 8),
-					}),
-					UI.Button({
-						LayoutOrder = 1,
-						Name = "Reload",
-						label = "Re-request artwork",
-						onActivate = reloadArt,
-					}),
-					UI.Button({
-						LayoutOrder = 2,
-						Name = "Deliver",
+				UI.Label "ArtStatus" { text = artStatus, TextWrapped = true },
+				UI.Grid "Art" {
+					columns = 2,
+					gap = "s",
+					cellHeight = 120,
+					UI.Button "Reload" { label = "Re-request artwork", onActivate = reloadArt },
+					UI.Button "Deliver" {
 						label = "Deliver artwork",
 						onActivate = function()
 							local n = deliverArt()
@@ -899,18 +802,10 @@ local function build(ctx: any)
 								if n > 0 then `Delivered {n} tile pictures.` else "Nothing was waiting to be delivered."
 							)
 						end,
-					}),
-					UI.Button({
-						LayoutOrder = 3,
-						Name = "Break",
-						label = "Fail a load",
-						onActivate = failArt,
-					}),
+					},
+					UI.Button "Break" { label = "Fail a load", onActivate = failArt },
 				},
-				UI.Button "Reset" {
-					label = "New board",
-					onActivate = reset,
-				},
+				UI.Button "Reset" { label = "New board", onActivate = reset },
 			},
 		}
 	end

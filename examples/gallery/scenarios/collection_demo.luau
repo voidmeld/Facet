@@ -161,7 +161,7 @@ return function(ctx: any, options: any)
 				Host.UIListLayout({ Padding = D.new(0, 4), SortOrder = E.SortOrder.LayoutOrder }),
 				UI.Label "PostTitle" {
 					LayoutOrder = 1,
-					Text = function(use)
+					text = function(use)
 						return use(current).label
 					end,
 					TextSize = function(use)
@@ -175,7 +175,7 @@ return function(ctx: any, options: any)
 				},
 				UI.Label "PostBody" {
 					LayoutOrder = 2,
-					Text = function(use)
+					text = function(use)
 						return use(current).description
 					end,
 					TextSize = function(use)
@@ -318,7 +318,7 @@ return function(ctx: any, options: any)
 						minWidth = 160,
 						render = function(current, _, key)
 							return UI.Label "Message" {
-								Text = function(use)
+								text = function(use)
 									return (if use(readRows)[key] then "Read · " else "Unread · ")
 										.. (if use(flaggedRows)[key] then "Flagged · " else "")
 										.. use(current).subject
@@ -418,7 +418,7 @@ return function(ctx: any, options: any)
 		}
 		local titleProbe = UI.Label "TitleLineMeasure" {
 			Visible = false,
-			Text = "Ag",
+			text = "Ag",
 			TextSize = function(use)
 				return 15 + use(textOffset)
 			end,
@@ -427,7 +427,7 @@ return function(ctx: any, options: any)
 		}
 		local bodyProbe = UI.Label "BodyLineMeasure" {
 			Visible = false,
-			Text = "Ag",
+			text = "Ag",
 			TextSize = function(use)
 				return 13 + use(textOffset)
 			end,
@@ -478,7 +478,7 @@ return function(ctx: any, options: any)
 							local viewport = ctx.viewport and use(ctx.viewport)
 							return viewport == nil or viewport.height <= 0 or viewport.height >= 480
 						end,
-						Text = options.title,
+						text = options.title,
 						textRole = "title",
 						TextWrapped = true,
 						Size = D2.new(1, 0, 0, 0),
@@ -488,7 +488,7 @@ return function(ctx: any, options: any)
 					actionsFrame,
 					UI.Label "Status" {
 						LayoutOrder = 3,
-						Text = function(use)
+						text = function(use)
 							local snapshot, count = use(status), 0
 							for _, on in use(selection) do
 								if on then

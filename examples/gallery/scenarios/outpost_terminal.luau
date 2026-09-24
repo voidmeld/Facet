@@ -247,14 +247,14 @@ return {
 					Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8) }),
 					UI.Label({
 
-						label = "Outpost 7 — World terminal",
+						text = "Outpost 7 — World terminal",
 						textRole = "heading",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 54),
 					}),
 					UI.Label({
 
-						label = connectionState,
+						text = connectionState,
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 72),
 					}),
@@ -263,7 +263,7 @@ return {
 					button("Restore", "Restore console", steps.restoreConsole),
 					UI.Label({
 
-						label = function(use)
+						text = function(use)
 							return `Last exit: {use(lastExit)}`
 						end,
 						TextWrapped = true,

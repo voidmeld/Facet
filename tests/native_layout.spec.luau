@@ -537,6 +537,7 @@ t.describe("native layout primitives", function()
 			columns:set(4)
 			t.expect(grid.FillDirectionMaxCells).toBe(4)
 			t.expect(grid.CellSize.X.Scale).toBeCloseTo(0.25)
+			t.expect(grid.CellSize.X.Offset).toBe(-3)
 			stop()
 		end)
 

@@ -186,7 +186,7 @@ local function mountGallery(name: string, kind: string?): (any, any, () -> (), a
 	end, target)
 	return built, node, function()
 		stop()
-		ctx.runtime.dispose()
+		ctx.runtime:dispose()
 	end, ctx
 end
 

@@ -60,7 +60,7 @@ local function stage(build: (any, any) -> any, config: { [string]: any }?): Stag
 		node = screen:FindFirstChildWhichIsA("Frame"),
 		stop = function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end,
 	}
 end
@@ -230,7 +230,7 @@ local function playlist(): Playlist
 		tracks = tracks,
 		stop = function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end,
 	}
 end
@@ -586,7 +586,7 @@ t.describe("native parity weaker tables", function()
 				t.expect(actionRow:isDestroyed()).toBe(true)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			t.expect(released).toBe(2)
 			local after = engine.census()
 			t.expect(after.live).toBe(baseline.live)
@@ -750,7 +750,7 @@ t.describe("native parity weaker tables", function()
 				expectAligned(table_, rowKey, { "name", "laps" })
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			local after = engine.census()
 			t.expect(after.live).toBe(baseline.live)
 			t.expect(after.connections).toBe(baseline.connections)

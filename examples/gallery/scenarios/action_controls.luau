@@ -126,7 +126,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = function(use)
+					text = function(use)
 						return `The appearance row uses the {use(rung)} size. Compact plates keep full-size tap targets.`
 					end,
 					textRole = "caption",
@@ -398,7 +398,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = text,
+					text = text,
 					textRole = "heading",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -471,7 +471,7 @@ return {
 							BorderSizePixel = 0,
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
-							Text = if mode == "crop"
+							text = if mode == "crop"
 								then "Focal crop · keeps the face in view"
 								else "Natural pixels · crop as the view shrinks",
 							TextWrapped = true,
@@ -525,7 +525,7 @@ return {
 						LayoutOrder = 1,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = "Your next race starts here",
+						text = "Your next race starts here",
 						textRole = "title",
 						TextWrapped = true,
 						TextXAlignment = Enum.TextXAlignment.Left,
@@ -535,7 +535,7 @@ return {
 						role = "secondary",
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = "Choose your driver. Tune your ride. Find your next challenge.",
+						text = "Choose your driver. Tune your ride. Find your next challenge.",
 						TextWrapped = true,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					},
@@ -673,7 +673,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = status,
+					text = status,
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -685,7 +685,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = Compose.formula(function(use)
+					text = Compose.formula(function(use)
 						return tostring(use(count)) .. " laps"
 					end),
 					TextWrapped = true,
@@ -700,7 +700,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = Compose.formula(function(use)
+					text = Compose.formula(function(use)
 						return (if use(favorites) then "Favorites" else "All races")
 							.. " · "
 							.. use(weather)
@@ -716,7 +716,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Split button · one control: the action, and its menu (pointer: split; touch: long-press, with a chevron)",
+					text = "Split button · one control: the action, and its menu (pointer: split; touch: long-press, with a chevron)",
 					textRole = "caption",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -759,7 +759,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Actions and menus",
+					text = "Actions and menus",
 					textRole = "title",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -793,7 +793,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Size and emphasis",
+					text = "Size and emphasis",
 					textRole = "heading",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,

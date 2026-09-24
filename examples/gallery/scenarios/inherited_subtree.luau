@@ -22,7 +22,7 @@ return {
 		local function label(name, text, color)
 			return UI.Label({
 				Name = name,
-				Text = text,
+				text = text,
 				TextColor3 = color,
 				TextWrapped = true,
 				Size = D2.new(1, 0, 0, 0),
@@ -71,7 +71,7 @@ return {
 				AutomaticCanvasSize = E.AutomaticSize.Y,
 				CanvasSize = D2.new(),
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 12) }),
-				UI.Label({ Text = "Nested color and control state", textRole = "title" }),
+				UI.Label({ text = "Nested color and control state", textRole = "title" }),
 				UI.Toggle "PowerToggle" { label = "Panel power", value = live },
 				UI.Slider "BlendSlider" { label = "Tint", value = blend, min = 0, max = 100, step = 5 },
 				Host.Frame "Panel" {
@@ -114,7 +114,7 @@ return {
 				},
 				after,
 				UI.Label({
-					Text = "Control paint stays independent of the surrounding text tint. Power disables both controls and moves focus to After.",
+					text = "Control paint stays independent of the surrounding text tint. Power disables both controls and moves focus to After.",
 					TextWrapped = true,
 				}),
 			}

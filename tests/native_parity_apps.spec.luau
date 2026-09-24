@@ -1820,10 +1820,6 @@ t.describe("native parity reference applications", function()
 				worldTarget = engine.new("Folder"),
 				guiService = guiService,
 				runService = { Heartbeat = engine.heartbeat },
-				UI = Facet.controls(
-					runtime,
-					{ types = engine.types, viewport = viewport, guiService = guiService } :: any
-				),
 			}
 			return ctx, engine, target
 		end
@@ -1834,6 +1830,16 @@ t.describe("native parity reference applications", function()
 			local built
 			local host = engine.new("ScreenGui")
 			local stop, node = ctx.runtime.mount(function()
+				gallery.configure(ctx)
+				ctx.UI = Facet.controls(
+					ctx.runtime,
+					{
+						types = engine.types,
+						viewport = ctx.viewport,
+						guiService = ctx.guiService,
+						reducedMotion = ctx.reducedMotion,
+					} :: any
+				)
 				built = (require :: any)("../examples/gallery/" .. path .. name).build(ctx)
 				if built.dispose then
 					Compose.cleanup(built.dispose)
@@ -2085,7 +2091,8 @@ t.describe("native parity reference applications", function()
 		t.it("edits the consumer's caller-owned Sound value through its toggle", function()
 			local ctx, _, target = nativeContext()
 			local stop, node = ctx.runtime.mount(function()
-				return require("../examples/consumer/src/screen").build(Facet, ctx.runtime, { types = ctx.types })
+				local UI = Facet.controls(ctx.runtime, { types = ctx.types })
+				return require("../examples/consumer/src/screen").build(Facet, UI)
 			end, target)
 			local sound = assert(find(node, "Sound"))
 			local indicator = assert(find(sound, "Indicator"))
@@ -3069,7 +3076,7 @@ t.describe("native parity reference applications", function()
 				header = node:FindFirstChild("Header"),
 				stop = function()
 					stop()
-					runtime.dispose()
+					runtime:dispose()
 				end,
 			}
 		end
@@ -3105,7 +3112,7 @@ t.describe("native parity reference applications", function()
 				target = target,
 				stop = function()
 					stop()
-					runtime.dispose()
+					runtime:dispose()
 				end,
 			}
 		end
@@ -3493,7 +3500,7 @@ t.describe("native parity reference applications", function()
 				end,
 				stop = function()
 					stop()
-					runtime.dispose()
+					runtime:dispose()
 				end,
 			}
 		end

@@ -154,6 +154,7 @@ end
 t.describe("pointer, touch and drag strength", function()
 	t.it("swaps a dragged Match3 tile only with the orthogonal neighbour in the drag direction", function()
 		local match3 = require("../examples/gallery/examples/07_match3")
+		local gallery = require("../examples/gallery/client/screen")
 		local board = {
 			{ "a", "a", "b", "c", "d", "e" },
 			{ "c", "d", "a", "e", "b", "c" },
@@ -188,11 +189,15 @@ t.describe("pointer, touch and drag strength", function()
 				runService = { Heartbeat = engine.heartbeat },
 				target = target,
 				engine = engine,
-				UI = Facet.controls(runtime, { types = engine.types, viewport = viewport } :: any),
 			}
 			ctx.guiService.ReducedMotionEnabled = true
 			local game: any
 			local stop, node = runtime.mount(function()
+				gallery.configure(ctx)
+				ctx.UI = Facet.controls(
+					runtime,
+					{ types = engine.types, viewport = viewport, reducedMotion = ctx.reducedMotion } :: any
+				)
 				game = match3.build(ctx)
 				return ctx.Host.ScreenGui("GameScreen")({ game.screen() })
 			end, target)

@@ -192,7 +192,7 @@ local function gallery(name: string): (any, any, () -> (), any)
 	end, target)
 	return built, node, function()
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 	end, engine
 end
 
@@ -300,7 +300,7 @@ t.describe("native parity weaker virtual", function()
 					end,
 					stop = function()
 						stop()
-						runtime.dispose()
+						runtime:dispose()
 					end,
 				}
 			end
@@ -459,7 +459,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(selection:peek()).toEqual({ [3] = true })
 			t.expect(#selections).toBe(3)
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -500,7 +500,7 @@ t.describe("native parity weaker virtual", function()
 		t.expect(row.isDestroyed()).toBe(true)
 		t.expect(built).toBe(3)
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 	end)
 
 	t.it(
@@ -543,7 +543,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(node.CanvasSize.Y.Offset).toBe(8 * 40 + 14 * xs)
 			t.expect(rendered).toBe(count)
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -622,7 +622,7 @@ t.describe("native parity weaker virtual", function()
 				t.expect(hit(index):GetAttribute("FacetSelected")).toBe(false)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -666,7 +666,7 @@ t.describe("native parity weaker virtual", function()
 		t.expect(rowHost(node, 1)).toBe(first)
 		t.expect(rendered).toBe(count + 7)
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 	end)
 
 	t.it(
@@ -719,7 +719,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(node.CanvasPosition.Y).toBe(45 * 40 - 400)
 			t.expect(state:peek().following).toBe(true)
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 	t.it(
@@ -765,7 +765,7 @@ t.describe("native parity weaker virtual", function()
 					end,
 					stop = function()
 						stop()
-						runtime.dispose()
+						runtime:dispose()
 					end,
 				}
 			end
@@ -876,7 +876,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(rowHost(short, 2).Position.X.Offset).toBe(80)
 			t.expect(rowHost(short, 4).Position.X.Offset).toBe(240)
 			stopShort()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -906,7 +906,7 @@ t.describe("native parity weaker virtual", function()
 					t.expect(#mountedKeys(node)).toBe(36)
 				end
 				stop()
-				runtime.dispose()
+				runtime:dispose()
 				return atTop, built - atTop
 			end
 			local top, jumped = buildsFor(10000, 24000)
@@ -973,7 +973,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(rowHost(short, 18).Position.Y.Offset).toBe(81)
 			t.expect(short.CanvasSize.X.Offset).toBe(5 * 120 + 4 * 6 + 2 * 3)
 			stopShort()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1018,7 +1018,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(state:peek().retained).toBe(2)
 			t.expect(mountedKeys(node)).toEqual({ 501, 502 })
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1060,7 +1060,7 @@ t.describe("native parity weaker virtual", function()
 		t.expect(node.CanvasPosition.Y).toBe(14 * 40 - 400)
 		t.expect(node.CanvasPosition.X).toBe(0)
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 	end)
 
 	t.it("collections-274 a horizontal measured list sizes each item from its native width and shrinks back", function()
@@ -1095,7 +1095,7 @@ t.describe("native parity weaker virtual", function()
 		t.expect(state:peek().extent).toBe(60 + 2 * 110)
 		t.expect(rowHost(node, 2).Position.X.Offset).toBe(60)
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 	end)
 
 	t.it(
@@ -1155,7 +1155,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(state:peek().retained).toBe(14)
 			t.expect(mountedKeys(bounded)).toEqual(range(499, 512))
 			stopBounded()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1213,7 +1213,7 @@ t.describe("native parity weaker virtual", function()
 			focus.focus(1)
 			t.expect(plain.CanvasPosition.Y).toBe(0)
 			stopPlain()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1267,7 +1267,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(state:peek().retained < 20).toBe(true)
 			t.expect(state:peek().first > 1).toBe(true)
 			stopLarge()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 	t.it(
@@ -1345,7 +1345,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(shape(fresh)).toBe(opening)
 			stop()
 			t.expect(cancels).toBe(loads)
-			runtime.dispose()
+			runtime:dispose()
 			local storm = engineLib.new()
 			local stormRuntime: any = Facet.Roblox.createRuntime(storm)
 			local stormUI: any = Facet.controls(stormRuntime, { types = storm.types })
@@ -1446,7 +1446,7 @@ t.describe("native parity weaker virtual", function()
 					t.expect(restored.CanvasPosition.Y).toBe(saved)
 					t.expect(topKey(restored)).toBe(anchor)
 					stopKnown()
-					runtime.dispose()
+					runtime:dispose()
 				end
 			end
 			local engine, runtime, UI, root = setup()
@@ -1510,7 +1510,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(anchor.Position.Y.Offset).toBe(24 * 40)
 			t.expect(anchor.Size.X.Offset).toBe(300)
 			stopGrid()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1562,7 +1562,7 @@ t.describe("native parity weaker virtual", function()
 				t.expect(rowHost(grid, 1)).toBe(first)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			local built, node, close, galleryEngine = gallery("container_grid")
 			local sidebar = find(node, "Sidebar")
 			find(node, "GuidesToggle").Activated.fire()
@@ -1642,7 +1642,7 @@ t.describe("native parity weaker virtual", function()
 					snapshot = snapshot,
 					stop = function()
 						stop()
-						runtime.dispose()
+						runtime:dispose()
 					end,
 				}
 			end
@@ -1767,7 +1767,7 @@ t.describe("native parity weaker virtual", function()
 			end
 			t.expect(crossed).toBe(true)
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1853,7 +1853,7 @@ t.describe("native parity weaker virtual", function()
 			end
 			stopUniform()
 			stopEqual()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1913,7 +1913,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(mountedKeys(list)).toEqual({})
 			stop()
 			local _ = tabs
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 
@@ -1969,7 +1969,7 @@ t.describe("native parity weaker virtual", function()
 			t.expect(faceNew.isDestroyed()).toBe(true)
 			stop()
 			t.expect(released).toBe(acquired)
-			runtime.dispose()
+			runtime:dispose()
 		end
 	)
 end)

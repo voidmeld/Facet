@@ -10,10 +10,10 @@ local value = Compose.cell(0.5)
 local selected = Compose.cell("home")
 local expanded = Compose.cell(false)
 local function content(): Instance
-	return UI.Label({ label = "Content" })
+	return UI.Label({ text = "Content" })
 end
 local function guiContent(): GuiObject
-	return UI.Label({ label = "Content" })
+	return UI.Label({ text = "Content" })
 end
 local function nothing() end
 local button: TextButton = UI.Button({

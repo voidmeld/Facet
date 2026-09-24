@@ -11,33 +11,22 @@ Keep the full module tree together. Facet contains its pinned Compose snapshot
 and the license notice. Do not copy selected private implementation files into
 an application.
 
-The native runtime mounts your ScreenGui into PlayerGui. Native ScreenGui
-properties control safe areas, display order and reset behavior.
+`Facet.app` mounts a ScreenGui into PlayerGui. To set other ScreenGui
+properties, such as the safe areas or the display order, mount your own
+ScreenGui with `runtime.mount`. See [Mounting](../reference/api.md#mounting).
 
 ```luau
 local Facet = require(game.ReplicatedStorage:WaitForChild("Facet"))
-local Compose = Facet.Compose
-local runtime = Facet.Roblox.createRuntime()
-local Host = runtime.constructors
-local UI = Facet.controls(runtime)
-local stop = runtime.mount(function()
-    local sheet = Facet.themes.createStyleSheet(runtime)
-    return Host.ScreenGui {
-        ResetOnSpawn = false,
-        sheet,
-        Host.StyleLink { StyleSheet = Compose.static(sheet) },
-        UI.Button { label = "Ready", onActivate = function() print("Ready") end },
-    }
-end, game.Players.LocalPlayer:WaitForChild("PlayerGui"))
-script.Destroying:Connect(function()
-    stop()
-    runtime:dispose()
+local app = Facet.app()
+app.mount(function()
+    return app.UI.Button { label = "Ready", onActivate = function() print("Ready") end }
 end)
+script.Destroying:Connect(app.dispose)
 ```
 
-The sheet is a native child. The StyleLink references the sheet and applies the
-themed paint. Keep game models, remotes and assets outside the Facet module
-tree.
+`app.mount` puts a StyleSheet and a StyleLink in the ScreenGui. The StyleLink
+references the sheet and applies the themed paint. Keep game models, remotes
+and assets outside the Facet module tree.
 
 ## The official Roblox Package
 

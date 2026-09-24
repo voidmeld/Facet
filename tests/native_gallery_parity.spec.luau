@@ -52,7 +52,7 @@ local function mount(name)
 		engine,
 		function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			t.expect(#target:GetChildren()).toBe(0)
 		end
 end

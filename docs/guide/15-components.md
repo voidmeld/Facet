@@ -2,11 +2,14 @@
 
 A component is a function that returns a native Instance.
 
-- Make controls with `Facet.controls(runtime)`.
-- Make native objects with `Host = runtime.constructors`.
-- Make both inside a Compose owner. This is usually the function that you give
-  to `runtime.mount`.
-- Put a semantic name directly after the constructor: `Host.Frame "Toolbar" { ... }` or `UI.Button "Save" { ... }`. Do not write `Name = "..."` for a fixed name. Use `Name` only when the name is computed.
+- Make an app with `Facet.app()`. Its `UI` field has the controls.
+- Mount a component with `app.mount(Component)`. The component runs in the
+  owner of that mount.
+- Make native objects with `Host = app.runtime.constructors` only when no
+  control or layout constructor makes them.
+- Make controls inside a Compose owner. This is usually the component that you
+  give to `app.mount`.
+- Put a semantic name directly after the constructor: `UI.HStack "Toolbar" { ... }` or `UI.Button "Save" { ... }`. Do not write `Name = "..."` for a fixed name. Use `Name` only when the name is computed.
 - Use numeric children and native property names.
 
 ## State and requests
@@ -22,7 +25,7 @@ again.
 | External effects | `Compose.watch` |
 | Teardown | `Compose.cleanup` |
 
-This component uses the `Compose`, `Host` and `UI` setup from
+This component uses the `Compose` and `UI` setup from
 [Getting started](03-getting-started.md):
 
 ```luau
@@ -74,7 +77,8 @@ return UI.VStack {
 ```
 
 For a bounded collection that stays mounted, use `Compose.keyed` with `from`, a
-key function and `render(current, index, key)`. Read the current item inside
+key function and `render(current, index, key)`. The Facet collection controls
+also accept a field name as the key: `key = "id"`. Read the current item inside
 property bindings. An existing key can receive a replacement item.
 
 For large scrolling collections, use the Facet
@@ -142,8 +146,10 @@ not from the reference.
 - Use `runtime.connect` for native events that are bound to an owner.
 - For an external connection, register its disconnect function with
   `Compose.cleanup`.
-- The stop function from `runtime.mount` releases that mount. Stop the mounts
-  before you call `runtime:dispose`.
+- The stop function from `app.mount` releases that mount. `app.dispose()`
+  releases every mount of the app and the runtime that the app made.
+- If you use `runtime.mount` directly, stop the mounts before you call
+  `runtime:dispose()`.
 - If durable model cells must outlive the screen component, keep them outside
   it.
 
@@ -170,8 +176,8 @@ options. To remove the motion, supply `transition = false`. The
 local path = Compose.cell({})
 return UI.NavigationStack {
 	path = path,
-	root = { title = "Library", content = Host.Frame {} },
-	destinations = { game = { title = "Game", content = Host.Frame {} } },
+	root = { title = "Library", content = UI.VStack {} },
+	destinations = { game = { title = "Game", content = UI.VStack {} } },
 	transition = { seconds = 0.25, ease = Compose.easing.outCubic },
 }
 ```

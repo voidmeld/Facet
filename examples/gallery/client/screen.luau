@@ -205,7 +205,7 @@ function screen.build(ctx: any)
 		}),
 		UI.Label "Title" {
 			LayoutOrder = 1,
-			label = "Facet gallery",
+			text = "Facet gallery",
 			textRole = "title",
 			Size = UDim2.fromScale(0, 0),
 			AutomaticSize = Enum.AutomaticSize.XY,
@@ -316,7 +316,7 @@ function screen.build(ctx: any)
 					UI.Label({
 						LayoutOrder = 4,
 						Name = "MotionNote",
-						Text = "Reduced removes decorative travel while progress keeps running. Roblox's reduced-motion preference remains in effect.",
+						text = "Reduced removes decorative travel while progress keeps running. Roblox's reduced-motion preference remains in effect.",
 						textRole = "caption",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -345,7 +345,7 @@ function screen.build(ctx: any)
 					}),
 					UI.Label({
 						LayoutOrder = 7,
-						Text = "Distant TV previews larger controls at 150% scale. Automatic and Near use normal scale; Roblox text and accessibility preferences still apply.",
+						text = "Distant TV previews larger controls at 150% scale. Automatic and Near use normal scale; Roblox text and accessibility preferences still apply.",
 						textRole = "caption",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -354,7 +354,7 @@ function screen.build(ctx: any)
 					UI.Label({
 						LayoutOrder = 8,
 						Name = "NativePreview",
-						Text = "In Studio, use Device Emulator for screen size, orientation and touch, and Controller Emulator for gamepad. Roblox Settings controls text size and accessibility preferences.",
+						text = "In Studio, use Device Emulator for screen size, orientation and touch, and Controller Emulator for gamepad. Roblox Settings controls text size and accessibility preferences.",
 						textRole = "caption",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 0),

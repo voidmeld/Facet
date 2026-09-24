@@ -35,6 +35,7 @@ to select a control. Then read the exact contract of that control in the
 | Reactive graph, owners, keyed and presented composition | `Facet.Compose` |
 | Native host, runtime and target construction | `Facet.Roblox`; `runtime.constructors` as `Host` |
 | Control constructors | `Facet.controls(runtime, options?)` |
+| A runtime, controls and a themed ScreenGui mount in one call | `Facet.app(options?)`; `app.mount(Component)`; `app.dispose()` |
 | Screen roots, stacks and layers | `UI.Screen`, `UI.VStack`, `UI.HStack`, `UI.ZStack` |
 | Scrolling content and grids | `UI.ScrollView`, `UI.Grid` |
 | Main-axis fill | `UI.fill` |

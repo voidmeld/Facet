@@ -55,8 +55,9 @@ The [API reference](../reference/api.md#themes) lists every color name.
 
 Give the same theme package readable to the controls and to the StyleSheet.
 `controls` uses it for metrics, icons and artwork. The StyleSheet supplies the
-native paint. Make and parent the sheet inside the screen owner, as
-[Styling](05-styling.md) describes.
+native paint. `Facet.app({ theme = selectedPackage })` gives it to both. When
+you also select a palette, make and parent the sheet inside the screen owner,
+as [Styling](05-styling.md) describes.
 
 ```luau
 local selectedPackage = Compose.cell(package)
@@ -78,9 +79,9 @@ Explicit Instance paint properties override the native stylesheet paint. Set
 them only when the screen needs that override.
 
 Keep native sizing in the layout of the screen. `controlSizes` and typography
-feed the control measurements and paint. Spacing values are theme package data
-for your native layout declarations. A change to `space.m` alone does not
-change the UIPadding or UIListLayout of a screen.
+feed the control measurements and paint. The layout constructors read the
+spacing steps from `metrics.space` of the theme package of the controls. A
+change to `space.m` changes each `gap` or `padding` that uses the `m` step.
 
 ## Coverage and icons
 

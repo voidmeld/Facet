@@ -768,7 +768,7 @@ t.describe("native accessibility and localization corpus", function()
 				table.insert(failures, `{name}: {entry}`)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 		for tag, gap in KNOWN_UNNAMED do
 			local engine, runtime, root, controls = world()
@@ -784,7 +784,7 @@ t.describe("native accessibility and localization corpus", function()
 				)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 		assert(total >= 30, `only {total} selectable nodes were checked`)
 		assert(#failures == 0, "selectable nodes without an accessible name:\n" .. table.concat(failures, "\n"))
@@ -820,7 +820,7 @@ t.describe("native accessibility and localization corpus", function()
 			end
 		end
 		stop()
-		ctx.runtime.dispose()
+		ctx.runtime:dispose()
 		for _, scenario in galleryTargets() do
 			local sctx, sengine, starget = galleryContext()
 			sctx.load = load
@@ -838,7 +838,7 @@ t.describe("native accessibility and localization corpus", function()
 				table.insert(failures, `{scenario.id}: {entry}`)
 			end
 			sstop()
-			sctx.runtime.dispose()
+			sctx.runtime:dispose()
 		end
 		assert(total > 100, `only {total} selectable nodes were checked`)
 		assert(#failures == 0, "gallery nodes without an accessible name:\n" .. table.concat(failures, "\n"))
@@ -879,7 +879,7 @@ t.describe("native accessibility and localization corpus", function()
 				elseif not ok then
 					table.insert(failures, `{name} {entry.id}: {err}`)
 				end
-				runtime.dispose()
+				runtime:dispose()
 				mounted += 1
 			end
 		end
@@ -909,7 +909,7 @@ t.describe("native accessibility and localization corpus", function()
 			assert(entry.text == "" or count >= 3, `{entry.id}: {count} of 3 relabelled controls show the input`)
 		end
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 	end)
 
 	t.it("keeps multibyte text edits valid UTF-8 through TextInput editing and maxLength", function()
@@ -940,7 +940,7 @@ t.describe("native accessibility and localization corpus", function()
 			assert(length == expected, `{entry.id}: maxLength kept {length} of {expected} characters`)
 			limited:ReleaseFocus(true)
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end
 	end)
 end)

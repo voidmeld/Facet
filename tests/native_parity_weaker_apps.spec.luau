@@ -1092,6 +1092,12 @@ t.describe("Documentation and tooling", function()
 			return sheet
 		end
 		local playerGui = engine.new("PlayerGui")
+		facade.app = function(options)
+			local settings = table.clone(options or {})
+			settings.types = engine.types
+			settings.parent = settings.parent or playerGui
+			return Facet.bind(Facet.Compose, facade.Roblox).app(settings)
+		end
 		local host = engine.new("ScreenGui")
 		local destroying = engineLib.new().heartbeat
 		local env = table.clone(engine.types) :: any
@@ -1140,8 +1146,16 @@ t.describe("Documentation and tooling", function()
 				local counter = assert(find(state.playerGui, "Counter"), `{file}: no Counter`)
 				t.expect(counter.ClassName).toBe("ScreenGui")
 				t.expect(counter.ResetOnSpawn).toBe(false)
-				t.expect(#state.sheets).toBe(1)
-				t.expect(state.sheets[1].Parent).toBe(counter)
+				local sheets = {}
+				for _, node in state.playerGui:GetDescendants() do
+					if node.ClassName == "StyleSheet" then
+						table.insert(sheets, node)
+					end
+				end
+				t.expect(#state.sheets + #sheets).toBe(1)
+				local sheet = state.sheets[1] or sheets[1]
+				t.expect(sheet.Parent).toBe(counter)
+				t.expect(counter:FindFirstChildWhichIsA("StyleLink").StyleSheet).toBe(sheet)
 				t.expect(`{file}: {hasText(counter, "Clicked 0 times")}`).toBe(`{file}: true`)
 				local add = assert(button(counter, "Add one"))
 				add.Activated.fire()
@@ -1150,7 +1164,7 @@ t.describe("Documentation and tooling", function()
 				t.expect(env.script.Destroying.count()).toBe(1)
 				env.script.Destroying.fire()
 				t.expect(counter.isDestroyed()).toBe(true)
-				t.expect(state.sheets[1].isDestroyed()).toBe(true)
+				t.expect(sheet.isDestroyed()).toBe(true)
 				t.expect(engine.census().live).toBe(state.baseline.live)
 				t.expect(engine.census().connections).toBe(state.baseline.connections)
 			end

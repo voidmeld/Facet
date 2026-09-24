@@ -1,5 +1,17 @@
 --!strict
 
+type Use = (any) -> any
+type Column = {
+	id: string,
+	label: string,
+	width: number,
+	minWidth: number?,
+	resizable: boolean,
+	sortable: boolean,
+	value: (any) -> any,
+	render: ((any) -> any)?,
+}
+
 local example = {}
 example.title = "Playlist Table"
 local TRACKS = {
@@ -11,9 +23,8 @@ local TRACKS = {
 	{ id = "apex", name = "Apex Bloom", artist = "Nine Volt", length = 176, rating = 3 },
 }
 function example.build(ctx: any)
-	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
-	local UDim, UDim2, Vector2, Color3, Enum =
-		ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
+	local UI, Compose = ctx.UI, ctx.Compose
+	local UDim2, Enum = ctx.types.UDim2, ctx.types.Enum
 	local built: any = {}
 
 	local function plain(item: any): any
@@ -61,7 +72,7 @@ function example.build(ctx: any)
 		end)
 		return out
 	end)
-	local filteredRows = Compose.formula(function(use)
+	local filteredRows = Compose.formula(function(use: Use)
 		local query = string.lower(use(filterText))
 		local all = use(sortedRows) :: { any }
 		if query == "" then
@@ -190,12 +201,10 @@ function example.build(ctx: any)
 					end,
 					render = starCell,
 				},
-			},
+			} :: { Column },
 
 			from = filteredRows,
-			key = function(item)
-				return plain(item).id
-			end,
+			key = "id",
 
 			sort = sortOrder,
 			selectionMode = "multi",
@@ -247,41 +256,26 @@ function example.build(ctx: any)
 				ratings[track.id]:set(track.rating)
 			end
 		end
-		local COLUMN_LABELS = { { "name", "Name", true }, { "artist", "Artist", true }, { "rating", "Rating", false } }
+		local COLUMN_LABELS = {
+			{ id = "name", label = "Name", resizable = true },
+			{ id = "artist", label = "Artist", resizable = true },
+			{ id = "rating", label = "Rating", resizable = false },
+		}
 		local widthsText = Compose.formula(function(use)
 			local overrides = use(columnWidths) :: { [string]: number }
-			local hidden = {} :: { string }
-			local hiddenSet: { [string]: boolean } = {}
-			for _, id in hidden do
-				hiddenSet[id] = true
-			end
 			local parts = {}
 			for _, column in COLUMN_LABELS do
-				local id, label, resizable = column[1] :: string, column[2] :: string, column[3] :: boolean
-				local px = overrides[id]
-				local shown = if hiddenSet[id]
-					then "hidden"
-					elseif px ~= nil then `{math.floor(px + 0.5)}px`
-					elseif resizable then "auto"
+				local px = overrides[column.id]
+				local shown = if px ~= nil
+					then `{math.floor(px + 0.5)}px`
+					elseif column.resizable then "auto"
 					else "locked"
-				table.insert(parts, `{label} {shown}`)
+				table.insert(parts, `{column.label} {shown}`)
 			end
-			local line = table.concat(parts, " · ")
-			return if #hidden > 0 then `{line} · {#hidden} hidden` else line
+			return table.concat(parts, " · ")
 		end)
-		local hintText = Compose.formula(function(use)
-			local selected = nil :: string?
-			if selected == nil then
-				return "Type to filter · tap a heading to sort · drag a divider to resize · swipe a row for its actions"
-			end
-			local label = "Rating"
-			for _, column in COLUMN_LABELS do
-				if column[1] == selected then
-					label = column[2] :: string
-				end
-			end
-			return `{label} has the keys: , and . resize it, ↑/↓ sorts`
-		end)
+		local hintText =
+			"Type to filter · tap a heading to sort · drag a divider to resize · swipe a row for its actions"
 		local nowPlayingText = function(use)
 			local track = use(nowPlaying)
 			if track == nil then
@@ -289,75 +283,19 @@ function example.build(ctx: any)
 			end
 			return `Now playing — {track}`
 		end
-		local screen = Host.Frame "Playlist" {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 1, 0),
-			Host.UIPadding({
-				PaddingTop = UDim.new(0, 16),
-				PaddingBottom = UDim.new(0, 16),
-				PaddingLeft = UDim.new(0, 16),
-				PaddingRight = UDim.new(0, 16),
-			}),
-			Host.ScrollingFrame "Page" {
-				BackgroundTransparency = 1,
-				Size = UDim2.new(1, 0, 1, 0),
-				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				CanvasSize = UDim2.new(),
-				ScrollBarThickness = 6,
-				Host.UIListLayout({
-					FillDirection = Enum.FillDirection.Vertical,
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					Padding = UDim.new(0, 8),
-				}),
-				UI.Label "Title" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = "Playlist",
-					textRole = "title",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
+		local screen = UI.Screen "Playlist" {
+			UI.ScrollView "Page" {
+				gap = "s",
+				align = "stretch",
+				UI.Label "Title" { text = "Playlist", textRole = "title" },
 				UI.TextInput "Filter" {
 					value = filterText,
 					presentation = "search",
 					placeholder = "Filter tracks",
 				},
-				UI.Label "Hint" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = hintText,
-					textRole = "caption",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				UI.Label "NowPlaying" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = nowPlayingText,
-					textRole = "caption",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
-				UI.Label "Widths" {
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					text = widthsText,
-					textRole = "caption",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				},
+				UI.Label "Hint" { text = hintText, textRole = "caption", TextWrapped = true },
+				UI.Label "NowPlaying" { text = nowPlayingText, textRole = "caption", TextWrapped = true },
+				UI.Label "Widths" { text = widthsText, textRole = "caption", TextWrapped = true },
 				tracks,
 				UI.Button "Restore" {
 					label = "Restore the original playlist",
@@ -376,7 +314,7 @@ function example.build(ctx: any)
 			end,
 
 			hint = function(): string
-				return hintText:peek()
+				return hintText
 			end,
 			reorder = reorder,
 			moveToTop = moveToTop,

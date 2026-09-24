@@ -8,7 +8,7 @@ exists.
 
 ```luau
 local confirm = Compose.cell(false)
-return Host.Frame {
+return UI.VStack {
     UI.Button { label = "Delete", onActivate = function() confirm:set(true) end },
     UI.Alert {
         isPresented = confirm,

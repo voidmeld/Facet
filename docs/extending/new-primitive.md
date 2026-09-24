@@ -1,17 +1,14 @@
 # Native primitives
 
 Facet does not keep a parallel catalog of primitives. If Compose Roblox can
-make the class, use it directly through `Host = runtime.constructors`.
+make the class, use it directly through `Host = runtime.constructors`. Put it
+in the layout constructors like any other child.
 
 ```luau
-return Host.Frame {
-    Size = UDim2.new(1, 0, 0, 0),
-    AutomaticSize = Enum.AutomaticSize.Y,
-    Host.UIListLayout {
-        FillDirection = Enum.FillDirection.Vertical,
-        Padding = UDim.new(0, 8),
-    },
-    UI.Label { label = "Inventory" },
+return UI.VStack {
+    gap = "s",
+    UI.Label { text = "Inventory" },
+    Host.ImageLabel "Crest" { Image = ownedPanelAsset, Size = UDim2.fromOffset(48, 48) },
     UI.Button { label = "Open", onActivate = openInventory },
 }
 ```

@@ -2,6 +2,7 @@ local t = require("./lib/testkit")
 local describe, it, expect = t.describe, t.it, t.expect
 local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
+local gallery = require("../examples/gallery/client/screen")
 local Compose = Facet.Compose
 local words = require("../examples/gallery/examples/words")
 local function find(root, name)
@@ -47,19 +48,23 @@ local function makeWorld()
 		runService = { Heartbeat = engine.heartbeat },
 		target = target,
 		engine = engine,
-		UI = Facet.controls(runtime, { types = engine.types, viewport = viewport }),
 	}
 end
 local function mountGame(ctx, definition)
 	local game
 	local stop, node = ctx.runtime.mount(function()
+		gallery.configure(ctx)
+		ctx.UI = Facet.controls(
+			ctx.runtime,
+			{ types = ctx.types, viewport = ctx.viewport, reducedMotion = ctx.reducedMotion }
+		)
 		game = definition.build(ctx)
 		return ctx.Host.ScreenGui "GameScreen" { game.screen() }
 	end, ctx.target)
 	ctx.node = node
 	game.dispose = function()
 		stop()
-		ctx.runtime.dispose()
+		ctx.runtime:dispose()
 	end
 	return game
 end
@@ -572,9 +577,9 @@ do
 			expect(game.phase()).toBe("won")
 			expect(findPath(ctx.node, game.keyPath("Z")).Interactable).toBe(false)
 			expect(findPath(ctx.node, game.keyPath("Enter")).Interactable).toBe(false)
-			expect(findPath(ctx.node, "/Wordle/page/col/Restart").Interactable).toBe(true)
+			expect(findPath(ctx.node, "/Wordle/page/Restart").Interactable).toBe(true)
 			tap(ctx, "/Close")
-			tap(ctx, "/Wordle/page/col/Restart")
+			tap(ctx, "/Wordle/page/Restart")
 			expect(game.phase()).toBe("playing")
 			game.dispose()
 		end)
@@ -614,12 +619,12 @@ do
 			expect(game.resultsOpen()).toBe(true)
 			expect((if game.resultsOpen() then 2 else 1)).toBe(2)
 
-			tap(ctx, "/Wordle/page/col/Restart")
+			tap(ctx, "/Wordle/page/Restart")
 			expect(game.resultsOpen()).toBe(true)
 			expect(game.phase()).toBe("lost")
 			tap(ctx, "/Close")
 			expect((if game.resultsOpen() then 2 else 1)).toBe(1)
-			tap(ctx, "/Wordle/page/col/Restart")
+			tap(ctx, "/Wordle/page/Restart")
 			expect(game.resultsOpen()).toBe(false)
 			expect(game.phase()).toBe("playing")
 			expect(findPath(ctx.node, game.keyPath("Z")).Interactable).toBe(true)

@@ -287,7 +287,7 @@ t.describe("native constructor conformance", function()
 		for name in fixtures do
 			assert(UI[name], `Stale conformance fixture: {name}`)
 		end
-		runtime.dispose()
+		runtime:dispose()
 	end)
 	local names = {}
 	for name in fixtures do
@@ -330,7 +330,7 @@ t.describe("native constructor conformance", function()
 				node.MouseEnter.fire()
 				assert(calls == 1, "native event was not forwarded")
 				stop()
-				runtime.dispose()
+				runtime:dispose()
 				node.MouseEnter.fire()
 				assert(calls == 1, "event survived disposal")
 				assert(node:isDestroyed(), "root survived disposal")

@@ -40,7 +40,7 @@ local function mount(width, height)
 		root,
 		function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			t.expect(#target:GetChildren()).toBe(0)
 		end,
 		viewport,

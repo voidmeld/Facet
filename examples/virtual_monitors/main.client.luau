@@ -296,15 +296,18 @@ local lifetime = Compose.createRootOwner(function()
 			})
 		end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	end
+	local desktopPackage = theme.create(Facet, "Discover")
+	local palette = function(use)
+		return if use(dark) then "Dark" else "Light"
+	end
+	local showing = function(use)
+		return use(modeProgress) > 0
+	end
 	runtime.mount(function()
-		local package = theme.create(Facet, "Discover")
-		local sheet = Facet.themes.createStyleSheet(runtime, package, {
+		local sheet = Facet.themes.createStyleSheet(runtime, desktopPackage, {
 			reducedMotion = reducedMotion,
-			theme = function(use)
-				return if use(dark) then "Dark" else "Light"
-			end,
+			theme = palette,
 		})
-		local views = screens.create(Facet, runtime, sceneActions(false, package))
 		local backdrop = Host.Frame "Backdrop" {
 			Size = UDim2.fromScale(1, 1),
 			BorderSizePixel = 0,
@@ -314,38 +317,42 @@ local lifetime = Compose.createRootOwner(function()
 			end,
 		}
 		backdrop:AddTag("facet-surface")
-		Host.ScreenGui "VirtualMonitorsBackdrop" {
-			Parent = players.LocalPlayer:WaitForChild("PlayerGui"),
+		return Host.ScreenGui "VirtualMonitorsBackdrop" {
 			DisplayOrder = 9,
 			ResetOnSpawn = false,
 			ScreenInsets = Enum.ScreenInsets.None,
-			Enabled = function(use)
-				return use(modeProgress) > 0
-			end,
+			Enabled = showing,
 			sheet,
 			Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
 			backdrop,
 		}
-		return Host.ScreenGui "VirtualMonitorsDesktop" {
+	end, players.LocalPlayer:WaitForChild("PlayerGui"))
+	local app = Facet.app({
+		runtime = runtime,
+		name = "VirtualMonitorsDesktop",
+		theme = desktopPackage,
+		reducedMotion = reducedMotion,
+		pressHaptic = pressHaptic,
+		sheet = { theme = palette },
+		screen = {
 			DisplayOrder = 10,
-			ResetOnSpawn = false,
 			ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets,
 			ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-			Enabled = function(use)
-				return use(modeProgress) > 0
-			end,
-			sheet,
-			Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
-			desktop.create(
-				Facet,
-				runtime,
-				views,
-				model,
-				modeProgress,
-				{ theme = package, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
-			)(),
-		}
-	end, players.LocalPlayer:WaitForChild("PlayerGui"))
+			Enabled = showing,
+		},
+	})
+	Compose.cleanup(app.dispose)
+	app.mount(function()
+		local views = screens.create(Facet, runtime, sceneActions(false, desktopPackage))
+		return desktop.create(
+			Facet,
+			runtime,
+			views,
+			model,
+			modeProgress,
+			{ theme = desktopPackage, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
+		)()
+	end)
 	local viewport = Facet.Roblox.createViewport(camera)
 	Compose.watch(function(use)
 		if (use(viewport).width < 700 or guiService:IsTenFootInterface()) and not model.modeChosen then

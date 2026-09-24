@@ -1,8 +1,7 @@
 --!strict
 local screen = {}
-function screen.build(Facet: any, runtime: any, options: any?)
+function screen.build(Facet: any, UI: any)
 	local Compose = Facet.Compose
-	local UI = Facet.controls(runtime, options)
 	local count = Compose.cell(0)
 	local sound = Compose.cell(true)
 	local visible = Compose.cell(true)

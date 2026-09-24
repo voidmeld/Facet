@@ -284,7 +284,7 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			if Compose.currentOwner() == nil then
 				building = outer
 				error(
-					`Facet UI.{control}: no owner from Facet's Compose is active. Build controls inside runtime.mount. `
+					`Facet UI.{control}: no owner from Facet's Compose is active. Build controls inside app.mount or runtime.mount. `
 						.. "If the runtime comes from another Compose instance, "
 						.. "bind Facet to that instance with Facet.bind(Compose, Roblox).",
 					0

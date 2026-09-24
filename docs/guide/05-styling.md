@@ -5,6 +5,18 @@ Instances that Compose owns.
 
 ## Install the StyleSheet
 
+`Facet.app` installs the StyleSheet for you. Give the theme package one time:
+
+```luau
+local app = Facet.app({ theme = package })
+app.mount(function()
+    return app.UI.Button { label = "Continue", onActivate = onContinue }
+end)
+```
+
+The controls and the sheet then use the same package. To install the sheet
+yourself, for example in a SurfaceGui, do these steps:
+
 1. Make the sheet inside the mounted component.
 2. Parent the sheet under the target root.
 3. Put a StyleLink that references the sheet next to it.

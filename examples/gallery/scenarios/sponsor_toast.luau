@@ -193,9 +193,9 @@ return {
 					AutomaticCanvasSize = E.AutomaticSize.Y,
 					CanvasSize = D2.new(),
 					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 12) }),
-					UI.Label({ Text = "Toasts", textRole = "title" }),
+					UI.Label({ text = "Toasts", textRole = "title" }),
 					UI.Label({
-						Text = "Show a toast, then try Test input. Notifications leave the controls below usable.",
+						text = "Show a toast, then try Test input. Notifications leave the controls below usable.",
 						TextWrapped = true,
 					}),
 					UI.Picker "Edge" {
@@ -263,7 +263,7 @@ return {
 						end,
 					},
 					UI.Label "Status" {
-						Text = function(use)
+						text = function(use)
 							use(rows)
 							local r = report()
 							return string.format(
@@ -324,7 +324,7 @@ return {
 							for _, field in { "title", "detail" } do
 								local text = UI.Label({
 									Name = "Measure_" .. field,
-									Text = function(use)
+									text = function(use)
 										return use(current)[field]
 									end,
 									TextWrapped = false,
@@ -391,7 +391,7 @@ return {
 								Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 4) }),
 								UI.Label "Title" {
 									textRole = "strong",
-									Text = function(use)
+									text = function(use)
 										return use(current).title
 									end,
 									TextWrapped = true,
@@ -400,7 +400,7 @@ return {
 								},
 								UI.Label "Detail" {
 									role = "secondary",
-									Text = function(use)
+									text = function(use)
 										return use(current).detail
 									end,
 									TextWrapped = true,
