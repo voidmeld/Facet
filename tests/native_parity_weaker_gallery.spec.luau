@@ -76,6 +76,7 @@ local function world(options: any?): any
 		} :: any
 	)
 	return {
+		reducedMotion = if opts.reducedMotion == nil then true else opts.reducedMotion,
 		engine = engine,
 		runtime = runtime,
 		target = target,
@@ -89,6 +90,8 @@ end
 local function mountBuilt(w: any, definition: any): (any, any, () -> ())
 	local built
 	local stop, node = w.runtime.mount(function()
+		gallery.configure(w.ctx)
+		w.ctx.motionPreference:set(w.reducedMotion)
 		built = definition.build(w.ctx)
 		if built.dispose then
 			Compose.cleanup(built.dispose)

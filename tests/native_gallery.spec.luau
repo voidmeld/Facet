@@ -3,7 +3,17 @@ local t = require("./lib/testkit")
 local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
 local catalogue = require("../examples/gallery/client/demo_picker")
+local gallery = require("../examples/gallery/client/screen")
 local Compose = Facet.Compose
+
+local function controlsFor(ctx)
+	return Facet.controls(ctx.runtime, {
+		types = ctx.types,
+		viewport = ctx.viewport,
+		guiService = ctx.guiService,
+		reducedMotion = ctx.reducedMotion,
+	})
+end
 
 local function nativeContext()
 	local engine = engineLib.new()
@@ -22,8 +32,8 @@ local function nativeContext()
 		worldTarget = engine.new("Folder"),
 		guiService = guiService,
 		runService = { Heartbeat = engine.heartbeat },
-		UI = Facet.controls(runtime, { types = engine.types, viewport = viewport, guiService = guiService }),
 	}
+	ctx.UI = controlsFor(ctx)
 	return ctx, engine, target
 end
 
@@ -48,6 +58,8 @@ local function mountExample(name)
 	local ctx, engine, target = nativeContext()
 	local built
 	local stop, node = ctx.runtime.mount(function()
+		gallery.configure(ctx)
+		ctx.UI = controlsFor(ctx)
 		built = load("example", name).build(ctx)
 		if built.dispose then
 			Compose.cleanup(built.dispose)
@@ -264,6 +276,8 @@ t.describe("native gallery", function()
 		t.it("mounts " .. demo.id .. " with the native runtime", function()
 			local ctx, engine, target = nativeContext()
 			local stop, node = ctx.runtime.mount(function()
+				gallery.configure(ctx)
+				ctx.UI = controlsFor(ctx)
 				local definition = load(demo.kind, demo.module)
 				local built = definition.build(ctx)
 				if built.dispose then

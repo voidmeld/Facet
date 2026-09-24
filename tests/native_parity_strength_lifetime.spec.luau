@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
+local gallery = require("../examples/gallery/client/screen")
 local Compose = Facet.Compose
 
 type Census = { live: number, connections: number, owners: number, holding: number, mounts: number }
@@ -69,6 +70,20 @@ local function find(root: any, name: string): any
 	return nil
 end
 
+local function controlsFor(ctx: any): any
+	ctx.UI = Facet.controls(
+		ctx.runtime,
+		{
+			types = ctx.types,
+			viewport = ctx.viewport,
+			guiService = ctx.guiService,
+			services = { GuiService = ctx.guiService },
+			reducedMotion = ctx.reducedMotion,
+		} :: any
+	)
+	return ctx
+end
+
 local function exampleContext(engine: any, extra: { [string]: any }?): any
 	local runtime = Facet.Roblox.createRuntime(engine)
 	local viewport = Compose.cell({ width = 1280, height = 720 })
@@ -91,22 +106,16 @@ local function exampleContext(engine: any, extra: { [string]: any }?): any
 	for key, value in (extra or {}) :: { [string]: any } do
 		ctx[key] = value
 	end
-	ctx.UI = Facet.controls(
-		runtime,
-		{
-			types = engine.types,
-			viewport = viewport,
-			guiService = guiService,
-			services = { GuiService = guiService },
-			reducedMotion = ctx.reducedMotion,
-		} :: any
-	)
-	return ctx
+	return controlsFor(ctx)
 end
 
 local function mountModule(ctx: any, module: any, wrap: boolean?): (any, any, () -> ())
 	local built
 	local stop, node = ctx.runtime.mount(function()
+		if ctx.reducedMotion == nil then
+			gallery.configure(ctx)
+			controlsFor(ctx)
+		end
 		built = module.build(ctx)
 		if built.dispose then
 			Compose.cleanup(built.dispose)

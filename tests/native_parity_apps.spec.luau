@@ -1813,10 +1813,6 @@ t.describe("native parity reference applications", function()
 				worldTarget = engine.new("Folder"),
 				guiService = guiService,
 				runService = { Heartbeat = engine.heartbeat },
-				UI = Facet.controls(
-					runtime,
-					{ types = engine.types, viewport = viewport, guiService = guiService } :: any
-				),
 			}
 			return ctx, engine, target
 		end
@@ -1827,6 +1823,16 @@ t.describe("native parity reference applications", function()
 			local built
 			local host = engine.new("ScreenGui")
 			local stop, node = ctx.runtime.mount(function()
+				gallery.configure(ctx)
+				ctx.UI = Facet.controls(
+					ctx.runtime,
+					{
+						types = engine.types,
+						viewport = ctx.viewport,
+						guiService = ctx.guiService,
+						reducedMotion = ctx.reducedMotion,
+					} :: any
+				)
 				built = (require :: any)("../examples/gallery/" .. path .. name).build(ctx)
 				if built.dispose then
 					Compose.cleanup(built.dispose)

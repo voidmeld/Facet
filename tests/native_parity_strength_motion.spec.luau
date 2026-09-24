@@ -1647,6 +1647,7 @@ end)
 
 t.describe("match3 cascade order and input lock", function()
 	local match3 = require("../examples/gallery/examples/07_match3")
+	local gallery = require("../examples/gallery/client/screen")
 	local dropBoard = {
 		{ "b", "c", "d", "e", "a", "b" },
 		{ "c", "d", "e", "a", "b", "c" },
@@ -1674,10 +1675,14 @@ t.describe("match3 cascade order and input lock", function()
 			runService = { Heartbeat = engine.heartbeat },
 			target = target,
 			engine = engine,
-			UI = Facet.controls(runtime, { types = engine.types, viewport = viewport } :: any),
 		}
 		local game
 		local stop, node = runtime.mount(function()
+			gallery.configure(ctx)
+			ctx.UI = Facet.controls(
+				runtime,
+				{ types = engine.types, viewport = viewport, reducedMotion = ctx.reducedMotion } :: any
+			)
 			game = match3.build(ctx)
 			return ctx.Host.ScreenGui "GameScreen" { game.screen() }
 		end, target)

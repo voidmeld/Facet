@@ -2,6 +2,7 @@ local t = require("./lib/testkit")
 local describe, it, expect = t.describe, t.it, t.expect
 local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
+local gallery = require("../examples/gallery/client/screen")
 local Compose = Facet.Compose
 local words = require("../examples/gallery/examples/words")
 local function find(root, name)
@@ -47,12 +48,16 @@ local function makeWorld()
 		runService = { Heartbeat = engine.heartbeat },
 		target = target,
 		engine = engine,
-		UI = Facet.controls(runtime, { types = engine.types, viewport = viewport }),
 	}
 end
 local function mountGame(ctx, definition)
 	local game
 	local stop, node = ctx.runtime.mount(function()
+		gallery.configure(ctx)
+		ctx.UI = Facet.controls(
+			ctx.runtime,
+			{ types = ctx.types, viewport = ctx.viewport, reducedMotion = ctx.reducedMotion }
+		)
 		game = definition.build(ctx)
 		return ctx.Host.ScreenGui "GameScreen" { game.screen() }
 	end, ctx.target)
