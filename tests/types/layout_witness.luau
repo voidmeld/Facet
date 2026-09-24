@@ -4,7 +4,7 @@ local Compose = Facet.Compose
 local runtime = Facet.Roblox.createRuntime()
 local UI = Facet.controls(runtime)
 local gap = Compose.cell("s" :: Facet.Space)
-local width = Compose.cell("fill" :: Facet.Extent) :: Facet.Cell<Facet.Extent>
+local width: Facet.Cell<Facet.Extent> = Compose.cell("fill" :: Facet.Extent)
 local visible = Compose.cell(true)
 local stackProps: Facet.StackProps = { gap = "m", padding = { left = "xs", top = 4 }, align = "center" :: "center" }
 local screen: Frame = UI.Screen({
@@ -34,6 +34,16 @@ local page: ScrollingFrame = UI.ScrollView({
 local sideways: ScrollingFrame = UI.ScrollView("Rail")({ axis = "x" :: "x" })
 local grid: Frame =
 	UI.Grid({ columns = 3, gap = "s", rowGap = 4, cellHeight = 60, aspectRatio = 1, align = "center" :: "center" })
+local guarded: Frame = UI.ErrorBoundary("Region")({
+	view = function()
+		return runtime.constructors.Frame({})
+	end,
+	fallback = function(failure: unknown, retry: () -> ())
+		return runtime.constructors.TextButton({ Text = tostring(failure), Activated = retry })
+	end,
+	onError = function(_failure: unknown) end,
+	width = "fill" :: "fill",
+})
 local flexible: UIFlexItem = UI.fill()
 local weighted: UIFlexItem = UI.fill(2)
 local padding: Facet.Padding = { right = "xl" }
@@ -51,6 +61,7 @@ return {
 	page = page,
 	sideways = sideways,
 	grid = grid,
+	guarded = guarded,
 	flexible = flexible,
 	weighted = weighted,
 	props = props,

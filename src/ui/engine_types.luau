@@ -1,7 +1,7 @@
 --!strict
 local Compose = require("../vendor/compose/core")
 
-export type Value<T> = Compose.Given<T>
+export type Value<T> = Compose.Value<T>
 export type StaticValue = typeof(Compose.static(nil))
 export type Constructor<P, N> = ((P) -> N) & ((string) -> (P) -> N)
 export type AttributeValue =
@@ -704,6 +704,13 @@ export type UIStrokeProperties = UIComponentProperties & {
 export type UIStrokeNativeProps = UIStrokeProperties & { [number]: Compose.Child }
 export type UIStrokeProps = UIStrokeNativeProps & { ref: ((UIStroke) -> ())? }
 
+export type UITextSizeConstraintProperties = UIConstraintProperties & {
+	MaxTextSize: ValueNumber?,
+	MinTextSize: ValueNumber?,
+}
+export type UITextSizeConstraintNativeProps = UITextSizeConstraintProperties & { [number]: Compose.Child }
+export type UITextSizeConstraintProps = UITextSizeConstraintNativeProps & { ref: ((UITextSizeConstraint) -> ())? }
+
 export type ViewportFrameProperties = GuiObjectProperties & {
 	Ambient: ValueColor3?,
 	CurrentCamera: (ValueCamera | StaticValue)?,
@@ -860,6 +867,7 @@ export type Host = {
 	UIShadow: Constructor<UIShadowNativeProps, UIShadow>,
 	UISizeConstraint: Constructor<UISizeConstraintNativeProps, UISizeConstraint>,
 	UIStroke: Constructor<UIStrokeNativeProps, UIStroke>,
+	UITextSizeConstraint: Constructor<UITextSizeConstraintNativeProps, UITextSizeConstraint>,
 	ViewportFrame: Constructor<ViewportFrameNativeProps, ViewportFrame>,
 	WorldModel: Constructor<WorldModelNativeProps, WorldModel>,
 }

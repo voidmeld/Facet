@@ -354,6 +354,9 @@ local function new(options: any?)
 					signals[key] = signals[key] or signal()
 					return signals[key]
 				end
+				if key == "TextBounds" and options and options.measureText then
+					return options.measureText(node)
+				end
 				if properties[key] ~= nil then
 					return properties[key]
 				end

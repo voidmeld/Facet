@@ -253,6 +253,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		Stage = function()
 			return {}
 		end,
+		ErrorBoundary = function()
+			return { view = content, fallback = content }
+		end,
 		Pagination = function()
 			return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
 		end,

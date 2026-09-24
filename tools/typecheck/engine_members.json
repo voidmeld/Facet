@@ -579,6 +579,13 @@
       "ZIndex"
     ]
   },
+  "UITextSizeConstraint": {
+    "sha256": "285c13a63e9783d8230debe1828d9c2fa9b3a70d9c39d986a899c2cdeeb5354a",
+    "writable": [
+      "MaxTextSize",
+      "MinTextSize"
+    ]
+  },
   "ViewportFrame": {
     "sha256": "9fb0391e6720b9f1cfb0ee755f3f72f02d3d41418451d8e958f4f3a298148df4",
     "writable": [

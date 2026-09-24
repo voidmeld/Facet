@@ -103,11 +103,11 @@ local function numberOr(value: unknown, fallback: number): number
 	return fallback
 end
 
-local function identity<V>(value: V, _index: number): any
+local function identity<V>(value: V, _index: number): V
 	return value
 end
 
-local function geometryOptions(value: any): Layout.Options
+local function geometryOptions(value: LayoutOptions): Layout.Options
 	local layoutOptions = Support.optionsOf(value, "OrderedCollection.layout", "kind = ..., itemSize = ...")
 	Support.noUnknownFields(layoutOptions, "OrderedCollection.layout", KNOWN_LAYOUT)
 	local kind: LayoutKind = layoutOptions.kind or "list"
@@ -165,10 +165,10 @@ local function orderedCollection<V, K>(options: Options<V, K>): Children.Directi
 	local layoutBody: Types.Body<LayoutOptions>? = nil
 	local initialLayout: Layout.Options
 	if cellModule.isReadable(settings.layout) or type(settings.layout) == "function" then
-		layoutBody = Support.sourceOf(settings.layout, "OrderedCollection", "layout")
+		layoutBody = Support.sourceOf(settings.layout, "OrderedCollection", "layout") :: Types.Body<LayoutOptions>
 		initialLayout = geometryOptions {}
 	else
-		initialLayout = geometryOptions(settings.layout or {})
+		initialLayout = geometryOptions((settings.layout :: LayoutOptions?) or {})
 	end
 	local overscan = math.max(0, math.floor(numberOr(settings.overscan, 0)))
 	local followThreshold = numberOr(settings.followThreshold, 4)
@@ -236,7 +236,8 @@ local function orderedCollection<V, K>(options: Options<V, K>): Children.Directi
 		if held ~= nil then
 			return held
 		end
-		local made = table.freeze(Layout.placementOf(geometry, index))
+		local made = Layout.placementOf(geometry, index)
+		table.freeze(made :: {})
 		placements[index] = made
 		return made
 	end

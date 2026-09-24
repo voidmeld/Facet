@@ -163,7 +163,9 @@ document their own write-then-notify behavior below.
 - `controlSize`: the control-size step (`compact`, `regular` or `large`) for
   theme icons.
 - `onError`: receives a failure from the content of a presented Alert or
-  Sheet, which then dismisses, and a failure from a Callout `onShow`.
+  Sheet, which then dismisses, and a failure from a Callout `onShow`. It also
+  receives a failure that an `ErrorBoundary` without its own `onError`
+  contains.
 - `services`, `guiService`, `userInputService` and `types`: native dependencies.
 - `inputParent` and `overlayParent`: placement targets.
 
@@ -318,6 +320,28 @@ stack. Put the result in the children of the control:
 `GrowRatio` and `ShrinkRatio`. The weight must be a positive number. For the
 cross axis, use `align = "stretch"` on the stack or `width = "fill"` on a
 container.
+
+### ErrorBoundary
+
+`UI.ErrorBoundary(spec) -> Frame` contains a failure in the region that it
+builds. `view()` builds the region. `fallback(failure, retry)` builds the
+content that replaces the region after a failure. Both are required.
+
+- A failure in `view` when the boundary mounts, or in a later Compose update
+  inside the region, disposes the region and shows the fallback. Siblings
+  outside the boundary stay. The code that wrote the cell that caused the
+  failure does not see an error.
+- The boundary reports each failure once. `onError(failure)` receives it. If you
+  do not set `onError`, the factory `onError` option receives it. The
+  `FacetError` attribute of the frame holds the failure text.
+- Call `retry()` to build the view again. A successful retry clears
+  `FacetError`.
+- A failure in the fallback is not contained.
+- `width` and `height` take `fill`, `hug` or pixels. The default is `hug` on
+  both axes.
+
+The boundary uses `Compose.boundary`. A failure outside every boundary stays a
+hard error.
 
 ## Actions and input
 
@@ -1556,6 +1580,26 @@ The cell state stays retained.
 `onSortChange`, `onWidthsChange` or `onSelectionChange`, it is a controlled
 request. Otherwise the control updates the writable cells.
 
+In `multi` mode, the selection keys are the same in Table, VirtualList and
+VirtualGrid:
+
+- A plain mouse click selects only that row.
+- Ctrl-click or Cmd-click adds the row to the selection or removes it.
+- Shift-click selects the rows from the anchor to the clicked row. The anchor
+  is the last row that a click without Shift selected. A second Shift-click
+  makes the range again from the same anchor. Rows that you added with
+  Ctrl-click before the anchor stay selected.
+- A touch tap, a gamepad press and a plain Return add the row or remove it.
+  Return with Ctrl, Cmd or Shift follows the click rules.
+- Shift with an arrow key, Home or End moves the focus and selects the range
+  from the anchor to the focused row. Without an anchor, the focused row
+  becomes the anchor.
+- An arrow key without Shift moves the focus and does not change the
+  selection.
+
+In `single` mode, each activation selects only that row, and the modifiers
+have no effect. Rows that `selectable` or `disabled` refuse are never selected.
+
 `selectable(item)`, `disabled(item)`, `onActivate(item, key, input, clickCount)`
 and `rowActions(current, key)` specialize rows. `onActivate` receives the same
 native activation facts as in VirtualList. `reorderable`, `movable(item)` and
@@ -1597,11 +1641,20 @@ can run again. A full swipe commits or opens a tray only after the row has a
 measured width.
 `reducedMotion`, `enabled` and `editing` stay explicit control options.
 
+A mouse click or a touch outside an open row closes its tray. The row observes
+`UserInputService.InputBegan` only while its tray is open, and it does not
+consume the input. Thus the control under the pointer also receives the press.
+A press inside the row, which includes its tray, does not close the tray. A
+press during a destructive commit does not stop the commit. The check uses the
+row bounds on a ScreenGui, with the top bar inset when the ScreenGui ignores
+it. A row on a SurfaceGui or a BillboardGui does not close from an outside
+press.
+
 ## Media and status
 
 | Control | Main contract |
 |---|---|
-| `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Without an icon, it returns a TextLabel. With an icon, it returns a Frame row that holds the icon and a TextLabel. Native properties then apply to that Frame, so give it Frame properties only. |
+| `Label` | `text` or `label`, icon and iconPosition, textRole and role, `truncate`, `textSize`, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Without an icon, it returns a TextLabel. With an icon, it returns a Frame row that holds the icon and a TextLabel. Native properties then apply to that Frame, so give it Frame properties only. See [Label text fit](#label-text-fit). |
 | `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
 | `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max`, `diameter` and `name`. The `name` sets the accessible label. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
 | `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. The endLabel shows after the value. With a label, a bar shows the value and the endLabel on the label row. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
@@ -1610,6 +1663,32 @@ measured width.
 | `Avatar` | `name`; image, userId or resource; loader and onStatus; presence online, away, busy or offline; presence label and mark; diameter or controlSize; standard or icon form; optional activation. |
 | `AvatarGroup` | `items` with id, name, image, userId and presence, and an optional `resource` shared-resource acquire function. max (4); stacked or spread layout; count or ellipsis overflow; onOverflow; diameter or controlSize. A stacked group has the `facet-avatar-stack` tag, and the theme draws a surface ring around each face. |
 | `Stage` | A native ViewportFrame. A `camera` CFrame or a borrowed Camera, `fieldOfView`, and `content(runtime, world)` for 3D content that Compose owns. |
+
+### Label text fit
+
+`truncate = "end"` sets the native `TextTruncate.AtEnd`. `truncate = "middle"`
+keeps the start and the end of the value and puts an ellipsis between them,
+for example `Coastal circui…lap 14`. Use it when the end identifies the value,
+such as a file name, a path or an id.
+
+- The label is one line. It fills the width and hugs the height by default.
+  `TextWrapped = true` or `RichText = true` with `truncate = "middle"` causes
+  an error.
+- The label measures each candidate with the engine `TextBounds` of the label
+  itself, so the measurement uses the painted face and size. A cut never
+  divides a UTF-8 character. When the value fits, the label shows all of it.
+  When no character fits, it shows only the ellipsis.
+- The label cuts the value again when the value, the width, `TextSize` or
+  `FontFace` changes. It does not measure on other changes. Before the label
+  has a width, it shows all of the value.
+
+`textSize = "fit"` sets `TextScaled` and adds a `UITextSizeConstraint`. The
+engine then paints the largest size that fits the box of the label. The
+default box fills its parent. `textSize = { fit = { cap = size, floor = size } }`
+sets the band. A size is a pixel number or a type role name. The default `cap`
+is the `textRole` of the label, or `body`. The default `floor` is `caption`.
+Role sizes come from the theme package and follow a theme change. Another
+`textSize` value, or another key in `fit`, causes an error.
 
 The AsyncImage loader receives `(source, resolve, reject)`. It can return a
 cancellation. A superseded result cannot replace the current image. Loading and
@@ -1645,7 +1724,9 @@ from `body` with the `SemiBold` weight. If a definition sets `control` and does
 not set `numeral`, `define` makes `numeral` from `control` with the `Bold`
 weight. The derived role keeps the family, style, size and line height.
 
-- `neutralPackage()` returns a mutable copy of the neutral theme package.
+- `neutralPackage()` returns a mutable copy of the neutral theme package. It
+  declares two palettes, `Dark` (the default) and `Light`. Both palettes pass
+  the contrast gate of `define`.
 - `define(definition)` derives from `base` (neutral by default) and returns
   `package?, report`. Check `report.ok` before use. An accepted theme package is
   recursively frozen. Callbacks, cycles and malformed definitions are rejected.
@@ -1654,7 +1735,9 @@ weight. The derived role keeps the family, style, size and line height.
   package shadow or a preset (`raised` or `overlay`). Each palette pair needs a
   contrast of at least 4.5:1, which includes `onSelected` (or `content`) on
   `controlSelected`.
-  Color channels and semantic contrast pairs are validated.
+  Color channels and semantic contrast pairs are validated. A package that
+  does not declare `style.themes` gets only the first palette of its base. Thus
+  a package derived from Neutral has one palette unless it declares more.
 - `checkCoverage(package, needs)` returns `{ ok, covered, missing }`.
 - `resolveIcon(package, name, state?)` resolves real image content.
 - `createStyleSheet(runtime, packageOrReadable?, options?)` returns a native

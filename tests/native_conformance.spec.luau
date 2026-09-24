@@ -84,6 +84,16 @@ local fixtures = {
 	AvatarGroup = function()
 		return { items = { { id = "a", name = "Ada" } } }
 	end,
+	ErrorBoundary = function(Host)
+		return {
+			view = function()
+				return Host.Frame({})
+			end,
+			fallback = function()
+				return Host.Frame({})
+			end,
+		}
+	end,
 	Stage = function()
 		return {}
 	end,

@@ -55,6 +55,13 @@ export type GridProps = Engine.FrameProps & {
 	aspectRatio: Types.Value<number>?,
 	align: Types.Value<Edge>?,
 }
+export type ErrorBoundaryProps = Engine.FrameProps & {
+	view: () -> Types.Child,
+	fallback: (failure: unknown, retry: () -> ()) -> Types.Child,
+	onError: ((failure: unknown) -> ())?,
+	width: Types.Value<Extent>?,
+	height: Types.Value<Extent>?,
+}
 export type LayoutControls = {
 	Screen: Types.Constructor<ScreenProps, Frame>,
 	VStack: Types.Constructor<StackProps, Frame>,
@@ -62,6 +69,7 @@ export type LayoutControls = {
 	ZStack: Types.Constructor<ZStackProps, Frame>,
 	ScrollView: Types.Constructor<ScrollViewProps, ScrollingFrame>,
 	Grid: Types.Constructor<GridProps, Frame>,
+	ErrorBoundary: Types.Constructor<ErrorBoundaryProps, Frame>,
 	fill: (weight: number?) -> UIFlexItem,
 }
 return {}

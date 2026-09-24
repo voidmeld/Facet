@@ -359,6 +359,16 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			onOverflow = function() end,
 		}
 	end,
+	ErrorBoundary = function(Host)
+		return {
+			view = function()
+				return Host.TextLabel({ Text = "Healthy" })
+			end,
+			fallback = function()
+				return Host.TextLabel({ Text = "Failed" })
+			end,
+		}
+	end,
 	Stage = function()
 		return {}
 	end,

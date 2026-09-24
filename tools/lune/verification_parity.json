@@ -30,16 +30,17 @@
     },
     "error-handling": {
       "mainCases": 220,
-      "a": 72,
-      "aWeaker": 0,
+      "a": 80,
+      "aWeaker": 8,
       "b": 2,
-      "c": 146,
+      "c": 138,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 7,
         "native_parity_navigation": 6,
         "native_parity_gaps": 5,
-        "native_themes_media": 4
+        "native_themes_media": 4,
+        "native_parity_restore": 8
       }
     },
     "controls-actions": {
@@ -255,16 +256,17 @@
     },
     "focus-selection": {
       "mainCases": 532,
-      "a": 103,
-      "aWeaker": 3,
+      "a": 109,
+      "aWeaker": 7,
       "b": 257,
-      "c": 172,
+      "c": 166,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 21,
         "native_collections": 18,
         "native_parity_apps": 10,
-        "native_inputs": 5
+        "native_inputs": 5,
+        "native_parity_restore": 7
       }
     },
     "docs-examples-tooling": {
@@ -383,30 +385,32 @@
     },
     "row-actions": {
       "mainCases": 264,
-      "a": 149,
-      "aWeaker": 13,
+      "a": 162,
+      "aWeaker": 25,
       "b": 0,
-      "c": 112,
+      "c": 99,
       "d": 3,
       "candidateSpecs": {
         "native_collections": 52,
         "native_parity_controls": 11,
         "native_gallery_workflows": 4,
-        "native_gallery_collections": 3
+        "native_gallery_collections": 3,
+        "native_parity_restore": 6
       }
     },
     "text-measure-fit": {
       "mainCases": 497,
-      "a": 63,
-      "aWeaker": 18,
+      "a": 95,
+      "aWeaker": 50,
       "b": 232,
-      "c": 202,
+      "c": 170,
       "d": 0,
       "candidateSpecs": {
         "native_inputs": 7,
         "native_collections": 5,
         "native_parity_navigation": 3,
-        "native_text_preference": 2
+        "native_text_preference": 2,
+        "native_parity_restore": 9
       }
     },
     "input-actions": {
@@ -457,10 +461,10 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3648,
-      "c": 6075,
+      "a": 3710,
+      "c": 6016,
       "b": 1447,
-      "d": 12
+      "d": 9
     },
     "auditByClass": {
       "a": 2294,
@@ -469,10 +473,10 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1434,
-      "c": 841,
+      "a": 1443,
+      "c": 833,
       "b": 308,
-      "d": 4
+      "d": 3
     },
     "mainCases": 10848,
     "uncitableCandidateCases": [
@@ -490,7 +494,7 @@
     ],
     "contracts": 2587,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 523
+    "coveredButWeaker": 579
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -11069,8 +11073,12 @@
         "row_actions_input"
       ],
       "mainCases": 1,
-      "class": "c",
-      "removal": "There is no outside-tap dismissal for the tray in CAND RowActions."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap",
+        "native_parity_restore::native parity restore: RowActions outside tap::ignores a press while no tray is open, a keyboard press and a secondary button"
+      ],
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-79",
@@ -11256,8 +11264,13 @@
         "row_actions_input"
       ],
       "mainCases": 2,
-      "class": "c",
-      "removal": "There is no outside catcher in CAND."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: RowActions outside tap::lets a commit in flight finish once when an outside tap arrives",
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap"
+      ],
+      "weaker": "There is no passive HUD catcher. The row observes UserInputService.InputBegan, which cannot consume the press.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-91",
@@ -12172,8 +12185,12 @@
         "table"
       ],
       "mainCases": 2,
-      "class": "c",
-      "removal": "Behavior changed. In multi mode every plain activation toggles (collection_selection.luau). There is no Ctrl distinction."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Table multi-select keys::replaces a multi selection on a plain mouse click",
+        "native_parity_restore::native parity restore: Table multi-select keys::toggles rows in and out of a multi selection on a Ctrl-click and a Cmd-click"
+      ],
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-151",
@@ -12808,8 +12825,16 @@
         "table_input"
       ],
       "mainCases": 4,
-      "class": "c",
-      "removal": "Arrows do not select."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Table multi-select keys::extends the selection from the anchor with Shift and an arrow, and moves focus with it",
+        "native_parity_restore::native parity restore: Table multi-select keys::extends to the first and the last row with Shift and Home or End",
+        "native_parity_restore::native parity restore: Table multi-select keys::starts a keyboard range at the focused row when nothing anchors it",
+        "native_parity_restore::native parity restore: Table multi-select keys::moves focus with Ctrl and an arrow and with a plain arrow without changing the selection",
+        "native_parity_restore::native parity restore: Table multi-select keys::honors held modifiers on a keyboard Return"
+      ],
+      "weaker": "A plain arrow moves the focus and does not replace the selection, because focus does not select in the native model. Main replaced the selection on a plain arrow.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-199",
@@ -14102,8 +14127,15 @@
         "virtual_list_row_actions"
       ],
       "mainCases": 10,
-      "class": "c",
-      "removal": "The overlay and outside-tap machinery are gone."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap",
+        "native_parity_restore::native parity restore: RowActions outside tap::closes the open row when another row is pressed and keeps it open for a press inside it",
+        "native_parity_restore::native parity restore: RowActions outside tap::adds the top bar inset when the screen ignores it",
+        "native_parity_restore::native parity restore: RowActions outside tap::releases its input listener with the row"
+      ],
+      "weaker": "There is no shared list overlay. A press on the content of the open row keeps its tray open; main closed it. The headless engine does not hit-test, so the no-swallow rule is shown by the absence of a catcher and by the tapped control still activating.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-286",
@@ -19071,8 +19103,19 @@
         "error_boundary"
       ],
       "mainCases": 8,
-      "class": "c",
-      "removal": "UI.ErrorBoundary, critical screens and ForEach row retry deleted; api.md promises containment only for Alert content (above) and NavigationStack destinations."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: ErrorBoundary::renders its view when healthy and does not mount the fallback",
+        "native_parity_restore::native parity restore: ErrorBoundary::swaps a view that throws at mount to its fallback, reports once and keeps siblings",
+        "native_parity_restore::native parity restore: ErrorBoundary::trips at runtime when a structural rebuild inside it throws, and the writer survives",
+        "native_parity_restore::native parity restore: ErrorBoundary::retries the view from the fallback and clears the reported error",
+        "native_parity_restore::native parity restore: ErrorBoundary::sends a failure to the factory onError when the boundary has no onError",
+        "native_parity_restore::native parity restore: ErrorBoundary::contains a throwing keyed row factory and releases every owner on disposal",
+        "native_parity_restore::native parity restore: ErrorBoundary::leaves a failure outside any boundary a hard mount error",
+        "native_parity_restore::native parity restore: ErrorBoundary::accepts both construction forms and refuses a boundary without a view or a fallback"
+      ],
+      "weaker": "The presenter critical fallback screen is not restored; a screen puts an ErrorBoundary at its root instead. The four ForEach cases that retry a throwing row outside any boundary are Compose keyed behavior; the candidate tests only that such a failure stays a hard mount error.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "mech1-116",
@@ -19984,8 +20027,17 @@
         "leaf_capabilities"
       ],
       "mainCases": 14,
-      "class": "c",
-      "removal": "middle truncation deleted (no \"middle\" in src/ui text code); api.md Table only promises \"natively truncated values\""
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::keeps the head and the tail and fits the width at three widths",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::paints the whole value when it fits and the bare mark when nothing fits",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::never cuts inside a multi-byte character",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::recomputes on a width or text change and on nothing else, and restores the whole value",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::re-derives the cut when the painted size changes and cuts an icon label beside its icon",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::stays on one line and refuses rich text, wrapping and an unknown truncation"
+      ],
+      "weaker": "The headless engine measures with a fixed glyph width. There is no disclosure plate for the full value.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "mech2-47",
@@ -21864,8 +21916,14 @@
         "text_size_fit"
       ],
       "mainCases": 18,
-      "class": "c",
-      "removal": "textSize='fit' deleted (Picker textSize is a plain size option); no fit grammar in api.md"
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::fits the text to its box between the role size and the caption floor",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::honors an explicit cap and floor by role or pixels and follows the theme",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::refuses a misspelled fit option, a cap that is not a size and a plain size"
+      ],
+      "weaker": "The engine chooses the size through TextScaled and UITextSizeConstraint. The headless engine does not scale text, so the candidate checks the native configuration, not a painted size. There is no ten-foot type ladder and no preferred-text offset term; the engine applies the player preference.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "mech3-84",
@@ -36403,15 +36461,18 @@
         "theme_package"
       ],
       "mainCases": 3,
-      "class": "d",
+      "class": "a",
       "apiPromise": "main api.md: neutralPackage() is the compiled package behind it (themes Dark and Light); a derived package inherits only its first theme.",
-      "gap": {
-        "description": "Facet Neutral still declares one palette. The theme strength specs count its palettes and pairs, so the Light palette needs those cases re-based in the same change.",
-        "headlessTestable": true,
-        "proposedTest": "Assert themes.neutralPackage().style.themes names Dark,Light; themes.define({ base = neutral }) keeps one palette; re-base native_parity_strength_themepkg and native_parity_strength_paint to count per palette."
-      },
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
-      "family": "content-navigation"
+      "family": "content-navigation",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Facet Neutral Light::declares Dark then Light and both palettes pass the contrast gate",
+        "native_parity_restore::native parity restore: Facet Neutral Light::keeps a derived package to its own palettes and inherits only the first",
+        "native_parity_restore::native parity restore: Facet Neutral Light::paints each Neutral palette through the native sheet and follows a palette change",
+        "native_parity_strength_themepkg::theme contrast gate::reports every semantic pair of an accepted package with its measured ratio",
+        "native_parity_strength_themepkg::theme contrast gate::refuses each unreadable pair at define time and names the pair, palette and ratio"
+      ],
+      "restoredBy": "parity/restore"
     },
     {
       "id": "post-lab-03",
