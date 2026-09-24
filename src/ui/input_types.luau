@@ -9,7 +9,7 @@ export type ValueBinding<T> =
 	{ value: Compose.Cell<T>, onChange: ((T) -> ())? }
 	| { value: Value<T>, onChange: (T) -> () }
 export type EnabledOptions = { enabled: Value<boolean>?, disabled: Value<boolean>?, busy: Value<boolean>? }
-export type Row = { title: Value<string>?, description: Value<string>? }
+export type Row = { title: Value<string>?, description: Value<string>?, value: string?, icon: string? }
 export type Shortcut = { keyCode: string, modifiers: { shift: boolean? }? }
 export type ButtonRole = "default" | "cancel" | "destructive" | "onIndicator"
 export type ButtonVisualOptions = EnabledOptions & {

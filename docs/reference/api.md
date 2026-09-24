@@ -137,8 +137,12 @@ Presentation options:
 - `icon` and `trailingIcon`.
 - `image`, `imageAspectRatio` (default `16/9`) and `imageFraming` (`fit` or
   `crop`).
-- `subtitle` and `row = { title, description }`. `hint` shows as a second line
-  of text below the label.
+- `subtitle` and `row = { title, description, value, icon }`. A row button
+  fills its width. It shows `icon` on the leading edge, the title and the
+  description, and `value` as secondary text on the trailing edge. When the
+  button has `onActivate` and no `trailingIcon`, it also shows a disclosure
+  chevron. `value` and `icon` are static strings. `hint` shows as a second
+  line of text below the label.
 - `help`: one sentence that describes the action. It shows in a small panel
   when a pointer rests on the button for 0.45 seconds, or when a gamepad
   selects the button. It does not show on touch, so do not put information in

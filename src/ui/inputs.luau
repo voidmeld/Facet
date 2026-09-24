@@ -445,10 +445,11 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					}
 				)
 			end
-			if spec.icon then
-				table.insert(content, icon(spec.icon, { Name = "LeadingIcon" }, iconState))
-			end
 			local row: InputTypes.Row = spec.row or {}
+			local leading = spec.icon or row.icon
+			if leading then
+				table.insert(content, icon(leading, { Name = "LeadingIcon" }, iconState))
+			end
 			local label = row.title or spec.label or spec.name or ""
 			local description = row.description or spec.subtitle or spec.hint
 			if not (spec.shape == "circle" and spec.icon) then
@@ -467,16 +468,31 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						TextWrapped = imageCard,
 					})
 				end
-				table.insert(
-					content,
-					if description
-						then ctx.column({ caption("Title", label), caption("Description", description) }, {
-							Name = "Captions",
-							Size = if imageCard then D2.new(1, 0, 0, 0) else D2.fromOffset(0, 0),
-							AutomaticSize = if imageCard then E.AutomaticSize.Y else E.AutomaticSize.XY,
-						})
-						else caption("Title", label)
-				)
+				local captions = if description
+					then ctx.column({ caption("Title", label), caption("Description", description) }, {
+						Name = "Captions",
+						Size = if imageCard then D2.new(1, 0, 0, 0) else D2.fromOffset(0, 0),
+						AutomaticSize = if imageCard then E.AutomaticSize.Y else E.AutomaticSize.XY,
+					})
+					else caption("Title", label)
+				if spec.row then
+					local descriptionNode = captions:FindFirstChild("Description")
+					if descriptionNode then
+						descriptionNode:AddTag("facet-secondary")
+					end
+					runtime.mount(function()
+						return Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill })
+					end, captions)
+				end
+				table.insert(content, captions)
+				if row.value ~= nil then
+					local value = caption("Value", row.value)
+					value:AddTag("facet-secondary")
+					table.insert(content, value)
+				end
+			end
+			if spec.row and spec.onActivate and not spec.trailingIcon then
+				table.insert(content, icon("chevron.trailing", { Name = "Disclosure" }, iconState))
 			end
 			if spec.trailingIcon then
 				table.insert(content, icon(spec.trailingIcon, { Name = "TrailingIcon" }, iconState))
@@ -488,6 +504,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					Size = D2.fromScale(1, 1),
 					AutomaticSize = E.AutomaticSize.None,
 					ClipsDescendants = true,
+				})
+				elseif spec.row then ctx.row(content, {
+					Name = "Content",
+					ZIndex = 1,
+					Size = D2.fromScale(1, 0),
+					AutomaticSize = E.AutomaticSize.Y,
+					AnchorPoint = if description then V2.zero else V2.new(0, 0.5),
+					Position = if description then D2.fromScale(0, 0) else D2.fromScale(0, 0.5),
 				})
 				elseif description then ctx.row(content, { Name = "Content", ZIndex = 1 })
 				else ctx.row(

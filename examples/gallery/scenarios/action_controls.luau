@@ -267,7 +267,7 @@ return {
 			}
 			local rowAction = UI.Button "Equipment" {
 				label = "Manage equipment",
-				row = { description = "Choose a driver for the next race", value = "2 drivers", icon = "search" },
+				row = { description = "Choose a driver for the next race", value = "2 drivers", icon = "person" },
 				onActivate = function()
 					scrollTarget:set(nil)
 					scrollTarget:set("Drivers")
@@ -477,58 +477,74 @@ return {
 				)
 			end
 
-			local hero = Host.ImageLabel({
+			local hero = Host.ImageLabel "Hero" {
 				Image = "rbxthumb://type=AvatarHeadShot&id=1&w=420&h=420",
-				ImageColor3 = Color3.fromRGB(90, 95, 108),
+				ImageColor3 = Color3.fromRGB(150, 156, 170),
 				ScaleType = Enum.ScaleType.Crop,
-				Name = "Hero",
-				BackgroundTransparency = 1,
-				Size = UDim2.new(1, 0, 0, 240),
-				AutomaticSize = Enum.AutomaticSize.None,
-				Host.UIListLayout({
-					FillDirection = Enum.FillDirection.Vertical,
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					Padding = UDim.new(0, 16),
-				}),
-				Host.UIPadding({
-					PaddingTop = UDim.new(0, 16),
-					PaddingBottom = UDim.new(0, 16),
-					PaddingLeft = UDim.new(0, 16),
-					PaddingRight = UDim.new(0, 16),
-				}),
-				UI.Label "HeroTitle" {
-					LayoutOrder = 1,
-					BackgroundTransparency = 1,
+				BackgroundColor3 = Color3.fromRGB(28, 31, 38),
+				BackgroundTransparency = 0,
+				ClipsDescendants = true,
+				Size = UDim2.new(1, 0, 0, 0),
+				AutomaticSize = Enum.AutomaticSize.Y,
+				Host.UICorner({ CornerRadius = UDim.new(0, 12) }),
+				Host.UISizeConstraint({ MinSize = Vector2.new(0, 240) }),
+				Host.Frame "Scrim" {
+					Size = UDim2.fromScale(1, 1),
+					BackgroundColor3 = Color3.new(0, 0, 0),
 					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Your next race starts here",
-					textRole = "title",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
+					Host.UIGradient({
+						Transparency = ctx.types.NumberSequence.new({
+							ctx.types.NumberSequenceKeypoint.new(0, 0.05),
+							ctx.types.NumberSequenceKeypoint.new(0.55, 0.35),
+							ctx.types.NumberSequenceKeypoint.new(1, 1),
+						}),
+					}),
 				},
-				UI.Label({
-					LayoutOrder = 2,
+				Host.Frame "Copy" {
+					Size = UDim2.fromScale(0.62, 0),
+					AutomaticSize = Enum.AutomaticSize.Y,
 					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Choose your driver. Tune your ride. Find your next challenge.",
-					textRole = "body",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Button "ChooseDriver" {
-					LayoutOrder = 3,
-					label = "Choose a driver",
-					onActivate = function()
-						scrollTarget:set(nil)
-						scrollTarget:set("Drivers")
-					end,
+					Host.UIListLayout({
+						FillDirection = Enum.FillDirection.Vertical,
+						SortOrder = Enum.SortOrder.LayoutOrder,
+						VerticalAlignment = Enum.VerticalAlignment.Center,
+						Padding = UDim.new(0, 12),
+					}),
+					Host.UIPadding({
+						PaddingLeft = UDim.new(0, 24),
+						PaddingRight = UDim.new(0, 12),
+						PaddingTop = UDim.new(0, 24),
+						PaddingBottom = UDim.new(0, 24),
+					}),
+					UI.Label "HeroTitle" {
+						LayoutOrder = 1,
+						Size = UDim2.new(1, 0, 0, 0),
+						AutomaticSize = Enum.AutomaticSize.Y,
+						Text = "Your next race starts here",
+						textRole = "title",
+						TextWrapped = true,
+						TextXAlignment = Enum.TextXAlignment.Left,
+					},
+					UI.Label "HeroBody" {
+						LayoutOrder = 2,
+						role = "secondary",
+						Size = UDim2.new(1, 0, 0, 0),
+						AutomaticSize = Enum.AutomaticSize.Y,
+						Text = "Choose your driver. Tune your ride. Find your next challenge.",
+						TextWrapped = true,
+						TextXAlignment = Enum.TextXAlignment.Left,
+					},
+					UI.Button "ChooseDriver" {
+						LayoutOrder = 3,
+						label = "Choose a driver",
+						appearance = "emphasis",
+						onActivate = function()
+							scrollTarget:set(nil)
+							scrollTarget:set("Drivers")
+						end,
+					},
 				},
-			})
+			}
 
 			local showroom = frame({
 				Name = "Showroom",
