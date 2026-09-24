@@ -205,6 +205,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			spec.surface == nil or spec.surface == "dialog" or fullScreen,
 			"Alert.surface must be dialog or fullScreen"
 		)
+		assert(
+			spec.transition == nil or spec.transition == false or type(spec.transition) == "table",
+			"Alert transition must be a table or false"
+		)
 		local transition: Nav.SourceTransition? = if type(spec.transition) == "table" then spec.transition else nil
 		if transition then
 			assert(
@@ -242,7 +246,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						"Alert actions require unique ids"
 					)
 					identities[action.id] = true
-					if action.role == "cancel" then
+					if action.role == "cancel" or action.shortcut == "cancelAction" then
 						assert(cancel == nil, "Alert accepts one cancel action")
 						cancel = action
 					end
@@ -773,8 +777,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						Host.TextButton "Grabber" {
 							AnchorPoint = V2.new(0.5, 0.5),
 							Position = D2.fromScale(0.5, 0.5),
-							Size = D2.fromOffset(64, 20),
+							Size = D2.fromOffset(88, 44),
 							BackgroundTransparency = 1,
+							ZIndex = 2,
 							Text = "",
 							AutoButtonColor = false,
 							Selectable = #detents > 1,

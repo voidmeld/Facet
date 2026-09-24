@@ -33,7 +33,7 @@ local COPY = {
 	idiomAuto = "Automatic",
 	idiomPanel = "Panel",
 	idiomSheet = "Sheet",
-	idiomNote = "Automatic reads the live interaction classes AND the space class. Panel and Sheet write the one fact the interaction rule reads — a live touch class — so both idioms are reachable without a second device at a regular width or wider. At a COMPACT width the framework always resolves Sheet, on purpose (director item 14): forcing Panel there still shows Sheet, because a floating per-level panel does not fit a phone regardless of which pointer moved it. Widen the window past a compact width to see Panel's floating, side-by-side submenus.",
+	idiomNote = "Automatic shows a floating panel for a mouse and a sheet for touch or a narrow screen. Panel and Sheet force one presentation, so you can compare them on one device.",
 
 	openedTitle = "What opened, and what this app can tell about it",
 	nothingYet = "nothing yet — open one of the cards above",
@@ -44,7 +44,7 @@ local COPY = {
 	ranTitle = "Last verb run",
 	ranNothing = "none — a disabled item runs nothing, which is the whole point of the last card",
 	honestTitle = "The one thing this readout cannot say",
-	honest = "Which trigger fired. `onOpen` takes no argument and `dump().triggers` is the set that was DECLARED, not the one that fired, so this fixture names the card and the live input classes instead. That is why the routes are split across cards rather than gathered on one.",
+	honest = "Which trigger opened the menu. onOpen has no argument, so each card declares one set of routes and the readout names the card.",
 	depthNote = "Layering ▸ Makeup Layering is two levels deep. Right and Left enter and leave a level on a keyboard; Cancel or ButtonB closes one level and a tap outside closes all of them.",
 }
 
@@ -69,17 +69,9 @@ return {
 		local countsLine = Compose.cell("")
 		local idiom = Compose.cell("auto")
 
-		local liveClasses = Compose.cell({ pointer = true, keyboard = true, gamepad = true, touch = false })
-		local classes = Compose.formula(function(use)
-			local live: any = use(liveClasses)
+		local presentation = Compose.formula(function(use)
 			local mode = use(idiom)
-			if mode == "auto" then
-				return live
-			end
-			local forced = if type(live) == "table" then table.clone(live) else {}
-			forced.touch = mode == "sheet"
-			forced.primary = if mode == "sheet" then "touch" else "pointer"
-			return forced
+			return if mode == "panel" then "menu" elseif mode == "sheet" then "sheet" else "automatic"
 		end)
 
 		local function verbs(): { any }
@@ -184,22 +176,12 @@ return {
 				label = entry.label,
 				items = entry.items(),
 				triggers = entry.triggers,
+				presentation = presentation,
 
 				onOpen = function()
 					counts[entry.id] = (counts[entry.id] or 0) + 1
 
-					local live: any = liveClasses:peek()
-					local names: { string } = {}
-					for _, name in { "pointer", "touch", "keyboard", "gamepad" } do
-						if type(live) == "table" and live[name] == true then
-							table.insert(names, name)
-						end
-					end
-					lastOpen:set(
-						`{entry.label} · routes: {entry.routes} · live input: {if type(live) == "table"
-							then tostring(live.primary)
-							else "?"} ({table.concat(names, ", ")})`
-					)
+					lastOpen:set(`{entry.label} · routes: {entry.routes}`)
 					countsLine:set(countsText())
 					stateLine:set(`{entry.label}: {COPY.open}`)
 				end,

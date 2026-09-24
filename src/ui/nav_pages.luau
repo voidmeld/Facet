@@ -474,13 +474,13 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				local place = use(placement)
 				return if place == "sidebar"
 					then D2.fromOffset(railWidth(use), 0)
-					elseif place == "topBar" then D2.fromOffset(0, 44)
+					elseif place == "topBar" then D2.fromOffset(0, 52)
 					else D2.fromOffset(0, 0)
 			end,
 			Size = function(use: Core.Use)
 				return if use(placement) == "sidebar"
 					then D2.new(1, -(railWidth(use)), 1, 0)
-					else D2.new(1, 0, 1, -44 - use(aboveHeight))
+					else D2.new(1, 0, 1, -52 - use(aboveHeight))
 			end,
 			Compose.LayerStack({
 				from = visited,

@@ -734,6 +734,40 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("runs a cancelAction action on Back and refuses a non-table transition", function()
+		local presented, stayed = Compose.cell(true), 0
+		local world = setup(function(UI)
+			return UI.Alert({
+				isPresented = presented,
+				title = "Leave?",
+				actions = {
+					{
+						id = "Stay",
+						label = "Stay",
+						shortcut = "cancelAction",
+						onActivate = function()
+							stayed += 1
+						end,
+					},
+					{ id = "Leave", label = "Leave" },
+				},
+			})
+		end)
+		find(world.screen, "ModalBack").Pressed.fire()
+		t.expect(stayed).toBe(1)
+		t.expect(presented:peek()).toBe(false)
+		world.stop()
+		t.expect(function()
+			setup(function(UI)
+				return UI.Alert({
+					isPresented = Compose.cell(true),
+					title = "Leave?",
+					transition = ("instant" :: unknown) :: false,
+				})
+			end)
+		end).toThrow()
+	end)
+
 	t.it("returns disclosure focus before unmounting its content", function()
 		local expanded = Compose.cell(true)
 		local world = setup(function(UI)
@@ -1163,6 +1197,7 @@ t.describe("native navigation controls", function()
 		local grabber = find(world.screen, "Grabber")
 		t.expect(grabber:GetAttribute("AccessibleLabel")).toBe("Resize")
 		t.expect(grabber.Selectable).toBe(true)
+		t.expect(grabber.Size.Y.Offset >= 44 and grabber.Size.X.Offset >= 44).toBe(true)
 		grabber.Activated.fire()
 		t.expect(detent:peek()).toBe("large")
 		grabber.Activated.fire()
@@ -1715,6 +1750,7 @@ t.describe("native navigation controls", function()
 			})
 		end)
 		local bar = find(world.screen, "Tabs")
+		t.expect(find(world.screen, "Content").Position.Y.Offset > bar.Size.Y.Offset).toBe(true)
 		bar.AbsoluteSize = world.engine.types.Vector2.new(100, 44)
 		local b = find(bar, "b")
 		b.AbsolutePosition = world.engine.types.Vector2.new(160, 0)
