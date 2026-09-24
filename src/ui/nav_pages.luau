@@ -173,8 +173,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local function railWidth(use: Core.Use): number
 			return read(spec.railWidth, use) or math.clamp(math.floor(use(dimensions).X * 0.2), 200, 280)
 		end
-		-- A nested strip in a short region spends height the page needs. Below COMPACT_HEIGHT it
-		-- collapses into one menu row that names the current tab; it expands again when room returns.
+
 		local COMPACT_HEIGHT = 480
 		local collapsed = Compose.formula(function(use: Core.Use): boolean
 			if spec.style == "collapsible" then
@@ -470,7 +469,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end)
 		local layers = Host.Frame "Content" {
 			BackgroundTransparency = 1,
-			-- A page taller than its region must not paint under the tab bar.
+
 			ClipsDescendants = true,
 			Position = function(use: Core.Use)
 				local place = use(placement)

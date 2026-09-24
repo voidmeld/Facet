@@ -15,9 +15,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 	end
 	local gui = service("GuiService") :: GuiService?
 	local input = service("UserInputService") :: UserInputService?
-	-- A surface takes selection only from a player who is navigating by selection: selection was
-	-- already active when it opened, or the preferred input is a gamepad. Pointer and touch players
-	-- never see a selection ring they did not ask for.
+
 	local function selecting(): (Core.Use) -> boolean
 		local active = gui ~= nil and gui.SelectedObject ~= nil
 		local preferred = if input and input.GetPropertyChangedSignal then ctx.observe(input, "PreferredInput") else nil
@@ -25,7 +23,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 			return active or (preferred ~= nil and use(preferred) == E.PreferredInput.Gamepad)
 		end
 	end
-	-- Roblox's Background transparency preference scales every translucent surface behind content.
+
 	local function preference(): (Core.Use) -> number
 		local source = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "PreferredTransparency") else nil
 		return function(use: Core.Use): number

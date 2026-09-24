@@ -633,7 +633,6 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end
 		local children: { Compose.Child } = {}
 		if presentation == "bar" and spec.label and readout then
-			-- A bar reads its name and value on one line above the track, like a download row.
 			runtime.decorate(readout, { LayoutOrder = 2 })
 			table.insert(
 				children,

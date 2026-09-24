@@ -567,8 +567,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 			rule(".facet-" .. role .. "::UIGradient", properties)
 		end
 	end
-	-- Tabs read as navigation, not as buttons: quiet labels, a strong current label, and an accent
-	-- fill only where the current tab needs a shape (sidebar and bottom bar).
+
 	rule(".facet-tab-item", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item:Hover", { BackgroundTransparency = 1, TextColor3 = c("content") })

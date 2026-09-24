@@ -1355,8 +1355,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				changed(spec, model.stepped(read(spec.value), direction))
 			end
 		end
-		-- One quiet track holds decrease, value and increase; a label, when present, leads the row so
-		-- the stepper reads like a settings line rather than three loose buttons.
+
 		local function stepButton(
 			name: string,
 			glyph: string,
@@ -1600,7 +1599,6 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end,
 		})
 		if not spec.row then
-			-- A fixed trailing slot keeps the track still while the digits change.
 			runtime.decorate(readout, {
 				Size = D2.fromOffset(44, 0),
 				AutomaticSize = E.AutomaticSize.XY,

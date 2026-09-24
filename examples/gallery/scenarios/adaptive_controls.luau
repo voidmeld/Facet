@@ -56,6 +56,7 @@ return {
 					LayoutOrder = i,
 					AutomaticSize = Enum.AutomaticSize.None,
 					TextXAlignment = Enum.TextXAlignment.Center,
+					BackgroundTransparency = 0,
 				})
 				stat:AddTag("facet-control")
 				table.insert(stats, stat)
@@ -67,6 +68,7 @@ return {
 					Size = UDim2.new(0.25, -6, 0, 44),
 					UI.Badge "Count" {
 						label = count,
+						status = "info",
 						Size = UDim2.fromOffset(28, 28),
 						AnchorPoint = Vector2.new(1, 0),
 						Position = UDim2.new(1, -6, 0, 6),
@@ -95,7 +97,9 @@ return {
 					BorderSizePixel = 0,
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 					CanvasSize = UDim2.new(),
-					ScrollBarThickness = 6,
+					ScrollBarThickness = 4,
+					ScrollBarImageTransparency = 0.4,
+					VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar,
 					Host.Frame "Body" {
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,

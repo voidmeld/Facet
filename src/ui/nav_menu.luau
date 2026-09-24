@@ -692,8 +692,7 @@ return function(
 			local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
 			local opened = spec.isPresented or Compose.cell(false)
 			local width = Compose.cell(0)
-			-- A few choices read best side by side, whatever the input; a crowded or narrow set folds
-			-- into a menu. Gamepad players keep the inline list for longer, where menus cost a press.
+
 			local resolved = Compose.formula(function(use: Core.Use): Nav.PickerStyle
 				if spec.query then
 					return "navigationLink"
@@ -836,8 +835,7 @@ return function(
 			if spec.label == nil then
 				return UI.Menu(menuSpec)
 			end
-			-- A labelled choice reads as a settings row: the question on the leading edge and the
-			-- current answer, with its disclosure, on the trailing edge.
+
 			menuSpec.Name = "Value"
 			menuSpec.Size = nil
 			menuSpec.AnchorPoint = V2.new(1, 0.5)
@@ -1050,7 +1048,6 @@ return function(
 		end
 		local picker = Host.Frame(p)
 		if style == "segmented" then
-			-- One track holds the choices; the current one is a filled capsule inside it.
 			picker:AddTag("facet-segmented")
 		end
 		return picker

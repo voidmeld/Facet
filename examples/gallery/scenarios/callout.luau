@@ -120,8 +120,7 @@ return {
 				end,
 				onHide = function(reason: string)
 					entry.showing:set(false)
-					-- "hidden" means the page left the screen; the request stays queued and the
-					-- coach mark returns with the page. Only retirement ends the request.
+
 					if reason ~= "hidden" then
 						entry.requested:set(false)
 					end

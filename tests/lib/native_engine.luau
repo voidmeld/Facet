@@ -370,8 +370,6 @@ local function new(options: any?)
 					return
 				end
 				if className == "GuiService" and key == "SelectedObject" and value ~= nil then
-					-- Roblox ignores a selection target that is hidden or not selectable and warns
-					-- "Setting GuiService.SelectedObject to invalid GuiObject".
 					local shown = value.Selectable ~= false
 					local cursor = value
 					while shown and cursor and cursor:IsA("GuiBase2d") do
