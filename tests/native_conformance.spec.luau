@@ -223,13 +223,14 @@ t.describe("native constructor conformance", function()
 				local UI = Facet.controls(runtime, { types = engine.types, reducedMotion = true })
 				local root = engine.new("ScreenGui")
 				local baseline = engine.census()
-				local zIndex, calls, reference = Compose.cell(7), 0, nil
+				local zIndex, calls, reference, refCalls = Compose.cell(7), 0, nil, 0
 				local stop, node = runtime.mount(function()
 					local props = fixtures[name](runtime.constructors)
 					props.ZIndex = zIndex
 					props.Attributes = { Conformance = name }
 					props.ref = function(value)
 						reference = value
+						refCalls += 1
 					end
 					props[Compose.event("MouseEnter")] = function()
 						calls += 1
@@ -240,11 +241,13 @@ t.describe("native constructor conformance", function()
 					return if named then UI[name]("Caller")(props) else UI[name](props)
 				end, root)
 				assert(reference == node, "ref must identify returned root")
+				assert(refCalls == 1, `ref ran {refCalls} times for one build`)
 				assert(node.Name == "Caller", "caller Name was lost")
 				assert(node:GetAttribute("Conformance") == name, "caller attributes were lost")
 				assert(node.ZIndex == 7, "native property was lost")
 				zIndex:set(9)
 				assert(node.ZIndex == 9, "native property stopped subscribing")
+				assert(refCalls == 1, "a property update ran ref again")
 				node.MouseEnter.fire()
 				assert(calls == 1, "native event was not forwarded")
 				stop()

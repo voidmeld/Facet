@@ -710,7 +710,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 
 	local function navigationStack<P>(spec: Nav.NavigationStackSpec<P>): Frame
 		assert(
-			spec.path and spec.path.set and spec.root and spec.destinations,
+			type(spec.path) == "table" and spec.path.set and spec.root and spec.destinations,
 			"NavigationStack requires path, root and destinations"
 		)
 		checkTransition(spec.transition)
