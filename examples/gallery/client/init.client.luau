@@ -16,27 +16,13 @@ local Host = runtime.constructors
 local owner = Compose.createRootOwner(function()
 	local viewport = Facet.Roblox.createViewport(workspace.CurrentCamera)
 	local demos = gallery.list()
-	local initial = workspace:GetAttribute("Facet_Demo") or "all-controls"
-	local scenario = workspace:GetAttribute("Facet_Scenario")
-	local exampleIndex = workspace:GetAttribute("Facet_Example")
-	local exampleNames = {
-		"01_temperature_converter",
-		"02_playlist_table",
-		"03_settings_sync",
-		"04_confirm_dialog",
-		"05_word_game",
-		"06_tile_game",
-		"07_match3",
-	}
-	local initialModule = if type(scenario) == "string" and scenario ~= "" then scenario else exampleNames[exampleIndex]
-	if initialModule then
-		initial = initialModule
-		table.insert(demos, {
-			id = initial,
-			title = initialModule,
-			kind = if scenario then "fixture" else "example",
-			module = initialModule,
-		})
+	local initial, booted = gallery.boot(
+		workspace:GetAttribute("Facet_Demo"),
+		workspace:GetAttribute("Facet_Scenario"),
+		workspace:GetAttribute("Facet_Example")
+	)
+	if booted then
+		table.insert(demos, booted)
 	end
 	local selected = Compose.cell(initial)
 	local neutral = assert(Facet.themes.define(Facet.themes.neutralPackage()))

@@ -272,6 +272,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			spec.dialogAction == nil or spec.dialogAction == "default" or spec.dialogAction == "cancel",
 			"Facet.Button: invalid dialogAction"
 		)
+		assert(
+			spec.imageFraming == nil or spec.imageFraming == "fit" or spec.imageFraming == "crop",
+			"Facet.Button: imageFraming must be fit or crop"
+		)
 		local popTimeline = if spec.pop then runtime.timeline({ duration = 0.45, autoplay = false }) else nil
 		local popReduced = if popTimeline then reducedMotion(ctx) else nil
 		local popStart = Compose.cell(1)
@@ -1165,6 +1169,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local ok, number = pcall(function(text: string): number?
 					return if spec.parse then spec.parse(text) else tonumber(text)
 				end, value)
+				if disposed or not enabled(spec) then
+					return
+				end
 				if
 					not ok
 					or type(number) ~= "number"
@@ -1188,12 +1195,18 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local formattedOk, formatted = pcall(function(value: number): string
 					return if spec.format then spec.format(value) else tostring(value)
 				end, number)
+				if disposed or not enabled(spec) then
+					return
+				end
 				if not formattedOk or type(formatted) ~= "string" or utf8.len(formatted) == nil then
 					markInvalid(true)
 					return
 				end
 				if spec.validate then
 					local valid, normalized = pcall(spec.validate, formatted)
+					if disposed or not enabled(spec) then
+						return
+					end
 					if not valid or type(normalized) ~= "string" or utf8.len(normalized) == nil then
 						markInvalid(true)
 						return
@@ -1226,6 +1239,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				markInvalid(false)
 			else
 				local normalized = normalize(value)
+				if disposed or not enabled(spec) then
+					return
+				end
 				if normalized == nil then
 					markInvalid(true)
 					return

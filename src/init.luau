@@ -5,6 +5,7 @@ local ControlTypes = require("@self/ui/control_types")
 local createControls: ControlTypes.Factory = require("@self/ui")
 local InputTypes = require("@self/ui/input_types")
 local NavigationTypes = require("@self/ui/navigation_types")
+local RadialTypes = require("@self/ui/radial_types")
 local CollectionTypes = require("@self/ui/collection_types")
 local MediaTypes = require("@self/ui/media_types")
 local ThemeTypes = require("@self/ui/theme_types")
@@ -35,6 +36,8 @@ export type NavigationEntry<P = unknown> = NavigationTypes.NavigationEntry<P>
 export type NavigationDestination<P = unknown> = NavigationTypes.NavigationDestination<P>
 export type NavigationStackSpec<P = unknown> = NavigationTypes.NavigationStackSpec<P>
 export type PageViewSpec = NavigationTypes.PageViewSpec
+export type RadialItem<V = string> = RadialTypes.RadialItem<V>
+export type RadialMenuSpec<V = string> = RadialTypes.RadialMenuSpec<V>
 export type KeyedCollectionSpec<V, K> = CollectionTypes.KeyedCollectionSpec<V, K>
 export type IdentityCollectionSpec<V> = CollectionTypes.IdentityCollectionSpec<V>
 export type CollectionSpec<V, K> = CollectionTypes.CollectionSpec<V, K>

@@ -2,11 +2,11 @@
   "groups": {
     "menus-pickers": {
       "mainCases": 141,
-      "a": 102,
+      "a": 103,
       "aWeaker": 58,
       "b": 0,
       "c": 38,
-      "d": 1,
+      "d": 0,
       "candidateSpecs": {
         "native_navigation": 49,
         "native_parity_navigation": 11,
@@ -16,11 +16,11 @@
     },
     "motion": {
       "mainCases": 581,
-      "a": 120,
+      "a": 142,
       "aWeaker": 80,
       "b": 33,
       "c": 404,
-      "d": 24,
+      "d": 2,
       "candidateSpecs": {
         "native_themes_media": 27,
         "native_navigation": 18,
@@ -30,11 +30,11 @@
     },
     "error-handling": {
       "mainCases": 220,
-      "a": 64,
-      "aWeaker": 14,
+      "a": 69,
+      "aWeaker": 16,
       "b": 2,
       "c": 146,
-      "d": 8,
+      "d": 3,
       "candidateSpecs": {
         "native_navigation": 7,
         "native_parity_navigation": 6,
@@ -44,25 +44,25 @@
     },
     "controls-actions": {
       "mainCases": 394,
-      "a": 62,
+      "a": 94,
       "aWeaker": 57,
       "b": 1,
       "c": 297,
-      "d": 34,
+      "d": 2,
       "candidateSpecs": {
         "native_inputs": 24,
         "native_navigation": 11,
-        "native_themes_media": 3,
-        "native_gallery_workflows": 2
+        "native_parity_apps": 9,
+        "native_parity_media": 8
       }
     },
     "collections-virtual": {
       "mainCases": 214,
-      "a": 151,
+      "a": 156,
       "aWeaker": 127,
       "b": 3,
       "c": 52,
-      "d": 8,
+      "d": 3,
       "candidateSpecs": {
         "native_collections": 52,
         "native_gallery_collections": 11,
@@ -72,11 +72,11 @@
     },
     "performance": {
       "mainCases": 792,
-      "a": 82,
+      "a": 84,
       "aWeaker": 34,
       "b": 4,
       "c": 704,
-      "d": 2,
+      "d": 0,
       "candidateSpecs": {
         "native_perf_principles": 12,
         "native_themes_media": 11,
@@ -86,11 +86,11 @@
     },
     "presented-surfaces": {
       "mainCases": 287,
-      "a": 116,
+      "a": 124,
       "aWeaker": 81,
       "b": 5,
       "c": 158,
-      "d": 8,
+      "d": 0,
       "candidateSpecs": {
         "native_navigation": 47,
         "native_parity_navigation": 7,
@@ -100,39 +100,39 @@
     },
     "icons-media": {
       "mainCases": 251,
-      "a": 86,
+      "a": 110,
       "aWeaker": 66,
       "b": 37,
       "c": 98,
-      "d": 30,
+      "d": 6,
       "candidateSpecs": {
         "native_themes_media": 64,
+        "native_parity_media": 11,
         "native_stress": 5,
-        "native_public_surface": 4,
-        "native_navigation": 4
+        "native_public_surface": 4
       }
     },
     "reference-apps": {
       "mainCases": 327,
-      "a": 59,
-      "aWeaker": 38,
+      "a": 151,
+      "aWeaker": 45,
       "b": 22,
       "c": 153,
-      "d": 93,
+      "d": 1,
       "candidateSpecs": {
+        "native_parity_apps": 42,
         "native_reference_apps": 15,
         "native_outpost_rules": 3,
-        "scenario_require_paths": 2,
-        "(all 20 identically named cases in native_outpost_rules)": 1
+        "scenario_require_paths": 2
       }
     },
     "layout-geometry": {
       "mainCases": 1326,
-      "a": 88,
+      "a": 94,
       "aWeaker": 58,
       "b": 359,
       "c": 872,
-      "d": 7,
+      "d": 1,
       "candidateSpecs": {
         "native_inputs": 11,
         "native_navigation": 11,
@@ -142,11 +142,11 @@
     },
     "public-surface-api": {
       "mainCases": 366,
-      "a": 86,
+      "a": 89,
       "aWeaker": 59,
       "b": 0,
       "c": 277,
-      "d": 3,
+      "d": 0,
       "candidateSpecs": {
         "native_conformance": 12,
         "native_registration": 6,
@@ -156,11 +156,11 @@
     },
     "pointer-touch-drag": {
       "mainCases": 368,
-      "a": 61,
-      "aWeaker": 47,
+      "a": 63,
+      "aWeaker": 48,
       "b": 97,
       "c": 208,
-      "d": 2,
+      "d": 0,
       "candidateSpecs": {
         "native_collections": 18,
         "native_radial_controls": 8,
@@ -170,16 +170,16 @@
     },
     "replication-server": {
       "mainCases": 55,
-      "a": 19,
+      "a": 31,
       "aWeaker": 14,
       "b": 0,
       "c": 24,
-      "d": 12,
+      "d": 0,
       "candidateSpecs": {
         "native_outpost_terminal": 8,
         "native_stress": 2,
-        "native_gallery": 1,
-        "native_themes_media": 1
+        "native_parity_apps": 2,
+        "native_gallery": 1
       }
     },
     "reactive-core": {
@@ -207,16 +207,17 @@
         "native_inputs": 50,
         "native_parity_controls": 24,
         "native_themes_media": 23,
-        "native_navigation": 6
+        "native_navigation": 6,
+        "native_parity_media": 4
       }
     },
     "adaptive-environment": {
       "mainCases": 419,
-      "a": 27,
+      "a": 28,
       "aWeaker": 17,
       "b": 51,
       "c": 336,
-      "d": 5,
+      "d": 4,
       "candidateSpecs": {
         "native_navigation": 4,
         "native_parity_navigation": 4,
@@ -226,11 +227,11 @@
     },
     "lifetime-ownership": {
       "mainCases": 316,
-      "a": 136,
+      "a": 142,
       "aWeaker": 103,
       "b": 6,
       "c": 168,
-      "d": 6,
+      "d": 0,
       "candidateSpecs": {
         "native_conformance": 23,
         "native_stress": 17,
@@ -240,59 +241,59 @@
     },
     "controls-text-input": {
       "mainCases": 119,
-      "a": 51,
+      "a": 69,
       "aWeaker": 26,
       "b": 28,
       "c": 21,
-      "d": 19,
+      "d": 1,
       "candidateSpecs": {
         "native_inputs": 22,
+        "native_parity_media": 6,
         "native_navigation": 5,
-        "native_collections": 3,
-        "native_gallery": 2
+        "native_collections": 3
       }
     },
     "focus-selection": {
       "mainCases": 532,
-      "a": 81,
-      "aWeaker": 47,
+      "a": 101,
+      "aWeaker": 49,
       "b": 257,
       "c": 172,
-      "d": 22,
+      "d": 2,
       "candidateSpecs": {
         "native_navigation": 21,
         "native_collections": 18,
-        "native_inputs": 5,
-        "native_themes_media": 4
+        "native_parity_apps": 10,
+        "native_inputs": 5
       }
     },
     "docs-examples-tooling": {
       "mainCases": 498,
-      "a": 21,
+      "a": 51,
       "aWeaker": 11,
       "b": 0,
       "c": 447,
-      "d": 30,
+      "d": 0,
       "candidateSpecs": {
         "native_documentation": 6,
         "native_registration": 3,
         "scenario_require_paths": 3,
-        "producer:links (tools/lune/check_links_cli, full tier)": 1,
-        "native_themes_media": 1
+        "native_themes_media": 1,
+        "native_parity_apps": 12
       }
     },
     "scrolling": {
       "mainCases": 330,
-      "a": 82,
+      "a": 93,
       "aWeaker": 60,
       "b": 100,
       "c": 137,
-      "d": 11,
+      "d": 0,
       "candidateSpecs": {
         "native_collections": 29,
         "native_gallery_collections": 10,
-        "native_virtual_monitors": 3,
-        "native_navigation": 3
+        "native_parity_apps": 6,
+        "native_virtual_monitors": 3
       }
     },
     "theme-packages": {
@@ -311,44 +312,44 @@
     },
     "gallery-examples": {
       "mainCases": 425,
-      "a": 204,
-      "aWeaker": 120,
+      "a": 237,
+      "aWeaker": 133,
       "b": 113,
       "c": 66,
-      "d": 42,
+      "d": 9,
       "candidateSpecs": {
         "native_gallery": 28,
         "native_games": 20,
-        "native_gallery_collections": 7,
-        "example_word_data": 4
+        "native_parity_apps": 11,
+        "native_gallery_collections": 7
       }
     },
     "hud-world": {
       "mainCases": 166,
-      "a": 43,
+      "a": 46,
       "aWeaker": 34,
       "b": 50,
       "c": 70,
-      "d": 3,
+      "d": 0,
       "candidateSpecs": {
         "native_hud": 11,
         "native_themes_media": 8,
         "native_outpost_terminal": 3,
-        "native_radial_controls": 1
+        "native_parity_apps": 2
       }
     },
     "tables-rows": {
       "mainCases": 156,
-      "a": 76,
-      "aWeaker": 40,
+      "a": 97,
+      "aWeaker": 43,
       "b": 1,
       "c": 58,
-      "d": 21,
+      "d": 0,
       "candidateSpecs": {
         "native_collections": 39,
+        "native_parity_apps": 10,
         "native_gallery_workflows": 4,
-        "native_gallery_collections": 3,
-        "native_virtual_monitors": 2
+        "native_gallery_collections": 3
       }
     },
     "paint-theming": {
@@ -362,16 +363,17 @@
         "native_themes_media": 54,
         "native_parity_paint": 44,
         "native_inputs": 14,
-        "native_navigation": 10
+        "native_navigation": 10,
+        "native_parity_media": 3
       }
     },
     "navigation-containers": {
       "mainCases": 72,
-      "a": 59,
+      "a": 64,
       "aWeaker": 36,
       "b": 1,
       "c": 2,
-      "d": 10,
+      "d": 5,
       "candidateSpecs": {
         "native_navigation": 28,
         "native_gallery_shell": 6,
@@ -455,10 +457,10 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 2769,
+      "a": 3131,
       "b": 1581,
       "c": 6080,
-      "d": 418
+      "d": 56
     },
     "auditByClass": {
       "a": 2294,
@@ -467,10 +469,10 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 978,
+      "a": 1139,
       "b": 306,
       "c": 823,
-      "d": 183
+      "d": 22
     },
     "mainCases": 10848,
     "uncitableCandidateCases": [
@@ -488,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1697
+    "coveredButWeaker": 1725
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2056,13 +2058,18 @@
         "example_match3_motion"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery examples::explains a non-adjacent tap, refuses taps while resolving and resets to the opening values"
+      ],
       "apiPromise": "07_match3.luau refuses activation while resolving",
       "gap": {
         "description": "No candidate test taps a tile during a cascade.",
         "headlessTestable": true,
         "proposedTest": "newGame(dropBoard); game.swap(3,3,4,3); while game.isResolving() activate a tile's hit; expect moves unchanged, selection nil and hintText to contain a refusal sentence."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery examples::explains a non-adjacent tap, refuses taps while resolving and resets to the opening values"
     },
     {
       "id": "apps2-09",
@@ -2227,13 +2234,18 @@
         "example_tile_game"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery examples::disables a spent rack slot instead of leaving a live blank button"
+      ],
       "apiPromise": "06_tile_game.luau rack button enabled = letter ~= nil and phase == 'playing'",
       "gap": {
         "description": "The enabled formula exists but no candidate test places a tile and checks the spent slot is non-interactable.",
         "headlessTestable": true,
         "proposedTest": "Mount 06_tile_game; activate rt1 then cell4_4/tap; expect(find(node,'rt1').Interactable).toBe(false) and its Text to be '\u00b7'; undo and expect Interactable true."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery examples::disables a spent rack slot instead of leaving a live blank button"
     },
     {
       "id": "apps2-21",
@@ -2365,13 +2377,18 @@
         "examples_gallery"
       ],
       "mainCases": 5,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery examples::converts only numeric Fahrenheit, previews live and commits on Enter or focus loss"
+      ],
       "apiPromise": "examples/gallery/examples/01_temperature_converter.luau: validate=acceptNumeric, onCommit, Preview '(live, as you type)', Result",
       "gap": {
         "description": "Control-level TextInput commit/validation is tested in native_inputs, but no test drives the tutorial: typing updates Preview without Result, Enter/FocusLost commits Result, a letter is rejected.",
         "headlessTestable": true,
         "proposedTest": "mountExample('01_temperature_converter'); editor=find TextBox; CaptureFocus; Text='212': expect Preview text contains '100' and Result 'Result: \u2014'; FocusLost.fire(true): expect Result 'Result: 100 \u00b0C'; Text='21a': expect Text reverted and Preview unchanged; FocusLost(false) commits; Clear resets all three; assert no Stepper/Convert button exists."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery examples::converts only numeric Fahrenheit, previews live and commits on Enter or focus loss"
     },
     {
       "id": "apps2-30",
@@ -2422,13 +2439,18 @@
         "examples_gallery"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Playlist example::aligns name artist and rating columns under their headers"
+      ],
       "apiPromise": "src/ui/collection_table.luau mirrors column widths into header and body",
       "gap": {
         "description": "No test compares header column geometry with body cells (same gap as playlist_columns header/body boundaries).",
         "headlessTestable": true,
         "proposedTest": "Mount 02_playlist_table, set Body window size; for 'name' and 'rating' assert header column Size.X equals the cell Size.X in row 1."
-      }
+      },
+      "closedBy": "native_parity_apps::Playlist example::aligns name artist and rating columns under their headers"
     },
     {
       "id": "apps2-34",
@@ -2483,13 +2505,18 @@
         "examples_gallery"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Playlist example::plays on a double click Return or touch tap while a single or slow click only selects"
+      ],
       "apiPromise": "02_playlist_table.luau NowPlaying hint 'double-click a row, or press Return on a focused one'; restore() sets nowPlaying nil (line 244)",
       "gap": {
         "description": "The Table has no double-click distinction: collection_table.luau:465 calls selectRow and onActivate on every activation, so a single click both selects and plays, contradicting the example's hint. Nothing tests activa...",
         "headlessTestable": true,
         "proposedTest": "Mount the playlist; fire one RowHit.Activated with a MouseButton1 input: expect selection set and nowPlaying nil; fire two within the double-click window: expect NowPlaying text 'Now playing \u2014 <track>'; built.restore(): expect 'Nothing playing'."
-      }
+      },
+      "closedBy": "native_parity_apps::Playlist example::plays on a double click Return or touch tap while a single or slow click only selects"
     },
     {
       "id": "apps2-38",
@@ -2560,13 +2587,18 @@
         "examples_gallery"
       ],
       "mainCases": 7,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery examples::reaches every sync state through its controls and keeps a bounded newest-first history"
+      ],
       "apiPromise": "examples/gallery/examples/03_settings_sync.luau log()/history (lines 9-54), 'Already waiting for a reply. Deliver it first.', Reset",
       "gap": {
         "description": "None of these example behaviors is asserted by a candidate test.",
         "headlessTestable": true,
         "proposedTest": "mountExample('03_settings_sync'); press Music twice: expect second press logs 'Already waiting...' and status stays pending without error; press Deliver with nothing pending: expect an explanatory history line; press Reset while pending: expect status idle and history 'Reset. Nothing sent yet.'; do 20 actions and assert history is newest-first and length-capped."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery examples::reaches every sync state through its controls and keeps a bounded newest-first history"
     },
     {
       "id": "apps2-43",
@@ -2615,13 +2647,18 @@
         "examples_gallery"
       ],
       "mainCases": 6,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery examples::confirms or keeps a deletion through one dialog and restores the save"
+      ],
       "apiPromise": "examples/gallery/examples/04_confirm_dialog.luau openDialog/restore, 'Deleted. The slot is empty now.' and kept message",
       "gap": {
         "description": "The candidate only calls openDialog() and restore() without assertions.",
         "headlessTestable": true,
         "proposedTest": "mountExample('04_confirm_dialog'); activate Delete twice: expect exactly one ConfirmDialog; activate Cancel: expect status text says kept and dialog gone; Delete then Confirm: expect 'Deleted. The slot is empty now.'; Restore: expect the save back."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery examples::confirms or keeps a deletion through one dialog and restores the save"
     },
     {
       "id": "apps2-47",
@@ -2657,13 +2694,18 @@
         "examples_gallery"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery layouts::slides the card rail window along X when the engine scrolls sideways"
+      ],
       "apiPromise": "api.md VirtualList/VirtualGrid (horizontal axis windowing)",
       "gap": {
         "description": "The card rail test only sets the window size; no test changes CanvasPosition.X on a horizontal list and checks the mounted window moves.",
         "headlessTestable": true,
         "proposedTest": "mount('card_rail'); viewport(rail,400,300); record status.first; rail.CanvasPosition = Vector2.new(3600,0); expect status.first > previous and Card_c1 no longer mounted, retained < 12."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery layouts::slides the card rail window along X when the engine scrolls sideways"
     },
     {
       "id": "apps2-50",
@@ -2813,13 +2855,18 @@
         "examples_gallery"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery layouts::flips wrapping on the same tag nodes and aligns only the block"
+      ],
       "apiPromise": "examples/gallery/scenarios/flow_wrap.luau WrapToggle bound to UIListLayout.Wraps (line 153) and the Block align Picker (line 170)",
       "gap": {
         "description": "No candidate test toggles WrapToggle or changes the Block picker.",
         "headlessTestable": true,
         "proposedTest": "mount('flow_wrap'); record tag Instances; activate WrapToggle: expect the tags' UIListLayout.Wraps false and the same Instances; set align End: expect HorizontalAlignment Right on the block layout and the tags unchanged."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery layouts::flips wrapping on the same tag nodes and aligns only the block"
     },
     {
       "id": "apps2-62",
@@ -2986,13 +3033,18 @@
         "examples_games"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery examples::deals match-three boards with no opening run, a legal move and five distinct tile arts"
+      ],
       "apiPromise": "07_match3.luau hasLegalMoveIn/deal loop (lines 69-143) and five KINDS with assets.match3Tiles images",
       "gap": {
         "description": "native_gallery only asserts hasLegalMove() after one cascade; no test checks the opening board has no run, that every reset deals a legal board, or that the five kinds map to five distinct images.",
         "headlessTestable": true,
         "proposedTest": "For 50 resets: call game.reset(); assert no horizontal/vertical run of 3 in game.boardSnapshot() and game.hasLegalMove(); collect assets.match3Tiles[k].image for the five kinds and assert five distinct non-empty ids."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery examples::deals match-three boards with no opening run, a legal move and five distinct tile arts"
     },
     {
       "id": "apps2-74",
@@ -3002,13 +3054,18 @@
         "examples_games"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery examples::explains a non-adjacent tap, refuses taps while resolving and resets to the opening values"
+      ],
       "apiPromise": "07_match3.luau:733 message 'Tiles have to touch to swap...' and reset() (line 736)",
       "gap": {
         "description": "No candidate test taps a non-adjacent tile, presses Reset, or interleaves rapid taps with Reset.",
         "headlessTestable": true,
         "proposedTest": "Select (1,1) then activate (3,3): expect hintText contains 'have to touch'; swap once, press Reset (find 'Reset').Activated: expect score 0, moves 0, no selected attribute on any hit, message ''; then 30 alternating activations/Resets and assert no tile has selected=true and no error."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery examples::explains a non-adjacent tap, refuses taps while resolving and resets to the opening values"
     },
     {
       "id": "apps2-75",
@@ -3079,13 +3136,18 @@
         "extension_checker"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Documentation and tooling::scaffolds formatter-clean control source"
+      ],
       "apiPromise": "docs/extending/new-control.md: 'Run lune run tools/lune/scaffold_cli control lower_snake_name'",
       "gap": {
         "description": "No test checks the stamped source/edits for line length or StyLua cleanliness.",
         "headlessTestable": true,
         "proposedTest": "In native_registration, for plan.files[1].content and each edited file assert no line exceeds 120 columns and no double blank line (or run stylua --check on a temp copy)."
-      }
+      },
+      "closedBy": "native_parity_apps::Documentation and tooling::scaffolds formatter-clean control source"
     },
     {
       "id": "apps2-81",
@@ -3107,13 +3169,18 @@
         "gallery_boot_mode"
       ],
       "mainCases": 5,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery shell::boots a scenario over an example over a demo and the default demo without attributes"
+      ],
       "apiPromise": "examples/gallery/client/init.client.luau:18-38 (Facet_Demo/Facet_Scenario/Facet_Example); relied on by tools/build_places.sh and tools/build_reference_places.sh",
       "gap": {
         "description": "The precedence logic is inline in init.client.luau and untested.",
         "headlessTestable": true,
         "proposedTest": "Extract the attribute decision into a pure function in examples/gallery/client (or stub workspace/game in Lune) and assert: Scenario='outpost_terminal' wins over Example=2; Example=5 selects 05_word_game; neither selects Facet_Demo or 'all-controls'."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery shell::boots a scenario over an example over a demo and the default demo without attributes"
     },
     {
       "id": "apps2-83",
@@ -3123,13 +3190,19 @@
         "gallery_boot_mode"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted"
+      ],
+      "weaker": "The test checks the stamped failure and the reported error. It does not capture the warn output.",
       "apiPromise": "examples/gallery/client/screen.luau:95-125 pcall around demo build, warn '[Facet Gallery] ...', errorMessage, DemoFailure label and dispatch().error",
       "gap": {
         "description": "Only the success path is tested (errorMessage nil for every demo).",
         "headlessTestable": true,
         "proposedTest": "native_gallery_shell fixture with ctx.load returning a module whose build errors; select it: expect a 'DemoFailure' TextLabel containing the title, ctx.errorMessage non-nil, ctx.active nil, and gallery.dispatch(ctx,'report').error equal to the message."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted"
     },
     {
       "id": "apps2-84",
@@ -3237,13 +3310,18 @@
         "gallery_chrome"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery shell::keeps the chosen motion setting across a demo swap"
+      ],
       "apiPromise": "examples/gallery/client/screen.luau Motion picker writes ctx.motionPreference shared by every demo branch",
       "gap": {
         "description": "No test changes the Motion setting and then switches demos.",
         "headlessTestable": true,
         "proposedTest": "native_gallery_shell fixture with two demos; open Settings, choose Motion 'reduced'; gallery.dispatch(ctx,'show','second'): expect ctx.reducedMotion true and the Motion picker still showing Reduced; the second demo's pageContext.reducedMotion reads true."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery shell::keeps the chosen motion setting across a demo swap"
     },
     {
       "id": "apps2-93",
@@ -3350,13 +3428,18 @@
         "gallery_demo_host"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery shell::releases a presenting demo's resources after its tree and exactly once per build"
+      ],
       "apiPromise": "examples/gallery/client/screen.luau: Compose.cleanup(built.dispose) inside each TabView branch with retention='top'",
       "gap": {
         "description": "No test switches away from a demo that has a presented Alert/Sheet and checks dispose ordering/count.",
         "headlessTestable": true,
         "proposedTest": "native_gallery_shell fixture with a demo whose build presents an Alert and counts dispose calls; switch selection away and back, then stop(): expect dispose called exactly once per build, after the Alert Instance is destroyed, and no errorMessage."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery shell::releases a presenting demo's resources after its tree and exactly once per build"
     },
     {
       "id": "apps2-102",
@@ -3432,13 +3515,18 @@
         "gallery_demo_picker"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery shell::steps through the demo list in both directions and wraps"
+      ],
       "apiPromise": "examples/gallery/client/demo_picker.luau catalogue.next and screen.dispatch('next', step)",
       "gap": {
         "description": "No test steps backwards, wraps, or starts from an unknown id.",
         "headlessTestable": true,
         "proposedTest": "For demo_picker: next(last) == first, next(first,-1) == last, applying next #list times returns to start, next('missing') is a listed id."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery shell::steps through the demo list in both directions and wraps"
     },
     {
       "id": "apps2-108",
@@ -3533,13 +3621,18 @@
         "gallery_demo_picker"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted"
+      ],
       "apiPromise": "examples/gallery/client/screen.luau: failed build sets active nil; dispatch returns { mounted = ctx.active:peek(), error = ... }",
       "gap": {
         "description": "No test uses a failing demo or reads dispatch().mounted.",
         "headlessTestable": true,
         "proposedTest": "native_gallery_shell fixture whose load for 'second' throws; dispatch(ctx,'show','second'): expect result.ok true, result.mounted nil, result.error non-nil, and a DemoFailure label."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted"
     },
     {
       "id": "apps2-116",
@@ -3723,13 +3816,18 @@
         "outpost_terminal"
       ],
       "mainCases": 5,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Outpost terminal::sends nothing before engagement, updates the budget verdict and exits once"
+      ],
       "apiPromise": "examples/gallery/examples/outpost_terminal steps.apply/engage/exit and its report().message/status (AGENTS.md section 3 names it the worked surface-target recipe)",
       "gap": {
         "description": "No candidate test calls apply() before engage(), reads the idle/objective or budget text after setValue, checks the outcome line clears on the next edit, or calls exit twice.",
         "headlessTestable": true,
         "proposedTest": "mount(terminal,{send=recorder}); expect(steps.apply().sent).toBe(false) and #recorder==0; expect(report().message) to name the objective; engage(); setValue('workshop',4); expect(report().budget/verdict text) to show over budget; apply+confirm; setValue('door',1): expect(report().outcome) nil; exit('cancel') twice: second is a no-op with the same exitReason and no extra send."
-      }
+      },
+      "closedBy": "native_parity_apps::Outpost terminal::sends nothing before engagement, updates the budget verdict and exits once"
     },
     {
       "id": "apps2-129",
@@ -3783,13 +3881,18 @@
         "outpost_terminal"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Outpost terminal::needs only activation for every control and keeps its content module engine-free"
+      ],
       "apiPromise": "AGENTS.md section 3 / examples/gallery/examples/outpost_terminal as the shared-content surface recipe used by two hosts",
       "gap": {
         "description": "No candidate test scans the terminal for drag/UIDragDetector use or checks that the content module requires no engine service (game:GetService/Instance.new).",
         "headlessTestable": true,
         "proposedTest": "Read examples/gallery/examples/outpost_terminal/*.luau; assert no 'UIDragDetector'/'DragStart' and no 'game:GetService'/'Instance.new' in the content module; mount it and assert every GuiButton descendant is reachable by Activated alone (no Draggable/DragDetector descendants)."
-      }
+      },
+      "closedBy": "native_parity_apps::Outpost terminal::needs only activation for every control and keeps its content module engine-free"
     },
     {
       "id": "apps2-133",
@@ -3883,13 +3986,18 @@
         "perf_lab"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Performance lab::clamps a requested row count to the dataset ceiling"
+      ],
       "apiPromise": "examples/performance/lab/perf_lab.luau:354 rowCount:set(math.clamp(count, 1, modules.dataset.MAX_ROWS))",
       "gap": {
         "description": "The clamp still exists in the shipped lab but no candidate test selects a count above dataset.MAX_ROWS.",
         "headlessTestable": true,
         "proposedTest": "In native_perf_lab fixture(): probe.select('dense-scroll', modules.dataset.MAX_ROWS * 10); expect(probe.state().rows).toBe(modules.dataset.MAX_ROWS) and #active.rows:peek() == MAX_ROWS."
-      }
+      },
+      "closedBy": "native_parity_apps::Performance lab::clamps a requested row count to the dataset ceiling"
     },
     {
       "id": "apps2-140",
@@ -4003,13 +4111,18 @@
         "perf_lab"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Performance lab::calls two captures the same workload only when every identity field agrees"
+      ],
       "apiPromise": "examples/performance/lab/capture.luau:123 function capture.sameWorkload(a, b): (boolean, {string})",
       "gap": {
         "description": "capture.sameWorkload is shipped but never called by a candidate test.",
         "headlessTestable": true,
         "proposedTest": "Build two rows with probe.capture() for the same workload; expect(capture.sameWorkload(a,b)).toBe(true); change b.rows (and separately b.seed, b.theme) and expect false with the differing field named in the returned list."
-      }
+      },
+      "closedBy": "native_parity_apps::Performance lab::calls two captures the same workload only when every identity field agrees"
     },
     {
       "id": "apps2-149",
@@ -4124,13 +4237,18 @@
         "perf_lab"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Documentation and tooling::calls only Facet exports that exist from every shipped client entry point"
+      ],
       "apiPromise": "examples/performance/client/init.client.luau (and gallery/virtual_monitors/consumer client bootstraps) call Facet.<name> exports",
       "gap": {
         "description": "No candidate test scans client bootstraps (init.client.luau) for Facet.<name> accesses; scenario_require_paths only checks relative requires. A renamed export breaks only in Studio.",
         "headlessTestable": true,
         "proposedTest": "Scan examples/**/*.client.luau for 'Facet%.([%a_]+)', assert each name is a key of require('../src'); include a negative control on a synthetic source string and a control that 'game.ReplicatedStorage.Facet' paths are not flagged."
-      }
+      },
+      "closedBy": "native_parity_apps::Documentation and tooling::calls only Facet exports that exist from every shipped client entry point"
     },
     {
       "id": "apps2-159",
@@ -4245,13 +4363,18 @@
         "playlist_columns"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Table::gives a resizable column a grip and a locked column neither a grip nor adjust keys"
+      ],
       "apiPromise": "docs/reference/api.md Table: '`resizable` and `sortable` (both true)'; src/ui/collection_table.luau:332 'if column.resizable ~= false then'",
       "gap": {
         "description": "Candidate tests only resizable columns; nothing mounts resizable=false and asserts no Resize grip and no NarrowColumn/WidenColumn action.",
         "headlessTestable": true,
         "proposedTest": "UI.Table with columns {id='a',width=100} and {id='b',width=100,resizable=false}; expect(header.a:FindFirstChild('Resize')) non-nil and header.b:FindFirstChild('Resize') nil; select header.b and assert no FacetNarrowColumn action is created under the target."
-      }
+      },
+      "closedBy": "native_parity_apps::Table::gives a resizable column a grip and a locked column neither a grip nor adjust keys"
     },
     {
       "id": "apps2-168",
@@ -4317,13 +4440,18 @@
         "playlist_columns"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Playlist example::sorts rating by the live stars and artist by value with source order breaking ties"
+      ],
       "apiPromise": "api.md Table: 'value(item) or render(...)', sort {column, direction}; 02_playlist_table.luau sortable=true columns with value()",
       "gap": {
         "description": "No candidate test checks the sorted row order produced by value(), a live change of a rating re-sorting, or stable tie-break on duplicate artists.",
         "headlessTestable": true,
         "proposedTest": "In 02_playlist_table set sort={column='artist',direction='ascending'}; assert sortedRows ids for duplicate artists keep source order; set sort rating descending, then ratingFor(x):set(5) and assert x moves to the top of sortedRows without remount of its row."
-      }
+      },
+      "closedBy": "native_parity_apps::Playlist example::sorts rating by the live stars and artist by value with source order breaking ties"
     },
     {
       "id": "apps2-173",
@@ -4348,13 +4476,18 @@
         "playlist_columns"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Playlist example::bakes the sort when Top moves a row and keeps the sort when a row is removed"
+      ],
       "apiPromise": "examples/gallery/examples/02_playlist_table.luau removeTrack/Top actions",
       "gap": {
         "description": "No candidate test presses Top under a sort or removes a row under a sort.",
         "headlessTestable": true,
         "proposedTest": "Set sort name descending; activate a row's Top: expect sort nil and baseRows[1] == that id; set sort again, removeTrack(id): expect sort unchanged."
-      }
+      },
+      "closedBy": "native_parity_apps::Playlist example::bakes the sort when Top moves a row and keeps the sort when a row is removed"
     },
     {
       "id": "apps2-175",
@@ -4389,13 +4522,18 @@
         "playlist_columns"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Table::keeps a resized column on a 2000 row table bounded to the window at the new width"
+      ],
       "apiPromise": "api.md Table: 'Otherwise, mode selects the Compose windowed or all lifetime'; widths map",
       "gap": {
         "description": "Candidate resize test uses two rows; no test commits a width on a large windowed table and checks the window stays bounded and unmounted rows remain unmounted.",
         "headlessTestable": true,
         "proposedTest": "UI.Table with 2000 rows, itemSize 40, Body.AbsoluteWindowSize 400x400; drag the grip to widen; expect the number of mounted row Instances < 30 before and after, and each mounted cell's width to equal the new width."
-      }
+      },
+      "closedBy": "native_parity_apps::Table::keeps a resized column on a 2000 row table bounded to the window at the new width"
     },
     {
       "id": "apps2-178",
@@ -4405,13 +4543,18 @@
         "playlist_columns"
       ],
       "mainCases": 5,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Table::keeps header column boundaries on the body columns through resize scroll and a scrollbar"
+      ],
       "apiPromise": "src/ui/collection_table.luau header sizing (lines ~650-665) mirrors body column widths and reorderGutter",
       "gap": {
         "description": "No candidate test compares header column X/width with body cell X/width, or the gutter when the body scrollbar appears.",
         "headlessTestable": true,
         "proposedTest": "Mount a 3-column Table; set Body.AbsoluteWindowSize and CanvasSize so it scrolls; for each column assert header column Size.X.Offset equals the row cell Size.X.Offset; resize one column and assert they still match; repeat with reorderable=true and check the 56px gutter is applied to both."
-      }
+      },
+      "closedBy": "native_parity_apps::Table::keeps header column boundaries on the body columns through resize scroll and a scrollbar"
     },
     {
       "id": "apps2-179",
@@ -4421,13 +4564,19 @@
         "playlist_columns"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Table::stops adjusting a column width once its grip loses selection"
+      ],
+      "weaker": "A column is held only while its grip has the native selection. The candidate has no separate Cancel or second-Activate release, so only the selection-loss release is tested.",
       "apiPromise": "src/ui/collection_table.luau:370-390 selected cell set on SelectionGained, cleared on SelectionLost, gating NarrowColumn/WidenColumn",
       "gap": {
         "description": "Only SelectionGained+NarrowColumn is tested; nothing fires SelectionLost and asserts the adjust action no longer changes widths.",
         "headlessTestable": true,
         "proposedTest": "Select a Resize grip, press NarrowColumn (width changes), fire grip.SelectionLost, press NarrowColumn again: expect widths unchanged."
-      }
+      },
+      "closedBy": "native_parity_apps::Table::stops adjusting a column width once its grip loses selection"
     },
     {
       "id": "apps2-180",
@@ -4573,13 +4722,19 @@
         "radial_menu"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::RadialMenu::sizes the hole from the anchor clearance and keeps a fixed ring until it reopens",
+        "native_parity_apps::RadialMenu::freezes the idle ring center and hole during a pointer capture and follows after release"
+      ],
       "apiPromise": "api.md RadialMenu options `anchor`, `follow`, `clearance`; nav_radial.luau layout uses max(clearance, anchor.clearance, native anchor extent/2) and follow in {idle, always, fixed}.",
       "gap": {
         "description": "No candidate test sets `clearance`, a projected anchor clearance, or follow=\"fixed\". Probe: follow=\"fixed\" keeps the center at 320 after the anchor moves, but the ring radius changes live (N moved from y=95 to y=85 wh...",
         "headlessTestable": true,
         "proposedTest": "anchor=cell{x=320,y=240,clearance=70}, clearance=50, follow=\"fixed\", compass items; expect N button center radius from anchor >= 70; anchor:set{x=400,clearance=90}; expect N.Position unchanged; close and reopen; expect N centered on x=400 with radius >= 90. Also idle follow: pointer capture freezes both center and inner radius until release."
-      }
+      },
+      "closedBy": "native_parity_apps::RadialMenu::sizes the hole from the anchor clearance and keeps a fixed ring until it reopens"
     },
     {
       "id": "apps2-191",
@@ -4604,16 +4759,18 @@
         "radial_menu"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "radial_geometry::radial geometry::all corner arcs face inward without rotating authored compass directions"
+        "native_parity_apps::RadialMenu::keeps corner rings of round buttons inside short and tall surfaces"
       ],
       "apiPromise": "nav_radial.luau layout: corner presets use room=min(size.X-28,size.Y-28), list when a sector size < 44 or outer > room; api.md option `preset`.",
       "gap": {
         "description": "radial_geometry only checks corner arc angles; no mounted test places a corner preset in a short viewport and checks button bounds, >=44 size, non-overlap, or activation.",
         "headlessTestable": true,
         "proposedTest": "For each corner preset and Modal.AbsoluteSize 469x209 and 800x650, appearance=\"buttons\", 3 items: expect Presentation==\"radial\"; for each item button expect Size.X.Offset>=44 and Position\u00b1Size/2 within Modal.AbsoluteSize, no pair overlapping; Activated on first fires onSelect once."
-      }
+      },
+      "closedBy": "native_parity_apps::RadialMenu::keeps corner rings of round buttons inside short and tall surfaces"
     },
     {
       "id": "apps2-193",
@@ -4635,16 +4792,19 @@
         "radial_menu"
       ],
       "mainCases": 9,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_radial_controls::native radial interaction policies::NRAD-13 gallery nearby item uses native owned scene and real actions"
+        "native_parity_apps::Quick actions example::opens the quick actions at phone viewports with large text and keeps a wandering ring round"
       ],
+      "weaker": "The fake engine does no layout or text measurement. The test places the explorer and imitates large text through TextBounds; real sizes need Studio.",
       "apiPromise": "examples/gallery/scenarios/radial_menu.luau steps open/character/move (examples are part of the API).",
       "gap": {
         "description": "Candidate mounts the scenario only at 1280x720; no case opens it at 359x718, 844x390, 320x568, 600x320, with +14 text, or checks the ring does not oscillate into a list while the anchor moves.",
         "headlessTestable": true,
         "proposedTest": "For each viewport x text offset: mount scenario, set Modal.AbsoluteSize, steps.open(), expect report().menu.open; steps.character(); steps.open(); expect open. At 359x718 after steps.move() step heartbeat 240 frames and expect Presentation stays \"radial\" every 6 frames."
-      }
+      },
+      "closedBy": "native_parity_apps::Quick actions example::opens the quick actions at phone viewports with large text and keeps a wandering ring round"
     },
     {
       "id": "apps2-195",
@@ -4723,13 +4883,18 @@
         "radial_menu"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::RadialMenu::shows exactly one navigation control for each center policy and names it by depth"
+      ],
       "apiPromise": "nav_radial.luau: center in {back, root, close, content, empty}; non-back centers insert \"$navigation\" labelled \"Close\" at root and \"Back\" when nested; api.md options center/centerLabel/centerContent.",
       "gap": {
         "description": "No candidate test enumerates center policies in list fallback to check exactly one navigation control, nor checks the navigation label changes from Close to Back with depth.",
         "headlessTestable": true,
         "proposedTest": "For each center policy with Modal.AbsoluteSize 180x180: count descendants named \"$navigation\" or \"Center\" that are visible GuiButtons; expect 1. With center=\"empty\", nested branch: expect $navigation Text \"Close\" at root, \"Back\" after Branch.Activated, and its activation returns to root."
-      }
+      },
+      "closedBy": "native_parity_apps::RadialMenu::shows exactly one navigation control for each center policy and names it by depth"
     },
     {
       "id": "apps2-201",
@@ -4756,13 +4921,18 @@
         "radial_menu"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::RadialMenu::returns to the root when the open branch disappears from the items"
+      ],
       "apiPromise": "nav_radial.luau Compose.watch trims path to layout.path when an ancestor disappears.",
       "gap": {
         "description": "No candidate test replaces items while a branch is open. Probe: items:set({other}) with gear open removes \"go\" and shows \"other\" (correct).",
         "headlessTestable": true,
         "proposedTest": "items=cell{gear{go}}; Activated gear; items:set{{id=\"other\"}}; expect find(\"other\")~=nil, find(\"go\")==nil, and Center/Back at root closes the menu."
-      }
+      },
+      "closedBy": "native_parity_apps::RadialMenu::returns to the root when the open branch disappears from the items"
     },
     {
       "id": "apps2-203",
@@ -4846,13 +5016,18 @@
         "radial_menu"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::RadialMenu::does not fire an item disabled while its touch was held"
+      ],
       "apiPromise": "nav_radial.luau activate(): returns when read(item.enabled)==false at release.",
       "gap": {
         "description": "Untested. Probe: begin touch on RadialPanel at N, set enabled false, InputEnded -> 0 calls (correct).",
         "headlessTestable": true,
         "proposedTest": "enabled=cell(true); compass item N with enabled; RadialPanel.InputBegan(touch at N); enabled:set(false); UserInputService.InputEnded(touch); expect calls==0."
-      }
+      },
+      "closedBy": "native_parity_apps::RadialMenu::does not fire an item disabled while its touch was held"
     },
     {
       "id": "apps2-209",
@@ -4903,13 +5078,18 @@
         "radial_menu"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::RadialMenu::leaves no built-in trigger when the launcher is off"
+      ],
       "apiPromise": "api.md RadialMenu option `launcher`; nav_radial.luau skips the Launcher button when spec.launcher == false and opened defaults true.",
       "gap": {
         "description": "No candidate test sets launcher=false. Probe: no Launcher descendant (correct).",
         "headlessTestable": true,
         "proposedTest": "setup{launcher=false,isPresented=cell(false)}: expect find(\"Launcher\")==nil; isPresented:set(true); activate N; expect closed and still no Launcher."
-      }
+      },
+      "closedBy": "native_parity_apps::RadialMenu::leaves no built-in trigger when the launcher is off"
     },
     {
       "id": "apps2-213",
@@ -4947,13 +5127,19 @@
         "radial_menu"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::RadialMenu::lets input through an empty center while edge catchers dismiss around it"
+      ],
+      "weaker": "The fake engine cannot route input to a node under the menu. The test shows that a center touch is never captured, against the same touch without pass-through.",
       "apiPromise": "api.md RadialMenu option `centerPassThrough`; nav_radial.luau sets RadialPanel.Active=false, hides DismissOutside and builds four edge rectangles around the center.",
       "gap": {
         "description": "Untested. Probe: RadialPanel.Active=false and DismissOutside.Visible=false with center=\"empty\"; edge rectangles not asserted.",
         "headlessTestable": true,
         "proposedTest": "setup{center=\"empty\",centerPassThrough=true}; expect RadialPanel.Active==false, DismissOutside.Visible==false; for the four Top/Bottom/Left/Right edge catchers expect none contains the ring center; Modal-level input at the center reaches a button underneath."
-      }
+      },
+      "closedBy": "native_parity_apps::RadialMenu::lets input through an empty center while edge catchers dismiss around it"
     },
     {
       "id": "apps2-216",
@@ -5076,16 +5262,19 @@
         "review_radial"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_radial_controls::native radial interaction policies::NRAD-13 gallery nearby item uses native owned scene and real actions"
+        "native_parity_apps::Quick actions example::picks the character command ring or list from the viewport height"
       ],
+      "weaker": "The fake engine does no layout. The test sets the viewport sizes that decide ring or list.",
       "apiPromise": "examples/gallery/scenarios/radial_menu.luau (examples are part of the API, AGENTS.md); nav_radial layout falls back to list when room < inner+band or a sector < 44px.",
       "gap": {
         "description": "NRAD-13 mounts the gallery radial scenario only at 1280x720 and drives the world step; no candidate case opens the character commands at 960x540/800x600/677x338 or asserts radial at >=540 height and list below.",
         "headlessTestable": true,
         "proposedTest": "For each of 1280x720, 960x540, 800x600, 677x338: mount radial_menu scenario as in NRAD-13, run built.steps.character() and built.steps.open(), set Modal.AbsoluteSize to the viewport, expect RadialPanel:GetAttribute(\"Presentation\") == (h>=540 and \"radial\" or \"list\") and built.report().menu.presentation to match."
-      }
+      },
+      "closedBy": "native_parity_apps::Quick actions example::picks the character command ring or list from the viewport height"
     },
     {
       "id": "apps2-225",
@@ -5162,13 +5351,19 @@
         "showcase_tabs"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery recipes::drives the avatar group recipe and resets the identity tab through its shared command",
+        "native_parity_apps::Gallery recipes::drives the badge recipe through its statuses and rungs and resets the status tab"
+      ],
       "apiPromise": "examples/gallery/scenarios/status_family.luau and identity.luau reset steps",
       "gap": {
         "description": "These tabs are only mounted; no reset command is driven.",
         "headlessTestable": true,
         "proposedTest": "Mount all_controls/status and all_controls/identity; change a value through their controls, invoke their Reset button/step, assert report() returns to the initial values without replacing the root Instances."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery recipes::drives the avatar group recipe and resets the identity tab through its shared command"
     },
     {
       "id": "apps2-231",
@@ -5245,13 +5440,18 @@
         "spatial"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Documentation and tooling::keeps every shipped document from claiming virtual-reality support"
+      ],
       "apiPromise": "api.md: \"World surfaces stay flat two-dimensional UI. Facet does not supply ray, hand or gaze input, or a VR layout mode.\"; docs/guide/07-input.md:44, 14-choosing-controls.md:105, AGENTS.md section 3.",
       "gap": {
         "description": "No candidate test scans docs for a VR/spatial support claim (grep VR/gaze in tests: none); the ledger cites native_public_surface, which does not read docs.",
         "headlessTestable": true,
         "proposedTest": "In native_documentation: read api.md, guide README, 02/07/14 guides, AGENTS.md and extending/new-platform-mode.md; fail on \"supports VR\", \"VR support\", \"VR-ready\", \"works in VR\", \"spatial support\" unless the line contains a negation; expect at least one denial line."
-      }
+      },
+      "closedBy": "native_parity_apps::Documentation and tooling::keeps every shipped document from claiming virtual-reality support"
     },
     {
       "id": "apps2-237",
@@ -5941,13 +6141,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::opens the shop for an empty premium satchel and presents the wisp only when the glade is ready"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'care for a glade, select and consume nectar, watch the supply and visitor state'",
       "gap": {
         "description": "choose() on a premium nectar with 0 satchel returns false and sets shopOpen (Provisions sheet); ready formula calls visits.markPresented only after dew+nectar full. Neither is asserted.",
         "headlessTestable": true,
         "proposedTest": "world(glade); drain starlight satchel via repeated steps.choose until 0; assert steps.choose('mossholm','starlight')==false and find(root,'Provisions') sheet presented. Separately: steps.open, assert visits.current('mossholm') not presented; refill + choose bramble; assert report().visits marks the task wisp presented."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::opens the shop for an empty premium satchel and presents the wisp only when the glade is ready"
     },
     {
       "id": "apps-05",
@@ -5968,13 +6173,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::drains nectar and dew on their own clock thresholds and restamps on refill"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'watch the supply'",
       "gap": {
         "description": "services/supply.luau still owns drain constants; no candidate case advances the clock and checks low/empty transitions.",
         "headlessTestable": true,
         "proposedTest": "world(glade); steps.advance(7.5*60) -> model.supply.state('mossholm','nectar'):peek()=='low'; advance to 9*60 -> 'empty'; dew uses its own thresholds; steps.refill -> state 'full' and drains again after advance."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::drains nectar and dew on their own clock thresholds and restamps on refill"
     },
     {
       "id": "apps-07",
@@ -5984,13 +6194,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::runs a provision purchase through pending, confirmed and the scripted decline on its Buy button"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'buy provisions'",
       "gap": {
         "description": "commerce.buyPack pending/confirmed/declined phases and satchel increment are never exercised by a candidate case.",
         "headlessTestable": true,
         "proposedTest": "world(glade); steps.buy(packId); assert commerce.status(packId)=='pending' and Buy button label 'Confirming\u2026' and disabled; advance(COMMAND_SECONDS) -> 'confirmed', satchelOf(nectar) += quantity; second buy -> 'rejected' with reason 'declined'; Buy label equals commerce.priceOf(packId)."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::runs a provision purchase through pending, confirmed and the scripted decline on its Buy button"
     },
     {
       "id": "apps-08",
@@ -6011,13 +6226,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::refuses to resell an owned charm, confirms a retry and opens the Frostwisp early window with Lumen"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section (Glade reference app behavior; services/commerce.luau buyCharm rank check, services/visits.luau lumen earlyStart)",
       "gap": {
         "description": "buyCharm rank<=held -> 'owned', visits Lumen earlyStart and restore command exist in CAND services but are untested.",
         "headlessTestable": true,
         "proposedTest": "world(glade); steps.charm('glow') advance -> charmTier; steps.charm(lower tier) -> status 'rejected' reason 'owned'; steps.charm('lumen') -> visits early window open for frostwisp; steps.restore() pending then confirmed."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::refuses to resell an owned charm, confirms a retry and opens the Frostwisp early window with Lumen"
     },
     {
       "id": "apps-10",
@@ -6049,13 +6269,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::states where a wisp was last seen and when it has not been seen"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'browse wisps'",
       "gap": {
         "description": "Wisp sheet renders 'Last seen in <glade>' / 'Not seen yet' (no longer 'when'); untested.",
         "headlessTestable": true,
         "proposedTest": "world(glade); set section 'wisps'; activate a wisp Open button; assert Wisp sheet text contains 'Last seen in Mossholm' for a seeded visitor and 'Not seen yet' for an unseen species."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::states where a wisp was last seen and when it has not been seen"
     },
     {
       "id": "apps-13",
@@ -6065,13 +6290,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::commits a keeper edit on Save and discards it on Cancel"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'edit the keeper profile'",
       "gap": {
         "description": "KeeperEdit sheet draft/save/cancel is untested; main also asserted Back dismissal and launcher focus restoration from a NavigationStack page (now a UI.Sheet).",
         "headlessTestable": true,
         "proposedTest": "world(glade); activate EditKeeper; type into DisplayName TextInput; activate CancelKeeper -> model.keeperName unchanged; reopen, edit, SaveKeeper -> keeperName updated and sheet dismissed."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::commits a keeper edit on Save and discards it on Cancel"
     },
     {
       "id": "apps-14",
@@ -6081,13 +6311,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::asks before Fresh Start, keeps the world on Keep and reseeds it on Start over"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'reset the world'",
       "gap": {
         "description": "UI.Alert 'Reset' with keep/startOver and reset() are never exercised.",
         "headlessTestable": true,
         "proposedTest": "world(glade); mutate (refill, choose, favorite, search, advance); activate FreshStart, choose 'keep' -> report unchanged; again choose 'reset' -> report() deep-equals a fresh world's report and search/notice cleared."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::asks before Fresh Start, keeps the world on Keep and reseeds it on Start over"
     },
     {
       "id": "apps-15",
@@ -6097,13 +6332,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::gives identical reports for identical worlds, keeps a report stable and makes every step callable"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'These applications keep ... deterministic domain services'",
       "gap": {
         "description": "No candidate case compares report() across two worlds or calls every step.",
         "headlessTestable": true,
         "proposedTest": "Build two worlds, drive identical steps list, assert report() deep-equal and repeated report() reads equal; iterate built.steps and call each with seeded args without error."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::gives identical reports for identical worlds, keeps a report stable and makes every step callable"
     },
     {
       "id": "apps-16",
@@ -6124,13 +6364,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::lists one overview entry per seeded glade in order with supply states and filters by search"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'care for a glade ... watch the supply'",
       "gap": {
         "description": "Overview keyed list, 'Dew x \u00b7 Nectar y' text and case-insensitive search formula are untested (the 'nothing matches' message was deleted).",
         "headlessTestable": true,
         "proposedTest": "world(glade); assert Glades column children order == seed.GLADES ids; states text shows full/low/empty seeds; model search 'MOSS' -> only mossholm entry remains; 'zzz' -> zero entries."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::lists one overview entry per seeded glade in order with supply states and filters by search"
     },
     {
       "id": "apps-18",
@@ -6151,13 +6396,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::refills dew instantly from the detail with no confirmation and a toast"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "Detail 'Refill' button refills immediately; candidate calls steps.refill directly instead of the button.",
         "headlessTestable": true,
         "proposedTest": "world(glade); steps.open('mossholm'); activate Refill button in GladeDetail; assert supply.state dew=='full' with no alert presented and notice text set."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::refills dew instantly from the detail with no confirmation and a toast"
     },
     {
       "id": "apps-20",
@@ -6200,13 +6450,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::moves its navigation between homes on a live resize and keeps the world and every section"
+      ],
       "apiPromise": "docs/reference/api.md TabView style 'sidebarAdaptable'",
       "gap": {
         "description": "No reference-app case resizes the viewport with state set.",
         "headlessTestable": true,
         "proposedTest": "world(glade) with viewport cell; set search/refill state; viewport:set compact then wide; assert Destinations tab bar/sidebar swap, model state and root identity preserved, and every tab id selectable through the tab buttons."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::moves its navigation between homes on a live resize and keeps the world and every section"
     },
     {
       "id": "apps-24",
@@ -6228,13 +6483,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::keeps locale key parity, expands by 1.4 times, keeps placeholders, falls back and relabels live"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section ('keep their original content'); content/strings.luau LOCALES {en, xa}",
       "gap": {
         "description": "strings.get fallback and xa table untested; Locale picker relabel untested.",
         "headlessTestable": true,
         "proposedTest": "Pure: for each key in strings.keys(), assert xa exists, #xa>=1.4*#en and {placeholders} preserved; strings.get('zz',key)==en value. Mounted: set Locale picker to 'xa' and assert a Label text changes without the root being replaced."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::keeps locale key parity, expands by 1.4 times, keeps placeholders, falls back and relabels live"
     },
     {
       "id": "apps-26",
@@ -6266,13 +6526,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::keeps the same states and events under reduced motion and holds the wisp still"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "reducedMotion cell from guiService.ReducedMotionEnabled freezes wisp position; untested.",
         "headlessTestable": true,
         "proposedTest": "world(glade) with ctx.guiService fake ReducedMotionEnabled=true; advance; assert wisp Frame Position constant while report() matches non-reduced run."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::keeps the same states and events under reduced motion and holds the wisp still"
     },
     {
       "id": "apps-29",
@@ -6305,13 +6570,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::browses flora by name and species with no presented surface"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'browse wisps and flora'",
       "gap": {
         "description": "Flora tab never asserted.",
         "headlessTestable": true,
         "proposedTest": "world(glade); model.section:set('flora'); assert Flora page has one column per seed.FLORA with name+species labels and no Sheet presented."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::browses flora by name and species with no presented surface"
     },
     {
       "id": "apps-32",
@@ -6332,13 +6602,18 @@
         "reference/glade_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Glade::keeps test vocabulary out of every string a player can read"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "No scan of strings for 'proof/stage/ledger'.",
         "headlessTestable": true,
         "proposedTest": "For each locale/key assert strings.get does not match /proof|stage|ledger|spec/i."
-      }
+      },
+      "closedBy": "native_parity_apps::Glade::keeps test vocabulary out of every string a player can read"
     },
     {
       "id": "apps-34",
@@ -6387,13 +6662,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::borrows only shipped framework art for its potion marks"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md reference apps keep original content",
       "gap": {
         "description": "content/art.luau ids not checked against shipped assets.",
         "headlessTestable": true,
         "proposedTest": "Iterate p2_cartwheel/content/art.luau ids and assert each is in the Facet asset manifest (src assets list)."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::borrows only shipped framework art for its potion marks"
     },
     {
       "id": "apps-38",
@@ -6414,13 +6694,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::selects each section through its tab button"
+      ],
       "apiPromise": "docs/reference/api.md TabView selection",
       "gap": {
         "description": "Candidate only writes model.section.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); activate the TabView 'workbench' tab button; assert model.section:peek()=='workbench' and the Workbench page mounted."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::selects each section through its tab button"
     },
     {
       "id": "apps-40",
@@ -6444,13 +6729,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::matches a brew search on its number, its potions and their ingredients"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md: 'examine and complete brews'",
       "gap": {
         "description": "rows formula uses orders.searchText; untested.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); set Search TextInput to a potion ingredient; assert BrewList keys equal the brews whose searchText contains it; brew number query matches exactly one."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::matches a brew search on its number, its potions and their ingredients"
     },
     {
       "id": "apps-42",
@@ -6485,13 +6775,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 6,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::moves a brew through start, brewing and done, disables pending commands and rejects a second collect"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md: 'examine and complete brews'",
       "gap": {
         "description": "steps.start, commands rejection path, pending gating of the Advance button and orders.remaining are untested.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); pick a 'new' brew; steps.start -> commands status pending and Advance button Interactable false; advance -> status 'brewing'; advance past remaining -> still 'brewing'/ready-to-finish not 'done'; steps.collect -> 'done'; steps.collect again -> rejected and notice text contains the strings reason."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::moves a brew through start, brewing and done, disables pending commands and rejects a second collect"
     },
     {
       "id": "apps-45",
@@ -6523,13 +6818,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::opens the completion celebration on a collected brew and closes it on its action"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md Cartwheel",
       "gap": {
         "description": "Alert 'Celebration' presentation untested.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); collect a ready brew; advance; assert Alert 'Celebration' presented; activate 'done'; assert dismissed."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::opens the completion celebration on a collected brew and closes it on its action"
     },
     {
       "id": "apps-48",
@@ -6550,13 +6850,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::delivers scripted arrivals in id order at seeded three to eight second gaps and re-keys the newest row"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md Cartwheel",
       "gap": {
         "description": "order_service arrivalTimes/arrivalLog untested.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); advance 60 s in steps; assert report().orders.arrivals ascending ids, gaps within [3,8] s, arrivalsRemaining()==0 afterwards, and dashboard newest row key == last arrival."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::delivers scripted arrivals in id order at seeded three to eight second gaps and re-keys the newest row"
     },
     {
       "id": "apps-50",
@@ -6602,13 +6907,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::opens the workbench on a potion, applies edits at once and keeps each draft after leaving"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md: 'keep potion drafts'",
       "gap": {
         "description": "selectPotion/drafts untested.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); steps.selectPotion(id); edit PotionName and Base picker; switch section away and back; assert model.draftName/base retained for that potion."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::opens the workbench on a potion, applies edits at once and keeps each draft after leaving"
     },
     {
       "id": "apps-54",
@@ -6631,13 +6941,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::locks the longer ledger and the chatter bonus until the second purchase is granted"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md: 'unlock expanded history and chatter'",
       "gap": {
         "description": "Only fullLedger fact is asserted; mounted gated content not checked.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); section 'ledger'; set LedgerTimeframe beyond twoWeeks -> locked content absent; purchase ledger twice -> content present. Same for 'chatter' with chatterPlus."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::locks the longer ledger and the chatter bonus until the second purchase is granted"
     },
     {
       "id": "apps-56",
@@ -6658,13 +6973,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::rejects a taken guild name with its reason and signs in an accepted name"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md: 'join the guild'",
       "gap": {
         "description": "Candidate case title claims guild validation but only asserts an accepted signup.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); steps.signup(<seeded taken name>,'x'); advance; assert identity.signedIn false and notice/field error present; then accepted name signs in."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::rejects a taken guild name with its reason and signs in an accepted name"
     },
     {
       "id": "apps-58",
@@ -6696,13 +7016,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::recommends the first plaza without a damp spell and mounts the market Stage"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md: 'examine market conditions'",
       "gap": {
         "description": "ambient.recommendedPlaza and UI.Stage MarketScene untested.",
         "headlessTestable": true,
         "proposedTest": "world(cartwheel); section 'plazas'; assert MarketScene Stage mounted and dashboard 'Recommended pitch' equals first plaza without damp spell from ambient data."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::recommends the first plaza without a damp spell and mounts the market Stage"
     },
     {
       "id": "apps-61",
@@ -6746,13 +7071,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::reports identically for one seed, differs for another and leaves nothing behind on dispose"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md: 'deterministic domain services'",
       "gap": {
         "description": "No determinism or teardown census for Cartwheel.",
         "headlessTestable": true,
         "proposedTest": "Two worlds, same steps -> report() deep-equal; build with a different orders seed -> differs; after stop() root.isDestroyed() and engine instance census back to baseline."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::reports identically for one seed, differs for another and leaves nothing behind on dispose"
     },
     {
       "id": "apps-65",
@@ -6762,13 +7092,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::expands the pseudo-locale by at least 1.4 times and keeps every placeholder"
+      ],
       "apiPromise": "content/strings.luau xa locale",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "For each key: #xa>=1.4*#en and placeholders preserved."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::expands the pseudo-locale by at least 1.4 times and keeps every placeholder"
     },
     {
       "id": "apps-66",
@@ -6789,13 +7124,18 @@
         "reference/cartwheel_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Cartwheel::mounts and drives identically with reduced motion"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "world with ReducedMotionEnabled=true; drive the RC steps; assert identical report()."
-      }
+      },
+      "closedBy": "native_parity_apps::Cartwheel::mounts and drives identically with reduced motion"
     },
     {
       "id": "apps-68",
@@ -6833,7 +7173,7 @@
       "class": "d",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
-        "description": "CAND examples/reference/p3_sipworks/init.luau now hardcodes English strings (e.g. 'Your order is confirmed...', ' of 10 stamps'), so the main check would fail; untested.",
+        "description": "Sipworks writes most player copy as literals in examples/reference/p3_sipworks/init.luau. Only blend names, measures and some notices use the locale table, so a locale swap leaves most text in English. Closing the gap needs the example copy moved into content/strings.luau.",
         "headlessTestable": true,
         "proposedTest": "Mount; collect every TextLabel/TextButton Text; assert each equals some i18n.at(locale,key) value for current locale (or switch to xa and assert all texts changed)."
       }
@@ -6857,13 +7197,18 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::keeps search text, the open blend and the section across a shell flip"
+      ],
       "apiPromise": "docs/reference/api.md TabView style 'sidebarAdaptable'",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "world(sipworks) with viewport cell; set search, open a blend, section 'favorites'; flip viewport compact->wide; assert cells retained and root not replaced."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::keeps search text, the open blend and the section across a shell flip"
     },
     {
       "id": "apps-73",
@@ -6873,13 +7218,18 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::matches a title or a botanical, shares the query across sections and toggles a shared favorite"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'search blends and botanicals, save favorites'",
       "gap": {
         "description": "Search formula and Favorite buttons untested.",
         "headlessTestable": true,
         "proposedTest": "world(sipworks); set Search 'lavender' -> rows are blends whose botanicals include lavender, filler excluded; switch section, query retained; activate a row 'Favorite' -> favorites.isFavorite true and Favorites section lists it."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::matches a title or a botanical, shares the query across sections and toggles a shared favorite"
     },
     {
       "id": "apps-74",
@@ -6900,13 +7250,18 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::opens the botanical card from a tile with the facts for this blend"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "Botanical sheet untested.",
         "headlessTestable": true,
         "proposedTest": "steps.open(blend); activate a tile botanical button; assert Sheet 'Botanical' presented with that botanical's mark text."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::opens the botanical card from a tile with the facts for this blend"
     },
     {
       "id": "apps-76",
@@ -6941,13 +7296,18 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::shows the guard reason and never starts an order when ordering is off"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'order with pending and rejection states'",
       "gap": {
         "description": "guard.paymentsDisabled path untested.",
         "headlessTestable": true,
         "proposedTest": "Configure guard to fail (services/order guard); activate Order; assert notice == i18n 'guard.paymentsDisabled' and order.status stays idle."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::shows the guard reason and never starts an order when ordering is off"
     },
     {
       "id": "apps-79",
@@ -6996,13 +7356,19 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch"
+      ],
+      "weaker": "The candidate Blend Book keeps a disabled Buy button while the price loads. Main showed no Buy button.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'examine measured recipes and unlock the Blend Book'",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "world(sipworks); before unlock.product price resolves assert no 'Buy' button; open recipe; Stepper 'Batch' to 3; assert measure text equals i18n.measureAt(locale, value*3, unit)."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch"
     },
     {
       "id": "apps-83",
@@ -7012,13 +7378,18 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::keeps locale keys, expansion, placeholders, plurals and separators and relabels without a remount"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section; services/i18n.luau",
       "gap": {
         "description": "i18n service untested.",
         "headlessTestable": true,
         "proposedTest": "Pure i18n: at('xa',k) length>=1.4x, placeholders kept, plural('one'/'other') per locale, measureAt separator differs by locale; mounted: Locale picker 'xa' relabels labels without replacing root."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::keeps locale keys, expansion, placeholders, plurals and separators and relabels without a remount"
     },
     {
       "id": "apps-84",
@@ -7039,13 +7410,19 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::reports identically for identical worlds and seeds favorites deterministically"
+      ],
+      "weaker": "The candidate Sipworks has no reset step. Determinism and seeded favorites are tested; the reset is not.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'deterministic domain services'",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "Two worlds same steps -> report() equal; reset step -> report equals fresh; favorites seed 2 differs from seed 1."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::reports identically for identical worlds and seeds favorites deterministically"
     },
     {
       "id": "apps-86",
@@ -7066,13 +7443,18 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::fires the same events under reduced motion and leaves nothing behind on dispose"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "Drive the RS steps with ReducedMotionEnabled true and false; assert identical report(); after stop assert root destroyed and census baseline."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::fires the same events under reduced motion and leaves nothing behind on dispose"
     },
     {
       "id": "apps-88",
@@ -7153,13 +7535,19 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::names the task blend on its action, orders that blend and ends the task after the free pour"
+      ],
+      "weaker": "The candidate task action orders its named blend directly and the app has no Serve another customer reset. The row-open path and the reset are not tested.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "Activate the task action button -> Sheet 'Blend' for the named blend; finish task; activate reset -> report() equals fresh world."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::names the task blend on its action, orders that blend and ends the task after the free pour"
     },
     {
       "id": "apps-95",
@@ -7180,13 +7568,18 @@
         "reference/sipworks_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Sipworks::titles the module Sipworks and keeps test vocabulary out of player strings"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "Untested (title is 'Sipworks').",
         "headlessTestable": true,
         "proposedTest": "assert sipworks.title=='Sipworks'; scan i18n tables for proof/stage/ledger words."
-      }
+      },
+      "closedBy": "native_parity_apps::Sipworks::titles the module Sipworks and keeps test vocabulary out of player strings"
     },
     {
       "id": "apps-97",
@@ -7235,13 +7628,18 @@
         "reference/foyer_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Foyer::docks a wide rail or a compact bottom bar and never remounts the home body"
+      ],
       "apiPromise": "docs/reference/api.md TabView style 'sidebarAdaptable'",
       "gap": {
         "description": "Untested in Foyer.",
         "headlessTestable": true,
         "proposedTest": "world(foyer) with viewport cell; wide -> sidebar present; compact -> bottom tabs; assert Home page instance identical across the flip."
-      }
+      },
+      "closedBy": "native_parity_apps::Foyer::docks a wide rail or a compact bottom bar and never remounts the home body"
     },
     {
       "id": "apps-101",
@@ -7288,13 +7686,18 @@
         "reference/foyer_spec"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Foyer::swaps the feed for the charts and shows unopened destinations honestly"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'show unavailable destinations honestly'",
       "gap": {
         "description": "Candidate sets destinations but asserts nothing about them.",
         "headlessTestable": true,
         "proposedTest": "world(foyer); FeedSelection 'charts' -> section list == services.charted; destination 'forge' -> text strings 'stub.honest' present and no world tiles."
-      }
+      },
+      "closedBy": "native_parity_apps::Foyer::swaps the feed for the charts and shows unopened destinations honestly"
     },
     {
       "id": "apps-105",
@@ -7343,13 +7746,18 @@
         "reference/foyer_spec"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Foyer::leaves Keep playing untouched and the world open after a rejected visit"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'keep the visit history'",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "steps.reject('visit',...); open & visit; settle; assert continued unchanged and WorldDetail sheet still presented."
-      }
+      },
+      "closedBy": "native_parity_apps::Foyer::leaves Keep playing untouched and the world open after a rejected visit"
     },
     {
       "id": "apps-109",
@@ -7359,13 +7767,18 @@
         "reference/foyer_spec"
       ],
       "mainCases": 5,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Foyer::clears the bell count, relabels on a locale swap, scripts image transport and stays deterministic"
+      ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'browse friends and notifications'",
       "gap": {
         "description": "None asserted.",
         "headlessTestable": true,
         "proposedTest": "Bell label shows noticeCount and clears on opening Notifications; Locale picker xa relabels without remount; AsyncImage loader resolves two keys failed; two worlds report equal; stop() destroys root."
-      }
+      },
+      "closedBy": "native_parity_apps::Foyer::clears the bell count, relabels on a locale swap, scripts image transport and stays deterministic"
     },
     {
       "id": "apps-110",
@@ -7464,13 +7877,18 @@
         "api_surface"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Public surface, catalog and theme corpus::exports the Props or Spec contract of every control and the documented Compose types"
+      ],
       "apiPromise": "src/init.luau exports ButtonProps ... Cell/Readable/Runtime/Owner/Use; docs/reference/api.md 'Types'",
       "gap": {
         "description": "No test pins the exported type list.",
         "headlessTestable": true,
         "proposedTest": "Parse src/init.luau 'export type' names and assert the set documented in api.md '### Types' matches (both directions)."
-      }
+      },
+      "closedBy": "native_parity_apps::Public surface, catalog and theme corpus::exports the Props or Spec contract of every control and the documented Compose types"
     },
     {
       "id": "apps-118",
@@ -7856,13 +8274,18 @@
         "focus"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::restores focus through nested sheet and alert presentations in last-in first-out order"
+      ],
       "apiPromise": "docs/guide/07-input.md 'Modal controls': a modal control 'restores the previous selection if that object still exists'; api.md Alert: 'restoration to the previous selection if that object still exists'",
       "gap": {
         "description": "Only a single modal is tested; no stacked Alert/Sheet restoration. A temporary probe (two Alerts, Base->InnerA->cancelB) showed CAND currently restores InnerA then Base correctly; only the regression test is missing.",
         "headlessTestable": true,
         "proposedTest": "Mount Button 'Base' + Sheet A containing Button 'Inner' + Alert B; select Base, present A (selection enters A), select Inner, present B; dismiss B -> SelectedObject == Inner; dismiss A -> SelectedObject == Base."
-      }
+      },
+      "closedBy": "native_parity_media::controls::restores focus through nested sheet and alert presentations in last-in first-out order"
     },
     {
       "id": "apps-147",
@@ -8269,13 +8692,18 @@
         "traversal_order"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::takes a disabled or busy button out of native selection and restores it"
+      ],
       "apiPromise": "src/ui/inputs.luau Button: Selectable = enabledProperty, Interactable = enabledProperty; api.md Button 'A disabled or busy button cannot activate'; docs/guide/07-input.md 'Facet supplies the control eligibility'",
       "gap": {
         "description": "No candidate case asserts Selectable toggles with enabled. Probe confirmed CAND sets Selectable/Interactable false when disabled and true when re-enabled; only the test is missing.",
         "headlessTestable": true,
         "proposedTest": "UI.Button{enabled=cell(false)} -> root.Selectable==false and Interactable==false; cell true -> both true; same for busy=true."
-      }
+      },
+      "closedBy": "native_parity_media::controls::takes a disabled or busy button out of native selection and restores it"
     },
     {
       "id": "apps-180",
@@ -9629,13 +10057,18 @@
         "collection_list"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::resumes following within followThreshold and rejoins the tail after the reader returns to the end"
+      ],
       "apiPromise": "api.md: '`follow` | The Compose `none` or `end` policy, with an optional `followThreshold`.'",
       "gap": {
         "description": "followThreshold is forwarded to Compose.OrderedCollection, but nothing tests it. Nothing tests that following resumes after the reader scrolls back to the end.",
         "headlessTestable": true,
         "proposedTest": "Mount a VirtualList with 10 records, itemSize 20, follow='end', followThreshold=30 and a status cell, and set AbsoluteWindowSize to (200,100). Set CanvasPosition.Y to 80 (20 px from the end, inside the threshold), append a row, and expect CanvasPosition.Y 120 and status.following true. Set CanvasPosition.Y to 0, append, and expect 0. Set CanvasPosition.Y to the extent minus 100, append, and expect the view to pin ..."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::resumes following within followThreshold and rejoins the tail after the reader returns to the end"
     },
     {
       "id": "collections-22",
@@ -11108,13 +11541,18 @@
         "scroll_snap"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::settles the last page to the end and leaves it only after a decisive drag back"
+      ],
       "apiPromise": "api.md: '`snap = \"item\"` settles scrolling to the Compose placement boundaries.' collection_snap.luau settle() includes maximum as a resting place.",
       "gap": {
         "description": "The end-of-list resting place is untested.",
         "headlessTestable": true,
         "proposedTest": "Use 10 rows, itemSize 40, a viewport of 100 (maximum 300) and snap 'item' with reducedMotion. Set CanvasPosition.Y to 290, advance 0.2 s, and expect 300. Then begin input, set 250 with velocity < -350, end, advance, and expect less than 300 (on a boundary)."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::settles the last page to the end and leaves it only after a decisive drag back"
     },
     {
       "id": "collections-129",
@@ -11124,14 +11562,19 @@
         "scroll_snap"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::releases the snap frame hook once settled and writes nothing while idle",
+        "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error"
+      ],
       "apiPromise": "src collections.luau asserts 'Facet collection snap must be none or item'; snap waitForRest disconnects its frame hook",
       "gap": {
         "description": "Refusal is confirmed by probe but untested. Idle snap per-frame work is untested.",
         "headlessTestable": true,
         "proposedTest": "expect(mount VirtualList{snap='page'}).toThrow(). With snap 'item' settled, fire the heartbeat 60 times and expect 0 native writes (the PP3 harness)."
       },
-      "partiallyClosedBy": "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error"
+      "closedBy": "native_parity_apps::Collections::releases the snap frame hook once settled and writes nothing while idle"
     },
     {
       "id": "collections-130",
@@ -11195,13 +11638,19 @@
         "table"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span"
+      ],
+      "weaker": "The fake engine has no layout solver. The test compares the declared header and cell origins, widths and flex settings, not solved pixels.",
       "apiPromise": "src collection_table.luau: header Position = reorderGutter - CanvasPosition.X; width minus disclosureWidth",
       "gap": {
         "description": "Untested alignment in edit (reorderable) mode and with the disclosure column.",
         "headlessTestable": true,
         "proposedTest": "Mount a reorderable Table with 2 fixed columns, set the Body window to (400,200) and a Header column AbsoluteSize. Expect Header.Position.X.Offset == 56, and expect header column 'a' X to equal row cell 'a' X plus Body.CanvasPosition.X. Scroll X by 30 and expect the header to track."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span"
     },
     {
       "id": "collections-135",
@@ -11222,13 +11671,18 @@
         "table"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::removes the header band and sizes a non-scrolling table to its rows when header is false"
+      ],
       "apiPromise": "api.md Table: '`header = false` removes the header band.'",
       "gap": {
         "description": "Untested. A probe confirmed that Header.Visible is false and Body.Position.Y is 0.",
         "headlessTestable": true,
         "proposedTest": "Mount a Table with header=false, and expect Header.Visible false and Body.Position.Y.Offset 0 while scrolls=false height == status.extent."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::removes the header band and sizes a non-scrolling table to its rows when header is false"
     },
     {
       "id": "collections-137",
@@ -11271,13 +11725,18 @@
         "table"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::keeps every column when their widths exactly fill the room and collapses one pixel narrower"
+      ],
       "apiPromise": "src collection_table.luau collapsed: `needed <= offer`",
       "gap": {
         "description": "Boundary untested.",
         "headlessTestable": true,
         "proposedTest": "Use 3 fixed columns of 100 and a Body window of exactly 300. Expect no Details button and every column Visible."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::keeps every column when their widths exactly fill the room and collapses one pixel narrower"
     },
     {
       "id": "collections-140",
@@ -11858,14 +12317,19 @@
         "table_input"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::activates the keyboard or gamepad selected table row with that row key and input",
+        "native_parity_gaps::native parity gaps::delivers onActivate with the item and key and skips disabled rows"
+      ],
       "apiPromise": "api.md Table/VirtualList: '`onActivate(item, key)`'",
       "gap": {
         "description": "onActivate is never asserted in a candidate test. A probe confirmed that VirtualList and Table invoke it with the key.",
         "headlessTestable": true,
         "proposedTest": "Mount a Table with onActivate recording the key. Fire the RowHit Activated on row '2' and expect key 2. Mount a VirtualList with onActivate and no selection, and expect the RowHit to exist and the call to happen."
       },
-      "partiallyClosedBy": "native_parity_gaps::native parity gaps::delivers onActivate with the item and key and skips disabled rows"
+      "closedBy": "native_parity_apps::Collections::activates the keyboard or gamepad selected table row with that row key and input"
     },
     {
       "id": "collections-185",
@@ -12155,13 +12619,19 @@
         "table_themed_header"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages"
+      ],
+      "weaker": "The fake engine has no layout solver. The test compares the declared column span under two packages, not solved X positions.",
       "apiPromise": "api.md Table column widths; header and body share columnFrame (collection_table.luau)",
       "gap": {
         "description": "No span comparison exists under any package.",
         "headlessTestable": true,
         "proposedTest": "For neutral and fantasy_ornate, mount a Table with fixed and fill columns plus reorderable. Set AbsoluteSize on header and body column frames through the engine, and assert equal X offsets after the header offset."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages"
     },
     {
       "id": "collections-208",
@@ -12278,13 +12748,18 @@
         "table_virtualized"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::keeps a table flush with the end when its bottom rows shrink"
+      ],
       "apiPromise": "guide 14-choosing-controls: 'native anchor preservation can keep the same item visible'; architecture: 'The control applies desiredOffset to CanvasPosition.'",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "Mount a Table with 20 rows and measured={}, scroll to the end, then set measured so every row is 20 px shorter. Expect CanvasPosition.Y == status.extent - window height."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::keeps a table flush with the end when its bottom rows shrink"
     },
     {
       "id": "collections-217",
@@ -12402,13 +12877,18 @@
         "virtual_grid"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::keeps the grid anchor item at the top when the column count and a line extent change"
+      ],
       "apiPromise": "guide 14-choosing-controls: anchoring comes from Compose OrderedCollection",
       "gap": {
         "description": "Untested for grids.",
         "headlessTestable": true,
         "proposedTest": "Mount a VirtualGrid with 100 items, columns cell 4 and itemSize 20, and scroll so item 41 is at the top. Set columns to 2, and expect indexOfKey(41)'s placement offset to equal CanvasPosition.Y. Set measured to grow line 1, and expect the same."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::keeps the grid anchor item at the top when the column count and a line extent change"
     },
     {
       "id": "collections-226",
@@ -12471,13 +12951,18 @@
         "virtual_grid"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::gives grid cells a focus readable that follows the focus ring"
+      ],
       "apiPromise": "collection_types FocusControls.isFocused; api.md 'Optional collection focus uses `focus`'",
       "gap": {
         "description": "focus.isFocused/current untested for grid cells.",
         "headlessTestable": true,
         "proposedTest": "Mount a VirtualGrid with a focus table, call focus.focus(3), and expect focus.isFocused(3):peek() true and focus.isFocused(2):peek() false."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::gives grid cells a focus readable that follows the focus ring"
     },
     {
       "id": "collections-231",
@@ -12502,13 +12987,18 @@
         "virtual_grid_input"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::activates a vertical or horizontal grid cell from pointer and touch with its key"
+      ],
       "apiPromise": "api.md: '`onActivate(item, key)` ... connect control events to domain behavior.'",
       "gap": {
         "description": "Untested for grids.",
         "headlessTestable": true,
         "proposedTest": "Mount a VirtualGrid with onActivate recording, and fire item 3's RowHit Activated. Expect key 3."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::activates a vertical or horizontal grid cell from pointer and touch with its key"
     },
     {
       "id": "collections-233",
@@ -12530,13 +13020,18 @@
         "virtual_grid_input"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::steps grid focus cell by cell with Left and Right and stops at the line edge"
+      ],
       "apiPromise": "src collections.luau CollectionLeft/Right -> Compose focus move",
       "gap": {
         "description": "Only Down across lines is asserted.",
         "headlessTestable": true,
         "proposedTest": "With 4 columns, focus.focus(2), press FacetCollectionRight, and expect 3. Press FacetCollectionLeft and expect 2."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::steps grid focus cell by cell with Left and Right and stops at the line edge"
     },
     {
       "id": "collections-235",
@@ -12662,13 +13157,18 @@
         "virtual_hgrid"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::activates a vertical or horizontal grid cell from pointer and touch with its key"
+      ],
       "apiPromise": "api.md onActivate",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "As in the grid onActivate test, with direction='horizontal'."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::activates a vertical or horizontal grid cell from pointer and touch with its key"
     },
     {
       "id": "collections-245",
@@ -12678,13 +13178,18 @@
         "virtual_hgrid"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::transposes horizontal grid navigation and scrolls a focused cell into view on X"
+      ],
       "apiPromise": "guide 07-input: 'Keyboard and gamepad traversal must not depend on every item being mounted.'",
       "gap": {
         "description": "Horizontal grid directional focus is untested. The position function transposes axes (collections.luau), but no test checks it.",
         "headlessTestable": true,
         "proposedTest": "Mount a VirtualGrid with direction horizontal, columns 3 and 30 items, and a window of (100,300). focus.focus(1), press CollectionDown, and expect 2. Press CollectionRight and expect 4. focus.focus(28) and expect CanvasPosition.X > 0."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::transposes horizontal grid navigation and scrolls a focused cell into view on X"
     },
     {
       "id": "collections-246",
@@ -12744,13 +13249,18 @@
         "virtual_list_axis"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::steps a horizontal list with Left and Right, ignores Up and Down and keeps focus visible on X"
+      ],
       "apiPromise": "guide 07-input virtual collections",
       "gap": {
         "description": "Untested (a probe confirmed canvasX 40 after focusing item 7).",
         "headlessTestable": true,
         "proposedTest": "Mount a horizontal VirtualList of 20 with itemSize 20 and a window of (100,50). focus.focus(7), and expect CanvasPosition == (40,0)."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::steps a horizontal list with Left and Right, ignores Up and Down and keeps focus visible on X"
     },
     {
       "id": "collections-251",
@@ -12785,13 +13295,18 @@
         "virtual_list_axis"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::activates a horizontal list item from pointer and touch with its key"
+      ],
       "apiPromise": "api.md onActivate",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "Mount a horizontal VirtualList with onActivate, fire item 2's RowHit Activated, and expect key 2."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::activates a horizontal list item from pointer and touch with its key"
     },
     {
       "id": "collections-254",
@@ -12813,13 +13328,18 @@
         "virtual_list_axis"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::steps a horizontal list with Left and Right, ignores Up and Down and keeps focus visible on X"
+      ],
       "apiPromise": "src collections.luau focus position transposed for horizontal",
       "gap": {
         "description": "A probe confirmed it works: Right moves, Down is inert. It is untested.",
         "headlessTestable": true,
         "proposedTest": "Mount a horizontal list with focus. Press FacetCollectionRight and expect +1. Press FacetCollectionDown and expect no change. Then focus past the window and expect CanvasPosition.X > 0."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::steps a horizontal list with Left and Right, ignores Up and Down and keeps focus visible on X"
     },
     {
       "id": "collections-256",
@@ -12929,13 +13449,18 @@
         "virtual_list_input"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::activates a list row from pointer and touch and keeps the selection on a second click"
+      ],
       "apiPromise": "api.md onActivate",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "Mount a VirtualList with onActivate, fire RowHit Activated, and expect the item and key."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::activates a list row from pointer and touch and keeps the selection on a second click"
     },
     {
       "id": "collections-264",
@@ -13021,13 +13546,18 @@
         "virtual_list_input"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::wraps arrow and D-pad focus at both ends only when wrapFocus is set"
+      ],
       "apiPromise": "api.md: 'Optional collection focus uses `focus`, `initialFocus`, `autoFocus`, `wrapFocus` and `disabled(item)`.'",
       "gap": {
         "description": "BUG, confirmed by probe. wrapFocus affects only focus.next/previous. Arrow and D-pad actions call Compose focus move(direction), which ignores wrap, so pressing Down on the last row stays put. See bugs.",
         "headlessTestable": true,
         "proposedTest": "Mount a VirtualList of 5 with wrapFocus=true and focus. focus.focus(5), press FacetCollectionDown, and expect 1. Without wrapFocus, expect 5."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::wraps arrow and D-pad focus at both ends only when wrapFocus is set"
     },
     {
       "id": "collections-271",
@@ -13462,13 +13992,18 @@
         "virtual_list_variable_extents"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::corrects the native offset when the rows at the end of a list shrink"
+      ],
       "apiPromise": "architecture guide desiredOffset",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "As in the table_virtualized shrink test, on a VirtualList with a measured map."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::corrects the native offset when the rows at the end of a list shrink"
     },
     {
       "id": "collections-303",
@@ -13754,13 +14289,18 @@
         "button_behavior"
       ],
       "mainCases": 4,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::keeps the busy dots inside the button plate in every shipped package"
+      ],
       "apiPromise": "api.md Button: 'busy' defines the action state; src/ui/inputs.luau places the Busy frame at UDim2.new(1, 5, 0.5, 0) with AnchorPoint (0, 0.5), i.e. 5px beyond the right edge of the plate.",
       "gap": {
         "description": "No candidate test checks where the busy dots paint relative to the plate; the implementation positions them outside the button's right edge (X scale 1 + 5px), contradicting the main contract.",
         "headlessTestable": true,
         "proposedTest": "world(UI.Button{label='Save', busy=Compose.cell(true)}); set node.AbsoluteSize=(120,44); expect find(node,'Busy').Position.X.Scale < 1 and every Dot's offset + size lies within the node's width (or assert Busy is inside the caption row)."
-      }
+      },
+      "closedBy": "native_parity_media::controls::keeps the busy dots inside the button plate in every shipped package"
     },
     {
       "id": "inputs-18",
@@ -13867,13 +14407,18 @@
         "button_behavior"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::adds no pop scale without pop and does not re-kick pop on held repeats"
+      ],
       "apiPromise": "api.md Button presentation option 'pop'; src/ui/inputs.luau activate() skips popTimeline:restart() while held.",
       "gap": {
         "description": "Neither the absence of the Pop UIScale on a plain button nor the no-re-kick-while-held rule is asserted.",
         "headlessTestable": true,
         "proposedTest": "world(UI.Button{label='x'}) -> expect find(node,'Pop')==nil. Then world(UI.Button{label='x', pop=true, repeatInterval=0.1, onActivate=...}); InputBegan MouseButton1; heartbeat(0.4); heartbeat(0.1); expect find(node,'Pop').Scale == 1 (repeat pulses do not restart the pop)."
-      }
+      },
+      "closedBy": "native_parity_media::controls::adds no pop scale without pop and does not re-kick pop on held repeats"
     },
     {
       "id": "inputs-26",
@@ -13883,13 +14428,18 @@
         "button_complete"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::renders caller numeric children inside the button beside its label"
+      ],
       "apiPromise": "api.md Constructor contract: 'The control forwards native events, Compose property and event keys, Attributes and numeric children to the host.'",
       "gap": {
         "description": "No test mounts UI.Button with numeric children.",
         "headlessTestable": true,
         "proposedTest": "world(UI.Button{label='Buy', Host.ImageLabel 'Art' {}}) -> expect find(node,'Art').Parent == node and node.Text == 'Buy'."
-      }
+      },
+      "closedBy": "native_parity_media::controls::renders caller numeric children inside the button beside its label"
     },
     {
       "id": "inputs-27",
@@ -13923,13 +14473,18 @@
         "button_complete"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::refusals::accepts every semantic button role and refuses an unknown one"
+      ],
       "apiPromise": "src/ui/inputs.luau roles = {default, cancel, destructive, onIndicator} with assert 'Facet.Button: invalid semantic role'; api.md lists 'role' but not its values.",
       "gap": {
         "description": "No test asserts that an unknown role errors (nor that all four are accepted); api.md does not document the role set.",
         "headlessTestable": true,
         "proposedTest": "for each of default/cancel/destructive/onIndicator mount UI.Button{label='x', role=r} and expect tag facet-role-<r>; expect world(UI.Button{label='x', role='danger'}) toThrow."
-      }
+      },
+      "closedBy": "native_parity_media::refusals::accepts every semantic button role and refuses an unknown one"
     },
     {
       "id": "inputs-30",
@@ -14106,14 +14661,19 @@
         "button_shape"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::refusals::refuses an unknown or reactive button shape at construction",
+        "native_parity_media::icons::resolves an unknown semantic icon to nothing and refuses to mount it"
+      ],
       "apiPromise": "api.md: 'shape: rect or circle' and 'An unsupported control option causes an error'; src asserts 'Facet.Button: shape must be rect or circle'.",
       "gap": {
         "description": "No test asserts that shape='oval' or a reactive shape errors, or what an unknown icon name does.",
         "headlessTestable": true,
         "proposedTest": "expect world(UI.Button{label='x', shape='oval'}) toThrow; expect world(UI.Button{label='x', shape=Compose.cell('circle')}) toThrow."
       },
-      "partiallyClosedBy": "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error"
+      "closedBy": "native_parity_media::refusals::refuses an unknown or reactive button shape at construction"
     },
     {
       "id": "inputs-44",
@@ -14430,13 +14990,18 @@
         "compact_label"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::refusals::refuses compactLabel on icon, image, subtitle and hint buttons"
+      ],
       "apiPromise": "api.md: compactLabel 'does not apply to icon, image or subtitle buttons'; src asserts 'Facet.Button: compactLabel requires a text button'.",
       "gap": {
         "description": "Refusal untested.",
         "headlessTestable": true,
         "proposedTest": "expect world(UI.Button{label='Continue', compactLabel='Go', icon='rbxassetid://1'}) toThrow; same for image and subtitle."
-      }
+      },
+      "closedBy": "native_parity_media::refusals::refuses compactLabel on icon, image, subtitle and hint buttons"
     },
     {
       "id": "inputs-68",
@@ -14516,13 +15081,18 @@
         "control_enabled"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::refusals::refuses a text input that supplies both enabled and disabled"
+      ],
       "apiPromise": "src/ui/inputs.luau: assert 'Facet.TextInput: use enabled or disabled, not both'.",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "expect world(UI.TextInput{value=Compose.cell(''), enabled=true, disabled=false}) toThrow."
-      }
+      },
+      "closedBy": "native_parity_media::refusals::refuses a text input that supplies both enabled and disabled"
     },
     {
       "id": "inputs-74",
@@ -14786,13 +15356,18 @@
         "help"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::shows button help in an unselectable panel that wraps long text at 264 pixels"
+      ],
       "apiPromise": "api.md Button 'help' shows 'in a small panel'; nav_modal builds HelpText with TextWrapped and max width 264.",
       "gap": {
         "description": "No test checks that the panel is non-selectable or that long help wraps within 264px.",
         "headlessTestable": true,
         "proposedTest": "hover a Button with a 300-char help; heartbeat(0.6); expect HelpText.TextWrapped and Size.X.Offset<=264 and no Selectable descendant in the Help panel."
-      }
+      },
+      "closedBy": "native_parity_media::controls::shows button help in an unselectable panel that wraps long text at 264 pixels"
     },
     {
       "id": "inputs-94",
@@ -15735,13 +16310,18 @@
         "reduced_motion_seam"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::follows GuiService reduced motion for button pop, validation pulse and busy dots"
+      ],
       "apiPromise": "guide 15-components: 'Obey the reduced-motion setting.' api.md: stylesheet 'follows GuiService' when omitted; nav surfaces observe GuiService.ReducedMotionEnabled.",
       "gap": {
         "description": "Input controls read only ctx.config.reducedMotion. Probe: with GuiService.ReducedMotionEnabled=true and no reducedMotion option, Button pop still scales to 1.08.",
         "headlessTestable": true,
         "proposedTest": "setup with GuiService.ReducedMotionEnabled=true and no reducedMotion option; UI.Button{pop=true}; Activated; heartbeat(0.1); expect Pop.Scale == 1; same for TextInput ValidationPulse and busy dots."
-      }
+      },
+      "closedBy": "native_parity_media::controls::follows GuiService reduced motion for button pop, validation pulse and busy dots"
     },
     {
       "id": "inputs-163",
@@ -15913,13 +16493,18 @@
         "shortcut_hint"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Gallery recipes::drives the shortcut hint recipe through rungs, a localized separator and live rebinding"
+      ],
       "apiPromise": "examples/gallery/scenarios/shortcut_hint.luau is a maintained example (AGENTS.md: examples are part of the API).",
       "gap": {
         "description": "Only the generic 'mounts <demo>' case covers the scenario.",
         "headlessTestable": true,
         "proposedTest": "load gallery scenario shortcut_hint; change separator/rung through its controls; expect the reactive Label report updates; rebind its InputAction PreferredBinding and expect the Key text follows."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery recipes::drives the shortcut hint recipe through rungs, a localized separator and live rebinding"
     },
     {
       "id": "inputs-177",
@@ -16039,13 +16624,18 @@
         "text_input"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::rejects an invalid UTF-8 edit and keeps the model, the text and onChange untouched"
+      ],
       "apiPromise": "api.md TextInput: 'maxLength counts UTF-8 characters'; src normalize() returns nil for utf8.len==nil.",
       "gap": {
         "description": "No invalid-UTF-8 edit is tested.",
         "headlessTestable": true,
         "proposedTest": "world(UI.TextInput{value=v}); CaptureFocus; node.Text='ab\\xff'; expect v unchanged, onChange not called, node.Text restored; repeat with maxLength=5."
-      }
+      },
+      "closedBy": "native_parity_media::controls::rejects an invalid UTF-8 edit and keeps the model, the text and onChange untouched"
     },
     {
       "id": "inputs-186",
@@ -16081,14 +16671,19 @@
         "text_input"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::shows the clear button at all times when clearButton is true and clears the value",
+        "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error"
+      ],
       "apiPromise": "api.md TextInput lists `clearButton` and `clearButtonMode` (never|always|whileEditing|unlessEditing); src asserts invalid mode.",
       "gap": {
         "description": "Untested (probe: clearButton=true shows Clear).",
         "headlessTestable": true,
         "proposedTest": "world(UI.TextInput{value=Compose.cell('a'), clearButton=true}) -> Clear.Visible; expect world(UI.TextInput{value=v, clearButtonMode='sometimes'}) toThrow."
       },
-      "partiallyClosedBy": "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error"
+      "closedBy": "native_parity_media::controls::shows the clear button at all times when clearButton is true and clears the value"
     },
     {
       "id": "inputs-189",
@@ -16183,13 +16778,18 @@
         "text_presentations"
       ],
       "mainCases": 6,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::does not commit after parse, format or validate disables or unmounts the field"
+      ],
       "apiPromise": "api.md TextInput 'enabled', 'disabled'; guide 07-input: 'The control owns validation, numeric bounds, and the change, commit and cancel behavior'; NI asserts disabled edits end without a commit.",
       "gap": {
         "description": "Untested and currently broken: commit() checks enabled/disposed only before calling parse/format/validate. Probe: a parse callback that disables (or unmounts) the field still writes value '5', numericValue 5 and fires...",
         "headlessTestable": true,
         "proposedTest": "en=Compose.cell(true); world(UI.TextInput{value=v, numericValue=n, presentation='number', enabled=en, parse=function(t) en:set(false) return tonumber(t) end, onCommit=spy}); CaptureFocus; Text='5'; ReleaseFocus(true); expect n unchanged, v unchanged, spy 0. Repeat with format/validate and with Compose.show unmount."
-      }
+      },
+      "closedBy": "native_parity_media::controls::does not commit after parse, format or validate disables or unmounts the field"
     },
     {
       "id": "inputs-197",
@@ -16199,13 +16799,18 @@
         "text_presentations"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::refusals::refuses nonfinite or inverted numeric bounds and non-function numeric callbacks"
+      ],
       "apiPromise": "src asserts 'numeric bounds must be finite' and 'min must not exceed max'.",
       "gap": {
         "description": "Only a missing numericValue is tested.",
         "headlessTestable": true,
         "proposedTest": "expect toThrow for UI.TextInput{presentation='number', numericValue=n, value=v, min=0/0}, {max=math.huge}, {min=5, max=1}, {parse=5}."
-      }
+      },
+      "closedBy": "native_parity_media::refusals::refuses nonfinite or inverted numeric bounds and non-function numeric callbacks"
     },
     {
       "id": "inputs-198",
@@ -18281,13 +18886,19 @@
         "focus_skip"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Collections::wraps next and previous focus past disabled rows and enters automatically once geometry exists",
+        "native_parity_apps::Collections::wraps arrow and D-pad focus at both ends only when wrapFocus is set"
+      ],
       "apiPromise": "api.md VirtualList/VirtualGrid: 'Optional collection focus uses focus, initialFocus, autoFocus, wrapFocus and disabled(item).'",
       "gap": {
         "description": "src/ui/collections.luau:429-430 forwards autoFocus and wrapFocus to Compose.createFocusScope. Probe: VirtualList{wrapFocus=true} next from last -> first, previous -> last; without wrap next stays; autoFocus selects it...",
         "headlessTestable": true,
         "proposedTest": "native_collections: VirtualList{from=records(5), wrapFocus=true, focus=focus}; set AbsoluteWindowSize; focus.focus(5); focus.next() -> current 1 and gui.SelectedObject.Text '1'; focus.previous() -> 5; repeat with wrapFocus=false -> stays 5; disabled item 1 with wrap -> next from 5 lands on 2. Separately VirtualList{autoFocus=true} -> gui.SelectedObject.Text == '1' once geometry exists."
-      }
+      },
+      "closedBy": "native_parity_apps::Collections::wraps next and previous focus past disabled rows and enters automatically once geometry exists"
     },
     {
       "id": "mech1-131",
@@ -20437,13 +21048,18 @@
         "studio_sync_bootstrap"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Public surface, catalog and theme corpus::syncs the gallery through one client-context bootstrap script"
+      ],
       "apiPromise": "tools/lune/lib/studio_tree.luau maps examples/gallery/client (init.client.luau) to ReplicatedStorage.Gallery Script RunContext Client, matching tools/lune/check_place_bootstrap.luau which build_places.sh enforces for ...",
       "gap": {
         "description": "Behavior still holds (probe: className Script, runContext Client) but no candidate test covers studio_tree; only built .rbxl places are checked by check_place_bootstrap in build_places.sh. Tooling contract, not an api...",
         "headlessTestable": true,
         "proposedTest": "Port the main case: require tools/lune/lib/studio_tree, iterate entries('gallery'), assert exactly one ReplicatedStorage.Gallery entry with className 'Script' and runContext 'Client', and no StarterPlayerScripts Gallery entry."
-      }
+      },
+      "closedBy": "native_parity_apps::Public surface, catalog and theme corpus::syncs the gallery through one client-context bootstrap script"
     },
     {
       "id": "mech3-56",
@@ -22139,13 +22755,18 @@
         "collapsible_view"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::NavigationStack and CollapsibleView::releases an expanded collapsible surface across open close cycles and on unmount"
+      ],
       "apiPromise": "api.md Constructor contract: 'Make controls inside a Compose owner'; CollapsibleView 'opens its content as a larger presented surface' (nav_surfaces.luau surfaces.overlay/modal).",
       "gap": {
         "description": "native_conformance census only mounts CollapsibleView collapsed; no test disposes it while expanded or cycles it open/closed with a changing image and checks the census.",
         "headlessTestable": true,
         "proposedTest": "setup() with engine census baseline; mount UI.CollapsibleView{expanded=cell(false), image=cell(a), content=Button}; loop 20x: expanded:set(true), image:set(alt), expanded:set(false); assert census == baseline; then expanded:set(true) and stop(); assert Expanded/ModalBack destroyed and census == pre-mount baseline, GuiService.SelectedObject not left on destroyed node."
-      }
+      },
+      "closedBy": "native_parity_apps::NavigationStack and CollapsibleView::releases an expanded collapsible surface across open close cycles and on unmount"
     },
     {
       "id": "navigation-2-05",
@@ -22206,13 +22827,18 @@
         "combo_box"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::refusals::refuses a combo box with a plain value, missing text, a non-function validator or an unknown key"
+      ],
       "apiPromise": "api.md ComboBox: 'ComboBox requires a writable string value, a writable string text, options and an acceptCustom validator.' and Constructor contract: 'An unsupported control option causes an error.' (nav_menu.luau wr...",
       "gap": {
         "description": "Main rejected ten malformed field types; candidate keeps only writable value/text, function acceptCustom and unknown-lowercase-key asserts (per-field type checks moved to Luau strict types). None of those remaining re...",
         "headlessTestable": true,
         "proposedTest": "expect(function() mount UI.ComboBox{value='a' (plain string), text=cell(''), options={}, acceptCustom=fn} end).toThrow(); same for acceptCustom=true, text missing, and an unknown option key 'bogus=1' (expect error containing 'Unknown Facet option')."
-      }
+      },
+      "closedBy": "native_parity_media::refusals::refuses a combo box with a plain value, missing text, a non-function validator or an unknown key"
     },
     {
       "id": "navigation-2-10",
@@ -23206,13 +23832,18 @@
         "native_navigation_stack"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::NavigationStack and CollapsibleView::fades a pushed page in over its transition and swaps immediately under reduced motion"
+      ],
       "apiPromise": "src/ui/navigation_types.luau NavigationStackSpec.transition: Transition|false; nav_pages.luau layer() crossfades CanvasGroup.GroupTransparency via runtime.tween and forces 0 under GuiService.ReducedMotionEnabled / con...",
       "gap": {
         "description": "No candidate test mounts NavigationStack with transition; fade progress, covered-page hide, Interactable=top and reduced-motion immediate swap are unverified (only TabView's layer fade is tested).",
         "headlessTestable": true,
         "proposedTest": "setup NavigationStack{path, root, destinations={detail}, transition={seconds=0.2}}; path:set({{id='detail'}}); heartbeat 0.1 -> detail CanvasGroup GroupTransparency strictly between 0 and 1 and root panel Interactable=false; heartbeat 0.2 -> detail GroupTransparency 0, root Visible=false; set gui.ReducedMotionEnabled=true, push again -> new page GroupTransparency 0 immediately; world.stop() disposes all page owners."
-      }
+      },
+      "closedBy": "native_parity_apps::NavigationStack and CollapsibleView::fades a pushed page in over its transition and swaps immediately under reduced motion"
     },
     {
       "id": "navigation-3-05",
@@ -23354,13 +23985,18 @@
         "navigation_stack"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::NavigationStack and CollapsibleView::restores the remembered page focus when surviving chrome holds selection during a pop"
+      ],
       "apiPromise": "nav_pages.luau navigationStack restores `remembered` (or firstSelectable) whenever the page becomes top and gui.SelectedObject ~= nil.",
       "gap": {
         "description": "No candidate test puts selection on chrome outside the stack before a path write/rapid Back.",
         "headlessTestable": true,
         "proposedTest": "Frame{UI.Button 'Chrome', NavigationStack{...}}; SelectedObject=RootAction; push; SelectedObject=Chrome; path:set({}) -> SelectedObject is RootAction. Repeat with push,pop,push,pop in one frame."
-      }
+      },
+      "closedBy": "native_parity_apps::NavigationStack and CollapsibleView::restores the remembered page focus when surviving chrome holds selection during a pop"
     },
     {
       "id": "navigation-3-16",
@@ -23370,13 +24006,18 @@
         "navigation_stack"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::NavigationStack and CollapsibleView::falls back to the first selectable control when the remembered control was disabled while away"
+      ],
       "apiPromise": "nav_pages.luau: remembered is used only if Parent, Visible and Interactable, else surfaces.firstSelectable(panel).",
       "gap": {
         "description": "Fallback path untested.",
         "headlessTestable": true,
         "proposedTest": "Root content Frame{Button 'First', Button 'Remember' enabled=cell(true)}; select Remember; push; enabled:set(false); path:set({}) -> SelectedObject.Name=='First'."
-      }
+      },
+      "closedBy": "native_parity_apps::NavigationStack and CollapsibleView::falls back to the first selectable control when the remembered control was disabled while away"
     },
     {
       "id": "navigation-3-17",
@@ -23386,13 +24027,18 @@
         "navigation_stack"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::NavigationStack and CollapsibleView::refuses malformed specs, paths and transitions before building any page"
+      ],
       "apiPromise": "api.md Constructor contract: 'An unsupported control option causes an error.' nav_pages.luau asserts path writable, root/destinations present, initial path destinations declared; layer() asserts transition keys.",
       "gap": {
         "description": "No candidate NavigationStack refusal test. Note CAND is looser than main: sparse path tables, extra entry fields, backLabel '' , root.title non-string and root.extra are accepted; content='invalid' fails inside the bo...",
         "headlessTestable": true,
         "proposedTest": "For each mutation (unknown key 'unknown', path = Compose.formula, path {{id='missing'}}, destinations missing, transition={unknown=true}) expect(function() setup(...NavigationStack(s)) end).toThrow()."
-      }
+      },
+      "closedBy": "native_parity_apps::NavigationStack and CollapsibleView::refuses malformed specs, paths and transitions before building any page"
     },
     {
       "id": "navigation-3-18",
@@ -23468,13 +24114,18 @@
         "navigation_stack"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::NavigationStack and CollapsibleView::keeps the mounted page through viewport theme input and reduced motion changes"
+      ],
       "apiPromise": "api.md: 'Compose LayerStack owns the retained pages'; nav_pages.luau reads GuiService.ReducedMotionEnabled in layer().",
       "gap": {
         "description": "No candidate test changes environment facts under a mounted NavigationStack.",
         "headlessTestable": true,
         "proposedTest": "Push detail counting builds; set gui.ReducedMotionEnabled, input.PreferredInput Gamepad/Touch, root AbsoluteSize changes -> same detail Instance, build count unchanged."
-      }
+      },
+      "closedBy": "native_parity_apps::NavigationStack and CollapsibleView::keeps the mounted page through viewport theme input and reduced motion changes"
     },
     {
       "id": "navigation-3-24",
@@ -23484,13 +24135,18 @@
         "navigation_stack"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::NavigationStack and CollapsibleView::leaves one opaque interactive root page after rapid pushes and pops under a fade"
+      ],
       "apiPromise": "NavigationStackSpec.transition (fade); layer() Interactable = state.top.",
       "gap": {
         "description": "Same NavigationStack transition gap: no test of fade retirement, reduced-motion settle, or Interactable=false on retired pages under rapid push/pop.",
         "headlessTestable": true,
         "proposedTest": "transition={seconds=0.2}; four push/pop pairs each followed by heartbeat(1/120); heartbeat(1) -> only root layer Visible, GroupTransparency 0, Interactable true; built-disposed == 1."
-      }
+      },
+      "closedBy": "native_parity_apps::NavigationStack and CollapsibleView::leaves one opaque interactive root page after rapid pushes and pops under a fade"
     },
     {
       "id": "navigation-3-25",
@@ -26405,13 +27061,18 @@
         "control_vocabulary"
       ],
       "mainCases": 8,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::refusals::refuses an unknown control size and keeps the last legal size for a live rung"
+      ],
       "apiPromise": "api.md Button: 'controlSize: compact, regular or large'; ShortcutHint: 'optional separator and controlSize'. src/ui/context.luau ctx.controlSize asserts 'Facet controlSize must be compact, regular or large'.",
       "gap": {
         "description": "No candidate case passes an illegal controlSize (static or reactive). Probe: UI.Button{controlSize=\"tiny\"} and UI.ShortcutHint{controlSize=\"tiny\"} throw; a cell set to \"tiny\" throws from :set, keeps Size 44, and a lat...",
         "headlessTestable": true,
         "proposedTest": "native_inputs: expect(UI.Button{label=\"Go\",controlSize=\"tiny\"}).toThrow(\"compact, regular or large\"); same for ShortcutHint. Mount Button with rung=cell(\"regular\"); expect pcall(rung.set,\"tiny\") false and node.Size.Y.Offset==44; rung:set(\"large\") -> 56. Repeat with a function(use) rung source."
-      }
+      },
+      "closedBy": "native_parity_media::refusals::refuses an unknown control size and keeps the last legal size for a live rung"
     },
     {
       "id": "paint-07",
@@ -26544,13 +27205,18 @@
         "control_vocabulary"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::gives a chip the rect button shape by default and orders its leading and trailing children"
+      ],
       "apiPromise": "api.md Chip: 'The removal options are removeLabel, removeFocusFallback, and native leading and trailing children.'",
       "gap": {
         "description": "No candidate case mounts Chip with leading/trailing children or checks their placement/order relative to the label.",
         "headlessTestable": true,
         "proposedTest": "native_inputs: UI.Chip{label=\"Rain\", selected=cell(false), leading=Host.ImageLabel \"Lead\"{}, trailing=Host.TextLabel \"Count\"{Text=\"3\"}}; assert both are descendants with LayoutOrder before/after the label, Activated toggles selected once, and removing the Chip destroys them."
-      }
+      },
+      "closedBy": "native_parity_media::controls::gives a chip the rect button shape by default and orders its leading and trailing children"
     },
     {
       "id": "paint-17",
@@ -26649,13 +27315,18 @@
         "display_controls"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::icons::resolves an unknown semantic icon to nothing and refuses to mount it"
+      ],
       "apiPromise": "src/ui/context.luau ctx.icon asserts 'Facet icon <name> requires an image asset'; guide 09: 'Do not use arbitrary text glyphs as interface icons.'",
       "gap": {
         "description": "No case mounts an unresolvable icon name.",
         "headlessTestable": true,
         "proposedTest": "expect(mount UI.Label{text=\"x\", icon=\"not-an-icon\"}).toThrow(\"requires an image asset\") and the same for UI.Button{label=\"x\", icon=\"nope\"}."
-      }
+      },
+      "closedBy": "native_parity_media::icons::resolves an unknown semantic icon to nothing and refuses to mount it"
     },
     {
       "id": "paint-25",
@@ -26830,13 +27501,18 @@
         "display_controls"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::progress motion::sweeps an indeterminate bar segment inside its clipped track and repeats every second"
+      ],
       "apiPromise": "api.md Media: ProgressView 'value' ... (value nil = indeterminate per media.luau timeline).",
       "gap": {
         "description": "No case mounts a bar ProgressView without value. media.luau sweeps Fill1 (width 0.3, Position progress*1.3-0.3) inside FillClip.",
         "headlessTestable": true,
         "proposedTest": "Mount UI.ProgressView{} (bar); assert FillClip.ClipsDescendants, Fill1 Size.X.Scale==0.3, Position.X.Scale changes across heartbeat 0.25/0.5 and wraps after 1s (repeats), reduced motion quantizes to quarters, and stop() leaves heartbeat.count()==0."
-      }
+      },
+      "closedBy": "native_parity_media::progress motion::sweeps an indeterminate bar segment inside its clipped track and repeats every second"
     },
     {
       "id": "paint-38",
@@ -26882,13 +27558,18 @@
         "display_controls"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::progress motion::refuses an unknown progress presentation before creating native nodes or a clock"
+      ],
       "apiPromise": "api.md ProgressView 'presentation: bar, circular or spinner'; media.luau asserts.",
       "gap": {
         "description": "Not in the rejects-incompatible-meter case list.",
         "headlessTestable": true,
         "proposedTest": "Add {value=1, presentation=\"ring\"} to \"rejects incompatible meter options before creating native nodes\"."
-      }
+      },
+      "closedBy": "native_parity_media::progress motion::refuses an unknown progress presentation before creating native nodes or a clock"
     },
     {
       "id": "paint-42",
@@ -27055,13 +27736,18 @@
         "icon_coverage"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::icon coverage::declares standard art for every icon name a control requests"
+      ],
       "apiPromise": "guide 09: 'Supply real image or vector image assets. Do not use arbitrary text glyphs'; api.md resolveIcon 'resolves real image content'.",
       "gap": {
         "description": "No case pins that every icon name src/ui requests (checkmark, chevron.*, status.warning, ...) exists in icons.ART, nor that each shipped package resolves every ART name to an rbxasset id. Probe: all 30 names resolve i...",
         "headlessTestable": true,
         "proposedTest": "Scan src/ui/*.luau for ctx.icon(\"..\")/icon(\"..\")/icon = \"..\" literals and assert icons.ART[name]; for each examples/themes package and each ART name assert string.match(themes.resolveIcon(pkg,name),\"^rbxasset\"); negative control: a package whose icons map a name to an undeclared asset must fail."
-      }
+      },
+      "closedBy": "native_parity_media::icon coverage::declares standard art for every icon name a control requests"
     },
     {
       "id": "paint-54",
@@ -27071,17 +27757,18 @@
         "icon_coverage"
       ],
       "mainCases": 10,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes"
+        "native_parity_media::icon coverage::resolves every framework icon to art in every shipped theme package"
       ],
-      "weaker": "Existing case cycles all packages but only resolves facet:search.",
       "apiPromise": "guide 13 theme catalog + api.md resolveIcon",
       "gap": {
         "description": "No case pins that every icon name src/ui requests (checkmark, chevron.*, status.warning, ...) exists in icons.ART, nor that each shipped package resolves every ART name to an rbxasset id. Probe: all 30 names resolve i...",
         "headlessTestable": true,
         "proposedTest": "Scan src/ui/*.luau for ctx.icon(\"..\")/icon(\"..\")/icon = \"..\" literals and assert icons.ART[name]; for each examples/themes package and each ART name assert string.match(themes.resolveIcon(pkg,name),\"^rbxasset\"); negative control: a package whose icons map a name to an undeclared asset must fail."
-      }
+      },
+      "closedBy": "native_parity_media::icon coverage::resolves every framework icon to art in every shipped theme package"
     },
     {
       "id": "paint-55",
@@ -27147,13 +27834,18 @@
         "native_regions_feedback"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::controls::fires button pointer down, up and cancel once each and none while disabled"
+      ],
       "apiPromise": "api.md Button: 'The pointer callbacks are onPointerDown, onPointerUp and onPointerCancel.' (selected covered by tag tests; hidden/anchor/onAppear are native Visible/AnchorPoint now)",
       "gap": {
         "description": "No candidate case fires InputBegan/InputEnded/MouseLeave on a Button with pointer callbacks; probe shows onPointerCancel alone never fires (bug).",
         "headlessTestable": true,
         "proposedTest": "Mount Button{onPointerDown,onPointerUp,onPointerCancel}; fire InputBegan{MouseButton1} -> down once; InputEnded -> up once; InputBegan then MouseLeave -> cancel once; disabled button -> none. Also a Button with only onPointerCancel must fire it."
-      }
+      },
+      "closedBy": "native_parity_media::controls::fires button pointer down, up and cancel once each and none while disabled"
     },
     {
       "id": "paint-61",
@@ -27390,13 +28082,18 @@
         "paint_extensions"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::icons::frames a button image by crop by default and by fit on request"
+      ],
       "apiPromise": "api.md Button: 'image, imageAspectRatio (default 16/9) and imageFraming (fit or crop)'.",
       "gap": {
         "description": "No case sets imageFraming; inputs.luau maps \"fit\"->ScaleType.Fit else Crop, with no validation of other words.",
         "headlessTestable": true,
         "proposedTest": "Mount Button{image=\"rbxassetid://1\", label=\"x\"} -> Image.ScaleType Crop; imageFraming=\"fit\" -> Fit; imageFraming=\"stretch\" should be refused (currently silently Crop)."
-      }
+      },
+      "closedBy": "native_parity_media::icons::frames a button image by crop by default and by fit on request"
     },
     {
       "id": "paint-80",
@@ -28191,13 +28888,18 @@
         "theme_docs"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Public surface, catalog and theme corpus::documents every Facet.themes export and every capability in the guide catalog"
+      ],
       "apiPromise": "api.md Themes section lists SCHEMA, TYPE_ROLES, REQUIRED_TYPE_ROLES, neutralPackage, define, checkCoverage, resolveIcon, createStyleSheet, skin.",
       "gap": {
         "description": "native_registration checks only UI constructors against api.md.",
         "headlessTestable": true,
         "proposedTest": "For each key of Facet.themes assert api.md contains \"`\"..key; negative control with a fake export."
-      }
+      },
+      "closedBy": "native_parity_apps::Public surface, catalog and theme corpus::documents every Facet.themes export and every capability in the guide catalog"
     },
     {
       "id": "paint-141",
@@ -28229,17 +28931,18 @@
         "theme_docs"
       ],
       "mainCases": 8,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_registration::native registration and package contract::registers every authored control and documents every public constructor"
+        "native_parity_apps::Public surface, catalog and theme corpus::documents every Facet.themes export and every capability in the guide catalog"
       ],
-      "weaker": "Registration checks api.md, not the guide catalog.",
       "apiPromise": "AGENTS.md: the capability catalog in docs/guide/README.md lists 'every public capability, one line each'.",
       "gap": {
         "description": "No case parses the docs/guide/README.md Capability catalog.",
         "headlessTestable": true,
         "proposedTest": "Parse the catalog table; assert every Facet.controls key and top-level Facet export appears, and every `UI.X`/`Facet.X` named exists; every docs/extending/*.md is linked from the guide index."
-      }
+      },
+      "closedBy": "native_parity_apps::Public surface, catalog and theme corpus::documents every Facet.themes export and every capability in the guide catalog"
     },
     {
       "id": "paint-144",
@@ -28715,13 +29418,18 @@
         "avatar"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::avatar::suppresses the presence mark but keeps presence in the accessible label"
+      ],
       "apiPromise": "api.md Avatar: 'presence label and mark'; media.luau mounts Presence only when spec.presenceMark ~= false.",
       "gap": {
         "description": "No case sets presenceMark=false on an Avatar.",
         "headlessTestable": true,
         "proposedTest": "Mount UI.Avatar{name='Ada', presence='away', presenceMark=false}; expect root:FindFirstChild('Presence')==nil and AccessibleLabel=='Ada, away'. Also mount AvatarGroup layout='stacked' with a presence member and expect no Presence child, and layout='spread' expect one."
-      }
+      },
+      "closedBy": "native_parity_media::avatar::suppresses the presence mark but keeps presence in the accessible label"
     },
     {
       "id": "themes-P1-24",
@@ -28745,13 +29453,18 @@
         "avatar"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::avatar::refuses an invalid name, form, presence or option before acquiring the resource"
+      ],
       "apiPromise": "media.luau UI.Avatar asserts form, nonempty name and presence; api.md line 92 'An unsupported control option causes an error.'",
       "gap": {
         "description": "No candidate case mounts an invalid Avatar.",
         "headlessTestable": true,
         "proposedTest": "For specs {}, {name=''}, {name='A', form='photo'}, {name='A', presence='wrong'}, {name='A', unexpected=true}: pcall(runtime.mount(...)) is false and a supplied resource acquire counter stays 0."
-      }
+      },
+      "closedBy": "native_parity_media::avatar::refuses an invalid name, form, presence or option before acquiring the resource"
     },
     {
       "id": "themes-P1-26",
@@ -28829,16 +29542,18 @@
         "avatar"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/identity"
+        "native_parity_apps::Gallery recipes::drives the avatar recipe through pending, failure, presence and size rungs"
       ],
       "apiPromise": "examples/gallery/scenarios/avatar.luau still exposes report() and steps (pending, ready, fail, presence, compact, large).",
       "gap": {
         "description": "Only a mount/teardown smoke case exists; steps/report are never driven.",
         "headlessTestable": true,
         "proposedTest": "Build scenarios/avatar with the native gallery ctx, mount screen, call steps.pending/ready/fail/presence/compact/large and assert report().portrait.state, initials 'AQ', presence 'away', rect widths 36/56; after stop report() is nil."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery recipes::drives the avatar recipe through pending, failure, presence and size rungs"
     },
     {
       "id": "themes-P1-32",
@@ -28955,13 +29670,18 @@
         "avatar_group"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::avatar::refuses a non-string overflow label and recovers the next valid label"
+      ],
       "apiPromise": "media.luau asserts 'Facet AvatarGroup overflowLabel must be a string'; api.md line 92 unsupported values error.",
       "gap": {
         "description": "No case passes a non-string overflowLabel.",
         "headlessTestable": true,
         "proposedTest": "Mount AvatarGroup{items=3 members, max=1, overflowLabel=cell('More')}; set 42 -> pcall false; set 'Tout' -> Overflow AccessibleLabel=='Tout'; set nil -> '2 more players'."
-      }
+      },
+      "closedBy": "native_parity_media::avatar::refuses a non-string overflow label and recovers the next valid label"
     },
     {
       "id": "themes-P1-41",
@@ -29026,16 +29746,18 @@
         "avatar_group"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/identity"
+        "native_parity_apps::Gallery recipes::drives the avatar group recipe and resets the identity tab through its shared command"
       ],
       "apiPromise": "examples/gallery/scenarios/avatar_group.luau and identity.luau expose report()/steps.",
       "gap": {
         "description": "Only mount smoke; roster reorder, compact/large, spread, ellipsis, fewer steps never driven.",
         "headlessTestable": true,
         "proposedTest": "Build scenarios/avatar_group, mount, call steps.restore/compact/large/spread/ellipsis/fewer and assert report().group.shown/hidden/chipText; build identity and assert both sub-reports then nil after stop."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery recipes::drives the avatar group recipe and resets the identity tab through its shared command"
     },
     {
       "id": "themes-P1-46",
@@ -29081,13 +29803,18 @@
         "badge"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::badge::gives an icon badge the plain caption height and orders the icon by its position"
+      ],
       "apiPromise": "api.md Badge: 'an optional icon and position'.",
       "gap": {
         "description": "iconPosition and height parity untested.",
         "headlessTestable": true,
         "proposedTest": "Mount Badge{label='Ranked'} and Badge{label='Ranked', icon='checkmark', iconPosition='trailing'}; assert both Size.Y.Offset equal (iconSize+4) and icon.LayoutOrder > label.LayoutOrder for trailing, < for leading."
-      }
+      },
+      "closedBy": "native_parity_media::badge::gives an icon badge the plain caption height and orders the icon by its position"
     },
     {
       "id": "themes-P1-49",
@@ -29147,16 +29874,18 @@
         "badge"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/status"
+        "native_parity_apps::Gallery recipes::drives the badge recipe through its statuses and rungs and resets the status tab"
       ],
       "apiPromise": "examples/gallery/scenarios/badge.luau exposes report()/steps.",
       "gap": {
         "description": "Mount smoke only.",
         "headlessTestable": true,
         "proposedTest": "Build scenarios/badge, call steps.warning/error and Neutral command; assert report().badge.status and icon present; report nil after stop."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery recipes::drives the badge recipe through its statuses and rungs and resets the status tab"
     },
     {
       "id": "themes-P1-53",
@@ -29475,13 +30204,18 @@
         "progress_reduced_motion"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::progress motion::holds a reduced-motion indeterminate bar within a quarter and then steps"
+      ],
       "apiPromise": "media.luau ProgressView indeterminate progress quantizes phase to quarters under reducedMotion for every presentation.",
       "gap": {
         "description": "No case mounts an indeterminate bar.",
         "headlessTestable": true,
         "proposedTest": "context reducedMotion=true, mount ProgressView{} (bar, no value); record Fill1.Position.X; heartbeat 0.1 -> unchanged; heartbeat 0.2 -> changed."
-      }
+      },
+      "closedBy": "native_parity_media::progress motion::holds a reduced-motion indeterminate bar within a quarter and then steps"
     },
     {
       "id": "themes-P1-76",
@@ -29491,13 +30225,18 @@
         "progress_reduced_motion"
       ],
       "mainCases": 6,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::progress motion::shows four quarter poses per cycle under reduced motion for bar, circular and spinner"
+      ],
       "apiPromise": "Same quantization (math.floor(phase*4)/4) in media.luau ProgressView.",
       "gap": {
         "description": "No case counts distinct poses per cycle or compares full and reduced cadence.",
         "headlessTestable": true,
         "proposedTest": "For each presentation fire heartbeat 0.05 x20 under reduced motion and count distinct readings (expect 3..8); repeat at 0.02 x20 with and without reduced motion and assert fullCount > reducedCount >= 2."
-      }
+      },
+      "closedBy": "native_parity_media::progress motion::shows four quarter poses per cycle under reduced motion for bar, circular and spinner"
     },
     {
       "id": "themes-P1-77",
@@ -29521,13 +30260,18 @@
         "progress_reduced_motion"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::progress motion::steps from the running phase when reduced motion turns on mid-cycle instead of restarting"
+      ],
       "apiPromise": "media.luau quantizes the read of the running timeline rather than seeking it.",
       "gap": {
         "description": "ROTATE switches mid-cycle but does not assert the pose is within one quantum of the pre-switch pose.",
         "headlessTestable": true,
         "proposedTest": "Indeterminate bar with reducedMotion cell false; heartbeat 0.6; read Fill1.Position.X; set true; assert position equals floor(0.6*4)/4*1.3-0.3 (not the -0.3 restart pose)."
-      }
+      },
+      "closedBy": "native_parity_media::progress motion::steps from the running phase when reduced motion turns on mid-cycle instead of restarting"
     },
     {
       "id": "themes-P1-79",
@@ -29721,13 +30465,18 @@
         "skeleton"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::skeleton and status indicator::releases the shared skeleton clock after a construction refuses and restarts it for the next"
+      ],
       "apiPromise": "Compose ownership: a failed mount must release the acquired skeleton clock.",
       "gap": {
         "description": "No case fails a Skeleton after skeletonClock() acquisition.",
         "headlessTestable": true,
         "proposedTest": "Mount Skeleton{form='box', controlSize='wrong'} (asserts inside Size binding after the clock is acquired); expect throw, then heartbeat.count()==0; a later valid Skeleton mounts and animates."
-      }
+      },
+      "closedBy": "native_parity_media::skeleton and status indicator::releases the shared skeleton clock after a construction refuses and restarts it for the next"
     },
     {
       "id": "themes-P1-93",
@@ -29759,16 +30508,18 @@
         "skeleton"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/progress"
+        "native_parity_apps::Gallery recipes::drives the skeleton recipe through silhouettes, branches and motion and releases its clock"
       ],
       "apiPromise": "examples/gallery/scenarios/skeleton.luau exposes report()/steps.",
       "gap": {
         "description": "Mount smoke only.",
         "headlessTestable": true,
         "proposedTest": "Build scenarios/skeleton; drive steps.removeFirst/reduced/full/loading and assert report().animating and box/circle; heartbeat listeners 0 after stop."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery recipes::drives the skeleton recipe through silhouettes, branches and motion and releases its clock"
     },
     {
       "id": "themes-P1-96",
@@ -29846,13 +30597,18 @@
         "stage"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::async image and stage::places an owned stage camera by CFrame and field of view and destroys it with the stage"
+      ],
       "apiPromise": "api.md Stage: 'A `camera` CFrame or a borrowed Camera, `fieldOfView`'.",
       "gap": {
         "description": "Only a borrowed Camera is tested; the owned Camera's CFrame and fieldOfView (and reactive fieldOfView) are not.",
         "headlessTestable": true,
         "proposedTest": "Mount UI.Stage{camera=CFrame.lookAt(...), fieldOfView=cell(55)}; assert stage.CurrentCamera.CFrame equals the supplied CFrame and FieldOfView 55; set 70 -> 70; stop destroys the owned Camera."
-      }
+      },
+      "closedBy": "native_parity_media::async image and stage::places an owned stage camera by CFrame and field of view and destroys it with the stage"
     },
     {
       "id": "themes-P1-102",
@@ -30055,16 +30811,18 @@
         "status_indicator"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/status"
+        "native_parity_apps::Gallery recipes::drives the status indicator recipe through count caps and shapes"
       ],
       "apiPromise": "examples/gallery/scenarios/status_indicator.luau exposes report()/steps.",
       "gap": {
         "description": "Mount smoke only.",
         "headlessTestable": true,
         "proposedTest": "Build scenarios/status_indicator; steps.capped -> '99+', steps.ring -> 'ring', Reset -> '0'; report nil after stop."
-      }
+      },
+      "closedBy": "native_parity_apps::Gallery recipes::drives the status indicator recipe through count caps and shapes"
     },
     {
       "id": "themes-P1-117",
@@ -30840,13 +31598,18 @@
         "theme_icons"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::icons::resolves the common framework icons to their standard art"
+      ],
       "apiPromise": "src/ui/icons.luau ART has status.info, status.success, status.warning, status.error, calendar, clock, vote.up, vote.down, person, chevron.first and chevron.last. resolveIcon falls back to icons.ART.",
       "gap": {
         "description": "No candidate test resolves these names, and nothing checks that status.success reuses the checkmark art.",
         "headlessTestable": true,
         "proposedTest": "For each of the 11 names, expect themes.resolveIcon(themes.neutralPackage(), name) == require('src/ui/icons').ART[name].contentId, with the value matching '^rbxassetid://'. Expect ART['status.success'].contentId == ART.checkmark.contentId."
-      }
+      },
+      "closedBy": "native_parity_media::icons::resolves the common framework icons to their standard art"
     },
     {
       "id": "themes-P2-44",
@@ -30917,13 +31680,18 @@
         "theme_icons"
       ],
       "mainCases": 1,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::icons::resolves an unknown semantic icon to nothing and refuses to mount it"
+      ],
       "apiPromise": "themes.resolveIcon returns nil when no entry exists. ctx.icon asserts 'Facet icon X requires an image asset'.",
       "gap": {
         "description": "Neither the nil answer nor the ctx.icon error is tested.",
         "headlessTestable": true,
         "proposedTest": "Expect themes.resolveIcon(neutral,'not.an.icon')==nil and themes.resolveIcon(neutral,'close') to match '^rbxassetid://'. Expect mounting UI.Label({icon='not.an.icon'}) to error with 'requires an image asset'."
-      }
+      },
+      "closedBy": "native_parity_media::icons::resolves an unknown semantic icon to nothing and refuses to mount it"
     },
     {
       "id": "themes-P2-49",
@@ -31002,13 +31770,18 @@
         "theme_icons_applied"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_media::icon coverage::shows the package increment and decrement art on stepper buttons instead of glyphs"
+      ],
       "apiPromise": "src/ui/icons.luau ART declares increment and decrement. Shipped pixel_quest and fantasy_ornate declare icons.increment and icons.decrement art. Guide 09: 'Supply real image or vector image assets. Do not use arbitrary...",
       "gap": {
         "description": "CAND Stepper (inputs.luau:1473/1487) renders TextButtons with '\u2212' (U+2212) and '+'. A probe confirmed 'Decrease \u2212' and 'Increase +' with no ImageLabel. The package increment and decrement art is dead. The stepperPlate...",
         "headlessTestable": true,
         "proposedTest": "Mount UI.Stepper under pixel_quest. Expect the Increase and Decrease buttons to each contain an ImageLabel whose Image is resolveIcon(pkg,'increment') or resolveIcon(pkg,'decrement'), and the button Text to be empty or hidden. Under neutral, expect the ART increment and decrement ids."
-      }
+      },
+      "closedBy": "native_parity_media::icon coverage::shows the package increment and decrement art on stepper buttons instead of glyphs"
     },
     {
       "id": "themes-P2-55",
@@ -31478,16 +32251,18 @@
         "theme_pixel_content"
       ],
       "mainCases": 3,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
       "candidateCases": [
-        "native_documentation::native documentation::executes docs/guide/10-rich-skinning.md snippet 1"
+        "native_parity_media::icons::treats contentId and content as the same asset spelling for skins and icons"
       ],
       "apiPromise": "10-rich-skinning example declares assets.panel = { contentId = ownedPanelAsset, sliceCenter = ... } for a nineSlice chrome slot; 09-custom-themes 'assets: Art declarations with content ids'. Implementation: themes.lua...",
       "gap": {
         "description": "Every CAND skin/icon test spells assets with `content`; the guide's `contentId` spelling is only run through define() by the documentation snippet (no skin mounted). Also the two readers use opposite precedence when b...",
         "headlessTestable": true,
         "proposedTest": "For field in {'content','contentId'}: pkg=neutralPackage(); pkg.assets.panel={[field]='rbxassetid://9', sliceCenter={x0=12,y0=12,x1=52,y1=52}}; pkg.chrome.panel={kind='nineSlice',asset='panel'}; pkg.icons['facet:search']={default='panel'}; mount themes.skin(runtime,pkg,'panel',{types}); expect panel1.Image=='rbxassetid://9', ScaleType Slice, SliceCenter Rect(12,12,52,52), and themes.resolveIcon(pkg,'facet:search')..."
-      }
+      },
+      "closedBy": "native_parity_media::icons::treats contentId and content as the same asset spelling for skins and icons"
     },
     {
       "id": "themes-P3-23",
@@ -32263,13 +33038,19 @@
         "theme_package_enumeration"
       ],
       "mainCases": 10,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Public surface, catalog and theme corpus::gives every theme module a role and derives the eight shippable packages",
+        "native_parity_apps::Public surface, catalog and theme corpus::reports each kind of drift in the theme corpus"
+      ],
       "apiPromise": "tools/lune/theme_packages.luau theme_packages.check() (ROLES, NOT_SHIPPABLE, REFERENCE_ORDER)",
       "gap": {
         "description": "theme_packages.check() is dead code in CAND: no spec, verify producer or tool calls it (grep). A new theme module without a role, or a renamed exclusion, would go unnoticed. build_themes.sh only uses list/shippable.",
         "headlessTestable": true,
         "proposedTest": "Port MAIN tests/theme_package_enumeration.spec.luau to testkit t.describe/t.it: expect check().ok (currently true, probe), byRole('reference')==9, check({'brand_new'}) reports 'has no declared role', and table-mutation cases for renamed role/exclusion, short reason, non-reference shippable, missing REFERENCE_ORDER entry (restore tables after)."
-      }
+      },
+      "closedBy": "native_parity_apps::Public surface, catalog and theme corpus::gives every theme module a role and derives the eight shippable packages"
     },
     {
       "id": "themes-P4-44",
@@ -32279,13 +33060,18 @@
         "theme_package_enumeration"
       ],
       "mainCases": 2,
-      "class": "d",
+      "auditClass": "d",
+      "class": "a",
+      "candidateCases": [
+        "native_parity_apps::Public surface, catalog and theme corpus::gives every theme module a role and derives the eight shippable packages"
+      ],
       "apiPromise": "tools/lune/theme_packages.luau shippable()/artifactName(), consumed by tools/build_themes.sh and theme_artifacts.luau",
       "gap": {
         "description": "Exercised only indirectly by the full-tier producers theme-builds and theme-artifacts (the selftest expects a problem mentioning 'PixelQuest'); no spec asserts shippable()== the 8 names or artifactName mappings.",
         "headlessTestable": true,
         "proposedTest": "expect(table.concat(theme_packages.shippable(),',')).toBe('classic_desktop,compact_pointer,fantasy_ornate,fantasy_parchment,glossy_mobile,glossy_touch,pixel_quest,scifi_hud'); artifactName('fantasy_ornate')=='FantasyOrnate', 'scifi_hud'=='ScifiHud'."
-      }
+      },
+      "closedBy": "native_parity_apps::Public surface, catalog and theme corpus::gives every theme module a role and derives the eight shippable packages"
     },
     {
       "id": "themes-P4-45",
@@ -32593,7 +33379,9 @@
       "apiPromise": "docs/guide/13-theme-catalog.md: 'Custom-control, layered and ornate-gauge fixtures | Focused extension and skin tests.'",
       "candidateCases": [
         "native_themes_media::native themes and media::mounts the namespaced control fixtures with the current constructors"
-      ]
+      ],
+      "auditClass": "d",
+      "closedBy": "native_parity_apps::Public surface, catalog and theme corpus::builds the custom-control and ornate-gauge fixtures from their needs, fallbacks and own art"
     },
     {
       "id": "themes-P5-13",
@@ -33230,11 +34018,12 @@
   "bugs": [
     {
       "id": "B1",
-      "status": "open",
+      "status": "fixed",
       "evidence": "probe at HEAD",
       "file": "src/ui/collections.luau",
       "title": "wrapFocus does not wrap arrow or D-pad navigation",
-      "failingTest": "Mount a VirtualList of 5 rows with wrapFocus = true and focus = {}. Set AbsoluteWindowSize to (200, 100). Call focus.focus(5). Fire FacetCollectionDown.CollectionDown.Pressed. Expect focus.current to be 1. Actual: 5. The arrow actions call focusScope.move, which ignores wrap; only focus.next wraps."
+      "failingTest": "Mount a VirtualList of 5 rows with wrapFocus = true and focus = {}. Set AbsoluteWindowSize to (200, 100). Call focus.focus(5). Fire FacetCollectionDown.CollectionDown.Pressed. Expect focus.current to be 1. Actual: 5. The arrow actions call focusScope.move, which ignores wrap; only focus.next wraps.",
+      "fixedBy": "native_parity_apps::Collections::wraps arrow and D-pad focus at both ends only when wrapFocus is set"
     },
     {
       "id": "B2",
@@ -33256,35 +34045,39 @@
     },
     {
       "id": "B4",
-      "status": "open",
+      "status": "fixed",
       "evidence": "probe at HEAD",
       "file": "src/ui/inputs.luau",
       "title": "A number TextInput commits after its parse callback disables it",
-      "failingTest": "Mount TextInput with presentation = \"number\", enabled cell true, and parse that sets enabled to false. Capture focus, set Text to \"5\", release focus with submit. Expect no onCommit and numericValue 2. Actual: onCommit runs and numericValue becomes 5."
+      "failingTest": "Mount TextInput with presentation = \"number\", enabled cell true, and parse that sets enabled to false. Capture focus, set Text to \"5\", release focus with submit. Expect no onCommit and numericValue 2. Actual: onCommit runs and numericValue becomes 5.",
+      "fixedBy": "native_parity_media::controls::does not commit after parse, format or validate disables or unmounts the field"
     },
     {
       "id": "B5",
-      "status": "open",
+      "status": "fixed",
       "evidence": "probe at HEAD",
       "file": "src/ui/inputs.luau",
       "title": "onPointerCancel alone never fires",
-      "failingTest": "Mount Button with only onPointerCancel. Fire InputBegan (MouseButton1) and MouseLeave. Expect one call. Actual: zero. The listeners connect only when repeatDelay, repeatInterval, onPointerDown or onPointerUp is present."
+      "failingTest": "Mount Button with only onPointerCancel. Fire InputBegan (MouseButton1) and MouseLeave. Expect one call. Actual: zero. The listeners connect only when repeatDelay, repeatInterval, onPointerDown or onPointerUp is present.",
+      "fixedBy": "native_parity_media::controls::fires button pointer down, up and cancel once each and none while disabled"
     },
     {
       "id": "B6",
-      "status": "open",
+      "status": "fixed",
       "evidence": "probe at HEAD",
       "file": "src/ui/inputs.luau",
       "title": "Input controls ignore GuiService.ReducedMotionEnabled",
-      "failingTest": "Set GuiService.ReducedMotionEnabled = true and do not pass the reducedMotion factory option. Mount Button with pop = true, fire Activated and heartbeat 0.1. Expect UIScale.Scale 1. Actual: the pop animates. The StyleSheet and the navigation surfaces follow GuiService; Button pop, the validation pulse and the busy dots do not."
+      "failingTest": "Set GuiService.ReducedMotionEnabled = true and do not pass the reducedMotion factory option. Mount Button with pop = true, fire Activated and heartbeat 0.1. Expect UIScale.Scale 1. Actual: the pop animates. The StyleSheet and the navigation surfaces follow GuiService; Button pop, the validation pulse and the busy dots do not.",
+      "fixedBy": "native_parity_media::controls::follows GuiService reduced motion for button pop, validation pulse and busy dots"
     },
     {
       "id": "B7",
-      "status": "open",
+      "status": "fixed",
       "evidence": "probe at HEAD",
       "file": "src/ui/collections.luau",
       "title": "A readable follow option is accepted and ignored",
-      "failingTest": "Mount VirtualList with follow = Compose.cell(\"end\"). Expect an error, because api.md says follow is static and an unsupported option causes an error. Actual: it mounts and behaves as follow = \"none\"."
+      "failingTest": "Mount VirtualList with follow = Compose.cell(\"end\"). Expect an error, because api.md says follow is static and an unsupported option causes an error. Actual: it mounts and behaves as follow = \"none\".",
+      "fixedBy": "native_parity_apps::Collections::refuses a readable follow policy because follow is a static option"
     },
     {
       "id": "B8",
@@ -33322,11 +34115,12 @@
     },
     {
       "id": "E2",
-      "status": "open",
+      "status": "fixed",
       "evidence": "agent probe",
       "file": "examples/gallery/examples/02_playlist_table.luau",
       "title": "Playlist plays a track on one click; its hint says double-click",
-      "failingTest": "Mount the playlist and fire one RowHit.Activated with MouseButton1. Expect selection only. Actual: nowPlaying changes."
+      "failingTest": "Mount the playlist and fire one RowHit.Activated with MouseButton1. Expect selection only. Actual: nowPlaying changes.",
+      "fixedBy": "native_parity_apps::Playlist example::plays on a double click Return or touch tap while a single or slow click only selects"
     },
     {
       "id": "E3",
@@ -33453,6 +34247,133 @@
       "title": "Toggle accepted a read-only mixed state without onChange",
       "failingTest": "Mount a checkbox Toggle with a writable value and a read-only mixed formula. Expect an error. Actual: it mounted, and the mixed state could never clear.",
       "fixedBy": "native_parity_controls::native parity controls::requires a request callback for a read-only toggle value or mixed state"
+    },
+    {
+      "id": "AB1",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/nav_menu.luau",
+      "title": "ComboBox accepted a value that is not a string and missing options",
+      "fixedBy": "native_parity_media::refusals::refuses a combo box with a plain value, missing text, a non-function validator or an unknown key"
+    },
+    {
+      "id": "AB2",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/inputs.luau",
+      "title": "Button accepted any imageFraming value; a table was treated as crop",
+      "fixedBy": "native_parity_media::icons::frames a button image by crop by default and by fit on request"
+    },
+    {
+      "id": "AB3",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collections.luau, src/ui/collection_table.luau",
+      "title": "onActivate did not receive the native input or click count; a double click turned a multi-select row off again",
+      "fixedBy": "native_parity_apps::Collections::activates a list row from pointer and touch and keeps the selection on a second click"
+    },
+    {
+      "id": "AB4",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/nav_radial.luau",
+      "title": "A fixed ring changed its hole when the anchor clearance changed",
+      "fixedBy": "native_parity_apps::RadialMenu::sizes the hole from the anchor clearance and keeps a fixed ring until it reopens"
+    },
+    {
+      "id": "AB5",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/nav_radial.luau",
+      "title": "The list presentation showed two navigation controls for the root and close centers, and the Center said Back where it closes",
+      "fixedBy": "native_parity_apps::RadialMenu::shows exactly one navigation control for each center policy and names it by depth"
+    },
+    {
+      "id": "AB6",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/init.luau",
+      "title": "The RadialMenu contract types were not exported",
+      "fixedBy": "native_parity_apps::Public surface, catalog and theme corpus::exports the Props or Spec contract of every control and the documented Compose types"
+    },
+    {
+      "id": "AB7",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/nav_pages.luau",
+      "title": "A NavigationStack built its root page before it refused a malformed transition",
+      "fixedBy": "native_parity_apps::NavigationStack and CollapsibleView::refuses malformed specs, paths and transitions before building any page"
+    },
+    {
+      "id": "AB8",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/nav_modal.luau",
+      "title": "Removing an open modal left GuiService selection on its destroyed control",
+      "fixedBy": "native_parity_apps::NavigationStack and CollapsibleView::releases an expanded collapsible surface across open close cycles and on unmount"
+    },
+    {
+      "id": "AE1",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/reference/*/init.luau",
+      "title": "A native signal connection went to Compose.cleanup, which refuses it; the apps did not mount with a heartbeat or GuiService",
+      "fixedBy": "native_parity_apps::Glade::keeps the same states and events under reduced motion and holds the wisp still"
+    },
+    {
+      "id": "AE2",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/reference/p1_glade/init.luau, examples/reference/p4_foyer/init.luau",
+      "title": "The Fresh Start and Invite alerts did not present; a (use) readable was given where Alert calls a payload factory",
+      "fixedBy": "native_parity_apps::Glade::asks before Fresh Start, keeps the world on Keep and reseeds it on Start over"
+    },
+    {
+      "id": "AE3",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/reference/p2_cartwheel/init.luau",
+      "title": "A rejected brew command lost its reason",
+      "fixedBy": "native_parity_apps::Cartwheel::moves a brew through start, brewing and done, disables pending commands and rejects a second collect"
+    },
+    {
+      "id": "AE4",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/reference/p2_cartwheel/init.luau",
+      "title": "Brew actions stayed active while their command was pending",
+      "fixedBy": "native_parity_apps::Cartwheel::moves a brew through start, brewing and done, disables pending commands and rejects a second collect"
+    },
+    {
+      "id": "AE5",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/gallery/scenarios/skeleton.luau",
+      "title": "The motion commands called an undefined function",
+      "fixedBy": "native_parity_apps::Gallery recipes::drives the skeleton recipe through silhouettes, branches and motion and releases its clock"
+    },
+    {
+      "id": "AE6",
+      "status": "fixed",
+      "evidence": "type check",
+      "file": "examples/gallery/scenarios/adaptive_controls.luau",
+      "title": "A grid layout set LayoutOrder from an undefined global"
+    },
+    {
+      "id": "AE7",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/gallery/client/init.client.luau",
+      "title": "An empty Facet_Scenario with Facet_Example loaded the example as a fixture",
+      "fixedBy": "native_parity_apps::Gallery shell::boots a scenario over an example over a demo and the default demo without attributes"
+    },
+    {
+      "id": "AD1",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "docs/guide/README.md",
+      "title": "The guide index linked one of the seven extension playbooks",
+      "fixedBy": "native_parity_apps::Public surface, catalog and theme corpus::documents every Facet.themes export and every capability in the guide catalog"
     }
   ]
 }

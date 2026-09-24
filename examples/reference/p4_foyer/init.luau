@@ -30,7 +30,10 @@ function Foyer.build(ctx)
 	end
 	local heartbeat = ctx.heartbeat or (if game then game:GetService("RunService").Heartbeat else nil)
 	if heartbeat then
-		Compose.cleanup(heartbeat:Connect(settle))
+		local beat = heartbeat:Connect(settle)
+		Compose.cleanup(function()
+			beat:Disconnect()
+		end)
 	end
 	Compose.watch(function(use)
 		local status = use(services.refreshStatus)
@@ -273,8 +276,8 @@ function Foyer.build(ctx)
 			},
 			UI.Alert "Invite" {
 				isPresented = invite,
-				title = text("invite.label"),
-				message = text("invite.stub"),
+				title = Compose.formula(text("invite.label")),
+				message = Compose.formula(text("invite.stub")),
 				actions = { { id = "close", label = text("close.label"), role = "cancel" } },
 			},
 		}

@@ -10,6 +10,9 @@
 - Removed first-party explanatory code comments. Compiler directives and legal notices remain.
 - Restored the verification producers that still apply to the native architecture: documentation style, maintainer map, brand and call-shape drift, experiment markers, screen key bindings, theme drift, public-surface snapshot, live-evidence records, performance scene, capture, place and gate evidence, the release falsification and the release-gate evidence file. CI runs on Ubuntu and on the ARM reference runner.
 - Badge `corners` reads the package radii. The Table resize grip and the Slider track have accessible names. The ornate-gauge and custom-control theme fixtures use the current constructors.
+- A `RadialMenu` with `follow = "fixed"` keeps its ring and its center hole until it opens again. The list presentation shows one navigation control: `close` and `back` at the root read "Close", and `back` in a submenu reads "Back".
+- Button refuses an `imageFraming` other than `fit` or `crop`. ComboBox refuses a value that is not a string and missing `options`.
+- `Facet` exports the `RadialItem` and `RadialMenuSpec` types.
 
 ## Pre-0.12.0 development history
 

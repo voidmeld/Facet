@@ -84,4 +84,23 @@ function catalogue.next(current, step)
 	end
 	return demos[(selected - 1 + (step or 1)) % #demos + 1].id
 end
+local EXAMPLES = {
+	"01_temperature_converter",
+	"02_playlist_table",
+	"03_settings_sync",
+	"04_confirm_dialog",
+	"05_word_game",
+	"06_tile_game",
+	"07_match3",
+}
+function catalogue.boot(demo, scenario, example)
+	if type(scenario) == "string" and scenario ~= "" then
+		return scenario, { id = scenario, title = scenario, kind = "fixture", module = scenario }
+	end
+	local name = if type(example) == "number" then EXAMPLES[example] else nil
+	if name then
+		return name, { id = name, title = name, kind = "example", module = name }
+	end
+	return demo or "all-controls", nil
+end
 return catalogue

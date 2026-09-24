@@ -176,7 +176,8 @@ return function(ctx: Types.Context): Nav.Surfaces
 				end
 			end)
 			Compose.cleanup(function()
-				if within(gui.SelectedObject, root) or gui.SelectedObject == nil then
+				local selected = gui.SelectedObject
+				if selected == nil or selected.Parent == nil or within(selected, root) then
 					gui.SelectedObject = if previous and previous.Parent ~= nil then previous else nil
 				end
 			end)

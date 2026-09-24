@@ -551,7 +551,7 @@ function workloads.create(ctx, name, dataset)
 								label = `Race car {index}`,
 								subtitle = "Ready to race",
 								image = dataset.IMAGE_KEYS[(index - 1) % #dataset.IMAGE_KEYS + 1],
-								imageFraming = { width = 256, height = 256, focusY = 0.25 },
+								imageFraming = "crop",
 								onActivate = function() end,
 							})
 							table.insert(state.nodes, card)

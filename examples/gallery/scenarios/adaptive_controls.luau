@@ -298,7 +298,6 @@ return {
 								Host.UIGridLayout({
 									SortOrder = Enum.SortOrder.LayoutOrder,
 									CellSize = UDim2.fromOffset(72, 30),
-									LayoutOrder = i,
 									CellPadding = UDim2.fromOffset(4, 4),
 								}),
 								table.unpack(stats),

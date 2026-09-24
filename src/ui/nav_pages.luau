@@ -24,6 +24,15 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	): Instance
 		return if type(builder) == "function" then builder(entry) else builder
 	end
+	local function checkTransition(transition: Nav.Transition | false?): ()
+		if transition == nil or transition == false then
+			return
+		end
+		assert(type(transition) == "table", "Navigation transition uses Compose tween options")
+		for key in transition do
+			assert(key == "seconds" or key == "ease", "Navigation transition uses Compose tween options: seconds, ease")
+		end
+	end
 	local function layer(
 		properties: Types.CanvasGroupNativeProps & Types.FrameNativeProps,
 		state: Core.Readable<Core.LayerStackState>,
@@ -41,10 +50,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			return node
 		end
-		assert(type(transition) == "table", "Navigation transition uses Compose tween options")
-		for key in transition do
-			assert(key == "seconds" or key == "ease", "Navigation transition uses Compose tween options: seconds, ease")
-		end
+		checkTransition(transition)
 		local mounted = Compose.cell(false)
 		local gui = surfaces.service("GuiService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
@@ -707,6 +713,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			spec.path and spec.path.set and spec.root and spec.destinations,
 			"NavigationStack requires path, root and destinations"
 		)
+		checkTransition(spec.transition)
 		local gui = surfaces.service("GuiService")
 		local selectedObject = if gui then ctx.observe(gui, "SelectedObject") else Compose.cell(nil)
 		local depth = navigationDepth

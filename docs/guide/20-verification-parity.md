@@ -15,9 +15,9 @@ where.
 
 - 894 main cases test behavior that `api.md`, a guide or `src`
   still promises, but no candidate case tested it. The parity tests close
-  475 of these cases. One case moved to class c, because `api.md`
-  no longer makes its promise. 418 cases remain.
-- 1,697 of the 2,769 covered cases have a weaker
+  837 of these cases. One case moved to class c, because `api.md`
+  no longer makes its promise. 56 cases remain.
+- 1,725 of the 3,131 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -64,10 +64,10 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 978 | 2,294 | 2,769 |
+| a | Covered by a candidate case | 1139 | 2,294 | 3,131 |
 | b | Retired. The Roblox Engine or Compose owns the mechanism | 306 | 1,581 | 1,581 |
 | c | Retired. The feature or code was deleted and is not promised | 823 | 6,079 | 6,080 |
-| d | Gap. A promise remains and no candidate case verifies it | 183 | 894 | 418 |
+| d | Gap. A promise remains and no candidate case verifies it | 22 | 894 | 56 |
 
 Class c is the largest class. Most of it tested the deleted solver,
 renderer, focus graph, input system, presenter, paint layer and their seams.
@@ -82,35 +82,35 @@ last column names the candidate specs that the group cites most.
 | Group | Main cases | a | Weaker | b | c | d | Candidate coverage |
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 63 | 23 | 16 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
-| Lifetime and ownership | 316 | 136 | 103 | 6 | 168 | 6 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,326 | 88 | 58 | 359 | 872 | 7 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
+| Layout and geometry | 1,326 | 94 | 58 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 497 | 54 | 38 | 232 | 202 | 9 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 532 | 81 | 47 | 257 | 172 | 22 | `native_navigation`, `native_collections`, `native_inputs` |
+| Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 368 | 61 | 47 | 97 | 208 | 2 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
-| Scrolling | 330 | 82 | 60 | 100 | 137 | 11 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
-| Motion | 581 | 120 | 80 | 33 | 404 | 24 | `native_themes_media`, `native_navigation`, `native_inputs` |
+| Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Scrolling | 330 | 93 | 60 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
+| Motion | 581 | 142 | 80 | 33 | 404 | 2 | `native_themes_media`, `native_navigation`, `native_inputs` |
 | Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
 | Theme packages | 379 | 146 | 68 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
-| Icons and media | 251 | 86 | 66 | 37 | 98 | 30 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 394 | 62 | 57 | 1 | 297 | 34 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Icons and media | 251 | 110 | 66 | 37 | 98 | 6 | `native_themes_media`, `native_stress`, `native_public_surface` |
+| Action controls | 394 | 94 | 57 | 1 | 297 | 2 | `native_inputs`, `native_navigation`, `native_themes_media` |
 | Value controls | 249 | 221 | 128 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
-| Text input | 119 | 51 | 26 | 28 | 21 | 19 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 141 | 102 | 58 | 0 | 38 | 1 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
-| Navigation containers | 72 | 59 | 36 | 1 | 2 | 10 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 287 | 116 | 81 | 5 | 158 | 8 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
-| Virtual collections | 214 | 151 | 127 | 3 | 52 | 8 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
-| Tables | 156 | 76 | 40 | 1 | 58 | 21 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
+| Text input | 119 | 69 | 26 | 28 | 21 | 1 | `native_inputs`, `native_navigation`, `native_collections` |
+| Menus and pickers | 141 | 103 | 58 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Navigation containers | 72 | 64 | 36 | 1 | 2 | 5 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
+| Presented surfaces | 287 | 124 | 81 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Virtual collections | 214 | 156 | 127 | 3 | 52 | 3 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
+| Tables | 156 | 97 | 43 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
 | Row actions | 264 | 149 | 101 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 166 | 43 | 34 | 50 | 70 | 3 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 419 | 27 | 17 | 51 | 336 | 5 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
-| Public surface | 366 | 86 | 59 | 0 | 277 | 3 | `native_conformance`, `native_registration`, `native_parity_gaps` |
-| Docs, examples and tooling | 498 | 21 | 11 | 0 | 447 | 30 | `native_documentation`, `native_registration`, `scenario_require_paths` |
-| Gallery and examples | 425 | 204 | 120 | 113 | 66 | 42 | `native_gallery`, `native_games`, `native_gallery_collections` |
-| Reference apps | 327 | 59 | 38 | 22 | 153 | 93 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
-| Performance | 792 | 82 | 34 | 4 | 704 | 2 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
-| Replication and server state | 55 | 19 | 14 | 0 | 24 | 12 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
-| Error handling and refusals | 220 | 64 | 14 | 2 | 146 | 8 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
+| HUD and world targets | 166 | 46 | 34 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| Adaptive environment | 419 | 28 | 17 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
+| Docs, examples and tooling | 498 | 51 | 11 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
+| Gallery and examples | 425 | 237 | 133 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
+| Reference apps | 327 | 151 | 45 | 22 | 153 | 1 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
+| Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
+| Replication and server state | 55 | 31 | 14 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
+| Error handling and refusals | 220 | 69 | 16 | 2 | 146 | 3 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
 
@@ -468,6 +468,38 @@ reproduction.
 | B20 | `src/ui/inputs.luau` | Rating and LevelPicker published values outside their run. |
 | B21 | `src/ui/inputs.luau` | Toggle accepted a read-only mixed state without onChange. |
 
+### Fixed with the reference-app, example and control tests
+
+A test in `tests/native_parity_apps.spec.luau` or
+`tests/native_parity_media.spec.luau` shows each of these defects. The same
+change fixes it.
+
+| ID | File | Defect |
+|---|---|---|
+| B1 | `src/ui/collections.luau` | `wrapFocus` did not wrap arrow or D-pad focus. Now it wraps at both ends along the pressed axis. |
+| B4 | `src/ui/inputs.luau` | A TextInput committed after its `parse`, `format` or `validate` callback disabled or removed it. Now the commit stops. |
+| B5 | `src/ui/inputs.luau` | A Button with only `onPointerCancel` never received the cancel. |
+| B6 | `src/ui/inputs.luau` | Button pop, busy dots and the validation pulse ignored `GuiService.ReducedMotionEnabled`. Now they follow it. |
+| B7 | `src/ui/collections.luau` | A readable `follow` mounted and acted as `none`. Now it causes an error. |
+| AB1 | `src/ui/nav_menu.luau` | ComboBox accepted a value that is not a string and missing `options`. |
+| AB2 | `src/ui/inputs.luau` | Button accepted any `imageFraming` value. A table was treated as `crop`. |
+| AB3 | `src/ui/collections.luau`, `src/ui/collection_table.luau` | `onActivate` did not receive the native input or click count, so a list could not tell one click from a double click. A double click also turned a multi-select row off again. |
+| AB4 | `src/ui/nav_radial.luau` | A ring with `follow = "fixed"` changed its hole when the anchor clearance changed. |
+| AB5 | `src/ui/nav_radial.luau` | The list presentation showed two navigation controls for the `root` and `close` centers. The Center button said "Back" where it closes the menu. |
+| AB6 | `src/init.luau` | The package did not export the RadialMenu contract types, although `api.md` promises the contract of each control. |
+| AB7 | `src/ui/nav_pages.luau` | A NavigationStack built its root page before it refused a malformed transition. |
+| AB8 | `src/ui/nav_modal.luau` | Removing an open modal left the selection on its destroyed control. Studio may clear it natively. The fake engine does not. |
+| E2 | `examples/gallery/examples/02_playlist_table.luau` | One click played a track. Now a double click, Return or a touch tap plays it. |
+| E3 | `examples/themes/ornate_gauge.luau`, `examples/themes/custom_control.luau` | The fixture blueprints called deleted constructors. They now build native nodes. |
+| AE1 | `examples/reference/*/init.luau` | Each app gave a native signal connection to `Compose.cleanup`, which refuses it. With a heartbeat or GuiService, the app did not mount. |
+| AE2 | `examples/reference/p1_glade/init.luau`, `examples/reference/p4_foyer/init.luau` | The Fresh Start and Invite alerts did not present. Alert calls a function title as a payload factory, and the apps gave a `(use)` readable. |
+| AE3 | `examples/reference/p2_cartwheel/init.luau` | A rejected brew command lost its reason, so the player saw the fallback text. |
+| AE4 | `examples/reference/p2_cartwheel/init.luau` | The brew actions stayed active while their command was pending. |
+| AE5 | `examples/gallery/scenarios/skeleton.luau` | The motion commands called an undefined function. The recipe now drives the gallery motion preference. |
+| AE6 | `examples/gallery/scenarios/adaptive_controls.luau` | A grid layout set `LayoutOrder` from an undefined global. |
+| AE7 | `examples/gallery/client/init.client.luau` | An empty `Facet_Scenario` with `Facet_Example` loaded the example as a fixture. The boot choice is now `catalogue.boot` in `demo_picker.luau`. |
+| AD1 | `docs/guide/README.md` | The guide index linked one of the seven extension playbooks. |
+
 ## Gaps closed by this audit
 
 [`tests/native_parity_gaps.spec.luau`](../../tests/native_parity_gaps.spec.luau)
@@ -653,6 +685,43 @@ These gaps close only in part. A live Studio check must show the rest:
 navigation-3-84 moved to class c. `api.md` no longer lists the Picker
 `valueAlignment` option, and a declared `valueAlignment` causes an error.
 
+### Reference app, example and media parity tests
+
+[`tests/native_parity_apps.spec.luau`](../../tests/native_parity_apps.spec.luau)
+and [`tests/native_parity_media.spec.luau`](../../tests/native_parity_media.spec.luau)
+close these contracts. The data file names the case for each contract.
+
+| Spec | Block | Closes | Main cases |
+|---|---|---|---:|
+| `native_parity_apps` | Glade | apps-04, apps-06, apps-07, apps-09, apps-12, apps-13, apps-14, apps-15, apps-17, apps-19, apps-23, apps-25, apps-28, apps-31, apps-33 | 34 |
+| `native_parity_apps` | Cartwheel | apps-37, apps-39, apps-41, apps-44, apps-47, apps-49, apps-53, apps-55, apps-57, apps-60, apps-64, apps-65, apps-67 | 27 |
+| `native_parity_apps` | Sipworks | apps-72, apps-73, apps-75, apps-78, apps-82, apps-83, apps-85, apps-87, apps-94, apps-96 | 21 |
+| `native_parity_apps` | Foyer | apps-100, apps-104, apps-108, apps-109 | 10 |
+| `native_parity_apps` | Gallery examples | apps2-02, apps2-08, apps2-20, apps2-29, apps2-42, apps2-46, apps2-73, apps2-74 | 28 |
+| `native_parity_apps` | Gallery shell | apps2-82, apps2-83, apps2-115, apps2-92, apps2-101, apps2-107 | 18 |
+| `native_parity_apps` | Gallery recipes | themes-P1-31, themes-P1-45, themes-P1-52, themes-P1-95, themes-P1-116, inputs-176, apps2-230 | 9 |
+| `native_parity_apps` | Gallery layouts | apps2-49, apps2-61 | 3 |
+| `native_parity_apps` | Outpost terminal | apps2-128, apps2-132 | 7 |
+| `native_parity_apps` | Performance lab | apps2-139, apps2-148 | 2 |
+| `native_parity_apps` | Documentation and tooling | apps2-158, apps2-236, apps2-80 | 6 |
+| `native_parity_apps` | Table | apps2-167, apps2-179, apps2-177, apps2-178 | 11 |
+| `native_parity_apps` | Playlist example | apps2-33, apps2-37, apps2-172, apps2-174 | 9 |
+| `native_parity_apps` | RadialMenu | apps2-190, apps2-192, apps2-200, apps2-202, apps2-208, apps2-212, apps2-215 | 11 |
+| `native_parity_apps` | Quick actions example | apps2-224, apps2-194 | 13 |
+| `native_parity_apps` | Public surface, catalog and theme corpus | apps-117, paint-140, paint-143, mech3-55, themes-P4-43, themes-P4-44, themes-P5-12 | 26 |
+| `native_parity_apps` | Menu scenario copy | navigation-2-57 | 1 |
+| `native_parity_media` | progress motion | paint-37, themes-P1-75, themes-P1-76, themes-P1-78, paint-41, themes-P1-69 | 21 |
+| `native_parity_media` | badge | themes-P1-47, themes-P1-48, themes-P1-49, themes-P1-53 | 4 |
+| `native_parity_media` | avatar | themes-P1-23, themes-P1-25, themes-P1-40 | 3 |
+| `native_parity_media` | skeleton and status indicator | themes-P1-89, themes-P1-91, themes-P1-92, themes-P1-114 | 4 |
+| `native_parity_media` | async image and stage | themes-P1-125, themes-P1-101 | 2 |
+| `native_parity_media` | icons | paint-24, themes-P2-48, themes-P2-43, themes-P3-22, paint-79 | 7 |
+| `native_parity_media` | refusals | inputs-29, inputs-43, inputs-67, inputs-73, inputs-197, paint-06, navigation-2-09 | 16 |
+| `native_parity_media` | controls | inputs-25, inputs-162, inputs-17, inputs-26, paint-16, paint-60, inputs-93, inputs-185, inputs-188, inputs-196, apps-179, apps-146 | 26 |
+| `native_parity_media` | icon coverage | paint-53, paint-54, themes-P2-54 | 14 |
+| `native_parity_apps` | Collections | collections-21, collections-128, collections-129, collections-134, collections-136, collections-139, collections-184, collections-207, collections-216, collections-302, collections-225, collections-230, collections-232, collections-244, collections-234, collections-245, collections-250, collections-255, collections-253, collections-263, collections-270, mech1-130 | 39 |
+| `native_parity_apps` | NavigationStack and CollapsibleView | navigation-3-04, navigation-3-24, navigation-3-15, navigation-3-16, navigation-3-17, navigation-3-23, navigation-2-04 | 12 |
+
 ## Proposed tests for the largest gaps
 
 Each proposal is headless. Use the fake engine in `tests/lib/native_engine.luau`.
@@ -667,137 +736,32 @@ Each proposal is headless. Use the fake engine in `tests/lib/native_engine.luau`
 
 ## Gap list
 
-Each ID is a contract in the data file. The data file has the promise, the
-main specs and a proposed test for each gap. Framework gaps come first.
-Example and reference-app gaps follow in a summary.
+These 22 contracts (56 main cases) still have a promise and no candidate case.
 
 | ID | Group | Main cases | Contract |
 |---|---|---:|---|
-| apps2-101 | Lifetime and ownership | 3 | Demo cleanup ordering: resources outlive the presented tree; same-frame dispose+dismiss is clean; self-presenting demo disposed once |
-| navigation-2-04 | Lifetime and ownership | 2 | Expanded CollapsibleView releases its surface on unmount and across open/close cycles |
-| themes-P1-92 | Lifetime and ownership | 1 | Held shared driver released after later construction refuses |
-| apps2-192 | Layout and geometry | 3 | Corner/portrait rings keep >=44px buttons inside the surface before falling back |
-| apps2-61 | Layout and geometry | 2 | Wrap toggle flips wrapping on the same nodes; Block align moves only the block |
-| navigation-1-69 | Layout and geometry | 1 | Nothing on the callout page crosses a lateral edge at swept sizes |
-| themes-P1-48 | Layout and geometry | 1 | Icon badge height equals plain caption; icon side respected |
-| paint-148 | Text measurement and fit | 9 | Type roles compile to native font rules and tags |
-| collections-255 | Focus and selection | 4 | Horizontal list Left/Right steps, Up/Down inert, D-pad parity, scroll into view |
-| collections-245 | Focus and selection | 3 | Transposed horizontal grid navigation and scroll-into-view |
-| apps-179 | Focus and selection | 2 | Disabled control leaves navigation |
-| apps2-179 | Focus and selection | 2 | A selected column is released on Cancel, second Activate, or when focus leaves the table |
-| apps2-232 | Focus and selection | 2 | D-pad reaches both tab strips and an alert, traps focus, restores its launcher; shoulders route to inner tabs and Back through the journey |
-| mech1-130 | Focus and selection | 2 | Collection wrapFocus/autoFocus |
-| navigation-3-15 | Focus and selection | 2 | Pop restores remembered focus even when surviving shell chrome holds selection |
-| apps-146 | Focus and selection | 1 | Nested modals restore focus in LIFO order |
-| collections-230 | Focus and selection | 1 | Cells get a focus readable that follows the ring |
-| collections-234 | Focus and selection | 1 | Grid Left/Right steps cell by cell |
-| collections-270 | Focus and selection | 1 | wrapFocus wraps the ring at both ends |
-| navigation-3-16 | Focus and selection | 1 | Remembered target disabled while away falls back to first selectable |
-| apps-163 | Input actions | 5 | Exactly one Activate per press across the InputAction and native Activated paths |
-| apps2-208 | Pointer, touch and drag | 1 | Item disabled mid-drag does not fire on release |
-| apps2-215 | Pointer, touch and drag | 1 | centerPassThrough leaves the center input-transparent |
-| collections-128 | Scrolling | 3 | Snap at the end of the list: the last page settles to the end; a decisive drag back leaves it |
-| collections-225 | Scrolling | 3 | The grid anchor holds under line-extent and column-count changes |
-| collections-129 | Scrolling | 2 | Snap idle churn guard and snap vocabulary refusal |
-| collections-216 | Scrolling | 1 | Shrinking rows at the bottom leaves the list flush |
-| collections-250 | Scrolling | 1 | Keep-visible writes X on a horizontal list |
-| collections-302 | Scrolling | 1 | Shrinking the end corrects the engine |
-| themes-P1-76 | Motion | 6 | Visible-step count and full-vs-reduced write differential for bar/circular/spinner |
-| apps2-92 | Motion | 4 | The motion setting survives a demo swap |
-| navigation-3-04 | Motion | 3 | NavigationStack fade transition and reduced-motion swap |
-| apps-258 | Motion | 2 | Source that moves or is a readable during flight; keeps last origin when it disappears |
-| inputs-25 | Motion | 2 | No pop transform without pop; held repeat does not re-kick pop |
-| navigation-3-24 | Motion | 2 | Fade transitions retire pages; rapid forward/back leaves one opaque interactive page |
-| paint-37 | Motion | 2 | Indeterminate bar sweeping segment stays inside the track |
-| inputs-162 | Motion | 1 | Control motion follows the player's reduced-motion preference with no consumer wiring |
-| themes-P1-75 | Motion | 1 | Reduced motion sub-tick hold then move: indeterminate bar |
-| themes-P1-78 | Motion | 1 | Switching policy mid-cycle steps, never restarts |
-| paint-54 | Icons and media | 10 | Every shipped package resolves every framework icon to art |
-| themes-P3-22 | Icons and media | 3 | contentId is an alias of content: both spellings yield the same native Image/rules as plain strings |
-| paint-53 | Icons and media | 2 | Framework icon list matches the names controls request |
-| themes-P2-23 | Icons and media | 2 | Slider rail paints sliced and the thumb paints whole (sliced=false) |
-| themes-P2-54 | Icons and media | 2 | Stepper increment and decrement use semantic icons, not the U+2212 glyph |
-| paint-24 | Icons and media | 1 | Unknown semantic icon refused |
-| paint-79 | Icons and media | 1 | Button imageFraming fit/crop |
-| themes-P1-23 | Icons and media | 1 | presenceMark=false suppresses the mark but keeps presence in the label |
-| themes-P1-25 | Icons and media | 1 | Refuses invalid name/form/presence before acquiring |
-| themes-P1-40 | Icons and media | 1 | Non-string overflowLabel refused and recovered |
-| themes-P2-38 | Icons and media | 1 | A flat package still tints framework icons (with no instance paint) |
-| themes-P2-43 | Icons and media | 1 | Eleven common framework icons (status, calendar, clock, vote, person, chevron ends) resolve to standard art |
-| themes-P2-46 | Icons and media | 1 | Framework icons are tinted by the palette content role, not left white |
-| themes-P2-47 | Icons and media | 1 | A status plate re-letters the picture on it |
-| themes-P2-48 | Icons and media | 1 | An unknown icon name resolves to nothing |
-| themes-P2-62 | Icons and media | 1 | A status plate re-letters the picture: kind tag and direct child |
-| paint-06 | Action controls | 8 | Unknown controlSize refused; live bad rung keeps last legal value |
-| inputs-17 | Action controls | 4 | Busy label and spinner dots stay inside the button plate in every package |
-| inputs-43 | Action controls | 3 | Unknown shape/icon names are refused at construction |
-| collections-184 | Action controls | 2 | Keyboard/gamepad row activation fires onActivate for that row |
-| collections-232 | Action controls | 2 | Pointer, touch and keyboard activation of a grid cell (onActivate) |
-| collections-253 | Action controls | 2 | Pointer and touch tap activate a horizontal item |
-| collections-263 | Action controls | 2 | Row tap activates (pointer and touch) |
-| paint-16 | Action controls | 2 | Chip default shape and leading/trailing accessories |
-| paint-30 | Action controls | 2 | Disabled Picker and DisclosureGroup refuse interaction |
-| apps2-08 | Action controls | 1 | A tap while the board resolves is refused in words and costs nothing |
-| apps2-20 | Action controls | 1 | A spent rack slot is disabled, not a live blank button |
-| apps2-230 | Action controls | 1 | Status and identity recipes reset through their shared commands |
-| collections-244 | Action controls | 1 | Horizontal grid cell tap activates |
-| inputs-26 | Action controls | 1 | Button renders caller children inside the button |
-| inputs-29 | Action controls | 1 | Role vocabulary accepted and unknown roles rejected |
-| paint-60 | Action controls | 1 | Button pointer callbacks |
-| inputs-196 | Text input | 6 | Numeric parse/format/validate cannot commit after disabling or disposing the control |
-| apps2-29 | Text input | 5 | Temperature converter: numeric field only, live Preview vs committed Result, Enter and focus-loss commit, validate rejects |
-| inputs-185 | Text input | 2 | Invalid UTF-8 edits are rejected |
-| inputs-188 | Text input | 2 | clearButton=true means always; unknown mode is refused |
-| inputs-197 | Text input | 1 | Numeric specs refuse nonfinite bounds and bad callbacks |
-| inputs-73 | Text input | 1 | TextInput refuses both enabled and disabled |
-| navigation-2-09 | Text input | 1 | ComboBox refuses malformed/missing required fields |
-| navigation-2-12 | Text input | 1 | Custom validation that disposes the control cannot commit |
-| apps2-212 | Menus and pickers | 1 | launcher=false leaves no built-in trigger |
-| navigation-5-47 | Navigation containers | 5 | Scenario behaviors still promised but untested: pill in adaptable nav, badge on unselected tab, 44px floor, shoulders, reveal-once |
-| apps2-107 | Navigation containers | 2 | Stepping wraps both ways, a full cycle returns, unknown current id yields a real demo |
-| apps2-200 | Navigation containers | 2 | One navigation control per center policy; Close/Back by depth |
-| apps2-202 | Navigation containers | 1 | Removing an open ancestor returns to the nearest valid page |
-| apps2-46 | Presented surfaces | 6 | Confirm dialog outcomes: Delete opens, Cancel records kept, Confirm changes the screen, Restore repeats, double Delete does not stack |
-| inputs-93 | Presented surfaces | 2 | Help plate takes no focus and wraps long text |
-| navigation-4-69 | Virtual collections | 3 | VirtualGrid and Table keep keyed scroll anchors across insertion while their tab is away (editing on/off) |
-| apps2-177 | Virtual collections | 2 | Column resize on a virtualized 2000-row table remounts only the window at the new width |
-| collections-21 | Virtual collections | 2 | followThreshold and rejoining the tail after returning to the end |
-| apps2-49 | Virtual collections | 1 | A sideways engine scroll slides the card rail window along X |
-| apps2-178 | Tables | 5 | Header column boundaries match the body's, with and without a scrollbar gutter, stable after resize |
-| apps2-37 | Tables | 4 | Double-click plays, single click only selects, slow clicks play nothing, touch first tap plays; Restore clears what was playing |
-| apps2-167 | Tables | 2 | Resizable column grows a grip; a locked (resizable=false) column has none and binds no adjust key |
-| apps2-172 | Tables | 2 | Rating sorts by live signal; Artist sorts by value with source-index tie-break |
-| apps2-174 | Tables | 2 | Top button bakes the sort; removing a row keeps the sort |
-| collections-134 | Tables | 2 | Header offset for the reorder and disclosure gutters keeps columns aligned |
-| apps2-33 | Tables | 1 | Playlist columns align name and rating under their headers |
-| collections-136 | Tables | 1 | Headerless table (header = false) |
-| collections-139 | Tables | 1 | A collapse sum equal to the available room fits |
-| collections-207 | Tables | 1 | Header and body cells span the same columns in every shape and package |
-| apps2-35 | Row actions | 3 | Scrolling the page closes a swiped-open tray; a swipe never plays the track (touch and mouse) |
-| apps2-190 | HUD and world targets | 2 | Anchor clearance sizes the hole; follow=fixed keeps opening geometry |
-| themes-P1-101 | HUD and world targets | 1 | Camera position/lookAt/fov |
-| collections-110 | Adaptive environment | 4 | A short landscape drops the heading; the first row is visible on all surfaces |
-| navigation-3-23 | Adaptive environment | 1 | Viewport/theme/input/reduced-motion switches keep the mounted page |
-| apps-117 | Public surface | 1 | init.luau re-exports contract types |
-| inputs-67 | Public surface | 1 | compactLabel refused on content/icon/image buttons |
-| navigation-3-17 | Public surface | 1 | Malformed specs, paths and route entries are refused before creating a page |
-| apps2-139 | Performance | 1 | Row count clamped to the declared ceiling |
-| apps2-148 | Performance | 1 | Two captures are the same workload only when every identity field agrees |
-| apps2-42 | Replication and server state | 7 | Settings sync: every state reachable by on-screen controls, status names next action, reset unanswered, second change refused visibly, idle Deliver explains, bounded newest-first history |
-| apps2-128 | Replication and server state | 5 | Unengaged terminal sends nothing and states the objective; ADJUST updates budget line/verdict; an edit retires the last outcome; exit is idempotent |
-| apps2-115 | Error handling and refusals | 2 | A demo that cannot build is not reported mounted; the scriptable API answers with what it delivered |
-| apps2-83 | Error handling and refusals | 2 | A demo that cannot be mounted is stamped and spoken |
-| collections-50 | Error handling and refusals | 2 | A theme metrics snapshot without derived row keys, or with NaN scale, falls back |
-| paint-41 | Error handling and refusals | 1 | Unknown ProgressView presentation refused |
-| themes-P4-42 | Error handling and refusals | 1 | Self-referential definition terminates (cycles rejected) |
-
-Example and reference-app gaps:
-
-| Group | Contracts | Main cases |
-|---|---:|---:|
-| Docs, examples and tooling | 9 | 30 |
-| Gallery and examples | 14 | 42 |
-| Reference apps | 43 | 93 |
+| apps2-35 | row-actions | 3 | Scrolling the page closes a swiped-open tray; a swipe never plays the track (touch and mouse) |
+| apps2-232 | focus-selection | 2 | D-pad reaches both tab strips and an alert, traps focus, restores its launcher; shoulders route to inner tabs and Back through the journey |
+| apps-70 | reference-apps | 1 | Every player-facing string comes from the locale table |
+| apps-163 | input-actions | 5 | Exactly one Activate per press across the InputAction and native Activated paths |
+| apps-258 | motion | 2 | Source that moves or is a readable during flight; keeps last origin when it disappears |
+| collections-50 | error-handling | 2 | A theme metrics snapshot without derived row keys, or with NaN scale, falls back |
+| collections-102 | gallery-examples | 1 | Shift+Return opens the mail row menu |
+| collections-106 | gallery-examples | 2 | Table surface: the pad reaches the edit minus; a horizontal drag reveals the tray |
+| collections-108 | gallery-examples | 6 | Virtual mail surface: switching, laziness, swipe commit, keyboard Delete, ButtonX, dispose |
+| collections-110 | adaptive-environment | 4 | A short landscape drops the heading; the first row is visible on all surfaces |
+| navigation-1-69 | layout-geometry | 1 | Nothing on the callout page crosses a lateral edge at swept sizes |
+| navigation-2-12 | controls-text-input | 1 | Custom validation that disposes the control cannot commit |
+| navigation-4-69 | collections-virtual | 3 | VirtualGrid and Table keep keyed scroll anchors across insertion while their tab is away (editing on/off) |
+| navigation-5-47 | navigation-containers | 5 | Scenario behaviors still promised but untested: pill in adaptable nav, badge on unselected tab, 44px floor, shoulders, reveal-once |
+| paint-30 | controls-actions | 2 | Disabled Picker and DisclosureGroup refuse interaction |
+| paint-148 | text-measure-fit | 9 | Type roles compile to native font rules and tags |
+| themes-P2-23 | icons-media | 2 | Slider rail paints sliced and the thumb paints whole (sliced=false) |
+| themes-P2-38 | icons-media | 1 | A flat package still tints framework icons (with no instance paint) |
+| themes-P2-46 | icons-media | 1 | Framework icons are tinted by the palette content role, not left white |
+| themes-P2-47 | icons-media | 1 | A status plate re-letters the picture on it |
+| themes-P2-62 | icons-media | 1 | A status plate re-letters the picture: kind tag and direct child |
+| themes-P4-42 | error-handling | 1 | Self-referential definition terminates (cycles rejected) |
 
 ## Use the data
 

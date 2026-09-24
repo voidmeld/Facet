@@ -320,11 +320,28 @@ return function(
 							else size.Y / 2
 					)
 				end)
+				local rawInner = Compose.formula(function(use: Reactive.Use): number
+					local inner = math.max(
+						24,
+						if type(read(spec.clearance, use)) == "number" then read(spec.clearance, use) else 40
+					)
+					local focal = read(spec.anchor, use)
+					if type(focal) == "table" and type(focal.clearance) == "number" then
+						inner = math.max(inner, focal.clearance)
+					end
+					if anchorSize then
+						local extent = use(anchorSize)
+						inner = math.max(inner, math.max(extent.X, extent.Y) / 2)
+					end
+					return inner
+				end)
 				local centerTarget = Compose.cell(rawCenter:peek())
+				local innerTarget = Compose.cell(rawInner:peek())
 				Compose.watch(function(use: Reactive.Use)
-					local at = use(rawCenter)
+					local at, inner = use(rawCenter), use(rawInner)
 					if follow ~= "fixed" and (follow == "always" or not use(interacting)) then
 						centerTarget:set(at)
+						innerTarget:set(inner)
 					end
 				end)
 				local frozenCenter = Compose.cell(centerTarget:peek())
@@ -341,20 +358,8 @@ return function(
 					frozenCenter:set(center:peek())
 				end
 				local layout = Compose.formula(function(use: Reactive.Use): Radial.Layout<V>
-					local size, at = use(viewport), use(centerTarget)
+					local size, at, inner = use(viewport), use(centerTarget), use(innerTarget)
 					local start, sweep = geometry.arc(spec.preset or "donut")
-					local inner = math.max(
-						24,
-						if type(read(spec.clearance, use)) == "number" then read(spec.clearance, use) else 40
-					)
-					local focal = read(spec.anchor, use)
-					if type(focal) == "table" and type(focal.clearance) == "number" then
-						inner = math.max(inner, focal.clearance)
-					end
-					if anchorSize then
-						local extent = use(anchorSize)
-						inner = math.max(inner, math.max(extent.X, extent.Y) / 2)
-					end
 					local room = if sweep == 360
 						then math.min(at.X - 12, size.X - at.X - 12, at.Y - 20, size.Y - at.Y - 20)
 						else math.min(size.X - 28, size.Y - 28)
@@ -796,7 +801,15 @@ return function(
 					surfaces.attach(panel, {
 						UI.Button "Center" {
 							LayoutOrder = -1,
-							label = spec.centerLabel or (if spec.center == "root" then "Home" else "Back"),
+							label = spec.centerLabel or function(use: Reactive.Use): string
+								return if spec.center == "root"
+									then "Home"
+									elseif spec.center == "close" or #use(path) == 0 then "Close"
+									else "Back"
+							end,
+							Visible = function(use: Reactive.Use)
+								return not (use(fallback) and (spec.center == "root" or spec.center == "close"))
+							end,
 							Position = function(use: Reactive.Use)
 								local at = use(center)
 								return if use(fallback) then D2.fromOffset(0, 0) else D2.fromOffset(at.X, at.Y)

@@ -30,9 +30,12 @@ function Glade.build(ctx)
 	local guiService = ctx.guiService
 	if guiService then
 		reducedMotion:set(guiService.ReducedMotionEnabled)
-		Compose.cleanup(guiService:GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(function()
+		local preference = guiService:GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(function()
 			reducedMotion:set(guiService.ReducedMotionEnabled)
-		end))
+		end)
+		Compose.cleanup(function()
+			preference:Disconnect()
+		end)
 	end
 	local favorites = {}
 	for _, glade in seed.GLADES do
@@ -54,7 +57,10 @@ function Glade.build(ctx)
 	end
 	local heartbeat = ctx.heartbeat or (if game then game:GetService("RunService").Heartbeat else nil)
 	if heartbeat then
-		Compose.cleanup(heartbeat:Connect(advance))
+		local beat = heartbeat:Connect(advance)
+		Compose.cleanup(function()
+			beat:Disconnect()
+		end)
 	end
 	local ready = Compose.formula(function(use)
 		return use(supply.state(seed.TASK.glade, "dew")) == "full"
@@ -411,8 +417,8 @@ function Glade.build(ctx)
 			},
 			UI.Alert "Reset" {
 				isPresented = resetOpen,
-				title = text("keeper.confirmTitle"),
-				message = text("keeper.confirmBody"),
+				title = Compose.formula(text("keeper.confirmTitle")),
+				message = Compose.formula(text("keeper.confirmBody")),
 				actions = {
 					{ id = "cancel", label = text("keeper.keep"), role = "cancel" },
 					{ id = "reset", label = text("keeper.startOver"), role = "destructive", onActivate = reset },

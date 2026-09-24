@@ -202,7 +202,10 @@ function example.build(ctx: any)
 			sort = sortOrder,
 			selectionMode = "multi",
 			selection = Compose.cell({}),
-			onActivate = function(item: any, _key: string)
+			onActivate = function(item: any, _key: string, input: InputObject?, clickCount: number?)
+				if input and input.UserInputType == Enum.UserInputType.MouseButton1 and (clickCount or 1) < 2 then
+					return
+				end
 				nowPlaying:set(plain(item).name)
 			end,
 			reorderable = true,

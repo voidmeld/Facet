@@ -511,8 +511,9 @@ The cell state stays retained.
 `onSortChange`, `onWidthsChange` or `onSelectionChange`, it is a controlled
 request. Otherwise the control updates the writable cells.
 
-`selectable(item)`, `disabled(item)`, `onActivate(item, key)` and
-`rowActions(current, key)` specialize rows. `reorderable`, `movable(item)` and
+`selectable(item)`, `disabled(item)`, `onActivate(item, key, input, clickCount)`
+and `rowActions(current, key)` specialize rows. `onActivate` receives the same
+native activation facts as in VirtualList. `reorderable`, `movable(item)` and
 `onReorder(keys, insertionSlot)` support native drag reorder. The insertion
 slot is zero-based among the remaining rows. `editing` is a writable cell.
 

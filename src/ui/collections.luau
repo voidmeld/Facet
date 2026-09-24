@@ -181,7 +181,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				selectRow(key, current:peek())
 			end
 			if spec.onActivate and (selectionMode == "none" or not pointer or double) then
-				spec.onActivate(current:peek(), key)
+				spec.onActivate(current:peek(), key, input, clicks)
 			end
 		end
 		local function captureSelection(node: Instance, key: K): ()
@@ -599,6 +599,31 @@ return function(ctx: Types.Context, UI: Controls): ()
 			ctx.action(root, "Collection" .. binding.name, binding.keys, eligible, function()
 				local before = focusScope.current:peek()
 				local after = focusScope.move(binding.direction)
+				if kind == "grid" and spec.wrapFocus and before ~= nil and after == before then
+					local rows = read(spec.from)
+					local columns = math.max(1, math.floor(read(spec.columns or 1)))
+					local at: number? = nil
+					for index, item in rows do
+						if keyOf(item, index) == before then
+							at = index
+							break
+						end
+					end
+					if at ~= nil then
+						local column = (at - 1) % columns
+						local rowStart = at - column
+						local rowEnd = math.min(rowStart + columns - 1, #rows)
+						local target = if binding.direction == "right"
+							then rowStart
+							elseif binding.direction == "left" then rowEnd
+							elseif binding.direction == "down" then column + 1
+							else column + 1 + math.floor((#rows - 1 - column) / columns) * columns
+						if target ~= at and rows[target] ~= nil then
+							focusScope.focus(keyOf(rows[target], target))
+						end
+					end
+					return
+				end
 				local step = if spec.wrapFocus
 						and before ~= nil
 						and after == before

@@ -37,6 +37,7 @@ export type ReorderOptions<V, K> = SelectionOptions<V, K> & {
 	dragLabel: ((item: V) -> string)?,
 	direction: Compose.OrderedCollectionDirection?,
 }
+export type Activate<V, K> = (item: V, key: K, input: InputObject?, clickCount: number?) -> ()
 export type CollectionOptions<V, K> = Types.ScrollingFrameProps & ReorderOptions<V, K> & {
 	from: Types.Value<{ V }>,
 	render: RowRender<V, K>,
@@ -59,7 +60,7 @@ export type CollectionOptions<V, K> = Types.ScrollingFrameProps & ReorderOptions
 	wrapFocus: boolean?,
 	snap: ("none" | "item")?,
 	reducedMotion: Types.Value<boolean>?,
-	onActivate: ((item: V, key: K) -> ())?,
+	onActivate: Activate<V, K>?,
 	onReachEnd: (() -> ())?,
 }
 export type KeyedCollectionSpec<V, K> = CollectionOptions<V, K> & { key: (item: V, index: number) -> K }
@@ -119,7 +120,7 @@ export type TableOptions<V, K> = Types.FrameProps & ReorderOptions<V, K> & {
 	onSortChange: ((sort: Sort) -> ())?,
 	widths: Compose.Cell<{ [string]: number }>?,
 	onWidthsChange: ((widths: { [string]: number }) -> ())?,
-	onActivate: ((item: V, key: K) -> ())?,
+	onActivate: Activate<V, K>?,
 	rowActions: ((current: Compose.Readable<V>, key: K) -> RowActionsOptions?)?,
 	headerHeight: Types.Value<number>?,
 	header: boolean?,
