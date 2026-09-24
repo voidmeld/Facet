@@ -313,7 +313,7 @@
     "gallery-examples": {
       "mainCases": 425,
       "a": 237,
-      "aWeaker": 133,
+      "aWeaker": 58,
       "b": 113,
       "c": 66,
       "d": 9,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1486
+    "coveredButWeaker": 1411
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -1964,9 +1964,10 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::updates and removes the standalone consumer through its controls"
+        "native_gallery::native gallery::updates and removes the standalone consumer through its controls",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-01 consumer mounts every part, repaints its count from the cell and tears down to baseline"
       ],
-      "weaker": "Main asserted every part has a non-empty rect, no core error, and a direct signal write repaints the label; candidate checks Bump->'1 tap' and Close removes Panel."
+      "weaker": "The fake engine does not compute layout. No test shows that each consumer part has a non-empty on-screen rectangle."
     },
     {
       "id": "apps2-02",
@@ -2190,9 +2191,9 @@
         "native_games::examples/06 crossword \u2014 commit, refill, undo, budget::A REFUSED SUBMIT CHANGES NOTHING \u2014 every tile stays where the player put it",
         "native_games::examples/06 crossword \u2014 determinism::a fixed script on a fixed seed lands on the same board, score and dump",
         "(44 identically named cases in native_games)",
-        "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack"
-      ],
-      "weaker": "'tears down to a registry baseline' now compares Instance count under the target, not reactive owner size."
+        "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-17 crossword play then dispose returns instances, connections and reactive roots to baseline"
+      ]
     },
     {
       "id": "apps2-18",
@@ -2939,9 +2940,11 @@
         "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
         "native_gallery_workflows::native gallery workflows::fits every word keyboard key and crossword rack slot in a narrow row",
         "native_games::examples/05 word game \u2014 the state machine::wins when the solution is submitted, and opens the results card",
-        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too"
-      ],
-      "weaker": "Touch is the same GuiButton.Activated path as pointer in the fake engine; no touch-specific input object is used for the word/tile games."
+        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 word game types, deletes and wins through pointer and touch key activations",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 crossword selects then places, undoes and explains an empty submit through touch",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 match-3 touch taps on two adjacent tiles land on the same board as the swap API"
+      ]
     },
     {
       "id": "apps2-67",
@@ -3237,9 +3240,10 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::switches the entire gallery catalogue through one native root"
+        "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-86 first paint selects the first demo under Facet Neutral and the sweep reaches every demo"
       ],
-      "weaker": "First paint is asserted only as the initial selection cell; no first-frame theme check."
+      "weaker": "The fake engine does not paint StyleRules. No test shows that the selected pill has a non-empty rectangle and a visible fill on the first frame."
     },
     {
       "id": "apps2-87",
@@ -3453,9 +3457,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
-        "(native_gallery 'mounts <demo.id> with the native runtime' for every catalogue entry)"
-      ],
-      "weaker": "No case asserts the count of ten or id uniqueness explicitly; find(bar, demo.id) would pass with duplicate ids."
+        "(native_gallery 'mounts <demo.id> with the native runtime' for every catalogue entry)",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-102 catalogue offers ten unique demos with real registered modules and one tab each"
+      ]
     },
     {
       "id": "apps2-103",
@@ -3610,9 +3614,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::switches the entire gallery catalogue through one native root"
-      ],
-      "weaker": "Asserts ctx.active per selection, not that exactly one demo screen remains in the tree (retention='top')."
+        "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-114 advancing the picker leaves exactly the named demo mounted and reports failed builds"
+      ]
     },
     {
       "id": "apps2-115",
@@ -4805,7 +4809,7 @@
       "candidateCases": [
         "native_parity_apps::Quick actions example::opens the quick actions at phone viewports with large text and keeps a wandering ring round"
       ],
-      "weaker": "The fake engine does no layout or text measurement. The test places the explorer and imitates large text through TextBounds; real sizes need Studio.",
+      "weaker": "The fake engine does no layout or text measurement. The existing case places the explorer and imitates large text through TextBounds. Real fitting at phone viewports and large text needs Studio.",
       "apiPromise": "examples/gallery/scenarios/radial_menu.luau steps open/character/move (examples are part of the API).",
       "gap": {
         "description": "Candidate mounts the scenario only at 1280x720; no case opens it at 359x718, 844x390, 320x568, 600x320, with +14 text, or checks the ring does not oscillate into a list while the anchor moves.",
@@ -4824,9 +4828,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_radial_controls::native radial interaction policies::NRAD-13 gallery nearby item uses native owned scene and real actions"
-      ],
-      "weaker": "NRAD-13 asserts the ViewportFrame stage is destroyed on stop, not that setOpen is not called after world dispose when switching to the corner step."
+        "native_radial_controls::native radial interaction policies::NRAD-13 gallery nearby item uses native owned scene and real actions",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-195 leaving the world item disposes its scene at once and leaves no frame work behind"
+      ]
     },
     {
       "id": "apps2-196",
@@ -5275,7 +5279,7 @@
       "candidateCases": [
         "native_parity_apps::Quick actions example::picks the character command ring or list from the viewport height"
       ],
-      "weaker": "The fake engine does no layout. The test sets the viewport sizes that decide ring or list.",
+      "weaker": "The fake engine does no layout. The existing case sets the viewport sizes that decide ring or list; the ring or list fit on the real screen needs Studio.",
       "apiPromise": "examples/gallery/scenarios/radial_menu.luau (examples are part of the API, AGENTS.md); nav_radial layout falls back to list when room < inner+band or a sector < 44px.",
       "gap": {
         "description": "NRAD-13 mounts the gallery radial scenario only at 1280x720 and drives the world step; no candidate case opens the character commands at 960x540/800x600/677x338 or asserts radial at >=540 height and list below.",
@@ -5779,9 +5783,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional"
-      ],
-      "weaker": "Hide-on-Saved-shelf and reappearance are not asserted; only short-viewport hide."
+        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-261 featured carousel opens a game and hides on the Saved shelf and a short viewport"
+      ]
     },
     {
       "id": "apps2-262",
@@ -6098,9 +6102,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_parity::restored native gallery parity::clamps the objective separates crowded markers respects the HUD band and only occludes supplies",
-        "native_gallery_workflows::native gallery workflows::moves and hides native map markers without remounting their controls"
-      ],
-      "weaker": "Candidate fires Move.Activated only (native Activated covers all classes); no initial selection on Move for gamepad/keyboard, no resize to 844x390 followed by a second Move that un-edges the marker."
+        "native_gallery_workflows::native gallery workflows::moves and hides native map markers without remounting their controls",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-285 every input class moves the objective marker, including after a resize"
+      ]
     },
     {
       "id": "apps-01",
@@ -8890,9 +8894,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::switches the entire gallery catalogue through one native root"
+        "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps-193 collections is the next peer tab after all controls in the one demo list"
       ],
-      "weaker": "Catalogue switched programmatically, not reached by navigation."
+      "weaker": "The fake engine does not run gamepad navigation. No test shows that one D-pad down press from the All controls tab selects the Collections tab."
     },
     {
       "id": "apps-194",
@@ -11185,9 +11190,10 @@
       "candidateCases": [
         "native_gallery_collections::native gallery collections::shows seeded mail state and applies idempotent read visible flag and chosen deletion",
         "native_gallery_workflows::native gallery workflows::swipes the native mail list and deletes exactly the chosen message",
-        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input"
+        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
+        "native_parity_weaker_gallery::native parity weaker gallery::collections-101 gallery mail rows open one at a time, close explicitly and delete from the keyboard"
       ],
-      "weaker": "The scenario tests do not assert explicit close, one-open across rows, or keyboard Delete in the gallery. Those are asserted only at control level."
+      "weaker": "The fake engine does not hit-test. No test shows that a real drag on the mail row content Button reaches the row swipe detector."
     },
     {
       "id": "collections-102",
@@ -11293,9 +11299,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::shows seeded mail state and applies idempotent read visible flag and chosen deletion"
-      ],
-      "weaker": "Mounted through build(ctx) with the gallery test ctx, not the picker ctx."
+        "native_gallery_collections::native gallery collections::shows seeded mail state and applies idempotent read visible flag and chosen deletion",
+        "native_parity_weaker_gallery::native parity weaker gallery::collections-109 the gallery page context builds, ticks and disposes the mail rows"
+      ]
     },
     {
       "id": "collections-110",
@@ -15177,9 +15183,10 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::requests native haptics and releases effects when the screen closes"
+        "native_gallery::native gallery::requests native haptics and releases effects when the screen closes",
+        "native_parity_weaker_gallery::native parity weaker gallery::inputs-77 sensory demo requests press before release, toggles off and on, remounts on and tears down"
       ],
-      "weaker": "Single mount; remount-restores-ON and PRESS-then-RELEASE ordering are not asserted; physical motor output is a pending live risk in parity_blockers.json."
+      "weaker": "Nothing headless can observe the physical motor output. The demo reports motorConfirmed=false."
     },
     {
       "id": "inputs-78",
@@ -19328,9 +19335,10 @@
       "mainCases": 17,
       "class": "a",
       "candidateCases": [
-        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together"
+        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together",
+        "native_parity_weaker_gallery::native parity weaker gallery::mech2-25 nested tint follows the package, disable blocks every input class and moves focus"
       ],
-      "weaker": "one case, one input path (fired Activated + SelectedObject); no per-paradigm pointer/touch/gamepad/Tab traversal, no pixel_quest package arm, no theme-dim assertion, no mount-identity check on blend"
+      "weaker": "The fake engine does not run Tab or D-pad traversal. No test shows that the engine skips Go and InnerGo when the panel is off. The fixture now dims its panel labels with a literal TextTransparency; only the controls dim through the theme tag."
     },
     {
       "id": "mech2-26",
@@ -19342,9 +19350,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together"
-      ],
-      "weaker": "close() called but no census asserted"
+        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together",
+        "native_parity_weaker_gallery::native parity weaker gallery::mech2-26 inherited subtree teardown with the panel on or off leaves nothing live"
+      ]
     },
     {
       "id": "mech2-27",
@@ -20661,9 +20669,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection"
+        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection",
+        "native_parity_weaker_gallery::native parity weaker gallery::mech3-20 card shelves are one-up on a phone, several-up on a desktop and made of selectable cards"
       ],
-      "weaker": "Three shelves with measured widths and native selection; no one-up mobile or distant-card size assertion"
+      "weaker": "The fake engine does no layout or navigation. No test shows larger cards at the Distant TV preview or D-pad movement between shelves."
     },
     {
       "id": "mech3-21",
@@ -22672,9 +22681,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::resets the mounted callout showcase without replacing anchor identities"
+        "native_navigation::native navigation controls::resets the mounted callout showcase without replacing anchor identities",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-1-65 callout reset keeps both anchors, replaces the tips and replays the tip"
       ],
-      "weaker": "Anchor 'Plus' identity is checked, but 'Share' is not. The scenario's seen/saved report after reset and the second tip's 'waiting' state are not asserted."
+      "weaker": "The fake engine does not place surfaces. No test shows that no raised plate covers the Share anchor after reset or that Reset is at least 44 px tall."
     },
     {
       "id": "navigation-1-66",
@@ -23481,9 +23491,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/menus"
-      ],
-      "weaker": "Mount-only; the standalone diagnostic screen is not mounted separately."
+        "native_gallery::native gallery::mounts all_controls/menus",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-2-50 the menu scenario is inside All controls and also mounts standalone"
+      ]
     },
     {
       "id": "navigation-2-51",
@@ -24285,9 +24295,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties"
-      ],
-      "weaker": "Reflow is triggered by a narrow viewport (600) not by switching a desktop to distant viewing."
+        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-3-32 showroom and race setup reflow across viewports and survive the distant preview"
+      ]
     },
     {
       "id": "navigation-3-33",
@@ -24334,9 +24344,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties"
-      ],
-      "weaker": "Does not assert nil before mount, height growth for large, or reset back to compact."
+        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-3-36 action controls report nil unmounted, the displayed rung, taller large controls and reset"
+      ]
     },
     {
       "id": "navigation-3-37",
@@ -26823,9 +26833,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery::native gallery::mounts all-controls with the native runtime",
-        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility"
-      ],
-      "weaker": "The standalone tab_view diagnostic scenario is gone; nested demo_tabs is only mounted and clicked."
+        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-5-45 all controls nests page tabs inside the adaptable group navigation"
+      ]
     },
     {
       "id": "navigation-5-46",
@@ -27693,9 +27703,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/progress"
-      ],
-      "weaker": "Mount-only; no dimensions or driven controls asserted."
+        "native_gallery::native gallery::mounts all_controls/progress",
+        "native_parity_weaker_gallery::native parity weaker gallery::paint-47 progress mounts inside all controls and its rung and value controls drive the indicators"
+      ]
     },
     {
       "id": "paint-48",
@@ -28726,9 +28736,9 @@
       "candidateCases": [
         "native_gallery::native gallery::mounts all_controls/basics",
         "native_gallery::native gallery::mounts all_controls/choices",
-        "native_gallery::native gallery::mounts all_controls/progress"
-      ],
-      "weaker": "Mount-only."
+        "native_gallery::native gallery::mounts all_controls/progress",
+        "native_parity_weaker_gallery::native parity weaker gallery::paint-125 all controls opens on the basics fixture with its settings and actions mounted"
+      ]
     },
     {
       "id": "paint-126",
@@ -34439,6 +34449,14 @@
       "file": "src/ui/collection_row_actions.luau",
       "title": "A row stayed open and kept the shared open-row claim when the actions of its open side became empty. When the actions came back, the tray opened again without a swipe. The row now closes when its open side has no actions.",
       "fixedBy": "native_parity_weaker_rows::native parity weaker rows::collections-281 locks, coordinates, releases, fires once and follows reactive actions inside list rows"
+    },
+    {
+      "id": "WA5",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/gallery/scenarios/action_controls.luau",
+      "title": "The Distant TV preview scales the gallery by 1.5, but the action controls demo read the unscaled viewport width. At 1440 px the Showroom and Race Setup sections stayed side by side under the preview. The gallery now gives demos ctx.sceneViewport, the viewport divided by the preview scale, and the demo reads it.",
+      "fixedBy": "native_parity_weaker_gallery::native parity weaker gallery::navigation-3-32 showroom and race setup reflow across viewports and survive the distant preview"
     }
   ]
 }
