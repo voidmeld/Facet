@@ -476,11 +476,18 @@ add("playlist-resize-grip-touch-target", { "apps2-175" }, function(t)
 	t.check("gallery shows the playlist", result.ok == true, result)
 	local gui = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("FacetGallery")
 	local header
-	for _, node in gui:GetDescendants() do
-		if node.Name == "Header" and node:IsA("GuiObject") and t.visible(node) and node:FindFirstChild("name") then
-			header = node
+	for _ = 1, 120 do
+		for _, node in gui:GetDescendants() do
+			if node.Name == "Header" and node:IsA("GuiObject") and t.visible(node) and node:FindFirstChild("name") then
+				header = node
+			end
 		end
+		if header then
+			break
+		end
+		t.settle(1)
 	end
+	t.settle(6)
 	local cell = header and header:FindFirstChild("name")
 	local grip = cell and cell:FindFirstChild("Resize", true)
 	if not grip then
