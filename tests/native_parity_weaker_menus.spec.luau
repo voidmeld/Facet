@@ -652,6 +652,34 @@ t.describe("native parity weaker menus", function()
 		world.stop()
 	end)
 
+	t.it("wraps an explicit segmented strip inside the width of its labelled row", function()
+		local world = setup(function(UI, Host)
+			return Host.Frame({
+				UI.Picker "Handling" {
+					label = "Handling",
+					style = "segmented",
+					selected = Compose.cell("a"),
+					options = {
+						{ value = "a", label = "Arcade handling" },
+						{ value = "b", label = "Simulation handling" },
+						{ value = "c", label = "Drift assist" },
+						{ value = "d", label = "Rally gravel" },
+					},
+				},
+			})
+		end)
+		local row = find(world.root, "Handling")
+		local options = find(row, "Options")
+		t.expect(options:FindFirstChildWhichIsA("UIListLayout").Wraps).toBe(true)
+		row.AbsoluteSize = V2(world, 390, 100)
+		local limit = options:FindFirstChildWhichIsA("UISizeConstraint")
+		t.expect(limit ~= nil).toBe(true)
+		t.expect(limit.MaxSize.X).toBe(390)
+		row.AbsoluteSize = V2(world, 1280, 100)
+		t.expect(limit.MaxSize.X).toBe(1280)
+		world.stop()
+	end)
+
 	t.it("leaves the segmented strip when the measured labels do not fit the width", function()
 		local long = {
 			{ value = "a", label = "Automatic transmission mode" },

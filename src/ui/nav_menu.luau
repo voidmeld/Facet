@@ -1771,6 +1771,9 @@ return function(
 				end,
 				SortOrder = E.SortOrder.LayoutOrder,
 				Padding = D.new(0, 4),
+				Wraps = function(use: ComposeTypes.Use)
+					return style == "segmented" and read(spec.axis, use) ~= "y"
+				end,
 				HorizontalFlex = function(use: ComposeTypes.Use)
 					return if style == "segmented"
 							and read(spec.axis, use) ~= "y"
@@ -2050,6 +2053,15 @@ return function(
 		layout.VerticalAlignment = E.VerticalAlignment.Center
 		layout.Padding = D.new(0, 16)
 		layout.Wraps = true
+		local rowSize = ctx.observe(row, "AbsoluteSize")
+		surfaces.attach(picker, {
+			Host.UISizeConstraint({
+				MaxSize = function(use: ComposeTypes.Use)
+					local width = (use(rowSize) :: Vector2).X
+					return V2.new(if width > 0 then width else math.huge, math.huge)
+				end,
+			}),
+		})
 		return row
 	end)
 

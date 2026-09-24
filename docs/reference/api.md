@@ -1051,7 +1051,9 @@ measured width and the native PreferredInput:
   larger sets.
 
 A `label` shows on the leading edge of a horizontal segmented row, with the
-control at its natural width on the trailing edge. The label shows above a vertical
+control at its natural width on the trailing edge. A horizontal segmented strip
+wraps its segments onto more lines when they do not fit in the width of the
+row. The label shows above a vertical
 segmented, inline or radio group control. A menu shows the label on the leading
 edge of the row and the value on the trailing edge.
 

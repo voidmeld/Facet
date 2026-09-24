@@ -444,7 +444,8 @@ add("grid-cell-width-arithmetic", { "collections-226" }, function(t)
 		end, { size = Vector2.new(400, 300) })
 		local grid = t.find(stage, "Grid")
 		local window = grid.AbsoluteWindowSize.X
-		local expected = (window - (columns - 1) * 10) / columns
+		local edge = math.ceil(10 / 2)
+		local expected = (window - 2 * edge - (columns - 1) * 10) / columns
 		local first, second = t.find(grid, "Cell1"), t.find(grid, "Cell2")
 		if not (first and second) then
 			t.check(`{columns} columns cells mounted`, false)
@@ -453,6 +454,7 @@ add("grid-cell-width-arithmetic", { "collections-226" }, function(t)
 		end
 		local a, b = t.rect(first), t.rect(second)
 		t.near(`{columns} columns cell width`, a.w, expected, 1)
+		t.near(`{columns} columns first cell keeps half a gap at the edge`, a.x - grid.AbsolutePosition.X, edge, 1)
 		t.near(`{columns} columns cross gap`, b.x - a.r, 10, 1)
 		t.near(`{columns} columns cell height`, a.h, 60, 1)
 		local below = t.find(grid, "Cell" .. tostring(columns + 1))

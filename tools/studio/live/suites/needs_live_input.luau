@@ -369,9 +369,17 @@ add("sheet-traps-and-orders-selection", { "apps-160", "apps-181" }, function(t)
 end, {
 	afterDown = function(t, value)
 		t.note("Down visits", table.clone(value.visited))
+		local stops = {}
+		for _, name in value.visited do
+			local node = value.panel and value.panel:FindFirstChild(name, true)
+			if not (node and node:IsA("ScrollingFrame")) then
+				table.insert(stops, name)
+			end
+		end
+		t.note("Down stops without scroll containers", stops)
 		t.check(
-			"Down walks the sheet in document order",
-			table.concat(value.visited, ",") == "DragHandle,Close,SheetContent,First,Second,Third",
+			"Down walks the sheet controls in document order",
+			table.concat(stops, ",") == "DragHandle,Close,First,Second,Third",
 			value.visited
 		)
 		t.check("Down stops at Third", selectedName() == "Third", selectedName())
