@@ -115,7 +115,7 @@
     "reference-apps": {
       "mainCases": 327,
       "a": 151,
-      "aWeaker": 45,
+      "aWeaker": 2,
       "b": 22,
       "c": 153,
       "d": 1,
@@ -270,7 +270,7 @@
     "docs-examples-tooling": {
       "mainCases": 498,
       "a": 51,
-      "aWeaker": 11,
+      "aWeaker": 0,
       "b": 0,
       "c": 447,
       "d": 0,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1707
+    "coveredButWeaker": 1653
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -3113,9 +3113,9 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_registration::native registration and package contract::scaffolds a typed native control with idempotent runtime and public type registration"
-      ],
-      "weaker": "The plan now stamps one source file and three edits; there is no spec or docs stub, and unsafe names (the lower_snake_case assert in tools/lune/scaffold.luau:7) are never exercised."
+        "native_registration::native registration and package contract::scaffolds a typed native control with idempotent runtime and public type registration",
+        "native_parity_weaker_apps::Documentation and tooling::apps2-78 rejects unsafe names and unknown kinds and stamps formatter-clean code for a long name"
+      ]
     },
     {
       "id": "apps2-79",
@@ -6110,9 +6110,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion"
-      ],
-      "weaker": "Only one build is mounted and destroyed; main compared two fresh builds for identical dumps and checked registry-neutral disposal."
+        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion",
+        "native_parity_weaker_apps::Glade::apps-01 builds and mounts without an error, reports identically for two builds and releases everything"
+      ]
     },
     {
       "id": "apps-02",
@@ -6135,9 +6135,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion"
-      ],
-      "weaker": "One order only (refill then bramble); no refill level/state assertion, no per-row ticks, destinations are switched by writing model.section, not through the TabView."
+        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion",
+        "native_parity_weaker_apps::Glade::apps-03 assigns and refills nectar, consumes a premium satchel, finishes the task in either order and keeps every destination"
+      ]
     },
     {
       "id": "apps-04",
@@ -6631,9 +6631,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean"
-      ],
-      "weaker": "Only checks requires resolve; no check that ref_glade forks nothing, that places map the same folders, or that ref_glade mounts (native_gallery does not mount ref_* scenarios)."
+        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean",
+        "native_parity_weaker_apps::Glade::apps-34 boots the showcase scenario from the one reference module and maps the same folders"
+      ]
     },
     {
       "id": "apps-35",
@@ -6645,9 +6645,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation"
-      ],
-      "weaker": "No assertion of root class or destruction after stop(); main also asserted no core error."
+        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation",
+        "native_parity_weaker_apps::Cartwheel::apps-35 builds and mounts without an error, opens on the dashboard and releases everything on stop"
+      ]
     },
     {
       "id": "apps-36",
@@ -6723,9 +6723,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation"
-      ],
-      "weaker": "Five sections via model.section writes, English only; main visited nine sections in both locales and checked core errors."
+        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation",
+        "native_parity_weaker_apps::Cartwheel::apps-40 mounts every section through its tab button with its own content"
+      ]
     },
     {
       "id": "apps-41",
@@ -6769,9 +6769,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation"
-      ],
-      "weaker": "Asserts status 'done' and collectedBottles()>0 only; main followed bottles into Top Five and the Ledger views."
+        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation",
+        "native_parity_weaker_apps::Cartwheel::apps-43 collects a seeded Ready brew to Done and carries its bottles into Top Five"
+      ]
     },
     {
       "id": "apps-44",
@@ -6890,9 +6890,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options"
-      ],
-      "weaker": "Generic picker test (touch->Trigger menu, gamepad->segments), not on the Cartwheel screen; desktop pointer/TV cases not separately asserted."
+        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
+        "native_parity_weaker_apps::Cartwheel::apps-51 resolves the unwired timeframe picker as a menu on touch and pointer and a strip on gamepad"
+      ]
     },
     {
       "id": "apps-52",
@@ -7164,9 +7164,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "No core-error or destruction assertion."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-69 builds and mounts without an error with the whole menu visible and releases everything"
+      ]
     },
     {
       "id": "apps-70",
@@ -7290,9 +7290,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Asserts task phase only; no pending label, toast, or 'Order-Placed' presentation / disc flip at t+4s."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-77 shows the pending label, refuses a second press, explains the rejection and reports the pour ready"
+      ]
     },
     {
       "id": "apps-78",
@@ -7325,9 +7325,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Checks unspent 9 after rejection and 0 after redeem; does not assert accrual per confirmed order independently or the redeem verb label."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-79 earns one stamp per confirmed order and redeems a flat ten with the redeem verb"
+      ]
     },
     {
       "id": "apps-80",
@@ -7350,9 +7350,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Asserts unlock flag, not that locked rows enter the list."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-81 keeps locked recipes behind the Blend Book until the second purchase confirms"
+      ]
     },
     {
       "id": "apps-82",
@@ -7365,9 +7365,10 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch"
+        "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch",
+        "native_parity_weaker_apps::Sipworks::apps-82 refuses the Blend Book page purchase while the price loads"
       ],
-      "weaker": "The candidate Blend Book keeps a disabled Buy button while the price loads. Main showed no Buy button.",
+      "weaker": "The Blend Book still mounts a disabled Buy button while the price loads. The main test required no Buy button. The new test shows that the button refuses the purchase and starts no attempt until the price is available. The session-local recipe checks are deleted from the app.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'examine measured recipes and unlock the Blend Book'",
       "gap": {
         "description": "Untested.",
@@ -7419,9 +7420,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Sipworks::reports identically for identical worlds and seeds favorites deterministically"
+        "native_parity_apps::Sipworks::reports identically for identical worlds and seeds favorites deterministically",
+        "native_parity_weaker_apps::Sipworks::apps-85 returns every service to its seeded report on reset and replays the loop identically"
       ],
-      "weaker": "The candidate Sipworks has no reset step. Determinism and seeded favorites are tested; the reset is not.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'deterministic domain services'",
       "gap": {
         "description": "Untested.",
@@ -7529,9 +7530,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Model phases only; no opening-screen copy or completion UI asserted."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-93 opens one stamp short, explains a refusal, earns the free pour, completes it and keeps every destination"
+      ]
     },
     {
       "id": "apps-94",
@@ -7544,9 +7545,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Sipworks::names the task blend on its action, orders that blend and ends the task after the free pour"
+        "native_parity_apps::Sipworks::names the task blend on its action, orders that blend and ends the task after the free pour",
+        "native_parity_weaker_apps::Sipworks::apps-94 opens the named task blend through its own row and resets every observable after the free pour"
       ],
-      "weaker": "The candidate task action orders its named blend directly and the app has no Serve another customer reset. The row-open path and the reset are not tested.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "Untested.",
@@ -7597,9 +7598,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean"
-      ],
-      "weaker": "Require resolution only; ref_sipworks is not mounted by any candidate case."
+        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean",
+        "native_parity_weaker_apps::Sipworks::apps-97 boots the showcase scenario from the one reference module and maps the same folders"
+      ]
     },
     {
       "id": "apps-98",
@@ -7622,9 +7623,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Mount only; four sections not asserted."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-99 mounts the home body with all four sections and their tiles without an error"
+      ]
     },
     {
       "id": "apps-100",
@@ -7680,9 +7681,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Only asserts a 'SearchResults' node exists; no filter correctness (title/creator) or clear restoration."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-103 filters by title and creator, says when nothing matches and restores the feed on clear"
+      ]
     },
     {
       "id": "apps-104",
@@ -7726,9 +7727,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Status pending/rejected asserted; button disabled state and unchanged feed contents not asserted."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-106 disables Refresh while pending, reseeds on confirm and keeps the feed on a rejection"
+      ]
     },
     {
       "id": "apps-107",
@@ -7740,9 +7741,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Asserts continued[...] only; detail modal presentation/dismissal not asserted."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-107 presents the tile detail, visits into Keep playing and dismisses the detail"
+      ]
     },
     {
       "id": "apps-108",
@@ -18185,9 +18186,10 @@
         "native_documentation::native documentation::executes README.md snippet 1",
         "native_documentation::native documentation::executes docs/guide/03-getting-started.md snippet 1",
         "native_documentation::native documentation::executes docs/guide/15-components.md snippet 1",
-        "native_documentation::native documentation::executes docs/guide/15-components.md snippet 2"
-      ],
-      "weaker": "Snippets execute; resource closure not asserted per snippet."
+        "native_documentation::native documentation::executes docs/guide/15-components.md snippet 2",
+        "native_parity_weaker_apps::Documentation and tooling::mech1-76 runs the README and getting-started counters and closes every resource on script teardown",
+        "native_parity_weaker_apps::Documentation and tooling::mech1-76 runs both component guide snippets and releases their Compose state and nodes"
+      ]
     },
     {
       "id": "mech1-77",
@@ -28893,9 +28895,9 @@
       "class": "a",
       "candidateCases": [
         "producer:links (tools/lune/check_links_cli, full tier)",
-        "producer:links-selftest"
-      ],
-      "weaker": "Checked by a verify producer, not a spec case."
+        "producer:links-selftest",
+        "native_parity_weaker_apps::Documentation and tooling::paint-139 reports a dead link or heading in each theme and skinning document and passes the shipped ones"
+      ]
     },
     {
       "id": "paint-140",
