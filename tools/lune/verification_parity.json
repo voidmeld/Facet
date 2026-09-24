@@ -129,7 +129,7 @@
     "layout-geometry": {
       "mainCases": 1326,
       "a": 94,
-      "aWeaker": 58,
+      "aWeaker": 25,
       "b": 359,
       "c": 872,
       "d": 1,
@@ -313,7 +313,7 @@
     "gallery-examples": {
       "mainCases": 425,
       "a": 237,
-      "aWeaker": 58,
+      "aWeaker": 51,
       "b": 113,
       "c": 66,
       "d": 9,
@@ -327,7 +327,7 @@
     "hud-world": {
       "mainCases": 166,
       "a": 46,
-      "aWeaker": 30,
+      "aWeaker": 0,
       "b": 50,
       "c": 70,
       "d": 0,
@@ -341,7 +341,7 @@
     "tables-rows": {
       "mainCases": 156,
       "a": 97,
-      "aWeaker": 9,
+      "aWeaker": 1,
       "b": 1,
       "c": 58,
       "d": 0,
@@ -384,7 +384,7 @@
     "row-actions": {
       "mainCases": 264,
       "a": 149,
-      "aWeaker": 19,
+      "aWeaker": 13,
       "b": 0,
       "c": 112,
       "d": 3,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1290
+    "coveredButWeaker": 1206
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2310,7 +2310,19 @@
       "candidateCases": [
         "native_gallery_workflows::native gallery workflows::fits every word keyboard key and crossword rack slot in a narrow row"
       ],
-      "weaker": "Candidate checks keyboard key widths sum to the row width at 240-472px; it does not check the board stays inside the phone width, that tiles are square in a 6x5 grid, or that the page is a ScrollingFrame (it is, 05_wo..."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/gallery-portrait-largest.json",
+          "artifacts/studio-live/gallery-landscape-844x369-largest.json",
+          "artifacts/studio-live/gallery-portrait-default.json",
+          "artifacts/studio-live/gallery-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "gallery/word-game-fits-the-phone"
+        ],
+        "observed": "Engine layout at 388x824 and 844x369, Medium and Largest text: the page is a native ScrollingFrame, the board and each keyboard row are inside the page width, each of the 30 tiles is square and inside the board in 6 rows and 5 columns, each key is inside its row, and the canvas reaches the last content."
+      }
     },
     {
       "id": "apps2-25",
@@ -3244,7 +3256,16 @@
         "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-86 first paint selects the first demo under Facet Neutral and the sweep reaches every demo"
       ],
-      "weaker": "The fake engine does not paint StyleRules. No test shows that the selected pill has a non-empty rectangle and a visible fill on the first frame."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live/gallery-current-tab-fill-at-first-frame"
+        ],
+        "observed": "In the running gallery the All controls tab is tagged current and filled, has a non-empty rectangle and a resolved BackgroundTransparency below 1, before any input and after a round trip through another demo."
+      }
     },
     {
       "id": "apps2-87",
@@ -4514,7 +4535,17 @@
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
         "native_parity_weaker_tables::native parity weaker tables::apps2-175 the resize grip keeps one trailing edge and sizes its target per input paradigm"
       ],
-      "weaker": "On touch, the grip is 44 px wide but only as tall as the header band, which is 40 px by default. Main required a 44 x 44 hit area. api.md does not promise a 44 px header on touch, and an existing test (native_collections, adapts table row and header height) pins the touch header at 40 px, so the test does not assert a 44 px height. The visible grip at the theme small spacing step is deleted design: the grip is transparent."
+      "weaker": "At Largest text the header grows to 44 px, so the grip is 44 x 44. At the default text size the header band is 40 px and the grip is 44 x 40; the live run did not measure the default size.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live/playlist-resize-grip-touch-target"
+        ],
+        "observed": "On the touch emulator at Largest text, the Name column grip is at least 44 x 44 px and its right edge meets the header cell right edge."
+      }
     },
     {
       "id": "apps2-176",
@@ -9079,7 +9110,20 @@
         "native_parity_weaker_hud::native parity weaker hud-world::apps-206 unbatched viewport and native body facts settle where a single change lands",
         "native_parity_weaker_hud::native parity weaker hud-world::apps-206 the URL bar takes exactly its drawn height and only the tail of the ladder leaves"
       ],
-      "weaker": "The test compares every written property of the whole painted tree, not only form names. It does not compare solved zone rectangles, because the engine computes them from UIGridLayout, UIFlexItem and AutomaticSize. In the engine, the body also loses the list padding (8 px) with the 64 px bar, and only the engine can show that."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/hud-viewport-round-trip",
+          "needs_live/hud-url-bar-reserves-its-height"
+        ],
+        "observed": "Engine rectangles of all ten zone frames after each of the twelve A->B->A paths with a URL bar episode and an overflow open and close equal a fresh mount within 0.5 px. With the URL bar open, HudBody shrinks by the BrowserChrome height plus 8 px, and no zone intersects the chrome or another zone, at 1079x809 and 691x360."
+      }
     },
     {
       "id": "apps-207",
@@ -9129,7 +9173,19 @@
         "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
         "native_parity_weaker_hud::native parity weaker hud-world::apps-210 URL bar and rotation sequences and four cycles land on the fresh landscape tree"
       ],
-      "weaker": "Every URL-bar position and four rotation cycles are compared by the whole painted tree against the fresh landscape mount. Engine rectangles are not compared."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/hud-orientation-cycles"
+        ],
+        "observed": "Engine rectangles after landscape, URL bar, portrait, no URL bar, landscape and after four rotation cycles equal a fresh landscape mount within 0.5 px."
+      }
     },
     {
       "id": "apps-211",
@@ -9183,7 +9239,19 @@
         "native_hud::native HUD::recovers whole simplified zones in overflow and shares their live model",
         "native_parity_weaker_hud::native parity weaker hud-world::apps-214 a height shrink degrades zones in ladder order and re-solves in place"
       ],
-      "weaker": "Monotone degradation, the exact ladder order, lane containment and in-place re-solve (same lane, region and ClockFull instances) are asserted, and the grid declaration tiles the width exactly. Absolute no-overlap between zone rectangles needs engine layout."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/hud-heights-keep-zones-apart"
+        ],
+        "observed": "At width 1079 and heights from 809 down to 240 in 19 px steps, no two zone rectangles intersect and each zone stays inside its lane."
+      }
     },
     {
       "id": "apps-215",
@@ -9235,7 +9303,19 @@
         "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
         "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree"
       ],
-      "weaker": "The painted tree (every written property, tags and style properties) is compared with a fresh mount, and the round strip is present, visible and opens the sink at the end. Engine rectangles are not compared."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/hud-viewport-round-trip"
+        ],
+        "observed": "Engine rectangles after each A->B->A path equal a fresh mount within 0.5 px."
+      }
     },
     {
       "id": "apps-219",
@@ -9276,7 +9356,19 @@
         "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Touch uses the HUD actions and recovers focus after a notification",
         "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Mouse uses the HUD actions and recovers focus after a notification"
       ],
-      "weaker": "All four input classes open the HUD actions menu, apply damage, heal and notice, and gamepad/keyboard selection returns to the trigger after each item and after ButtonB/Escape cancel; touch and mouse leave no selection. The test does not prove that the notice rectangle does not overlap a zone, because that needs engine layout."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/hud-notice-clear-of-zones"
+        ],
+        "observed": "With the notice shown, its rectangle intersects no zone rectangle at 1280x800 and 390x844."
+      }
     },
     {
       "id": "apps-222",
@@ -9434,7 +9526,19 @@
         "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
         "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree"
       ],
-      "weaker": "All twelve A->B->A paths with a URL bar episode compare the whole painted tree and prove the sink stays reachable. Engine rectangles are not compared."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/hud-viewport-round-trip"
+        ],
+        "observed": "Engine rectangles after each A->B->A path with a URL bar episode equal a fresh mount within 0.5 px."
+      }
     },
     {
       "id": "apps-235",
@@ -9959,7 +10063,16 @@
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
         "native_parity_weaker_rows::native parity weaker rows::collections-11 reorders list rows by pointer both ways and leaves plain rows to native panning"
       ],
-      "weaker": "A touch on the row body must pan the native ScrollingFrame. The headless test proves only that no UIDragDetector exists outside the Move handle; the engine owns the pan."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live_input-touch-drag-scrolls-reorderable-list-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live_input/touch-drag-scrolls-reorderable-list"
+        ],
+        "observed": "On the touch emulator a vertical drag on a reorderable row body scrolls the list 192 px and requests no reorder."
+      }
     },
     {
       "id": "collections-12",
@@ -11195,7 +11308,17 @@
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_parity_weaker_gallery::native parity weaker gallery::collections-101 gallery mail rows open one at a time, close explicitly and delete from the keyboard"
       ],
-      "weaker": "The fake engine does not hit-test. No test shows that a real drag on the mail row content Button reaches the row swipe detector."
+      "weaker": "Two horizontal drags from the Studio input tools arrived as taps and did not open the tray. The swipe half needs a real pointer or touch drag.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live_input-mail-swipe-and-tap-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live_input/mail-swipe-and-tap"
+        ],
+        "observed": "A tap on a mail row content Button marks that row read."
+      }
     },
     {
       "id": "collections-102",
@@ -11660,7 +11783,16 @@
         "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms",
         "native_parity_weaker_tables::native parity weaker tables::collections-133 fill and fixed columns align in every row, rows take variable heights, dispose frees"
       ],
-      "weaker": "The test asserts the declared header and cell spans for a fill and a fixed column in every row, variable row heights, and a clean dispose. The fake engine has no layout solver, so the solved pixel X and width of each header cell against its body cells are not asserted."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live/table-columns-follow-the-header"
+        ],
+        "observed": "Engine layout for all ten packages: each body cell has the x and width of its header cell within 0.5 px for a fill Name column and a fixed 64 px Laps column in every row, also after a row grows."
+      }
     },
     {
       "id": "collections-134",
@@ -11676,14 +11808,23 @@
         "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span",
         "native_parity_weaker_tables::native parity weaker tables::collections-134 the header follows the reorder and edit gutters so columns stay aligned"
       ],
-      "weaker": "The test asserts the declared header origin and width against the declared row cell span with the reorder gutter, the row-action edit gutter, and a horizontal scroll. The solved pixels are not asserted because the fake engine has no layout solver. The separate selection-circle gutter is deleted design.",
       "apiPromise": "src collection_table.luau: header Position = reorderGutter - CanvasPosition.X; width minus disclosureWidth",
       "gap": {
         "description": "Untested alignment in edit (reorderable) mode and with the disclosure column.",
         "headlessTestable": true,
         "proposedTest": "Mount a reorderable Table with 2 fixed columns, set the Body window to (400,200) and a Header column AbsoluteSize. Expect Header.Position.X.Offset == 56, and expect header column 'a' X to equal row cell 'a' X plus Body.CanvasPosition.X. Scroll X by 30 and expect the header to track."
       },
-      "closedBy": "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span"
+      "closedBy": "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live/table-columns-follow-the-header"
+        ],
+        "observed": "Engine layout for all ten packages with reorder, editing and a destructive row action: header cells match body cells before and after a 40 px horizontal scroll. The live run first found the header 109 to 120 px left of the edited rows; the branch now aligns the header with the row edit gutter."
+      }
     },
     {
       "id": "collections-135",
@@ -12611,7 +12752,16 @@
         "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
         "native_parity_weaker_tables::native parity weaker tables::collections-203 every collapsed width carries a More disclosure on each row that opens"
       ],
-      "weaker": "The test asserts that at every width from 20 to 460 with committed widths, when a header column collapses each row carries a More disclosure and the header and cells agree, and that the disclosure opens with the hidden value. The absolute touch height of the disclosure button is not asserted because the fake engine has no layout solver."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live/collapsed-column-details-target"
+        ],
+        "observed": "On the touch emulator a 240 px table with three 150 px columns collapses a column, and each Details button is at least 44 px high."
+      }
     },
     {
       "id": "collections-204",
@@ -12660,14 +12810,23 @@
         "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages",
         "native_parity_weaker_tables::native parity weaker tables::collections-207 header and body cells span the same columns in every shape and shipped package"
       ],
-      "weaker": "The test asserts the declared header and cell spans in the viewport, block, reorder and collapsed shapes under the neutral package and every shippable reference package. The solved X positions are not asserted because the fake engine has no layout solver.",
       "apiPromise": "api.md Table column widths; header and body share columnFrame (collection_table.luau)",
       "gap": {
         "description": "No span comparison exists under any package.",
         "headlessTestable": true,
         "proposedTest": "For neutral and fantasy_ornate, mount a Table with fixed and fill columns plus reorderable. Set AbsoluteSize on header and body column frames through the engine, and assert equal X offsets after the header offset."
       },
-      "closedBy": "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages"
+      "closedBy": "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live/table-columns-follow-the-header"
+        ],
+        "observed": "Engine layout of the viewport, content (scrolls = false), reorderable and collapsed shapes under all ten packages: every header cell has the x and width of its body cells."
+      }
     },
     {
       "id": "collections-208",
@@ -12938,7 +13097,19 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions"
       ],
-      "weaker": "Cell width (crossSize) is not asserted."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/grid-cell-width-arithmetic"
+        ],
+        "observed": "Engine layout for 2, 3 and 4 columns: each cell is (window - (columns - 1) x crossGap) / columns wide within 1 px, the cross gap is 10 px, the line gap is 8 px, the next line starts at the first column and the cell height is the item size."
+      }
     },
     {
       "id": "collections-227",
@@ -13476,7 +13647,17 @@
         "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
         "native_parity_weaker_scrolling::native parity weaker scrolling::collections-262 list keys bind arrows and D-pad to one action that steps and reveals rows"
       ],
-      "weaker": "The case checks that each Collection action binds exactly the arrow key and its D-pad KeyCode to one InputAction. The fake engine cannot send a real KeyCode through the InputContext, so engine dispatch needs a Studio check."
+      "weaker": "Studio input tools deliver the DPadDown key code as Keyboard input, and the list did not move for it. The gamepad route still needs a controller or a physical gamepad.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live_input-list-keyboard-and-dpad-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live_input/list-keyboard-and-dpad"
+        ],
+        "observed": "Real keyboard Down through the InputContext moves GuiService.SelectedObject from row 1 to row 2 to row 3, and past the band the canvas is row x 40 - 200."
+      }
     },
     {
       "id": "collections-263",
@@ -19340,7 +19521,17 @@
         "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together",
         "native_parity_weaker_gallery::native parity weaker gallery::mech2-25 nested tint follows the package, disable blocks every input class and moves focus"
       ],
-      "weaker": "The fake engine does not run Tab or D-pad traversal. No test shows that the engine skips Go and InnerGo when the panel is off. The fixture now dims its panel labels with a literal TextTransparency; only the controls dim through the theme tag."
+      "weaker": "Tab does not move the native selection (Facet binds no Tab key; see apps-158), and the D-pad route needs a controller.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live_input-power-off-traversal-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live_input/power-off-traversal"
+        ],
+        "observed": "With panel power off, native selection from PowerToggle with the Down arrow visits Track and After and never Go or InnerGo."
+      }
     },
     {
       "id": "mech2-26",
@@ -20801,7 +20992,17 @@
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
         "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
       ],
-      "weaker": "Facet no longer has a scroll-to-visible API for a plain ScrollingFrame. The engine scrolls to the selection in a non-collection ScrollingFrame, and only a Studio check can show that. The collection keep-visible has headless tests in collections-176 and collections-262."
+      "weaker": "The selection moved with the keyboard arrows. Studio input tools deliver DPad key codes as Keyboard input, so the gamepad route still needs a controller.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live_input-scroll-into-view-by-gamepad-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live_input/scroll-into-view-by-gamepad"
+        ],
+        "observed": "Moving the native selection down past the band of a plain ScrollingFrame with 20 buttons scrolls the canvas so that the selected button is fully visible."
+      }
     },
     {
       "id": "mech3-32",
@@ -21794,7 +21995,19 @@
       "candidateCases": [
         "native_inputs::native input controls::lays out image buttons vertically inside their authored card bounds"
       ],
-      "weaker": "Candidate checks one size: vertical UIListLayout, wrapped Title/Description, aspect constraint. No theme packages (Pixel Quest, Fantasy Ornate), no viewport sweep, no focus-state check."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/image-button-caption-clear-of-artwork"
+        ],
+        "observed": "Engine layout for all ten theme packages at card widths 180, 240 and 320 px in both viewports and text sizes: the title and the description are below the artwork, the artwork and the title are inside the card, and the card is the one selectable target. At Largest text the fixed 300 px card lets the description extend below the card; the run records that overflow as a note."
+      }
     },
     {
       "id": "navigation-1-07",
@@ -22302,7 +22515,19 @@
         "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away",
         "native_navigation::native navigation controls::keeps measured callout arrows outside automatic content bounds"
       ],
-      "weaker": "Callout only (no general solver). Asserts edge top gap 8 and x clamp to 32. Shift amount is not reported, and the clamp is only checked on X."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/callout-edge-gap-shift-clamp"
+        ],
+        "observed": "Engine layout for anchors at the centre, both lateral edges, the top-left corner and the bottom-right corner: the panel is 8 px off its edge, it never covers the anchor, it stays inside the layer with an 8 px gutter on both axes, and the along-edge shift is recorded. The run found that a top callout with no room above covered its anchor; 7e89af75 moves it below the anchor."
+      }
     },
     {
       "id": "navigation-1-40",
@@ -22348,7 +22573,19 @@
       "candidateCases": [
         "native_navigation::native navigation controls::keeps measured callout arrows outside automatic content bounds"
       ],
-      "weaker": "Only the arrow Y (border) is asserted (547). X centring on the anchor and the [12, width-12] corner clamp are unasserted."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/callout-tail-centre-border-corners"
+        ],
+        "observed": "Engine layout for the same five anchors: the tail centre rides the shared border within 1.5 px, it stays at least 12 px from both panel corners, it centres on the source whenever the source is inside that band, and it paints behind the panel."
+      }
     },
     {
       "id": "navigation-1-43",
@@ -22686,7 +22923,16 @@
         "native_navigation::native navigation controls::resets the mounted callout showcase without replacing anchor identities",
         "native_parity_weaker_gallery::native parity weaker gallery::navigation-1-65 callout reset keeps both anchors, replaces the tips and replays the tip"
       ],
-      "weaker": "The fake engine does not place surfaces. No test shows that no raised plate covers the Share anchor after reset or that Reset is at least 44 px tall."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json"
+        ],
+        "cases": [
+          "needs_live/coach-mark-clear-of-share-and-reset-floor"
+        ],
+        "observed": "In the callout scenario with Share selected, no plate covers Share after show, after use and after reset and show, and Reset is at least 44 px high."
+      }
     },
     {
       "id": "navigation-1-66",
@@ -22721,7 +22967,20 @@
       "candidateCases": [
         "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away"
       ],
-      "weaker": "A fixed 8px gutter (not the theme's step) is checked only on the right edge."
+      "weaker": "The gutter is a fixed 8 px, not the theme spacing step. A device safe inset applies only through the ScreenGui safe area that the layer reports.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/callout-edge-gap-shift-clamp"
+        ],
+        "observed": "Engine layout keeps the panel at least 8 px from both lateral edges of the layer for anchors at both edges."
+      }
     },
     {
       "id": "navigation-1-68",
@@ -24229,7 +24488,19 @@
       "candidateCases": [
         "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back"
       ],
-      "weaker": "Asserts Destination Position.Y 0 for the untitled root and Back after push; destination box reduction not asserted."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/navigation-stack-root-box-and-back-chrome"
+        ],
+        "observed": "Engine layout: the untitled root destination has the full stack box; after a push the destination starts below the navigation bar, keeps the stack bottom and is reduced by exactly the bar height; Back is visible inside the bar and the title fits."
+      }
     },
     {
       "id": "navigation-3-28",
@@ -24667,7 +24938,19 @@
         "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
         "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors"
       ],
-      "weaker": "Floor asserts MinSize.X only."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/vertical-segments-stack-share-width-floor"
+        ],
+        "observed": "Engine layout of a segmented picker with axis y: the three segments stack on y without overlap, share one width and x, and each is at least 44 px on both axes."
+      }
     },
     {
       "id": "navigation-3-60",
@@ -26658,7 +26941,19 @@
       "candidateCases": [
         "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup"
       ],
-      "weaker": "Asserts Tabs Position.Y==measured head height (52); rail width/containment not asserted."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/tab-head-accessory-above-rail"
+        ],
+        "observed": "Engine layout of a sidebar TabView at 1000x600: the head accessory has a measured height, sits above the tab strip with the rail width and x, stays inside the TabView, and the foot is pinned to the rail bottom below the strip."
+      }
     },
     {
       "id": "navigation-5-35",
@@ -27227,7 +27522,19 @@
         "native_inputs::native input controls::reflows Button and circle sizes from live theme metrics and control rungs",
         "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes"
       ],
-      "weaker": "Circle uses native UIAspectRatioConstraint; authored width-only/height-only axes are not exercised."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/circle-button-authored-axes"
+        ],
+        "observed": "Engine layout: compact, regular and large circles are round and not empty. The run found that a circle with only an authored width (32) or height (72) collapsed to 0x0; 7e89af75 keeps the authored axis dominant and the live run shows 32x32 and 72x72."
+      }
     },
     {
       "id": "paint-15",
@@ -29300,7 +29607,19 @@
         "native_themes_media::native themes and media::centers circular readouts when native text bounds fit the ring",
         "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-11 circular readouts center only while native text bounds fit inside the ring"
       ],
-      "weaker": "The centered/below decision is asserted at the exact 0.6 x diameter boundary with injected TextBounds, with Center alignment, no wrap and XY automatic size. The engine's own text measurement is not exercised."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/circular-value-inside-gauge"
+        ],
+        "observed": "Engine text measurement: the 120 px ring shows 75% with TextBounds.X at most 72, AnchorPoint (0.5, 0.5), inside the gauge width."
+      }
     },
     {
       "id": "themes-P1-12",
@@ -29341,7 +29660,19 @@
         "native_themes_media::native themes and media::moves oversized circular readouts below the ring using native text bounds",
         "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-14 a gauge keeps a long value whole and visible as native text grows"
       ],
-      "weaker": "Growing TextBounds are injected to stand for larger preferred text; the readout stays visible, whole, centered below the ring and the gauge grows to fit. The engine's PreferredTextSize scaling is not exercised."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/needs_live-portrait-largest.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-largest.json",
+          "artifacts/studio-live/needs_live-portrait-default.json",
+          "artifacts/studio-live/needs_live-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "needs_live/large-text-gauge-value-below-ring"
+        ],
+        "observed": "With PreferredTextSize Largest set in the Roblox menu, the 80 px gauge shows 10000 / 10000 below the ring, visible and whole, wider than the ring, and the gauge is at least as wide as the text. The label reports TextFits false while its AutomaticSize box equals its TextBounds, so the run compares the bounds."
+      }
     },
     {
       "id": "themes-P1-15",
@@ -30199,7 +30530,19 @@
       "candidateCases": [
         "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive"
       ],
-      "weaker": "Neutral (32/3) and one override (48/6) asserted; the eight shipped packages are not swept."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/circular-progress-stroke-inside-box"
+        ],
+        "observed": "For all ten theme packages, the full ring stroke (each control point plus half the thickness) stays inside the square indicator box."
+      }
     },
     {
       "id": "themes-P1-72",
@@ -31309,7 +31652,20 @@
         "native_themes_media::native themes and media::accepts the Virtual Monitors package without optional art sections",
         "native_inputs::native input controls::isolates artwork and mirrored captions from native automatic sizing while following real padding"
       ],
-      "weaker": "The candidate asserts that `.facet-button::UIPadding` takes a layered control recipe's left inset (20), that the live theme insets reach a Toggle's padding, and that there is a 12px default with no chrome. `.facet-pan..."
+      "weaker": "Panel (facet-panel) padding insets are not asserted live.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/chrome-insets-reserve-native-padding"
+        ],
+        "observed": "For all ten theme packages, the resolved native UIPadding of a Button and a Toggle leaves a non-negative content box, the lifted label (five packages) starts and ends at the padded edges, and plain text fits the padded box."
+      }
     },
     {
       "id": "themes-P2-21",
@@ -31407,7 +31763,20 @@
       "candidateCases": [
         "native_inputs::native input controls::isolates artwork and mirrored captions from native automatic sizing while following real padding"
       ],
-      "weaker": "The candidate's LabelBounds mirrors the host's real UIPadding. The cases cover inset and no padding, but only for Button."
+      "weaker": "The zero-inset full-bleed case is asserted only headlessly.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/chrome-insets-reserve-native-padding"
+        ],
+        "observed": "For the five packages that lift the label, the LabelBounds rectangle of a Button and a Toggle starts at the left inset and ends at the right inset of the resolved native padding."
+      }
     },
     {
       "id": "themes-P2-27",
@@ -32558,7 +32927,19 @@
       "candidateCases": [
         "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork"
       ],
-      "weaker": "Candidate asserts the Skin/SkinBoundary placement outside native layout for a panel fill layer; direct-child-combinator semantics no longer apply."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "artifacts": [
+          "artifacts/studio-live/layout_geometry-portrait-largest.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-largest.json",
+          "artifacts/studio-live/layout_geometry-portrait-default.json",
+          "artifacts/studio-live/layout_geometry-landscape-844x369-default.json"
+        ],
+        "cases": [
+          "layout_geometry/layers-hang-outside-layout"
+        ],
+        "observed": "For each package that decorates a sheet panel, the Skin art covers the panel rectangle within 1.5 px, the art boundary is not a GuiObject in the layout, and the sheet content stays inside the panel."
+      }
     },
     {
       "id": "themes-P4-06",

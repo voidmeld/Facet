@@ -83,7 +83,7 @@ last column names the candidate specs that the group cites most.
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 63 | 23 | 16 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,326 | 94 | 58 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Layout and geometry | 1,326 | 94 | 25 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 497 | 54 | 38 | 232 | 202 | 9 | `native_inputs`, `native_collections`, `native_parity_navigation` |
 | Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
@@ -100,13 +100,13 @@ last column names the candidate specs that the group cites most.
 | Navigation containers | 72 | 64 | 36 | 1 | 2 | 5 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
 | Presented surfaces | 287 | 124 | 81 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 214 | 156 | 6 | 3 | 52 | 3 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
-| Tables | 156 | 97 | 9 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
-| Row actions | 264 | 149 | 19 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 166 | 46 | 30 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| Tables | 156 | 97 | 1 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
+| Row actions | 264 | 149 | 13 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
+| HUD and world targets | 166 | 46 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 28 | 17 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 0 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
-| Gallery and examples | 425 | 237 | 58 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
+| Gallery and examples | 425 | 237 | 51 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 151 | 2 | 22 | 153 | 1 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
@@ -126,9 +126,25 @@ results:
 - the fit of the showcase on each viewport (`overflow_sweep`, 124 cases),
 - selection visuals and scroll-into-view geometry.
 
-`tools/lune/parity_blockers.json` still lists three pending live risks. The
-`coverage` producer fails for this reason. Studio evidence for the other
-native mechanisms is not recorded per contract.
+`tools/lune/parity_blockers.json` still lists one pending live risk: haptic
+motor output on a physical phone and gamepad. The `coverage` producer fails
+for this reason. Studio shows only that the controls request the effects.
+
+The live Studio harness in `tools/studio/live` records engine geometry for 34
+contracts in the `liveEvidence` field of each contract. The results are in
+`artifacts/studio-live`. The runs use the device emulator at 844x369 and
+388x824, at the Medium and Largest preferred text sizes. The harness found
+four defects, and the branch fixes them:
+
+- The collection toolbar took the whole page on a short landscape phone, so
+  the list had no height.
+- The gallery shell reserved a fixed 56 px, and a taller Settings button
+  overlapped the demo tabs.
+- A top callout with no room above covered its anchor.
+- A circle Button with a Size on one axis only collapsed to 0x0.
+
+[Device verification](11-device-verification.md#live-assertion-harness)
+describes the harness and its limits.
 
 ### Workloads
 
