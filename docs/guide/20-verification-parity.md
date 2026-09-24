@@ -15,8 +15,8 @@ where.
 
 - 894 main cases test behavior that `api.md`, a guide or `src`
   still promises, but no candidate case tested it. This audit adds tests
-  for 56 of these cases. 838 cases remain.
-- 1,679 of the 2,350 covered cases have a weaker
+  for 218 of these cases. 676 cases remain.
+- 1,683 of the 2,512 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -27,8 +27,10 @@ where.
 - The release gate cannot pass. No producer writes
   `artifacts/verify/latest-release.json`, so `tools/package.sh publish`
   refuses with `gate-evidence-missing`. This fails closed.
-- The audit found 10 open defects in `src` and
-  3 in the examples.
+- The audit found 10 defects in `src` and 3 in the examples. The paint
+  and theme tests fixed E1. They also found and fixed 4 more defects in
+  `src` and 2 in the examples. 10 defects in `src` and 2 in the examples
+  stay open.
 
 ## Method
 
@@ -60,10 +62,10 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 805 | 2,294 | 2,350 |
+| a | Covered by a candidate case | 860 | 2,294 | 2,512 |
 | b | Retired. The Roblox Engine or Compose owns the mechanism | 306 | 1,581 | 1,581 |
 | c | Retired. The feature or code was deleted and is not promised | 822 | 6,079 | 6,079 |
-| d | Gap. A promise remains and no candidate case verifies it | 357 | 894 | 838 |
+| d | Gap. A promise remains and no candidate case verifies it | 302 | 894 | 676 |
 
 Class c is the largest class. Most of it tested the deleted solver,
 renderer, focus graph, input system, presenter, paint layer and their seams.
@@ -86,8 +88,8 @@ last column names the candidate specs that the group cites most.
 | Pointer, touch and drag | 368 | 57 | 47 | 97 | 208 | 6 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 330 | 75 | 59 | 100 | 137 | 18 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 581 | 118 | 80 | 33 | 404 | 26 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 709 | 98 | 67 | 70 | 440 | 101 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 379 | 85 | 68 | 0 | 233 | 61 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_parity_paint`, `native_inputs` |
+| Theme packages | 379 | 146 | 68 | 0 | 233 | 0 | `native_themes_media`, `native_parity_themes`, `native_inputs` |
 | Icons and media | 251 | 86 | 66 | 37 | 98 | 30 | `native_themes_media`, `native_stress`, `native_public_surface` |
 | Action controls | 394 | 61 | 57 | 1 | 297 | 35 | `native_inputs`, `native_navigation`, `native_themes_media` |
 | Value controls | 249 | 171 | 128 | 0 | 28 | 50 | `native_inputs`, `native_themes_media`, `native_navigation` |
@@ -249,7 +251,6 @@ Each item describes a test that fails today. The audit did not fix them.
 | B8 | `src/ui/media.luau` | Label with an icon returns a Frame | Mount Label with text and icon. Expect a TextLabel root, as api.md says. Actual: a Frame. |
 | B9 | `src/ui/media.luau` | ProgressView endLabel hides the showValue readout | Mount ProgressView with value 0.5, showValue = true and endLabel = "End". Expect a "50%" text. Actual: no text shows the value. |
 | B10 | `src/ui/inputs.luau` | Button corners rejects a readable, but Badge corners accepts one | Mount Button with corners = Compose.cell("square"). Expect it to mount, the same as Badge. Actual: an error. api.md does not say that corners is static. Low severity. |
-| E1 | `examples/gallery/examples/05_word_game.luau` | Word-game keys and the active row no longer show state by paint | Mount the word game and guess RULES against REACT. Expect key_R and key_U to carry different surfaces, and the active row to carry an outline. Actual: the surface formulas are computed and never applied. |
 | E2 | `examples/gallery/examples/02_playlist_table.luau` | Playlist plays a track on one click; its hint says double-click | Mount the playlist and fire one RowHit.Activated with MouseButton1. Expect selection only. Actual: nowPlaying changes. |
 | E3 | `examples/themes/ornate_gauge.luau, examples/themes/custom_control.luau` | Theme fixtures call deleted constructors | Call each fixture blueprint with Facet.controls(runtime). Expect a mounted view. Actual: UI.ZStack, UI.HStack and UI.VStack are nil. docs/guide/13-theme-catalog.md still calls them tested fixtures. |
 
@@ -262,6 +263,21 @@ The concurrent session fixed these reported defects before the recheck:
 - `8781d9f8`: define accepted malformed type roles and unknown shadow presets; unreadable selected-label contrast passed.
 - `8b19bba9`: corners layers ignored layer.asset; derived packages kept stale state art; skinned toggle fills were outranked.
 - `3aa388a5`: Alert shortcut "cancelAction" and non-table transitions were silently ignored.
+
+### Fixed with the paint and theme tests
+
+A test in the new paint and theme specs showed each of these defects. The
+same change fixes it.
+
+| ID | File | Defect |
+|---|---|---|
+| B11 | `src/ui/nav_menu.luau` | A Picker with `indicator = "none"` removed every selection cue. The chosen option now keeps its static current tags. |
+| B12 | `src/ui/themes.luau` | The transparency preference scaled dividers, soft fills, current-choice fills and package rules. At preference 0, an accent caption sat on an opaque accent fill. Now the preference scales only the scrim. |
+| B13 | `src/ui/media.luau` | Label accepted an unknown `textRole` and added an inert tag. Now it causes an error. |
+| B14 | `src/ui/themes.luau` | A package that set `body` and `control` but not `strong` or `numeral` got the neutral face for them. Now `define` derives them from the package face. |
+| E1 | `examples/gallery/examples/05_word_game.luau` | The word-game keys and the active row did not show their state. The keys now use Button appearances, and the active row has an outline. The caret has the empty color, so the caret mark is the cue. |
+| E4 | `examples/gallery/scenarios/status_indicator.luau` | The guide label used `textRole = "secondary"`. It now uses `role = "secondary"`. |
+| E5 | `examples/gallery/scenarios/recipes_common.luau`, `examples/gallery/examples/06_tile_game.luau` | The recipe dividers used a fixed inset and color. They now use the theme spacing, hairline and `facet-divider` paint. A pending crossword tile now has an outline. A committed tile does not. |
 
 ## Gaps closed by this audit
 
@@ -282,13 +298,67 @@ adds these cases:
 | delivers onActivate with the item and key and skips disabled rows | - | 0 | collections-184 |
 | wraps rating activation to zero only when allowZero and ignores a disabled rating | - | 0 | inputs-156 |
 
+[`tests/native_parity_paint.spec.luau`](../../tests/native_parity_paint.spec.luau)
+closes every gap in the paint and theming group. A contract that two cases
+close counts once, in the first row.
+
+| Candidate case | Closes | Main cases | Also partly covers |
+|---|---|---:|---|
+| compiles the button role and appearance vocabulary to palette rules above their base states | paint-02, paint-08, paint-110, paint-119, themes-P2-39 | 13 | - |
+| tags each button role, appearance and corner choice for the matching rule | paint-02, paint-08, paint-119 | 0 | - |
+| moves the picker current-option tags with the selection and the indicator choice | navigation-3-50, paint-29 | 9 | - |
+| keeps the picker menu catcher invisible at every background preference | navigation-4-12 | 3 | - |
+| marks the selected tab by placement and indicator choice | navigation-5-22 | 1 | - |
+| paints every value-control own slot solid in every shipped package and palette | paint-106, themes-P2-32, themes-P2-34, themes-P4-25 | 7 | - |
+| tags unskinned value-control slots for their own paint and keeps the tags when skinned | paint-75, themes-P5-28 | 4 | themes-P5-35 |
+| repaints corner radii and type roles in place when package metrics change | paint-114, themes-P2-21, themes-P5-42 | 6 | - |
+| compiles every type role to native font rules and tags labels with their role | themes-P3-10 | 5 | paint-148 |
+| compiles palette chrome gradients to UIGradient rules and removes them with the palette | themes-P2-09, themes-P3-12, themes-P5-13 | 6 | - |
+| orders rule priority by declaration with states after rests and package rules last | themes-P2-11 | 2 | - |
+| keeps an icon badge icon through reactive status paint and switches badge appearances | themes-P1-47, themes-P1-49 | 2 | - |
+| skins the badge seal from the package badge slot and removes it with the package | themes-P2-16 | 4 | - |
+| blends a bound dimmed async image and restores it | themes-P1-125 | 1 | - |
+| lets per-view slider images replace the theme skin on that node only | themes-P2-25, inputs-227 | 7 | themes-P4-10 |
+| leaves icon tint and transparency to the style sheet | themes-P2-63 | 1 | - |
+| keeps the selected label readable on the selection fill and its sampled art in every shipped theme | themes-P5-23, themes-P5-46 | 7 | - |
+| treats a garbage transparency preference as the identity | themes-P5-48 | 2 | - |
+| scales only the scrim backdrop by the transparency preference | themes-P5-49 | 8 | - |
+| insets and paints the recipe dividers from the installed theme | apps2-221 | 1 | - |
+| marks the active word row and pending crossword tiles without relying on color | apps2-19, apps2-26 | 6 | - |
+| selects every tag the framework emits with a rule in every shipped sheet | themes-P5-41 | 9 | - |
+
+`keeps a transparent menu catcher transparent at every background preference`
+in `native_navigation` also covers navigation-4-12.
+
+[`tests/native_parity_themes.spec.luau`](../../tests/native_parity_themes.spec.luau)
+closes every gap in the theme packages group.
+
+| Candidate case | Closes | Main cases | Also partly covers |
+|---|---|---:|---|
+| derives unauthored strong and numeral roles from the package face | paint-152 | 3 | - |
+| authors circular and spinner metrics in every reference package across a twofold span | themes-P1-69 | 10 | - |
+| answers the progress metrics from neutral for a package that authors none | themes-P1-70 | 1 | - |
+| resolves content and contentId to the same skin and icon image | themes-P2-01 | 2 | themes-P3-22 |
+| refuses an unknown text role and follows a bound role | themes-P3-26 | 1 | - |
+| inherits unrestated base values in a derived package and gates it as strictly | themes-P4-29 | 2 | - |
+| rejects non-finite theme numbers with the field path | themes-P4-33 | 1 | themes-P4-42 |
+| paints omitted semantic pairs from the neutral fallbacks in every palette | themes-P4-37 | 3 | - |
+| falls back to default art for unstated states and ranks disabled over pressed over hover over selected | themes-P4-46 | 1 | - |
+| shows the derived default art in a state the derived package no longer declares | themes-P4-50 | 1 | - |
+| exercises every declared theme class of each reference package against neutral | themes-P5-03 | 13 | - |
+| names declared rbxassetid assets in every chrome and icon recipe | themes-P5-04 | 5 | - |
+| compiles and skins a full stack when a declared asset is bogus | themes-P5-05 | 2 | - |
+| declares distinct success and warning pairs in every reference palette | themes-P5-15 | 2 | - |
+| pairs touch and pointer metrics, hover art and the tile stripe | themes-P5-22 | 5 | - |
+| loads only shipping theme package modules from the gallery theme folder | apps2-118 | 3 | - |
+| lists Neutral first then names, keeps the installed package on reselection and selects a palette | apps2-117 | 3 | - |
+
 ## Proposed tests for the largest gaps
 
 Each proposal is headless. Use the fake engine in `tests/lib/native_engine.luau`.
 
-- **Paint rules.** Compile the neutral sheet. For each Button role and appearance tag, read the rule for the button, its caption and its icon. Expect the palette color. Change the package palette and expect the rule to change.
 - **Control size.** Mount Button and ShortcutHint with `controlSize = "tiny"`. Expect an error that names compact, regular and large. Bind a cell and set an illegal value. Expect the last legal height.
-- **Theme packages.** For each shipped package, call `checkCoverage` with every icon name that a control requests. Expect no missing name. Expect every `.facet-type-<role>` rule to use the package font.
+- **Icons.** For each shipped package, call `checkCoverage` with every icon name that a control requests. Expect no missing name.
 - **Value controls.** Mount Slider with `thumbImage` and `trackImage`. Expect the images on the thumb and track. Hold Increase on a Stepper, then present a modal. Expect the value to stop changing.
 - **Row actions.** Mount a Table with `rowActions`. Open one row, then open a second row with a shared coordinator. Expect the first row to close. Press Delete on a focused row. Expect one commit.
 - **Tables.** Mount a Table with fixed and flexible columns. Set the viewport size. Expect the header and body column edges to match. Expect no resize grip on a column with `resizable = false`.
@@ -383,61 +453,6 @@ Example and reference-app gaps follow in a summary.
 | navigation-5-50 | Motion | 1 | No declaration leaves no transition |
 | themes-P1-75 | Motion | 1 | Reduced motion sub-tick hold then move: indeterminate bar |
 | themes-P1-78 | Motion | 1 | Switching policy mid-cycle steps, never restarts |
-| themes-P5-41 | Paint and theming | 9 | Every tag the framework emits is selected by a rule in every sheet |
-| navigation-3-50 | Paint and theming | 8 | Current-option paint follows selection and indicator choice (none/underline/inline) |
-| themes-P5-49 | Paint and theming | 8 | Preference touches only backdrops, never hairlines, disabled dim or authored opacity |
-| paint-08 | Paint and theming | 7 | Role/appearance/corners vocabulary paint and state precedence |
-| themes-P3-10 | Paint and theming | 5 | Typography roles compile into native rules (.facet-type-<role>, .facet-button, captions) and follow package edits; Label textRole reaches them |
-| apps2-26 | Paint and theming | 4 | Active row cue is not a colour: outlined plate follows the active row, next-letter mark |
-| themes-P2-16 | Paint and theming | 4 | Badge chrome slot: an ornate package skins the badge seal with its insets |
-| themes-P2-25 | Paint and theming | 4 | A per-view image overrides the theme skin for one node (Slider thumbImage and trackImage) |
-| themes-P5-23 | Paint and theming | 4 | Selected label contrast holds against the selection ART (plate samples) |
-| navigation-4-12 | Paint and theming | 3 | A Picker/Menu popup catcher is invisible (resolves to fully transparent) |
-| paint-114 | Paint and theming | 3 | Accent/control corner radius follows package radii live |
-| paint-75 | Paint and theming | 3 | Value-control own-paint tags independent of skinning |
-| themes-P2-32 | Paint and theming | 3 | Slider thumb and rail paint opaque on every package, and badge and accent fills stay solid |
-| themes-P5-13 | Paint and theming | 3 | Gradient packages stay readable and reach ::UIGradient rules |
-| themes-P5-46 | Paint and theming | 3 | Selected label on controlSelected clears 4.5:1 in every shipped theme |
-| apps2-19 | Paint and theming | 2 | Committed vs uncommitted is not a colour: solid vs outline plate, ASCII mark |
-| paint-02 | Paint and theming | 2 | Content text/icon colors per role and appearance rule |
-| paint-106 | Paint and theming | 2 | Every value-control own-paint slot gets a solid fill with corner/hairline |
-| paint-119 | Paint and theming | 2 | onIndicator caption role tag and rule |
-| themes-P2-09 | Paint and theming | 2 | Palette chrome gradients compile to ::UIGradient rules per palette |
-| themes-P2-11 | Paint and theming | 2 | Cascade order: StyleRule Priority follows declaration order (resting before states, contributions last) |
-| themes-P2-21 | Paint and theming | 2 | Metric changes (radii, strokes, typography) repaint live |
-| themes-P5-48 | Paint and theming | 2 | Garbage preference is the identity |
-| apps2-221 | Paint and theming | 1 | Divider edges honour leading/trailing insets and heavy thickness under each theme |
-| navigation-5-22 | Paint and theming | 1 | Selection indicator default (underline on top band) |
-| paint-110 | Paint and theming | 1 | Parent-role caption variants |
-| paint-29 | Paint and theming | 1 | Picker selection rides the style tag |
-| themes-P1-125 | Paint and theming | 1 | Bound dimmed blends image and back |
-| themes-P1-47 | Paint and theming | 1 | Icon badge keeps its icon through reactive status paint |
-| themes-P1-49 | Paint and theming | 1 | Utility plateless and status leading dot appearances |
-| themes-P2-34 | Paint and theming | 1 | The toggle's ON track uses that theme's accent |
-| themes-P2-39 | Paint and theming | 1 | A skinned role button keeps its role text colours |
-| themes-P2-63 | Paint and theming | 1 | Icons carry no instance paint; the tint comes from the sheet |
-| themes-P3-12 | Paint and theming | 1 | Package chromeGradient paints the chrome slots via native UIGradient rules |
-| themes-P4-25 | Paint and theming | 1 | Bar family owns solid native paint (track/fill rules) when unskinned |
-| themes-P5-28 | Paint and theming | 1 | Suppression outranks each value slot's own paint rule |
-| themes-P5-42 | Paint and theming | 1 | Themed corner radii follow the installed package |
-| themes-P5-03 | Theme packages | 13 | Declared theme classes (palette/metric/font/asset) are real, corpus covers all four |
-| themes-P1-69 | Theme packages | 10 | Every shipped package authors its own circular/spinner metrics and the corpus spans 2x |
-| themes-P5-04 | Theme packages | 5 | Recipes name declared assets, never raw ids |
-| themes-P5-22 | Theme packages | 5 | Platform pair: touch vs pointer metrics, hover art, tile stripe |
-| apps2-117 | Theme packages | 3 | Neutral first then sorted by name; re-selecting the installed package is a no-op; selecting a theme within the active package |
-| apps2-118 | Theme packages | 3 | FacetThemes folder: ignores non-packages, excludes testOnly fixtures, lists every shipping package (ornate with two themes) |
-| inputs-227 | Theme packages | 3 | Per-view thumbImage/trackImage override |
-| paint-152 | Theme packages | 3 | Unauthored strong/numeral derive from the package face |
-| themes-P4-37 | Theme packages | 3 | Omitted semantic pairs ride the neutral fallbacks, including derived two-variant packages |
-| themes-P2-01 | Theme packages | 2 | `content` and `contentId` both resolve to the same image |
-| themes-P4-29 | Theme packages | 2 | Derivation from base inherits unrestated values and is gated as strictly |
-| themes-P5-05 | Theme packages | 2 | Bogus art still compiles and skins a full stack (asset failure is runtime) |
-| themes-P5-15 | Theme packages | 2 | Shipped palettes declare their own success/warning, distinct from accent/content |
-| themes-P1-70 | Theme packages | 1 | Package that authors nothing still answers the three metrics |
-| themes-P3-26 | Theme packages | 1 | Unknown typography role is rejected at construction |
-| themes-P4-33 | Theme packages | 1 | Non-finite (NaN) numbers are rejected |
-| themes-P4-46 | Theme packages | 1 | Unstated states fall back to default art (and skin state precedence disabled > pressed > hover > selected) |
-| themes-P4-50 | Theme packages | 1 | A derived package override cannot leave a stale base state |
 | paint-54 | Icons and media | 10 | Every shipped package resolves every framework icon to art |
 | themes-P3-22 | Icons and media | 3 | contentId is an alias of content: both spellings yield the same native Image/rules as plain strings |
 | paint-53 | Icons and media | 2 | Framework icon list matches the names controls request |
@@ -607,7 +622,8 @@ Example and reference-app gaps:
 - `contracts` has one record for each contract. A record has the main
   specs, the class, the cited candidate cases and the gap.
 - `producers.rows` maps each main `full` producer to its candidate status.
-- `bugs` has a failing-test description for each open defect.
+- `bugs` has a failing-test description for each defect. `status` is
+  `open` or `fixed`. A fixed defect names the case that shows the fix.
 - `totals.uncitableCandidateCases` lists citations that are not suite case
   IDs, such as producers and groups of cases.
 

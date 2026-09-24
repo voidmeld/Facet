@@ -180,7 +180,27 @@ return {
 				table.unpack(children),
 			})
 		end
+		local function metrics(use)
+			local package = if ctx.theme then use(ctx.theme) else Facet.themes.neutralPackage()
+			return package.metrics
+		end
 		local function dividerExample(id: string, name: string, sides: any, thickness: number?): any
+			local function inset(side: string)
+				return function(use)
+					return UDim.new(
+						0,
+						if type(sides) == "table" and sides[side] then metrics(use).space[sides[side]] else 0
+					)
+				end
+			end
+			local line = Host.Frame({
+				LayoutOrder = 1,
+				Name = "Line",
+				Size = function(use)
+					return UDim2.new(1, 0, 0, thickness or metrics(use).strokes.hairline)
+				end,
+			})
+			line:AddTag("facet-divider")
 			return Host.Frame({
 				Name = id,
 				BackgroundTransparency = 1,
@@ -216,29 +236,12 @@ return {
 						Padding = UDim.new(0, 0),
 					}),
 					Host.UIPadding({
-						PaddingTop = UDim.new(
-							0,
-							if type(sides) == "table" then (if sides.top then 16 else 0) else sides
-						),
-						PaddingBottom = UDim.new(
-							0,
-							if type(sides) == "table" then (if sides.bottom then 16 else 0) else sides
-						),
-						PaddingLeft = UDim.new(
-							0,
-							if type(sides) == "table" then (if sides.left then 16 else 0) else sides
-						),
-						PaddingRight = UDim.new(
-							0,
-							if type(sides) == "table" then (if sides.right then 16 else 0) else sides
-						),
+						PaddingTop = inset("top"),
+						PaddingBottom = inset("bottom"),
+						PaddingLeft = inset("left"),
+						PaddingRight = inset("right"),
 					}),
-					Host.Frame({
-						LayoutOrder = 1,
-						Name = "Line",
-						BackgroundColor3 = Color3.fromRGB(110, 118, 135),
-						Size = UDim2.new(1, 0, 0, thickness or 1),
-					}),
+					line,
 				}),
 			})
 		end
@@ -553,11 +556,11 @@ return {
 					end,
 				}),
 				heading("DividerHeading", "Divider insets"),
-				dividerExample("DividerFull", "Full", 0),
+				dividerExample("DividerFull", "Full"),
 				dividerExample("DividerLeading", "Leading inset", { left = "m" }),
 				dividerExample("DividerTrailing", "Trailing inset", { right = "m" }),
 				dividerExample("DividerBoth", "Leading and trailing", { left = "m", right = "m" }),
-				dividerExample("DividerHeavy", "Heavy", 0, 3),
+				dividerExample("DividerHeavy", "Heavy", nil, 3),
 				heading("AccordionHeading", "Single-open accordion"),
 				Host.Frame "Accordion" {
 					BackgroundTransparency = 1,

@@ -123,6 +123,12 @@ local KEY_SURFACE: { [string]: string } = {
 	correct = "accent",
 }
 local KEY_MARK: { [string]: string } = { absent = "x", present = "~", correct = "v" }
+local KEY_APPEARANCE: { [string]: string } = {
+	control = "standard",
+	base = "utility",
+	chip = "soft",
+	accent = "emphasis",
+}
 
 local KEYBOARD = {
 	{ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" },
@@ -293,7 +299,7 @@ function example.build(ctx: any)
 	local keyPathByLetter: { [string]: any } = {}
 	local tileColors = {
 		empty = Color3.fromRGB(58, 67, 82),
-		caret = Color3.fromRGB(70, 83, 104),
+		caret = Color3.fromRGB(58, 67, 82),
 		filled = Color3.fromRGB(78, 89, 109),
 		absent = Color3.fromRGB(76, 82, 90),
 		present = Color3.fromRGB(155, 124, 30),
@@ -338,6 +344,14 @@ function example.build(ctx: any)
 								return tileColors[use(state)]
 							end,
 							Host.UICorner({ CornerRadius = UDim.new(0, 4) }),
+							Host.UIStroke "Outline" {
+								ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+								Color = Color3.fromRGB(236, 239, 245),
+								Thickness = 2,
+								Enabled = function(use)
+									return use(surface) == ACTIVE_ROW_PLATE.surface
+								end,
+							},
 						},
 						UI.Label "ch" {
 							Text = letter,
@@ -408,7 +422,11 @@ function example.build(ctx: any)
 					}),
 					LayoutOrder = ki,
 					label = labelOf,
-
+					appearance = if surfaceOf
+						then function(use)
+							return KEY_APPEARANCE[use(surfaceOf)]
+						end
+						else nil,
 					enabled = playingSig,
 					TextSize = if isCommand then 14 else 16,
 					onActivate = function()

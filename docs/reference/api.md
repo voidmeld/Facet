@@ -520,7 +520,7 @@ animation. If the owner is removed, an unfinished departure is cancelled.
 
 | Control | Main contract |
 |---|---|
-| `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. Returns a TextLabel. |
+| `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Returns a TextLabel. |
 | `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
 | `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max` and `diameter`. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
 | `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
@@ -544,6 +544,10 @@ same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
 `themes.SCHEMA` is `facet-theme/2`. `TYPE_ROLES` and `REQUIRED_TYPE_ROLES` list
 `caption`, `label`, `body`, `heading`, `title`, `control`, `strong` and
 `numeral`. The `caption` role also uses the `contentSecondary` color.
+If a definition sets `body` and does not set `strong`, `define` makes `strong`
+from `body` with the `SemiBold` weight. If a definition sets `control` and does
+not set `numeral`, `define` makes `numeral` from `control` with the `Bold`
+weight. The derived role keeps the family, style, size and line height.
 
 - `neutralPackage()` returns a mutable copy of the neutral theme package.
 - `define(definition)` derives from `base` (neutral by default) and returns
@@ -572,6 +576,10 @@ same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
   - `name`: the native name.
   - `transition`: a native TweenInfo, a readable, or `false`.
   - `reducedMotion`: a boolean or a readable.
+  - `preferredTransparency`: a number or a readable. The value multiplies the
+    scrim transparency. Other rules keep their authored transparency. A value
+    that is not a number has no effect. If you omit it, the sheet follows
+    GuiService.
 - Colors and opacity use native StyleRule transitions. The default duration is
   `metrics.motion.normal` of the theme package, or 0.2 seconds if it is
   omitted. The easing is Quad Out. The same timing applies across rules. Native

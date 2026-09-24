@@ -31,6 +31,27 @@ function screen.configure(ctx)
 	end)
 end
 
+function screen.themePackages(themes, modules, load)
+	local packages = {}
+	for _, module in modules do
+		if module:IsA("ModuleScript") then
+			local ok, definition = pcall(load, module)
+			if
+				ok
+				and type(definition) == "table"
+				and not definition.testOnly
+				and type(definition.build) == "function"
+			then
+				local built, package = pcall(definition.build, themes)
+				if built and package then
+					packages[module.Name] = package
+				end
+			end
+		end
+	end
+	return packages
+end
+
 function screen.setTheme(ctx, name)
 	local package = ctx.packages[name]
 	if not package then
