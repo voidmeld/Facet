@@ -45,8 +45,9 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local committing: ComposeTypes.Cell<{ action: RowAction, edge: RowEdge }?> =
 			Compose.cell(nil :: { action: RowAction, edge: RowEdge }?)
 		local fired = false
+		local motionReduced = ctx.reducedMotion()
 		local function reduced(use: ComposeTypes.Use?): boolean
-			return read(if spec.reducedMotion == nil then ctx.config.reducedMotion else spec.reducedMotion, use) == true
+			return if spec.reducedMotion == nil then motionReduced(use) else read(spec.reducedMotion, use) == true
 		end
 		local function actions(edge: string, use: ComposeTypes.Use?): { RowAction }
 			return read(if edge == "leading" then leading else trailing, use)

@@ -20,6 +20,7 @@ return function<K>(
 	local stopWait: Compose.Dispose? = nil
 	local idle, from, target = 0, 0, 0
 	local previous, previousTime, velocity, gestureStart = 0, clock(), 0, 0
+	local motionReduced = ctx.reducedMotion()
 	local function cancel()
 		running = false
 		motion:pause()
@@ -81,7 +82,7 @@ return function<K>(
 		if math.abs(desired - box.offset) < 0.5 then
 			return
 		end
-		if ctx.read(if spec.reducedMotion == nil then ctx.config.reducedMotion else spec.reducedMotion) then
+		if if spec.reducedMotion == nil then motionReduced() else ctx.read(spec.reducedMotion) == true then
 			write(desired)
 		else
 			from, target, running = box.offset, desired, true

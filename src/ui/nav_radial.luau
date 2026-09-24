@@ -33,8 +33,9 @@ return function(
 		choice(spec.center, "back", { "back", "root", "close", "content", "empty" }, "center")
 		choice(spec.completion, "close", { "close", "back", "root", "stay" }, "completion")
 		choice(spec.buttonSurface, "native", { "native", "none" }, "buttonSurface")
+		local motionReduced = ctx.reducedMotion()
 		local function reduced(use: Reactive.Use?): boolean
-			return spec.transition == false or read(ctx.config.reducedMotion, use) == true
+			return spec.transition == false or motionReduced(use)
 		end
 		local function validate(
 			items: { Radial.RadialItem<V> },

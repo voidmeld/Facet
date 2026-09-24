@@ -268,12 +268,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.Button: invalid dialogAction"
 		)
 		local popTimeline = if spec.pop then runtime.timeline({ duration = 0.45, autoplay = false }) else nil
+		local popReduced = if popTimeline then ctx.reducedMotion() else nil
 		local popStart = Compose.cell(1)
 		local popScale
 		if popTimeline then
 			popTimeline:seek(0.45)
 			popScale = Compose.formula(function(use: ComposeTypes.Use)
-				if read(ctx.config.reducedMotion, use) then
+				if assert(popReduced)(use) then
 					return 1
 				end
 				local phase = use(popTimeline.progress)
@@ -282,7 +283,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					+ 0.25 * math.sin(math.pi * phase) * math.exp(-3 * phase)
 			end)
 			Compose.watch(function(use: ComposeTypes.Use)
-				if read(ctx.config.reducedMotion, use) then
+				if assert(popReduced)(use) then
 					popTimeline:pause()
 					popTimeline:seek(0.45)
 				end
@@ -303,7 +304,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		)
 		local function activate(...)
 			if enabled(spec) and node and ctx.available(node) and spec.onActivate then
-				if popTimeline and not held and not read(ctx.config.reducedMotion) then
+				if popTimeline and popReduced and not held and not popReduced() then
 					popStart:set(popScale:peek())
 					popTimeline:restart()
 				end
@@ -392,6 +393,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					return read(spec.busy, use) == true
 				end, function()
 					local phase = runtime.timeline({ duration = 1, repeats = math.huge })
+					local dotsReduced = ctx.reducedMotion()
 					local dots: Shared.FrameNativeProps = {
 						Name = "Busy",
 						Size = D2.fromOffset(18, 18),
@@ -410,7 +412,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 									Position = D2.fromOffset((index - 1) * 6, 7),
 									BorderSizePixel = 0,
 									BackgroundTransparency = function(use: ComposeTypes.Use)
-										return if read(ctx.config.reducedMotion, use)
+										return if dotsReduced(use)
 											then 0
 											else 0.2 + 0.6 * ((use(phase.progress) + index / 3) % 1)
 									end,
@@ -1059,6 +1061,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local validationMessage = Compose.cell("")
 		local mayReject = numeric or spec.invalid ~= nil
 		local errorTimeline = if mayReject then runtime.timeline({ duration = 0.24, autoplay = false }) else nil
+		local errorReduced = if errorTimeline then ctx.reducedMotion() else nil
 		if errorTimeline then
 			assert(errorTimeline):seek(0.24)
 		end
@@ -1089,7 +1092,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			if writable(spec.invalid) then
 				(spec.invalid :: ComposeTypes.Cell<boolean>):set(value)
 			end
-			if value and errorTimeline and not read(ctx.config.reducedMotion) then
+			if value and errorTimeline and errorReduced and not errorReduced() then
 				errorTimeline:restart()
 			end
 		end
@@ -1287,7 +1290,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				p,
 				Host.UIScale "ValidationPulse" {
 					Scale = function(use: ComposeTypes.Use)
-						if read(ctx.config.reducedMotion, use) then
+						if assert(errorReduced)(use) then
 							return 1
 						end
 						local phase = use(assert(errorTimeline).progress)
@@ -1350,7 +1353,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					markInvalid(false)
 				end
 				wasInvalid = sourceInvalid
-				if read(ctx.config.reducedMotion, use) then
+				if assert(errorReduced)(use) then
 					assert(errorTimeline):pause()
 					assert(errorTimeline):seek(0.24)
 				end

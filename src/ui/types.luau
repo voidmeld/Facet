@@ -136,6 +136,7 @@ export type Context = {
 	controlSize: (Value<ControlSize>?, "height" | "paddingX" | "iconSize", Use?) -> number,
 	observe: Observe,
 	observeStyled: Observe,
+	reducedMotion: () -> (Use?) -> boolean,
 	playWhileShown: (Playback, Instance) -> (),
 	props: <P>(P, { string } | { [string]: boolean }?, unknown?) -> P,
 	construct: <F>(F) -> F & ((string) -> F),

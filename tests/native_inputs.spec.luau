@@ -460,6 +460,45 @@ t.describe("native input controls", function()
 		t.expect(activated).toBe(2)
 		t.expect(engine.heartbeat.count()).toBe(0)
 	end)
+	t.it("follows GuiService.ReducedMotionEnabled for pop, validation pulse and busy dots", function()
+		local gui
+		local busy, value, number = Compose.cell(false), Compose.cell("2"), Compose.cell(2)
+		local root, stop, engine = world(function(UI, engine, runtime)
+			return runtime.constructors.Frame({
+				UI.Button "Pop" { label = "Pop", pop = true, busy = busy, onActivate = function() end },
+				UI.TextInput "Amount" {
+					value = value,
+					numericValue = number,
+					presentation = "number",
+					max = 10,
+				},
+			})
+		end, function(engine)
+			gui = engine.new("GuiService")
+			gui.ReducedMotionEnabled = true
+			return { guiService = gui, services = { GuiService = gui } }
+		end)
+		local button, field = find(root, "Pop"), find(root, "Amount")
+		local scale = button:FindFirstChildWhichIsA("UIScale")
+		button.Activated.fire()
+		engine.heartbeat.fire(0.1)
+		t.expect(scale.Scale).toBe(1)
+		field:CaptureFocus()
+		field.Text = "11"
+		field:ReleaseFocus(true)
+		engine.heartbeat.fire(0.08)
+		t.expect(find(field, "ValidationPulse").Scale).toBe(1)
+		busy:set(true)
+		engine.heartbeat.fire(0.3)
+		t.expect(find(button, "Dot1").BackgroundTransparency).toBe(0)
+		busy:set(false)
+		gui.ReducedMotionEnabled = false
+		button.Activated.fire()
+		engine.heartbeat.fire(0.1)
+		t.expect(scale.Scale > 1).toBe(true)
+		stop()
+	end)
+
 	t.it("edits a controlled map field without duplicating durable state", function()
 		local notes = Compose.cell({ item = "saved" })
 		local requests = 0
