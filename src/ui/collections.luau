@@ -177,13 +177,15 @@ return function(ctx: Types.Context, UI: Controls): ()
 				writingOffset = false
 			end
 		end
-		local function select(key: K, current: ComposeTypes.Readable<V>): ()
+		local function select(key: K, current: ComposeTypes.Readable<V>, input: InputObject?, clickCount: number?): ()
 			if policy.disabled(spec.disabled, current:peek()) then
 				return
 			end
-			selectRow(key, current:peek())
+			if (clickCount or 1) < 2 then
+				selectRow(key, current:peek())
+			end
 			if spec.onActivate then
-				spec.onActivate(current:peek(), key)
+				spec.onActivate(current:peek(), key, input, clickCount)
 			end
 		end
 		local function captureSelection(node: Instance, key: K): ()
@@ -294,8 +296,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 								Interactable = function(use: ComposeTypes.Use)
 									return not policy.disabled(spec.disabled, use(current))
 								end,
-								Activated = function()
-									select(key, current)
+								Activated = function(input: InputObject?, clickCount: number?)
+									select(key, current, input, clickCount)
 								end,
 								Attributes = {
 									FacetSelected = function(use: ComposeTypes.Use)

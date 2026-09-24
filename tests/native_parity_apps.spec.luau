@@ -37,6 +37,8 @@ local perfModules = {
 	capture = require("../examples/performance/lab/capture"),
 	workloads = require("../examples/performance/lab/workloads"),
 }
+local playlistExample = require("../examples/gallery/examples/02_playlist_table")
+local quickActions = require("../examples/gallery/scenarios/radial_menu")
 local Compose = Facet.Compose
 
 type World = {
@@ -2881,6 +2883,919 @@ t.describe("native parity reference applications", function()
 			end
 			local bad = process.exec("stylua", { "--check", "-" }, { stdio = { stdin = "local x   =  1\n" } })
 			t.expect(bad.ok).toBe(false)
+		end)
+	end)
+
+	t.describe("Tables and radial menus", function()
+		local function named(node: any, name: string): { any }
+			local out = {}
+			for _, child in node:GetDescendants() do
+				if child.Name == name then
+					table.insert(out, child)
+				end
+			end
+			return out
+		end
+
+		local function controlsFor(engine: any, target: any, extra: { [string]: any }?): (any, any, any, any)
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local gui, input = engine.new("GuiService"), engine.new("UserInputService")
+			input.GetFocusedTextBox = function()
+				return nil
+			end
+			input.IsKeyDown = function()
+				return false
+			end
+			local config: { [string]: any } = {
+				types = engine.types,
+				guiService = gui,
+				services = { GuiService = gui, UserInputService = input },
+				inputParent = target,
+				reducedMotion = true,
+			}
+			if extra then
+				for key, value in extra do
+					config[key] = value
+				end
+			end
+			return runtime, Facet.controls(runtime, config :: any), gui, input
+		end
+
+		local function mountTable(spec: any): any
+			local engine = engineLib.new()
+			local target = engine.new("ScreenGui")
+			local runtime, UI = controlsFor(engine, target)
+			local stop, node = runtime.mount(function()
+				return UI.Table(spec)
+			end, target)
+			return {
+				engine = engine,
+				target = target,
+				node = node,
+				body = node:FindFirstChild("Body"),
+				header = node:FindFirstChild("Header"),
+				stop = function()
+					stop()
+					runtime.dispose()
+				end,
+			}
+		end
+
+		local function mountGallery(module: any): any
+			local engine = engineLib.new()
+			local target = engine.new("Folder")
+			local viewport = Compose.cell({ width = 1280, height = 720 })
+			local runtime, UI, gui = controlsFor(engine, target, { viewport = viewport })
+			local ctx = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = runtime,
+				Host = runtime.constructors,
+				types = engine.types,
+				viewport = viewport,
+				guiService = gui,
+				runService = { Heartbeat = engine.heartbeat },
+				UI = UI,
+			}
+			local built
+			local stop, node = runtime.mount(function()
+				built = module.build(ctx)
+				if built.dispose then
+					Compose.cleanup(built.dispose)
+				end
+				return ctx.Host.ScreenGui "DemoScreen" { built.screen() }
+			end, target)
+			return {
+				built = built,
+				node = node,
+				engine = engine,
+				target = target,
+				stop = function()
+					stop()
+					runtime.dispose()
+				end,
+			}
+		end
+
+		local function vector(engine: any, x: number, y: number): any
+			return engine.types.Vector2.new(x, y)
+		end
+
+		local function ids(rows: { any }): string
+			local out = {}
+			for _, row in rows do
+				table.insert(out, row.id)
+			end
+			return table.concat(out, ",")
+		end
+
+		local function records(count: number): { any }
+			local out = {}
+			for index = 1, count do
+				out[index] = { id = index, first = `First {index}`, second = `Second {index}`, third = `Third {index}` }
+			end
+			return out
+		end
+
+		local function recordKey(item: any): number
+			return item.id
+		end
+
+		t.describe("Table", function()
+			t.it("gives a resizable column a grip and a locked column neither a grip nor adjust keys", function()
+				local widths = Compose.cell({})
+				local world = mountTable({
+					from = records(3),
+					key = recordKey,
+					widths = widths,
+					columns = {
+						{ id = "first", width = 100 },
+						{ id = "second", width = 100, resizable = false },
+					},
+				})
+				world.body.AbsoluteWindowSize = vector(world.engine, 400, 200)
+				local first, second = world.header:FindFirstChild("first"), world.header:FindFirstChild("second")
+				first.AbsoluteSize = vector(world.engine, 100, 40)
+				second.AbsoluteSize = vector(world.engine, 100, 40)
+				t.expect(first:FindFirstChild("Resize") ~= nil).toBe(true)
+				t.expect(first:FindFirstChildWhichIsA("UIDragDetector", true) ~= nil).toBe(true)
+				t.expect(second:FindFirstChild("Resize")).toBeNil()
+				t.expect(second:FindFirstChildWhichIsA("UIDragDetector", true)).toBeNil()
+				t.expect(#named(world.target, "FacetNarrowColumn")).toBe(1)
+				t.expect(#named(world.target, "FacetWidenColumn")).toBe(1)
+				local narrow = within(world.target, "FacetNarrowColumn", "NarrowColumn")
+				local widen = within(world.target, "FacetWidenColumn", "WidenColumn")
+				second:FindFirstChild("Sort").SelectionGained.fire()
+				narrow.Pressed.fire()
+				widen.Pressed.fire()
+				t.expect(widths:peek()).toEqual({})
+				first:FindFirstChild("Resize").SelectionGained.fire()
+				narrow.Pressed.fire()
+				t.expect(widths:peek()).toEqual({ first = 92 })
+				t.expect(second.Size.X.Offset).toBe(100)
+				world.stop()
+			end)
+
+			t.it("stops adjusting a column width once its grip loses selection", function()
+				local widths = Compose.cell({})
+				local world = mountTable({
+					from = records(3),
+					key = recordKey,
+					widths = widths,
+					columns = { { id = "first", width = 100 }, { id = "second", width = 100 } },
+				})
+				world.body.AbsoluteWindowSize = vector(world.engine, 400, 200)
+				local column = world.header:FindFirstChild("first")
+				column.AbsoluteSize = vector(world.engine, 100, 40)
+				local grip = column:FindFirstChild("Resize")
+				local actions = named(world.target, "NarrowColumn")
+				local wides = named(world.target, "WidenColumn")
+				t.expect(#actions).toBe(2)
+				local function pressAll(list: { any })
+					for _, action in list do
+						action.Pressed.fire()
+					end
+				end
+				pressAll(actions)
+				t.expect(widths:peek()).toEqual({})
+				grip.SelectionGained.fire()
+				pressAll(actions)
+				t.expect(widths:peek()).toEqual({ first = 92 })
+				pressAll(wides)
+				pressAll(wides)
+				t.expect(widths:peek()).toEqual({ first = 108 })
+				grip.SelectionLost.fire()
+				pressAll(actions)
+				pressAll(wides)
+				t.expect(widths:peek()).toEqual({ first = 108 })
+				t.expect(column.Size.X.Offset).toBe(108)
+				grip.SelectionGained.fire()
+				pressAll(actions)
+				t.expect(widths:peek()).toEqual({ first = 100 })
+				world.stop()
+			end)
+
+			t.it("keeps a resized column on a 2000 row table bounded to the window at the new width", function()
+				local widths = Compose.cell({})
+				local status = Compose.cell({
+					mode = "windowed",
+					direction = "vertical",
+					total = 0,
+					retained = 0,
+					first = 0,
+					last = 0,
+					firstRow = 0,
+					lastRow = 0,
+					rowCount = 0,
+					extent = 0,
+					following = false,
+					measured = 0,
+				} :: any)
+				local world = mountTable({
+					from = records(2000),
+					key = recordKey,
+					widths = widths,
+					itemSize = 40,
+					status = status,
+					columns = { { id = "first", width = 100 }, { id = "second", width = 120 } },
+				})
+				world.body.AbsoluteWindowSize = vector(world.engine, 400, 400)
+				local function mountedCells(id: string): { any }
+					local out = {}
+					for _, row in named(world.body, "Row") do
+						local cell = row:FindFirstChild(id)
+						if cell then
+							table.insert(out, cell)
+						end
+					end
+					return out
+				end
+				local before = mountedCells("first")
+				t.expect(#before > 0 and #before < 30).toBe(true)
+				t.expect(#before).toBe(status:peek().retained)
+				t.expect(status:peek().total).toBe(2000)
+				for _, cell in before do
+					t.expect(cell.Size.X.Offset).toBe(100)
+				end
+				local column = world.header:FindFirstChild("first")
+				column.AbsoluteSize = vector(world.engine, 100, 40)
+				local detector = column:FindFirstChildWhichIsA("UIDragDetector", true)
+				detector.DragStart.fire(vector(world.engine, 100, 10))
+				detector.DragContinue.fire(vector(world.engine, 180, 10))
+				t.expect(widths:peek()).toEqual({ first = 180 })
+				local after = mountedCells("first")
+				t.expect(#after).toBe(#before)
+				for index, cell in after do
+					t.expect(cell).toBe(before[index])
+					t.expect(cell.Size.X.Offset).toBe(180)
+				end
+				for _, cell in mountedCells("second") do
+					t.expect(cell.Size.X.Offset).toBe(120)
+				end
+				t.expect(column.Size.X.Offset).toBe(180)
+				world.body.CanvasPosition = vector(world.engine, 0, 40000)
+				local far = mountedCells("first")
+				t.expect(#far > 0 and #far < 30).toBe(true)
+				t.expect(find(world.body, "1")).toBeNil()
+				t.expect(find(world.body, "1001") ~= nil).toBe(true)
+				for _, cell in far do
+					t.expect(cell.Size.X.Offset).toBe(180)
+				end
+				world.stop()
+			end)
+
+			t.it("keeps header column boundaries on the body columns through resize scroll and a scrollbar", function()
+				for _, reorderable in { false, true } do
+					local widths = Compose.cell({})
+					local world = mountTable({
+						from = records(40),
+						key = recordKey,
+						widths = widths,
+						itemSize = 40,
+						reorderable = reorderable,
+						columns = {
+							{ id = "first", width = 120 },
+							{ id = "second", width = 140 },
+							{ id = "third", width = 160 },
+						},
+					})
+					local gutter = if reorderable then 56 else 0
+					world.body.AbsoluteSize = vector(world.engine, 600, 300)
+					world.body.AbsoluteWindowSize = vector(world.engine, 600, 300)
+					t.expect(world.body.CanvasSize.Y.Offset > 300).toBe(true)
+					t.expect(world.body.CanvasSize.X.Offset)
+						.toBe(world.header:FindFirstChildWhichIsA("UIListLayout").AbsoluteContentSize.X + gutter)
+					local function check(windowWidth: number, scrollX: number, disclosure: number)
+						local row = find(world.body, "1")
+						local cells = find(row, "Row")
+						local frame = if reorderable then find(row, "Cells") else nil
+						t.expect(world.header.Position.X.Offset).toBe(gutter - scrollX)
+						t.expect(if frame then frame.Position.X.Offset else 0).toBe(gutter)
+						t.expect(world.header.Size.X.Offset).toBe(windowWidth - gutter - disclosure)
+						t.expect(row.Size.X.Offset).toBe(windowWidth)
+						t.expect(cells.Size.X.Scale).toBe(1)
+						t.expect(cells.Size.X.Offset).toBe(-disclosure)
+						local left = 0
+						for _, id in { "first", "second", "third" } do
+							local head, cell = world.header:FindFirstChild(id), cells:FindFirstChild(id)
+							t.expect(head.Size).toBe(cell.Size)
+							t.expect(head.LayoutOrder).toBe(cell.LayoutOrder)
+							t.expect(head.Visible).toBe(cell.Visible)
+							if cell.Visible then
+								left += cell.Size.X.Offset
+							end
+						end
+						return left
+					end
+					t.expect(check(600, 0, 0)).toBe(420)
+					world.body.AbsoluteWindowSize = vector(world.engine, 594, 300)
+					t.expect(check(594, 0, 0)).toBe(420)
+					widths:set({ second = 200 })
+					t.expect(check(594, 0, 0)).toBe(480)
+					t.expect(world.header:FindFirstChild("second").Size.X.Offset).toBe(200)
+					world.body.CanvasPosition = vector(world.engine, 30, 0)
+					t.expect(check(594, 30, 0)).toBe(480)
+					widths:set({ second = 360 })
+					t.expect(world.header:FindFirstChild("third").Visible).toBe(false)
+					t.expect(check(594, 30, 48)).toBe(480)
+					world.stop()
+				end
+			end)
+		end)
+
+		t.describe("Playlist example", function()
+			local function prepare(world: any): any
+				local body = find(world.node, "Body")
+				body.AbsoluteSize = vector(world.engine, 900, 288)
+				body.AbsoluteWindowSize = vector(world.engine, 900, 288)
+				return body
+			end
+
+			local function click(world: any, kind: string, count: number?): any
+				local E = world.engine.types.Enum
+				return {
+					UserInputType = if kind == "mouse"
+						then E.UserInputType.MouseButton1
+						elseif kind == "touch" then E.UserInputType.Touch
+						else E.UserInputType.Keyboard,
+					KeyCode = if kind == "key" then E.KeyCode.Return else E.KeyCode.Unknown,
+					UserInputState = E.UserInputState.End,
+				},
+					count or 1
+			end
+
+			t.it("aligns name artist and rating columns under their headers", function()
+				local world = mountGallery(playlistExample)
+				local body = prepare(world)
+				local header = find(world.node, "Header")
+				local row = find(body, "neon")
+				local cells = find(row, "Row")
+				t.expect(header.Position.X.Offset).toBe(find(row, "Cells").Position.X.Offset)
+				t.expect(header.Size.X.Offset).toBe(900 - 56)
+				for id, width in { name = 220, artist = 220, rating = 144 } do
+					t.expect(header:FindFirstChild(id).Size.X.Offset).toBe(width)
+					t.expect(cells:FindFirstChild(id).Size).toBe(header:FindFirstChild(id).Size)
+				end
+				world.built.columnWidths:set({ name = 290 })
+				t.expect(header:FindFirstChild("name").Size.X.Offset).toBe(290)
+				t.expect(cells:FindFirstChild("name").Size.X.Offset).toBe(290)
+				t.expect(cells:FindFirstChild("rating").Size.X.Offset).toBe(144)
+				t.expect(find(world.node, "Widths").Text).toBe("Name 290px · Artist auto · Rating locked")
+				world.stop()
+			end)
+
+			t.it("plays on a double click Return or touch tap while a single or slow click only selects", function()
+				local world = mountGallery(playlistExample)
+				local body = prepare(world)
+				local label = find(world.node, "NowPlaying")
+				local function hit(id: string): any
+					return find(find(body, id), "RowHit")
+				end
+				local function selected(id: string): boolean
+					return find(find(body, id), "Row"):GetAttribute("FacetSelected") == true
+				end
+				t.expect(label.Text).toBe("Nothing playing — double-click a row, or press Return on a focused one")
+				hit("neon").Activated.fire(click(world, "mouse", 1))
+				t.expect(selected("neon")).toBe(true)
+				t.expect(world.built.nowPlaying:peek()).toBeNil()
+				t.expect(label.Text).toBe("Nothing playing — double-click a row, or press Return on a focused one")
+				hit("neon").Activated.fire(click(world, "mouse", 2))
+				t.expect(world.built.nowPlaying:peek()).toBe("Neon Straightaway")
+				t.expect(label.Text).toBe("Now playing — Neon Straightaway")
+				t.expect(selected("neon")).toBe(true)
+				hit("drift").Activated.fire(click(world, "mouse", 1))
+				hit("drift").Activated.fire(click(world, "mouse", 1))
+				t.expect(label.Text).toBe("Now playing — Neon Straightaway")
+				t.expect(selected("drift")).toBe(false)
+				t.expect(selected("neon")).toBe(true)
+				hit("turbo").Activated.fire(click(world, "touch", 1))
+				t.expect(label.Text).toBe("Now playing — Turbo Cascade")
+				hit("pit").Activated.fire(click(world, "key", 1))
+				t.expect(label.Text).toBe("Now playing — Pit Lane Shuffle")
+				press(world.node, "Restore")
+				t.expect(world.built.nowPlaying:peek()).toBeNil()
+				t.expect(label.Text).toBe("Nothing playing — double-click a row, or press Return on a focused one")
+				world.stop()
+			end)
+
+			t.it("sorts rating by the live stars and artist by value with source order breaking ties", function()
+				local world = mountGallery(playlistExample)
+				local body = prepare(world)
+				local header = find(world.node, "Header")
+				press(header, "artist", "Sort")
+				t.expect(world.built.sort:peek()).toEqual({ column = "artist", direction = "ascending" })
+				t.expect(ids(world.built.sortedRows:peek())).toBe("photo,neon,drift,apex,turbo,pit")
+				t.expect(find(header, "artist"):FindFirstChild("Sort").Text).toBe("Artist ↑")
+				press(header, "artist", "Sort")
+				t.expect(ids(world.built.sortedRows:peek())).toBe("pit,turbo,drift,apex,neon,photo")
+				world.built.sort:set({ column = "rating", direction = "descending" })
+				t.expect(ids(world.built.sortedRows:peek())).toBe("turbo,neon,drift,apex,pit,photo")
+				local photo = find(body, "photo")
+				local stars = find(photo, "Rating")
+				t.expect(find(body, "photo").Position.Y.Offset > find(body, "neon").Position.Y.Offset).toBe(true)
+				world.built.ratingFor("photo"):set(5)
+				t.expect(ids(world.built.sortedRows:peek())).toBe("turbo,photo,neon,drift,apex,pit")
+				t.expect(find(body, "photo")).toBe(photo)
+				t.expect(find(photo, "Rating")).toBe(stars)
+				t.expect(find(body, "photo").Position.Y.Offset < find(body, "neon").Position.Y.Offset).toBe(true)
+				t.expect(find(body, "turbo").Position.Y.Offset < find(body, "photo").Position.Y.Offset).toBe(true)
+				world.built.ratingFor("photo"):set(0)
+				t.expect(ids(world.built.sortedRows:peek())).toBe("turbo,neon,drift,apex,pit,photo")
+				world.stop()
+			end)
+
+			t.it("bakes the sort when Top moves a row and keeps the sort when a row is removed", function()
+				local world = mountGallery(playlistExample)
+				local body = prepare(world)
+				local function swipe(id: string, distance: number)
+					local actions = find(find(body, id), "leading").Parent
+					actions.AbsoluteSize = vector(world.engine, 844, 44)
+					local detector = actions:FindFirstChildWhichIsA("UIDragDetector")
+					detector.DragStart.fire(vector(world.engine, 400, 20))
+					detector.DragContinue.fire(vector(world.engine, 400 + distance, 20))
+					detector.DragEnd.fire()
+				end
+				world.built.sort:set({ column = "name", direction = "descending" })
+				t.expect(ids(world.built.sortedRows:peek())).toBe("turbo,pit,photo,neon,drift,apex")
+				press(find(body, "neon"), "top")
+				t.expect(world.built.sort:peek()).toEqual({ column = "name", direction = "descending" })
+				swipe("neon", 120)
+				press(find(body, "neon"), "top")
+				t.expect(world.built.sort:peek()).toBeNil()
+				t.expect(ids(world.built.baseRows:peek())).toBe("neon,turbo,pit,photo,drift,apex")
+				t.expect(ids(world.built.from:peek())).toBe("neon,turbo,pit,photo,drift,apex")
+				world.built.sort:set({ column = "name", direction = "descending" })
+				world.built.nowPlaying:set("Pit Lane Shuffle")
+				swipe("drift", -120)
+				press(find(body, "drift"), "remove")
+				t.expect(world.built.sort:peek()).toEqual({ column = "name", direction = "descending" })
+				t.expect(ids(world.built.sortedRows:peek())).toBe("turbo,pit,photo,neon,apex")
+				t.expect(world.built.nowPlaying:peek()).toBe("Pit Lane Shuffle")
+				swipe("pit", -700)
+				t.expect(world.built.sort:peek()).toEqual({ column = "name", direction = "descending" })
+				t.expect(ids(world.built.sortedRows:peek())).toBe("turbo,photo,neon,apex")
+				t.expect(world.built.nowPlaying:peek()).toBeNil()
+				t.expect(find(body, "pit")).toBeNil()
+				world.stop()
+			end)
+		end)
+
+		local function openRadial(spec: any, extra: { [string]: any }?): any
+			local engine = engineLib.new()
+			local target = engine.new("Folder")
+			local runtime, UI, gui, input = controlsFor(engine, target, extra)
+			local opened = spec.isPresented or Compose.cell(true)
+			spec.isPresented = opened
+			local stop, screen = runtime.mount(function()
+				return runtime.constructors.ScreenGui({ UI.RadialMenu(spec) })
+			end, target)
+			return {
+				engine = engine,
+				gui = gui,
+				input = input,
+				screen = screen,
+				opened = opened,
+				find = function(name: string): any
+					return screen:FindFirstChild(name, true)
+				end,
+				stop = function()
+					stop()
+					runtime.dispose()
+				end,
+			}
+		end
+
+		local function touch(world: any, x: number, y: number): any
+			local E = world.engine.types.Enum
+			return {
+				UserInputType = E.UserInputType.Touch,
+				UserInputState = E.UserInputState.Begin,
+				Position = world.engine.types.Vector3.new(x, y, 0),
+			}
+		end
+
+		local function compassItems(record: { string }, enabled: any?): { any }
+			local out = {}
+			for _, id in { "N", "E", "S", "W" } do
+				table.insert(out, {
+					id = id,
+					slot = id,
+					label = id,
+					completion = "stay",
+					enabled = if id == "N" then enabled else nil,
+					onSelect = function()
+						table.insert(record, id)
+					end,
+				})
+			end
+			return out
+		end
+
+		local function centerOf(button: any): (number, number)
+			return button.Position.X.Offset, button.Position.Y.Offset
+		end
+
+		local function distance(button: any, x: number, y: number): number
+			local bx, by = centerOf(button)
+			return math.sqrt((bx - x) ^ 2 + (by - y) ^ 2)
+		end
+
+		t.describe("RadialMenu", function()
+			t.it("sizes the hole from the anchor clearance and keeps a fixed ring until it reopens", function()
+				local function ring(clearance: number?, anchorClearance: number?): number
+					local world = openRadial({
+						anchor = Compose.cell({ x = 320, y = 240, clearance = anchorClearance }),
+						clearance = clearance,
+						follow = "fixed",
+						distribution = "compass",
+						items = compassItems({}),
+					})
+					local measured = distance(world.find("N"), 320, 240)
+					world.stop()
+					return measured
+				end
+				local plain, fifty, seventy = ring(nil, nil), ring(50, nil), ring(50, 70)
+				t.expect(plain < fifty).toBe(true)
+				t.expect(fifty < seventy).toBe(true)
+				t.expect(ring(70, 50)).toBe(seventy)
+				local anchor = Compose.cell({ x = 320, y = 240, clearance = 70 })
+				local world = openRadial({
+					anchor = anchor,
+					clearance = 50,
+					follow = "fixed",
+					distribution = "compass",
+					items = compassItems({}),
+				})
+				local north = world.find("N")
+				local position = north.Position
+				t.expect(position.X.Offset).toBe(320)
+				t.expect(distance(north, 320, 240)).toBe(seventy)
+				t.expect(distance(north, 320, 240) - north.Size.Y.Offset / 2 >= 70).toBe(true)
+				anchor:set({ x = 400, y = 240, clearance = 90 })
+				t.expect(world.find("N").Position).toBe(position)
+				t.expect(world.find("E").Position.X.Offset - 320).toBe(seventy)
+				world.opened:set(false)
+				world.opened:set(true)
+				local reopened = world.find("N")
+				t.expect(reopened.Position.X.Offset).toBe(400)
+				t.expect(distance(reopened, 400, 240) > seventy).toBe(true)
+				t.expect(distance(reopened, 400, 240) - reopened.Size.Y.Offset / 2 >= 90).toBe(true)
+				world.stop()
+			end)
+
+			t.it("freezes the idle ring center and hole during a pointer capture and follows after release", function()
+				local picked = {}
+				local anchor = Compose.cell({ x = 320, y = 240, clearance = 70 })
+				local world = openRadial({
+					anchor = anchor,
+					distribution = "compass",
+					items = compassItems(picked),
+				})
+				local north = world.find("N")
+				local position = north.Position
+				local radius = distance(north, 320, 240)
+				local hold = touch(world, position.X.Offset, position.Y.Offset)
+				world.find("RadialPanel").InputBegan.fire(hold)
+				anchor:set({ x = 400, y = 240, clearance = 90 })
+				t.expect(world.find("N").Position).toBe(position)
+				t.expect(world.find("E").Position.X.Offset - 320).toBe(radius)
+				world.input.InputEnded.fire(hold)
+				t.expect(table.concat(picked, ",")).toBe("N")
+				t.expect(world.find("N").Position.X.Offset).toBe(400)
+				t.expect(distance(world.find("N"), 400, 240) > radius).toBe(true)
+				world.stop()
+			end)
+
+			t.it("keeps corner rings of round buttons inside short and tall surfaces", function()
+				for _, preset in { "bottom-left", "bottom-right", "top-right", "top-left" } do
+					for _, size in { { 469, 209 }, { 800, 650 } } do
+						local picked = {}
+						local items = {}
+						for _, id in { "look", "pack", "wave" } do
+							table.insert(items, {
+								id = id,
+								label = id,
+								onSelect = function()
+									table.insert(picked, id)
+								end,
+							})
+						end
+						local world = openRadial({ preset = preset, appearance = "buttons", items = items })
+						world.find("Modal").AbsoluteSize = vector(world.engine, size[1], size[2])
+						t.expect(world.find("RadialPanel"):GetAttribute("Presentation")).toBe("radial")
+						local boxes = {}
+						for _, id in { "look", "pack", "wave" } do
+							local button = world.find(id)
+							local x, y = centerOf(button)
+							local half = button.Size.X.Offset / 2
+							t.expect(button.Size.X.Offset >= 44).toBe(true)
+							t.expect(button.Size.Y.Offset).toBe(button.Size.X.Offset)
+							t.expect(x - half >= 0 and x + half <= size[1]).toBe(true)
+							t.expect(y - half >= 0 and y + half <= size[2]).toBe(true)
+							table.insert(boxes, { x = x, y = y, half = half })
+						end
+						for first = 1, #boxes do
+							for second = first + 1, #boxes do
+								local a, b = boxes[first], boxes[second]
+								local gap = math.sqrt((a.x - b.x) ^ 2 + (a.y - b.y) ^ 2)
+								t.expect(gap >= a.half + b.half).toBe(true)
+							end
+						end
+						world.find("look").Activated.fire()
+						t.expect(table.concat(picked, ",")).toBe("look")
+						t.expect(world.opened:peek()).toBe(false)
+						world.stop()
+					end
+				end
+			end)
+
+			t.it("shows exactly one navigation control for each center policy and names it by depth", function()
+				for _, center in { "back", "root", "close", "content", "empty" } do
+					local world = openRadial({
+						center = center,
+						items = {
+							{
+								id = "Branch",
+								label = "Branch",
+								children = { { id = "Leaf", label = "Leaf", onSelect = function() end } },
+							},
+							{ id = "Other", label = "Other", onSelect = function() end },
+						} :: { any },
+					})
+					world.find("Modal").AbsoluteSize = vector(world.engine, 180, 180)
+					t.expect(world.find("RadialPanel"):GetAttribute("Presentation")).toBe("list")
+					local function controls(): { any }
+						local out = {}
+						for _, node in world.screen:GetDescendants() do
+							if (node.Name == "$navigation" or node.Name == "Center") and node:IsA("GuiButton") then
+								local shown = true
+								local at = node
+								while at and at:IsA("GuiObject") do
+									shown = shown and at.Visible ~= false
+									at = at.Parent
+								end
+								if shown then
+									table.insert(out, node)
+								end
+							end
+						end
+						return out
+					end
+					t.expect(#controls()).toBe(1)
+					t.expect(controls()[1].Text).toBe("Close")
+					world.find("Branch").Activated.fire()
+					t.expect(world.find("Leaf") ~= nil).toBe(true)
+					t.expect(#controls()).toBe(1)
+					t.expect(controls()[1].Text).toBe("Back")
+					controls()[1].Activated.fire()
+					t.expect(world.opened:peek()).toBe(true)
+					t.expect(world.find("Leaf")).toBeNil()
+					t.expect(world.find("Branch") ~= nil).toBe(true)
+					t.expect(#controls()).toBe(1)
+					controls()[1].Activated.fire()
+					t.expect(world.opened:peek()).toBe(false)
+					world.stop()
+				end
+				for center, labels in
+					{ back = { "Close", "Back" }, close = { "Close", "Close" }, root = { "Home", "Home" } } :: { [string]: { string } }
+				do
+					local world = openRadial({
+						center = center,
+						items = {
+							{
+								id = "Branch",
+								label = "Branch",
+								children = { { id = "Leaf", label = "Leaf", onSelect = function() end } },
+							},
+						},
+					})
+					local button = world.find("Center")
+					t.expect(button.Visible).toBe(true)
+					t.expect(button.Text).toBe(labels[1])
+					world.find("Branch").Activated.fire()
+					t.expect(button.Text).toBe(labels[2])
+					button.Activated.fire()
+					t.expect(world.opened:peek()).toBe(center ~= "close")
+					t.expect(world.find("Leaf")).toBeNil()
+					t.expect(world.find("Branch") ~= nil).toBe(center ~= "close")
+					world.stop()
+				end
+				local world = openRadial({
+					center = "empty",
+					items = {
+						{
+							id = "Branch",
+							label = "Branch",
+							children = { { id = "Leaf", label = "Leaf", onSelect = function() end } },
+						},
+					},
+				})
+				world.find("Modal").AbsoluteSize = vector(world.engine, 180, 180)
+				t.expect(world.find("$navigation").Text).toBe("Close")
+				world.find("Branch").Activated.fire()
+				t.expect(world.find("$navigation").Text).toBe("Back")
+				world.find("$navigation").Activated.fire()
+				t.expect(world.find("Branch") ~= nil).toBe(true)
+				t.expect(world.find("Leaf")).toBeNil()
+				t.expect(world.opened:peek()).toBe(true)
+				t.expect(world.find("$navigation").Text).toBe("Close")
+				world.find("$navigation").Activated.fire()
+				t.expect(world.opened:peek()).toBe(false)
+				world.stop()
+			end)
+
+			t.it("returns to the root when the open branch disappears from the items", function()
+				local items = Compose.cell({
+					{
+						id = "gear",
+						label = "Gear",
+						children = { { id = "go", label = "Go", onSelect = function() end } },
+					},
+				} :: { any })
+				local world = openRadial({ items = items })
+				world.find("gear").Activated.fire()
+				t.expect(world.find("go") ~= nil).toBe(true)
+				t.expect(world.find("gear")).toBeNil()
+				items:set({ { id = "other", label = "Other", onSelect = function() end } })
+				t.expect(world.find("other") ~= nil).toBe(true)
+				t.expect(world.find("go")).toBeNil()
+				t.expect(world.opened:peek()).toBe(true)
+				world.find("Center").Activated.fire()
+				t.expect(world.opened:peek()).toBe(false)
+				world.stop()
+			end)
+
+			t.it("does not fire an item disabled while its touch was held", function()
+				for _, disable in { false, true } do
+					local picked = {}
+					local enabled = Compose.cell(true)
+					local world = openRadial({ distribution = "compass", items = compassItems(picked, enabled) })
+					local x, y = centerOf(world.find("N"))
+					local hold = touch(world, x, y)
+					world.find("RadialPanel").InputBegan.fire(hold)
+					if disable then
+						enabled:set(false)
+					end
+					world.input.InputEnded.fire(hold)
+					t.expect(#picked).toBe(if disable then 0 else 1)
+					world.stop()
+				end
+			end)
+
+			t.it("leaves no built-in trigger when the launcher is off", function()
+				local shown = openRadial({
+					isPresented = Compose.cell(false),
+					distribution = "compass",
+					items = compassItems({}),
+				})
+				t.expect(shown.find("Launcher") ~= nil).toBe(true)
+				shown.stop()
+				local picked = {}
+				local presented = Compose.cell(false)
+				local world = openRadial({
+					launcher = false,
+					isPresented = presented,
+					items = {
+						{
+							id = "N",
+							label = "N",
+							onSelect = function()
+								table.insert(picked, "N")
+							end,
+						},
+					},
+				})
+				t.expect(world.find("Launcher")).toBeNil()
+				t.expect(world.find("N")).toBeNil()
+				presented:set(true)
+				world.find("N").Activated.fire()
+				t.expect(table.concat(picked, ",")).toBe("N")
+				t.expect(presented:peek()).toBe(false)
+				t.expect(world.find("Launcher")).toBeNil()
+				t.expect(world.find("N")).toBeNil()
+				world.stop()
+			end)
+
+			t.it("lets input through an empty center while edge catchers dismiss around it", function()
+				for _, passThrough in { false, true } do
+					local picked = {}
+					local world = openRadial({
+						center = "empty",
+						centerPassThrough = passThrough,
+						distribution = "compass",
+						items = compassItems(picked),
+					})
+					local panel = world.find("RadialPanel")
+					t.expect(panel.Active).toBe(not passThrough)
+					t.expect(world.find("DismissOutside").Visible).toBe(not passThrough)
+					if passThrough then
+						local covered = 0
+						for _, edge in { "Top", "Bottom", "Left", "Right" } do
+							local catcher = world.find("Dismiss" .. edge)
+							t.expect(catcher.Visible).toBe(true)
+							local x, y = catcher.Position.X.Offset, catcher.Position.Y.Offset
+							local w, h = catcher.Size.X.Offset, catcher.Size.Y.Offset
+							t.expect(320 >= x and 320 < x + w and 240 >= y and 240 < y + h).toBe(false)
+							covered += w * h
+						end
+						t.expect(covered).toBe(640 * 480 - 80 * 80)
+					else
+						t.expect(world.find("DismissTop")).toBeNil()
+					end
+					local hold = touch(world, 320, 240)
+					panel.InputBegan.fire(hold)
+					local x, y = centerOf(world.find("N"))
+					hold.Position = world.engine.types.Vector3.new(x, y, 0)
+					world.input.InputChanged.fire(hold)
+					world.input.InputEnded.fire(hold)
+					t.expect(#picked).toBe(if passThrough then 0 else 1)
+					t.expect(world.opened:peek()).toBe(true)
+					if passThrough then
+						world.find("DismissTop").Activated.fire()
+						t.expect(world.opened:peek()).toBe(false)
+					end
+					world.stop()
+				end
+			end)
+		end)
+
+		t.describe("Quick actions example", function()
+			local function stageExplorer(world: any, width: number, height: number, offsetX: number)
+				world.node:FindFirstChild("Modal", true).AbsoluteSize = vector(world.engine, width, height)
+				local explorer = find(world.node, "Explorer")
+				explorer.AbsoluteSize = vector(world.engine, 76, 110)
+				explorer.AbsolutePosition = vector(world.engine, width / 2 - 38 + offsetX, 310 - 55)
+			end
+
+			t.it("picks the character command ring or list from the viewport height", function()
+				for _, case in
+					{ { 1280, 720, "radial" }, { 960, 540, "radial" }, { 800, 600, "radial" }, { 677, 338, "list" } } :: { { any } }
+				do
+					local world = mountGallery(quickActions)
+					world.built.steps.character()
+					world.built.steps.open()
+					t.expect(world.built.report().menu.isPresented).toBe(true)
+					stageExplorer(world, case[1], case[2], 0)
+					local panel = world.node:FindFirstChild("RadialPanel", true)
+					t.expect(panel:GetAttribute("Presentation")).toBe(case[3])
+					t.expect(panel.ScrollingEnabled).toBe(case[3] == "list")
+					t.expect(find(panel, "equipment") ~= nil and find(panel, "wave") ~= nil).toBe(true)
+					press(panel, "inspect")
+					t.expect(world.built.report().status).toBe("Trail guide · explorer · lantern off")
+					t.expect(world.built.report().menu.isPresented).toBe(true)
+					world.stop()
+				end
+			end)
+
+			t.it(
+				"opens the quick actions at phone viewports with large text and keeps a wandering ring round",
+				function()
+					for _, size in { { 359, 718 }, { 844, 390 }, { 320, 568 }, { 600, 320 } } do
+						for _, grow in { 0, 14 } do
+							local world = mountGallery(quickActions)
+							world.built.steps.open()
+							t.expect(world.built.report().tab).toBe("corner")
+							t.expect(world.built.report().menu.isPresented).toBe(true)
+							world.node:FindFirstChild("Modal", true).AbsoluteSize =
+								vector(world.engine, size[1], size[2])
+							for _, id in { "look", "pack", "wave" } do
+								find(world.node, id).TextBounds = vector(world.engine, 40 + grow * 4, 16 + grow)
+							end
+							t.expect(world.node:FindFirstChild("RadialPanel", true):GetAttribute("Presentation"))
+								.toBe("radial")
+							t.expect(world.built.report().menu.isPresented).toBe(true)
+							world.built.steps.character()
+							t.expect(world.built.report().tab).toBe("character")
+							world.built.steps.open()
+							t.expect(world.built.report().menu.isPresented).toBe(true)
+							stageExplorer(world, size[1], size[2], 0)
+							t.expect(find(world.node, "equipment") ~= nil).toBe(true)
+							world.stop()
+						end
+					end
+					local world = mountGallery(quickActions)
+					world.built.steps.character()
+					world.built.steps.open()
+					stageExplorer(world, 359, 718, 0)
+					local panel = world.node:FindFirstChild("RadialPanel", true)
+					t.expect(panel:GetAttribute("Presentation")).toBe("radial")
+					world.built.steps.move()
+					local explorer = find(world.node, "Explorer")
+					local moved = false
+					for frame = 1, 240 do
+						world.engine.heartbeat.fire(1 / 60)
+						if frame % 6 == 0 then
+							local offset = explorer.Position.X.Offset
+							moved = moved or math.abs(offset) > 1
+							stageExplorer(world, 359, 718, offset)
+							t.expect(panel:GetAttribute("Presentation")).toBe("radial")
+							t.expect(world.built.report().menu.isPresented).toBe(true)
+						end
+					end
+					t.expect(moved).toBe(true)
+					world.stop()
+				end
+			)
 		end)
 	end)
 end)

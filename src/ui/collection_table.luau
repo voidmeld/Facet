@@ -464,10 +464,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 			snap = spec.snap,
 			reducedMotion = spec.reducedMotion,
 			followThreshold = spec.followThreshold,
-			onActivate = function(item: V, key: K)
-				selectRow(key, item)
+			onActivate = function(item: V, key: K, input: InputObject?, clickCount: number?)
+				if (clickCount or 1) < 2 then
+					selectRow(key, item)
+				end
 				if spec.onActivate then
-					spec.onActivate(item, key)
+					spec.onActivate(item, key, input, clickCount)
 				end
 			end,
 

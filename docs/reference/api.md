@@ -437,8 +437,10 @@ Optional collection focus uses `focus`, `initialFocus`, `autoFocus`,
 - `selection` is a writable key-set map.
 - `selectionMode` defaults to single when you supply `selection` or its
   callback. Otherwise it defaults to none.
-- `onSelectionChange(nextMap)`, `onActivate(item, key)` and `onReachEnd`
-  connect control events to domain behavior.
+- `onSelectionChange(nextMap)`, `onActivate(item, key, input, clickCount)`
+  and `onReachEnd` connect control events to domain behavior.
+- `onActivate` receives the native `Activated` input and click count. The
+  second click of a double click does not change the selection.
 - `selectable(item)`, `reorderable`, `movable(item)`, `dragLabel` and
   `onReorder(keys, insertionSlot)` use the same zero-based insertion contract
   among the remaining rows as Table.
@@ -483,8 +485,9 @@ The cell state stays retained.
 `onSortChange`, `onWidthsChange` or `onSelectionChange`, it is a controlled
 request. Otherwise the control updates the writable cells.
 
-`selectable(item)`, `disabled(item)`, `onActivate(item, key)` and
-`rowActions(current, key)` specialize rows. `reorderable`, `movable(item)` and
+`selectable(item)`, `disabled(item)`, `onActivate(item, key, input, clickCount)`
+and `rowActions(current, key)` specialize rows. `onActivate` receives the same
+native activation facts as in VirtualList. `reorderable`, `movable(item)` and
 `onReorder(keys, insertionSlot)` support native drag reorder. The insertion
 slot is zero-based among the remaining rows. `editing` is a writable cell.
 
