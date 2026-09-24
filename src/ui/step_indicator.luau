@@ -168,13 +168,17 @@ return function(
 			})
 			local numberBounds = ctx.observe(numberLabel, "TextBounds")
 			local numberSize = ctx.observeStyled(numberLabel, "TextSize")
+			local numberExtent = ctx.observe(numberLabel, "AbsoluteSize")
 			local cue = Host.Frame({
 				Name = "Cue",
 				LayoutOrder = 1,
 				BackgroundTransparency = 1,
 				Size = function(use: ComposeTypes.Use)
-					local bounds = use(numberBounds)
-					local line = tonumber(use(numberSize)) or 0
+					use(numberBounds)
+					use(numberSize)
+					use(numberExtent)
+					local bounds = numberLabel.TextBounds
+					local line = tonumber(numberLabel:GetStyled("TextSize")) or 0
 					local side = math.max(cueSize(use), math.ceil(math.max(bounds.X, bounds.Y, line)) + 8)
 					return D2.fromOffset(side, side)
 				end,
