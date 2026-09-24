@@ -252,23 +252,32 @@ return {
 		rich.Weapon = function()
 			return text("WeaponText", copy.weaponName, 16)
 		end
+		local function chip(name, icon, label)
+			return UI.Button({
+				Name = name,
+				icon = icon,
+				label = label,
+				appearance = "soft",
+				onActivate = steps.openOverflow,
+			})
+		end
 		local function compact(id)
 			if id == "Clock" then
-				return action("ClockCompact", function(use)
+				return chip("ClockCompact", "clock", function(use)
 					return timerText(use(forms).Clock, use)
-				end, steps.openOverflow)
+				end)
 			elseif id == "Health" then
-				return action("HealthCompact", function(use)
-					return tostring(math.floor(use(health) * 100 + 0.5))
-				end, steps.openOverflow)
+				return chip("HealthCompact", "person", function(use)
+					return `{copy.healthLabel} {math.floor(use(health) * 100 + 0.5)}`
+				end)
 			elseif id == "Rail" then
-				return action("RailCompact", function(use)
+				return chip("RailCompact", "flag", function(use)
 					return copy["weapon" .. use(selectedWeapon)]
-				end, steps.openOverflow)
+				end)
 			elseif id == "Tasks" then
-				return action("TasksCompact", copy.tasksChip, steps.openOverflow)
+				return chip("TasksCompact", "checkmark", copy.tasksChip)
 			end
-			return action(id .. "Compact", id, steps.openOverflow)
+			return chip(id .. "Compact", "more", id)
 		end
 		local function region(id)
 			return Host.Frame({
@@ -362,6 +371,7 @@ return {
 								label = "",
 								name = copy.round1,
 								icon = "menu",
+								shape = "circle",
 								Size = D2.fromOffset(44, 44),
 							},
 							AutomaticSize = E.AutomaticSize.None,
@@ -375,7 +385,7 @@ return {
 						UI.Button "Report" {
 							label = "",
 							name = copy.round2,
-							icon = "more",
+							icon = "flag",
 							shape = "circle",
 							Size = D2.fromOffset(44, 44),
 							onActivate = function()
