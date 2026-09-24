@@ -2114,12 +2114,17 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							type(separator) == "string" and separator ~= "",
 							"Facet.ShortcutHint: separator must be a nonempty string"
 						)
+						if string.find(separator, "^%a+$") then
+							separator = ` {separator} `
+						end
 						return table.concat(parts, separator)
 					end,
 					Size = function(use: ComposeTypes.Use)
 						return D2.fromOffset(0, ctx.controlSize(spec.controlSize, "iconSize", use) + 8)
 					end,
 					AutomaticSize = E.AutomaticSize.X,
+					BackgroundTransparency = 0,
+					TextXAlignment = E.TextXAlignment.Center,
 				})),
 				"shortcut-hint"
 			)
@@ -2130,10 +2135,24 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.ShortcutHint: action must be a native InputAction"
 		)
 		local binding = ctx.observe(action, "PreferredBinding")
+		local keyNames: { [string]: string } = {
+			Return = "Enter",
+			KeypadEnter = "Enter",
+			Escape = "Esc",
+			Space = "Space",
+			Backspace = "Delete",
+			Tab = "Tab",
+			LeftShift = "Shift",
+			RightShift = "Shift",
+			LeftControl = "Ctrl",
+			RightControl = "Ctrl",
+			LeftAlt = "Alt",
+			RightAlt = "Alt",
+		}
 		local p = props(
 			spec :: Shared.GuiObjectNativeProps,
 			semantic,
-			{ Size = D2.fromOffset(0, 0), AutomaticSize = E.AutomaticSize.XY, BackgroundTransparency = 1 }
+			{ Size = D2.fromOffset(0, 0), AutomaticSize = E.AutomaticSize.XY, BackgroundTransparency = 0 }
 		)
 		table.insert(
 			p,
@@ -2206,12 +2225,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 										local keys = {}
 										for _, code in { use(primary), use(secondary), use(key) } do
 											if code and code ~= noKey then
-												table.insert(
-													keys,
-													if input and input.GetStringForKeyCode
-														then input:GetStringForKeyCode(code)
-														else code.Name
-												)
+												local text = if input and input.GetStringForKeyCode
+													then input:GetStringForKeyCode(code)
+													else ""
+												if text == nil or text == "" then
+													text = keyNames[code.Name] or code.Name
+												end
+												table.insert(keys, text)
 											end
 										end
 										return table.concat(keys, "+")
