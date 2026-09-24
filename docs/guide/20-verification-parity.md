@@ -17,7 +17,7 @@ where.
   still promises, but no candidate case tested it. The parity tests close
   837 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 56 cases remain.
-- 1,725 of the 3,131 covered cases have a weaker
+- 1,707 of the 3,131 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -102,14 +102,14 @@ last column names the candidate specs that the group cites most.
 | Virtual collections | 214 | 156 | 127 | 3 | 52 | 3 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 43 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
 | Row actions | 264 | 149 | 101 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 166 | 46 | 34 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| HUD and world targets | 166 | 46 | 30 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 28 | 17 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 11 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 425 | 237 | 133 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 151 | 45 | 22 | 153 | 1 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
-| Replication and server state | 55 | 31 | 14 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
+| Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
 | Error handling and refusals | 220 | 69 | 16 | 2 | 146 | 3 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
@@ -721,6 +721,21 @@ close these contracts. The data file names the case for each contract.
 | `native_parity_media` | icon coverage | paint-53, paint-54, themes-P2-54 | 14 |
 | `native_parity_apps` | Collections | collections-21, collections-128, collections-129, collections-134, collections-136, collections-139, collections-184, collections-207, collections-216, collections-302, collections-225, collections-230, collections-232, collections-244, collections-234, collections-245, collections-250, collections-255, collections-253, collections-263, collections-270, mech1-130 | 39 |
 | `native_parity_apps` | NavigationStack and CollapsibleView | navigation-3-04, navigation-3-24, navigation-3-15, navigation-3-16, navigation-3-17, navigation-3-23, navigation-2-04 | 12 |
+
+### Stronger assertions for weaker contracts
+
+These specs add sibling cases for covered contracts whose candidate
+assertion was weaker than the main assertion. "Equal" lists the
+contracts that now assert all that main asserted and that is still
+promised. The `weaker` field of these contracts is removed. "Still
+weaker" lists the contracts that get more assertions, but that still
+need a Roblox layout result from a live Studio check. Their `weaker`
+field names the missing assertion.
+
+| Spec | Group | Equal | Main cases | Still weaker | Main cases |
+|---|---|---|---:|---|---:|
+| `native_parity_weaker_hud` | HUD and world targets | `apps2-130`, `apps-215`, `themes-P1-102` | 4 | `apps-206`, `apps-210`, `apps-214`, `apps-218`, `apps-221`, `apps-234`, `themes-P1-11`, `themes-P1-14` | 30 |
+| `native_parity_weaker_hud` | Replication and server state | `apps2-41`, `apps2-127` | 14 | - | 0 |
 
 ## Proposed tests for the largest gaps
 

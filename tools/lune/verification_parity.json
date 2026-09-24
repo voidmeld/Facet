@@ -171,7 +171,7 @@
     "replication-server": {
       "mainCases": 55,
       "a": 31,
-      "aWeaker": 14,
+      "aWeaker": 0,
       "b": 0,
       "c": 24,
       "d": 0,
@@ -327,7 +327,7 @@
     "hud-world": {
       "mainCases": 166,
       "a": 46,
-      "aWeaker": 34,
+      "aWeaker": 30,
       "b": 50,
       "c": 70,
       "d": 0,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1725
+    "coveredButWeaker": 1707
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2575,9 +2575,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::retains optimistic settings and rolls back rejected server data"
-      ],
-      "weaker": "Touch is the same Activated path; 'whole accept round trip by touch alone' is driven through Music+Deliver only."
+        "native_gallery::native gallery::retains optimistic settings and rolls back rejected server data",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-41 settings sync applies optimistically, confirms, and rolls back a rejection by touch alone"
+      ]
     },
     {
       "id": "apps2-42",
@@ -3804,9 +3804,15 @@
         "native_outpost_terminal::native outpost terminal::refuses over-budget drafts locally and preserves authority guards",
         "native_outpost_terminal::native outpost terminal::recovers rejected or failed sends and cancels an unanswered request before reengagement",
         "native_outpost_terminal::native outpost terminal::converges full snapshots across skipped revisions without losing independent drafts",
-        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears"
-      ],
-      "weaker": "Main asserted the on-screen outcome sentence says what changed, that every one of the server refusal codes reaches the screen as its own sentence (candidate: 'rate' only), that the draft survives a refusal, and that E..."
+        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 an illegal draft is refused on the terminal and never reaches the wire",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 apply sends one intent with the draft, pending is not success and a second apply is refused",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 a confirmed verdict moves the outpost and the screen says what changed",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 a refusal is shown and the draft survives it",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 every server refusal reaches the screen as its own sentence",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 reset is a server intent and the verdict moves the outpost back",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 an allocation another player applied lands without touching this draft"
+      ]
     },
     {
       "id": "apps2-128",
@@ -3857,9 +3863,9 @@
       "class": "a",
       "candidateCases": [
         "native_outpost_terminal::native outpost terminal::mounts a real SurfaceGui on the caller runtime and owns cleanup",
-        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears"
-      ],
-      "weaker": "Candidate asserts SurfaceGui Face, CanvasSize.X=640, Active and Adornee; not the Y extent/aspect."
+        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps2-130 the terminal surface declares its walk-up contract and a 4:3 console canvas"
+      ]
     },
     {
       "id": "apps2-131",
@@ -9058,9 +9064,12 @@
       "class": "a",
       "candidateCases": [
         "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
-        "native_hud::native HUD::uses native body bounds after chrome layout and disconnects on disposal"
+        "native_hud::native HUD::uses native body bounds after chrome layout and disconnects on disposal",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 unbatched viewport and native body facts settle where a single change lands",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 the URL bar takes exactly its drawn height and only the tail of the ladder leaves"
       ],
-      "weaker": "Compares per-zone form names (report().forms), not solved zone rectangles; rank order of what leaves is not asserted."
+      "weaker": "The test compares every written property of the whole painted tree, not only form names. It does not compare solved zone rectangles, because the engine computes them from UIGridLayout, UIFlexItem and AutomaticSize. In the engine, the body also loses the list padding (8 px) with the 64 px bar, and only the engine can show that."
     },
     {
       "id": "apps-207",
@@ -9107,9 +9116,10 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes"
+        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-210 URL bar and rotation sequences and four cycles land on the fresh landscape tree"
       ],
-      "weaker": "Forms only, not geometry."
+      "weaker": "Every URL-bar position and four rotation cycles are compared by the whole painted tree against the fresh landscape mount. Engine rectangles are not compared."
     },
     {
       "id": "apps-211",
@@ -9160,9 +9170,10 @@
       "class": "a",
       "candidateCases": [
         "native_hud::native HUD::uses native body bounds after chrome layout and disconnects on disposal",
-        "native_hud::native HUD::recovers whole simplified zones in overflow and shares their live model"
+        "native_hud::native HUD::recovers whole simplified zones in overflow and shares their live model",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-214 a height shrink degrades zones in ladder order and re-solves in place"
       ],
-      "weaker": "Forms change with AbsoluteSize; strict rank ordering, column containment and no-overlap are not asserted."
+      "weaker": "Monotone degradation, the exact ladder order, lane containment and in-place re-solve (same lane, region and ClockFull instances) are asserted, and the grid declaration tiles the width exactly. Absolute no-overlap between zone rectangles needs engine layout."
     },
     {
       "id": "apps-215",
@@ -9174,9 +9185,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::updates segmented health and full, compact and tiny numeric timer formats"
-      ],
-      "weaker": "Timer text/health segments asserted; icon disc buttons not."
+        "native_hud::native HUD::updates segmented health and full, compact and tiny numeric timer formats",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-215 the timer is a live ring, the health bar is bound and the round buttons are icon discs"
+      ]
     },
     {
       "id": "apps-216",
@@ -9211,9 +9222,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes"
+        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree"
       ],
-      "weaker": "Form comparison only; no painted-tree comparison."
+      "weaker": "The painted tree (every written property, tags and style properties) is compared with a fresh mount, and the round strip is present, visible and opens the sink at the end. Engine rectangles are not compared."
     },
     {
       "id": "apps-219",
@@ -9248,9 +9260,13 @@
       "class": "a",
       "candidateCases": [
         "native_hud::native HUD::keeps native notification text valid while hidden shown and dismissed",
-        "native_hud::native HUD::keeps complete task rewards, weapon ammunition, scores and telemetry"
+        "native_hud::native HUD::keeps complete task rewards, weapon ammunition, scores and telemetry",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Gamepad uses the HUD actions and recovers focus after a notification",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 KeyboardAndMouse uses the HUD actions and recovers focus after a notification",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Touch uses the HUD actions and recovers focus after a notification",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Mouse uses the HUD actions and recovers focus after a notification"
       ],
-      "weaker": "Actions fired via Activated only; per-input-class focus recovery after the notice is not asserted."
+      "weaker": "All four input classes open the HUD actions menu, apply damage, heal and notice, and gamepad/keyboard selection returns to the trigger after each item and after ButtonB/Escape cancel; touch and mouse leave no selection. The test does not prove that the notice rectangle does not overlap a zone, because that needs engine layout."
     },
     {
       "id": "apps-222",
@@ -9405,9 +9421,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes"
+        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree"
       ],
-      "weaker": "Compares zone form names, not geometry."
+      "weaker": "All twelve A->B->A paths with a URL bar episode compare the whole painted tree and prove the sink stays reachable. Engine rectangles are not compared."
     },
     {
       "id": "apps-235",
@@ -29253,9 +29270,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::centers circular readouts when native text bounds fit the ring"
+        "native_themes_media::native themes and media::centers circular readouts when native text bounds fit the ring",
+        "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-11 circular readouts center only while native text bounds fit inside the ring"
       ],
-      "weaker": "TextBounds are injected; engine text measurement is not exercised (native evidence none)."
+      "weaker": "The centered/below decision is asserted at the exact 0.6 x diameter boundary with injected TextBounds, with Center alignment, no wrap and XY automatic size. The engine's own text measurement is not exercised."
     },
     {
       "id": "themes-P1-12",
@@ -29293,9 +29311,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::moves oversized circular readouts below the ring using native text bounds"
+        "native_themes_media::native themes and media::moves oversized circular readouts below the ring using native text bounds",
+        "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-14 a gauge keeps a long value whole and visible as native text grows"
       ],
-      "weaker": "Preferred text size is not varied; the oversized readout is simulated by injecting TextBounds (190x32)."
+      "weaker": "Growing TextBounds are injected to stand for larger preferred text; the readout stays visible, whole, centered below the ring and the gauge grows to fit. The engine's PreferredTextSize scaling is not exercised."
     },
     {
       "id": "themes-P1-15",
@@ -30620,9 +30639,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves external cameras and forwards native viewport lighting"
-      ],
-      "weaker": "LightColor not asserted."
+        "native_themes_media::native themes and media::preserves external cameras and forwards native viewport lighting",
+        "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-102 Stage forwards ambient, light color and light direction and keeps them reactive"
+      ]
     },
     {
       "id": "themes-P1-103",
