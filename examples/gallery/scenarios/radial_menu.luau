@@ -381,32 +381,12 @@ return {
 			}
 			return root
 		end
-		local tabs = {}
-		for _, tab in
-			{
-				{ id = "corner", text = "Corner commands", short = "Corner" },
-				{ id = "gestures", text = "Quick gestures", short = "Gestures" },
-				{ id = "character", text = "Character commands", short = "Character" },
-				{ id = "world", text = "Nearby item", short = "Item" },
-			}
-		do
-			table.insert(
-				tabs,
-				UI.Button({
-					Name = tab.id,
-					Size = UDim2.new(0, 0, 0, 36),
-					AutomaticSize = Enum.AutomaticSize.X,
-					label = tab.text,
-
-					selected = Compose.formula(function(use)
-						return use(selected) == tab.id
-					end),
-					onActivate = function()
-						selected:set(tab.id)
-					end,
-				})
-			)
-		end
+		local modes = {
+			{ value = "corner", label = "Corner commands" },
+			{ value = "gestures", label = "Quick gestures" },
+			{ value = "character", label = "Character commands" },
+			{ value = "world", label = "Nearby item" },
+		}
 		local instruction = Compose.formula(function(use)
 			local tab = use(selected)
 			return if tab == "gestures"
@@ -482,17 +462,9 @@ return {
 		end
 		local function controls()
 			return {
-				Host.Frame "Tabs" {
-					BackgroundTransparency = 1,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Host.UIListLayout({
-						FillDirection = Enum.FillDirection.Horizontal,
-						Wraps = true,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 4),
-					}),
-					table.unpack(tabs),
+				UI.Picker "Tabs" {
+					selected = selected,
+					options = modes,
 				},
 				Host.Frame "InstructionPlate" {
 					BackgroundTransparency = 1,
