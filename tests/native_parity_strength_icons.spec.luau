@@ -5,7 +5,7 @@ local Compose = require("../src/vendor/compose/core")
 local Roblox = require("../src/vendor/compose/roblox")
 local context = require("../src/ui/context")
 local media = require("../src/ui/media")
-local themes = require("../src/ui/themes")
+local themes = require("../src/ui/themes")(Compose)
 local icons = require("../src/ui/icons")
 local engineLib = require("./lib/native_engine")
 
@@ -16,7 +16,7 @@ local function setup(options: { [string]: any }?): (any, any, any)
 	for key, value in (options or {}) :: { [string]: any } do
 		config[key] = value
 	end
-	local UI = media(context(runtime, config :: any))
+	local UI = media(context(Compose, runtime, config :: any))
 	return engine, runtime, UI
 end
 
@@ -93,7 +93,7 @@ t.describe("async image states", function()
 		}
 		local calls, madeDuringPreload, destroyedDuringPreload = {}, 0, 0
 		local status = engine.types.Enum.AssetFetchStatus.Success
-		local UI = media(context(runtime, {
+		local UI = media(context(Compose, runtime, {
 			types = engine.types,
 			services = {
 				ContentProvider = {
@@ -187,7 +187,7 @@ t.describe("async image states", function()
 				end,
 				cancel = function() end,
 			}
-			local UI = media(context(runtime, {
+			local UI = media(context(Compose, runtime, {
 				types = engine.types,
 				services = {
 					ContentProvider = {
@@ -274,7 +274,7 @@ t.describe("async image states", function()
 		local folder = engine.new("Folder")
 		local baseline = engine.census()
 		local runtime = Roblox.createRuntime(engine)
-		local UI = media(context(runtime, { types = engine.types }))
+		local UI = media(context(Compose, runtime, { types = engine.types }))
 		local acquired, released = 0, 0
 		local resource = Compose.createSharedResource(function()
 			acquired += 1
@@ -1083,7 +1083,7 @@ t.describe("semantic icons", function()
 		local engine = engineLib.new()
 		local runtime = Roblox.createRuntime(engine)
 		local package = Compose.cell(themes.neutralPackage())
-		local ctx = context(runtime, { types = engine.types, theme = package })
+		local ctx = context(Compose, runtime, { types = engine.types, theme = package })
 		local folder = engine.new("Folder")
 		local baseline = engine.census()
 		local name = Compose.cell("close")
@@ -1257,7 +1257,7 @@ t.describe("pixel rendering", function()
 				end
 				local engine = engineLib.new()
 				local runtime = Roblox.createRuntime(engine)
-				local ctx = context(runtime, { types = engine.types, theme = package })
+				local ctx = context(Compose, runtime, { types = engine.types, theme = package })
 				local state = Compose.cell("default")
 				local stop, icon = runtime.mount(function()
 					return ctx.icon("close", nil, state)
@@ -1569,7 +1569,7 @@ t.describe("sliced and bar art", function()
 		local selected = Compose.cell(package)
 		local engine = engineLib.new()
 		local runtime = Roblox.createRuntime(engine)
-		local UI = media(context(runtime, { types = engine.types, theme = selected }))
+		local UI = media(context(Compose, runtime, { types = engine.types, theme = selected }))
 		local stop, root = runtime.mount(function()
 			return UI.ProgressView({ value = 0.01 })
 		end, engine.new("Folder"))
@@ -1639,7 +1639,7 @@ t.describe("sliced and bar art", function()
 		local folder = engine.new("Folder")
 		local baseline = engine.census()
 		local runtime = Roblox.createRuntime(engine)
-		local UI = media(context(runtime, { types = engine.types, theme = package }))
+		local UI = media(context(Compose, runtime, { types = engine.types, theme = package }))
 		local value = Compose.cell(0.4)
 		local stop, root = runtime.mount(function()
 			return UI.ProgressView({ value = value })

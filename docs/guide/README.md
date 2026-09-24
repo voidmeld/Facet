@@ -35,6 +35,7 @@ to select a control. Then read the exact contract of that control in the
 | Reactive graph, owners, keyed and presented composition | `Facet.Compose` |
 | Native host, runtime and target construction | `Facet.Roblox`; `runtime.constructors` as `Host` |
 | Control constructors | `Facet.controls(runtime, options?)` |
+| One reactive graph with the game's own Compose | `Facet.bind(Compose, Roblox)`; `Facet.COMPOSE_COMMIT` |
 | Semantic native styling and art | `Facet.themes` |
 | Activation and rich action rows | `UI.Button` |
 | Boolean and mixed selection | `UI.Toggle` |

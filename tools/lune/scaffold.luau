@@ -10,7 +10,7 @@ function scaffold.plan(kind: string, name: string): Plan
 		files = {
 			{
 				path = `src/ui/{name}.luau`,
-				content = `--!strict\nlocal Shared = require("@self/types")\nexport type Props = Shared.FrameProps\nexport type Constructor = Shared.Constructor<Props, Frame>\ntype Registry = \{ {display}: Constructor \}\nreturn function(ctx: Shared.Context, UI: Registry)\n\tUI.{display} = ctx.construct(function(spec: Props): Frame\n\t\treturn ctx.Host.Frame(ctx.props(spec, \{\}))\n\tend)\nend\n`,
+				content = `--!strict\nlocal Shared = require("@self/types")\nexport type Props = Shared.FrameProps\nexport type Constructor = Shared.Constructor<Props, Frame>\ntype Registry = \{ {display}: Constructor \}\nreturn function(ctx: Shared.Context, UI: Registry)\n\tUI.{display} = ctx.construct("{display}", function(spec: Props): Frame\n\t\treturn ctx.Host.Frame(ctx.props(spec, \{\}))\n\tend)\nend\n`,
 			},
 		},
 		edits = {

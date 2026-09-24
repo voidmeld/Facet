@@ -1,12 +1,12 @@
 --!strict
-local Compose = require("../vendor/compose/core")
-local themes = require("./themes")
+local ComposeTypes = require("../vendor/compose/core")
+local bindThemes = require("./themes")
 local Shared = require("./types")
 local Theme = require("./theme_types")
 
 type ModalPortal = { node: Instance, anchor: Instance }
 type ActionSettings = { onReleased: (() -> ())?, priority: number?, sink: boolean? }
-return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Context
+return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, options: Shared.Config?): Shared.Context
 	assert(runtime.host.name == "roblox", "Facet.controls requires a Compose Roblox runtime")
 	local config: Shared.Config = table.clone(options or {})
 	local types: Shared.RobloxTypes = config.types
@@ -44,6 +44,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 	config.userInputService = config.userInputService or services.UserInputService
 	local Host = (runtime.constructors :: unknown) :: Shared.Host
 	local Enum = types.Enum
+	local themes = bindThemes(Compose)
 	local ctx = {
 		runtime = runtime,
 		Host = Host,
@@ -52,13 +53,34 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		config = config :: Shared.ResolvedConfig,
 		metrics = { textSize = 16, controlHeight = 36, gap = 8, cornerRadius = 8 },
 	}
-	local function read<T>(value: T | Compose.Source<T>, use: Compose.Use?): T
+	local building: string? = nil
+	local metatableOf = (getmetatable :: unknown) :: (unknown) -> unknown
+	local native: { [unknown]: boolean } = {}
+	native[metatableOf(Compose.cell(nil))] = true
+	native[metatableOf(Compose.sharedCell(nil))] = true
+	local probe = Compose.formula(function()
+		return nil
+	end)
+	native[metatableOf(probe)] = true
+	probe:dispose()
+	local function reject(key: string?)
+		local option = if key then ` option '{key}'` else " a value"
+		error(
+			`Facet UI.{building or "control"}:{option} is a readable from another Compose instance. `
+				.. "Facet cannot track it. Bind Facet to that Compose with Facet.bind(Compose, Roblox).",
+			0
+		)
+	end
+	local function read<T>(value: T | ComposeTypes.Source<T>, use: ComposeTypes.Use?): T
 		if Compose.isReadable(value) then
-			local source = value :: Compose.Readable<T>
+			if not native[metatableOf(value)] then
+				reject(nil)
+			end
+			local source = value :: ComposeTypes.Readable<T>
 			return if use then use(source) else source:peek()
 		elseif type(value) == "function" then
-			local body = value :: Compose.Body<T>
-			return body(use or function<U>(source: Compose.Readable<U>): U
+			local body = value :: ComposeTypes.Body<T>
+			return body(use or function<U>(source: ComposeTypes.Readable<U>): U
 				return source:peek()
 			end)
 		end
@@ -75,7 +97,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		end
 		return if type(value) == "number" then value else nil
 	end
-	function ctx.metric(path: string, use: Compose.Use?): number
+	function ctx.metric(path: string, use: ComposeTypes.Use?): number
 		local package = ctx.read(config.theme, use)
 		return assert(
 			metricAt(if package then package.metrics else nil, path) or metricAt(defaultMetrics, path),
@@ -85,7 +107,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 	function ctx.controlSize(
 		source: Shared.Value<Shared.ControlSize>?,
 		field: "height" | "paddingX" | "iconSize",
-		use: Compose.Use?
+		use: ComposeTypes.Use?
 	): number
 		local requested = ctx.read(source, use)
 		local rung = if requested == nil then "regular" else requested
@@ -95,7 +117,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		)
 		return ctx.metric("controlSizes." .. rung .. "." .. field, use)
 	end
-	local function observe(node: Instance, property: string): Compose.Cell<unknown>
+	local function observe(node: Instance, property: string): ComposeTypes.Cell<unknown>
 		local observation = assert(runtime.host.observation, "Roblox property observation is required")
 		local value = Compose.cell(observation.readProperty(node, property))
 		Compose.cleanup(observation.observeProperty(node, property, function()
@@ -107,7 +129,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 
 	function ctx.playWhileShown(timeline: Shared.Playback, node: Instance)
 		local owner = assert(Compose.currentOwner(), "Facet playWhileShown requires a Compose owner")
-		local ancestryOwner: Compose.Owner?
+		local ancestryOwner: ComposeTypes.Owner?
 		local function locate()
 			if owner.isDisposed() then
 				return
@@ -118,7 +140,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 			local childOwner = owner.createChild()
 			ancestryOwner = childOwner
 			Compose.withOwner(childOwner, function()
-				local sources: { Compose.Readable<boolean> } = {}
+				local sources: { ComposeTypes.Readable<boolean> } = {}
 				local at: Instance? = node
 				while at do
 					if at:IsA("GuiObject") then
@@ -129,7 +151,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 					end
 					at = at.Parent
 				end
-				Compose.watch(function(use: Compose.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					for _, source in sources do
 						if not use(source) then
 							timeline:pause()
@@ -143,7 +165,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		runtime.connect(node, "AncestryChanged", locate)
 		locate()
 	end
-	local function observeStyled(node: Instance, property: string): Compose.Cell<unknown>
+	local function observeStyled(node: Instance, property: string): ComposeTypes.Cell<unknown>
 		local initial: unknown = node:GetStyled(property)
 		local value = Compose.cell(initial)
 		local connection = node:GetStyledPropertyChangedSignal(property):Connect(function()
@@ -156,6 +178,35 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		return value
 	end
 	ctx.observeStyled = (observeStyled :: unknown) :: Shared.Observe
+	local function distance(a: string, b: string): number
+		local previous: { number } = {}
+		for j = 0, #b do
+			previous[j] = j
+		end
+		for i = 1, #a do
+			local current: { number } = { [0] = i }
+			for j = 1, #b do
+				local cost = if string.byte(a, i) == string.byte(b, j) then 0 else 1
+				current[j] = math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
+			end
+			previous = current
+		end
+		return previous[#b]
+	end
+	local function unknownOption(key: string, known: { [string]: boolean }): string
+		local best: string? = nil
+		local bestDistance = 3
+		for name in known do
+			if name ~= "ref" then
+				local d = distance(key, name)
+				if d < bestDistance or (d == bestDistance and best ~= nil and name < best) then
+					best, bestDistance = name, d
+				end
+			end
+		end
+		local suggestion = if best then ` Did you mean '{best}'?` else ""
+		return `Facet UI.{building or "control"}: unknown option '{key}'.{suggestion}`
+	end
 	function ctx.props<P>(spec: P, behavioralKeys: { string } | { [string]: boolean }?, defaults: unknown?): P
 		local result: { [unknown]: unknown } = if type(defaults) == "table"
 			then table.clone(defaults :: { [unknown]: unknown })
@@ -173,23 +224,44 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 			if type(key) == "number" then
 				result[#result + 1] = value
 			elseif type(key) ~= "string" or not consumed[key] then
-				assert(type(key) ~= "string" or not string.match(key, "^[a-z]"), `Unknown Facet option {tostring(key)}`)
+				if type(key) == "string" and string.match(key, "^[a-z]") then
+					error(unknownOption(key, consumed), 0)
+				end
 				result[key] = value
 			end
 		end
 		return (result :: unknown) :: P
 	end
-	function ctx.construct<F>(build: F): F & ((string) -> F)
+	function ctx.construct<F>(control: string, build: F): F & ((string) -> F)
 		assert(type(build) == "function", "Facet constructor requires a builder")
 		local apply = (build :: unknown) :: ({ [unknown]: unknown }) -> unknown
 		local function construct(fields: { [unknown]: unknown }, name: string?): unknown
-			assert(type(fields) == "table", "Facet control expects a property table")
+			if type(fields) ~= "table" then
+				error(`Facet UI.{control}: expected a property table, got {typeof(fields)}`, 0)
+			end
 			if name then
 				fields = table.clone(fields)
 				assert(fields.Name == nil, "Facet: supply either a constructor name or Name")
 				fields.Name = name
 			end
+			local outer = building
+			building = control
+			if Compose.currentOwner() == nil then
+				building = outer
+				error(
+					`Facet UI.{control}: no owner from Facet's Compose is active. Build controls inside runtime.mount. `
+						.. "If the runtime comes from another Compose instance, "
+						.. "bind Facet to that instance with Facet.bind(Compose, Roblox).",
+					0
+				)
+			end
+			for key, value in fields do
+				if type(key) == "string" and Compose.isReadable(value) and not native[metatableOf(value)] then
+					reject(key)
+				end
+			end
 			local node = apply(fields)
+			building = outer
 			if fields.ref then
 				assert(type(fields.ref) == "function")
 				local ref = fields.ref :: (unknown) -> ()
@@ -238,7 +310,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		return ctx.styled(Host.TextLabel(native), "Text")
 	end
 	local function stack(
-		children: { Compose.Child },
+		children: { ComposeTypes.Child },
 		properties: Shared.FrameNativeProps?,
 		direction: Enum.FillDirection
 	): Frame
@@ -272,10 +344,10 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		end
 		return Host.Frame(native)
 	end
-	function ctx.row(children: { Compose.Child }, properties: Shared.FrameNativeProps?): Frame
+	function ctx.row(children: { ComposeTypes.Child }, properties: Shared.FrameNativeProps?): Frame
 		return stack(children, properties, Enum.FillDirection.Horizontal)
 	end
-	function ctx.column(children: { Compose.Child }, properties: Shared.FrameNativeProps?): Frame
+	function ctx.column(children: { ComposeTypes.Child }, properties: Shared.FrameNativeProps?): Frame
 		return stack(children, properties, Enum.FillDirection.Vertical)
 	end
 	function ctx.icon(
@@ -284,7 +356,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		state: Shared.Value<Theme.SkinState>?
 	): ImageLabel
 		local native: Shared.ImageLabelNativeProps = {
-			Image = function(use: Compose.Use)
+			Image = function(use: ComposeTypes.Use)
 				local requested = ctx.read(name, use)
 				local package: Theme.IconRegistry = ctx.read(config.theme, use) or {}
 				local overrides = ctx.read(config.icons, use)
@@ -299,11 +371,11 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 				return asset
 			end,
 			BackgroundTransparency = 1,
-			Size = function(use: Compose.Use)
+			Size = function(use: ComposeTypes.Use)
 				local size = ctx.controlSize(config.controlSize, "iconSize", use)
 				return types.UDim2.fromOffset(size, size)
 			end,
-			ResampleMode = function(use: Compose.Use)
+			ResampleMode = function(use: ComposeTypes.Use)
 				local package = ctx.read(config.theme, use)
 				return if package and package.identity.rendering == "pixel"
 					then Enum.ResamplerMode.Pixelated
@@ -333,7 +405,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 			ctx.modalPortals:set(remaining)
 		end)
 	end
-	function ctx.available(node: Instance, use: Compose.Use?): boolean
+	function ctx.available(node: Instance, use: ComposeTypes.Use?): boolean
 		local scopes = ctx.read(ctx.modalScopes, use)
 		local portals = ctx.read(ctx.modalPortals, use)
 		local modal: Instance? = scopes[#scopes]
@@ -380,7 +452,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		local owner = assert(Compose.currentOwner(), "Facet action requires a Compose owner")
 		local parent = Compose.cell(nil :: Instance?)
 		local available = Compose.cell(false)
-		local ancestryOwner: Compose.Owner?
+		local ancestryOwner: ComposeTypes.Owner?
 		local function locate()
 			if owner.isDisposed() then
 				return
@@ -391,7 +463,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 			local childOwner = owner.createChild()
 			ancestryOwner = childOwner
 			Compose.withOwner(childOwner, function()
-				local sources: { Compose.Readable<boolean> } = {}
+				local sources: { ComposeTypes.Readable<boolean> } = {}
 				local at: Instance? = node
 				local collector: Instance? = nil
 				while at do
@@ -406,7 +478,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 					at = at.Parent
 				end
 				parent:set(config.inputParent or collector)
-				Compose.watch(function(use: Compose.Use)
+				Compose.watch(function(use: ComposeTypes.Use)
 					local enabled = true
 					for _, source in sources do
 						if use(source) == false then
@@ -451,7 +523,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 			Parent = parent,
 			Priority = settings.priority or 2000,
 			Sink = settings.sink ~= false,
-			Enabled = function(use: Compose.Use)
+			Enabled = function(use: ComposeTypes.Use)
 				if selection then
 					use(selection)
 				end
@@ -465,7 +537,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		return action, context
 	end
 
-	function ctx.skin(node: GuiObject, slot: string, skinOptions: Shared.SkinStateOptions?): Compose.Dispose?
+	function ctx.skin(node: GuiObject, slot: string, skinOptions: Shared.SkinStateOptions?): ComposeTypes.Dispose?
 		if config.theme == nil then
 			return nil
 		end
@@ -486,7 +558,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 					then ctx.observe(node, "Text")
 					elseif node:IsA("TextLabel") then ctx.observe(node, "Text")
 					else nil,
-				state = function(use: Compose.Use)
+				state = function(use: ComposeTypes.Use)
 					if ctx.read(stateOptions.disabled, use) == true then
 						return "disabled"
 					end

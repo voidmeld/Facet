@@ -11,12 +11,9 @@ local TRACKS = {
 	{ id = "apex", name = "Apex Bloom", artist = "Nine Volt", length = 176, rating = 3 },
 }
 function example.build(ctx: any)
-	local UI, Compose = ctx.UI, ctx.Compose
-	local Host = ctx.Host
-	local Compose = ctx.Compose
-	local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Color3 = Color3, Enum = Enum }
+	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
 	local UDim, UDim2, Vector2, Color3, Enum =
-		nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Color3, nativeTypes.Enum
+		ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
 	local built: any = {}
 
 	local function plain(item: any): any
@@ -186,6 +183,7 @@ function example.build(ctx: any)
 					id = "rating",
 					label = "Rating",
 					width = 144,
+					resizable = false,
 					sortable = true,
 					value = function(item)
 						return ratings[plain(item).id]:peek()
@@ -316,7 +314,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Playlist",
+					text = "Playlist",
 					textRole = "title",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -332,7 +330,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = hintText,
+					text = hintText,
 					textRole = "caption",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -343,7 +341,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = nowPlayingText,
+					text = nowPlayingText,
 					textRole = "caption",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -354,7 +352,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = widthsText,
+					text = widthsText,
 					textRole = "caption",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,

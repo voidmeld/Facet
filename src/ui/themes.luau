@@ -1,6 +1,6 @@
 --!strict
 local decoration = require("./native_decoration")
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local icons = require("./icons")
 local ThemeTypes = require("./theme_types")
 local Engine = require("./engine_types")
@@ -131,14 +131,14 @@ do
 	}
 end
 
-local function read<T>(source: Engine.Value<T>, use: Compose.Use?): T
+local function read<T>(source: Engine.Value<T>, use: ComposeTypes.Use?): T
 	if type(source) == "function" then
-		return (source :: (Compose.Use) -> T)(use or function(value)
+		return (source :: (ComposeTypes.Use) -> T)(use or function(value)
 			return value:peek()
 		end)
 	end
 	if type(source) == "table" and type(source.peek) == "function" then
-		local readable = source :: Compose.Readable<T>
+		local readable = source :: ComposeTypes.Readable<T>
 		return if use then use(readable) else readable:peek()
 	end
 	return source :: T
@@ -853,8 +853,9 @@ local function deeplyFrozen(value: unknown, visited: { [unknown]: boolean }): bo
 	return true
 end
 
-function themes.createStyleSheet(
-	runtime: Compose.Runtime,
+local function createStyleSheet(
+	Compose: typeof(ComposeTypes),
+	runtime: ComposeTypes.Runtime,
 	packageOrReadable: Engine.Value<ThemeTypes.ThemePackage>?,
 	options: ThemeTypes.ThemeOptions?
 ): StyleSheet
@@ -891,12 +892,12 @@ function themes.createStyleSheet(
 			end)
 		end
 	end
-	local function preferenceFor(use: Compose.Use): number
+	local function preferenceFor(use: ComposeTypes.Use): number
 		local value = read(preferredTransparency, use)
 		return if type(value) == "number" and value == value then math.clamp(value, 0, 1) else 1
 	end
 	local defaultTimings: { [number]: TweenInfo } = {}
-	local function timingFor(package: ThemeTypes.ThemePackage, use: Compose.Use): TweenInfo
+	local function timingFor(package: ThemeTypes.ThemePackage, use: ComposeTypes.Use): TweenInfo
 		local explicit = read(settings.transition, use)
 		local seconds
 		if read(reducedMotion, use) == true or explicit == false then
@@ -1055,7 +1056,7 @@ function themes.createStyleSheet(
 		Name = settings.name or "FacetTheme",
 		Compose.keyed({
 			from = ids,
-			render = function(current: Compose.Readable<string>)
+			render = function(current: ComposeTypes.Readable<string>)
 				local id = current:peek()
 				local initial = definitions[id]
 				local node = Host.StyleRule({
@@ -1075,7 +1076,7 @@ function themes.createStyleSheet(
 			end,
 		}),
 	})
-	Compose.watch(function(use: Compose.Use)
+	Compose.watch(function(use: ComposeTypes.Use)
 		local package = read(packageOrReadable, use) or neutral
 		local current = compiledRules(package, read(settings.theme, use))
 		local timing = timingFor(package, use)
@@ -1142,12 +1143,13 @@ type ImageLayer = {
 type MountedImage = {
 	node: ImageLabel,
 	properties: ImageLayer,
-	caption: Compose.Cell<ImageLayer>?,
+	caption: ComposeTypes.Cell<ImageLayer>?,
 	visible: boolean,
 }
 
-function themes.skin(
-	runtime: Compose.Runtime,
+local function skin(
+	Compose: typeof(ComposeTypes),
+	runtime: ComposeTypes.Runtime,
 	packageOrReadable: Engine.Value<ThemeTypes.ThemePackage>?,
 	slot: string,
 	options: ThemeTypes.SkinOptions?
@@ -1197,7 +1199,7 @@ function themes.skin(
 					}
 				end, settings.target or root)
 			end
-			return decoration(runtime, types, settings.target, root) :: Frame
+			return decoration(Compose, runtime, types, settings.target, root) :: Frame
 		end
 	end
 	type CompiledLayers = {
@@ -1207,7 +1209,7 @@ function themes.skin(
 		layers: { ImageLayer },
 	}
 	local compiled: { CompiledLayers } = {}
-	local function buildLayers(use: Compose.Use): { ImageLayer }
+	local function buildLayers(use: ComposeTypes.Use): { ImageLayer }
 		local package = read(packageOrReadable, use) or neutral
 		local recipe = (package.chrome or {})[slot]
 		if recipe == nil or recipe.kind == "native" or recipe.kind == "none" then
@@ -1383,29 +1385,29 @@ function themes.skin(
 			SliceScale = initial.SliceScale,
 			ResampleMode = initial.ResampleMode,
 		}
-		local captionSource: Compose.Cell<ImageLayer>?
+		local captionSource: ComposeTypes.Cell<ImageLayer>?
 		if settings.label then
 			local current = Compose.cell(initial)
 			captionSource = current
 			table.insert(
 				properties,
-				Compose.show(function(use: Compose.Use)
+				Compose.show(function(use: ComposeTypes.Use)
 					return use(current).text == true
 				end, function()
 					local padding: Engine.UIPaddingNativeProps = {
-						PaddingLeft = function(use: Compose.Use)
+						PaddingLeft = function(use: ComposeTypes.Use)
 							local inset: ThemeTypes.Insets = use(current).textInsets or {}
 							return types.UDim.new(0, inset.left or 0)
 						end,
-						PaddingRight = function(use: Compose.Use)
+						PaddingRight = function(use: ComposeTypes.Use)
 							local inset: ThemeTypes.Insets = use(current).textInsets or {}
 							return types.UDim.new(0, inset.right or 0)
 						end,
-						PaddingTop = function(use: Compose.Use)
+						PaddingTop = function(use: ComposeTypes.Use)
 							local inset: ThemeTypes.Insets = use(current).textInsets or {}
 							return types.UDim.new(0, inset.top or 0)
 						end,
-						PaddingBottom = function(use: Compose.Use)
+						PaddingBottom = function(use: ComposeTypes.Use)
 							local inset: ThemeTypes.Insets = use(current).textInsets or {}
 							return types.UDim.new(0, inset.bottom or 0)
 						end,
@@ -1470,7 +1472,7 @@ function themes.skin(
 		end
 	end
 	local activeLayers: { ImageLayer } = {}
-	local slots: Compose.Cell<{ number }> = Compose.cell({})
+	local slots: ComposeTypes.Cell<{ number }> = Compose.cell({})
 	local mounted: { [number]: MountedImage } = {}
 	local root = Host.Frame "Skin" {
 		Size = settings.Size or D2.fromScale(1, 1),
@@ -1481,7 +1483,7 @@ function themes.skin(
 		ZIndex = settings.ZIndex or 0,
 		Compose.keyed({
 			from = slots,
-			render = function(current: Compose.Readable<number>)
+			render = function(current: ComposeTypes.Readable<number>)
 				local index = current:peek()
 				local record = createImage(activeLayers[index])
 				mounted[index] = record
@@ -1492,7 +1494,7 @@ function themes.skin(
 			end,
 		}),
 	}
-	Compose.watch(function(use: Compose.Use)
+	Compose.watch(function(use: ComposeTypes.Use)
 		local active = buildLayers(use)
 		activeLayers = active
 		local previousSlots = slots:peek()
@@ -1526,7 +1528,7 @@ function themes.skin(
 			end
 		end
 	end)
-	local shadow = Compose.formula(function(use: Compose.Use)
+	local shadow = Compose.formula(function(use: ComposeTypes.Use)
 		local package = read(packageOrReadable, use) or neutral
 		local recipe = (package.chrome or {})[slot]
 		local value = if recipe then recipe.shadow else nil
@@ -1537,7 +1539,7 @@ function themes.skin(
 		return value
 	end)
 	local previousShadow: ThemeTypes.Shadow?
-	local retainedShadow = Compose.formula(function(use: Compose.Use): ThemeTypes.Shadow?
+	local retainedShadow = Compose.formula(function(use: ComposeTypes.Use): ThemeTypes.Shadow?
 		local current = use(shadow)
 		if current then
 			previousShadow = current :: ThemeTypes.Shadow
@@ -1559,29 +1561,29 @@ function themes.skin(
 				end
 				local properties: Engine.UIShadowNativeProps = {
 					Name = "ChromeShadow",
-					Color = function(use: Compose.Use)
+					Color = function(use: ComposeTypes.Use)
 						return color(
 								types,
 								(use(retainedShadow) :: ThemeTypes.Shadow).color or { r = 0, g = 0, b = 0 }
 							) :: Color3
 					end,
-					Transparency = function(use: Compose.Use)
+					Transparency = function(use: ComposeTypes.Use)
 						return (use(retainedShadow) :: ThemeTypes.Shadow).transparency or 0.5
 					end,
-					ZIndex = function(use: Compose.Use)
+					ZIndex = function(use: ComposeTypes.Use)
 						return (use(retainedShadow) :: ThemeTypes.Shadow).zIndex or -1
 					end,
-					Enabled = function(use: Compose.Use)
+					Enabled = function(use: ComposeTypes.Use)
 						local current = use(shadow)
 						return current ~= nil and (current :: ThemeTypes.Shadow).enabled ~= false
 					end,
-					BlurRadius = function(use: Compose.Use)
+					BlurRadius = function(use: ComposeTypes.Use)
 						return types.UDim.new(axis((use(retainedShadow) :: ThemeTypes.Shadow).blurRadius))
 					end,
-					Offset = function(use: Compose.Use)
+					Offset = function(use: ComposeTypes.Use)
 						return pair((use(retainedShadow) :: ThemeTypes.Shadow).offset)
 					end,
-					Spread = function(use: Compose.Use)
+					Spread = function(use: ComposeTypes.Use)
 						return pair((use(retainedShadow) :: ThemeTypes.Shadow).spread)
 					end,
 				}
@@ -1589,8 +1591,41 @@ function themes.skin(
 			end),
 		}
 	end, settings.target or root)
-	return decoration(runtime, types, settings.target, root) :: Frame
+	return decoration(Compose, runtime, types, settings.target, root) :: Frame
 end
 
-local surface: ThemeTypes.Themes = themes
-return surface
+local bound: { [typeof(ComposeTypes)]: ThemeTypes.Themes } = {}
+setmetatable(bound, { __mode = "k" })
+
+return function(Compose: typeof(ComposeTypes)): ThemeTypes.Themes
+	local cached = bound[Compose]
+	if cached then
+		return cached
+	end
+	local surface: ThemeTypes.Themes = {
+		SCHEMA = themes.SCHEMA,
+		TYPE_ROLES = themes.TYPE_ROLES,
+		REQUIRED_TYPE_ROLES = themes.REQUIRED_TYPE_ROLES,
+		neutralPackage = themes.neutralPackage,
+		define = themes.define,
+		checkCoverage = themes.checkCoverage,
+		resolveIcon = themes.resolveIcon,
+		createStyleSheet = function(
+			runtime: ComposeTypes.Runtime,
+			packageOrReadable: Engine.Value<ThemeTypes.ThemePackage>?,
+			options: ThemeTypes.ThemeOptions?
+		): StyleSheet
+			return createStyleSheet(Compose, runtime, packageOrReadable, options)
+		end,
+		skin = function(
+			runtime: ComposeTypes.Runtime,
+			packageOrReadable: Engine.Value<ThemeTypes.ThemePackage>?,
+			slot: string,
+			options: ThemeTypes.SkinOptions?
+		): Frame
+			return skin(Compose, runtime, packageOrReadable, slot, options)
+		end,
+	}
+	bound[Compose] = surface
+	return surface
+end

@@ -24,7 +24,7 @@ local stop = runtime.mount(function()
             Size = UDim2.fromOffset(320, 120),
             Host.UIListLayout { Padding = UDim.new(0, 8) },
             UI.Label {
-                label = function(use) return `Clicked {use(count)} times` end,
+                text = function(use) return `Clicked {use(count)} times` end,
             },
             UI.Button {
                 label = "Add one",
@@ -51,6 +51,111 @@ end)
 - `Facet.themes.createStyleSheet(runtime)` makes a StyleSheet. The sheet is a
   child of the ScreenGui. The StyleLink references it. See
   [Styling](05-styling.md).
+
+## Test a screen without Studio
+
+You can mount a screen headlessly with Lune. This path needs a clone of this
+repository and the pinned toolchain. Run `rokit install` from the repository
+root.
+
+The repository has a fake native engine in
+[`tests/lib/native_engine.luau`](../../tests/lib/native_engine.luau). It makes
+objects that act like Roblox Instances: properties, children, `FindFirstChild`
+and events that a test can fire. It is not part of the Roblox package.
+
+Save this script as `tests/counter.luau` and run
+`lune run tests/counter.luau` from the repository root.
+
+```luau
+local Facet = require("../src")
+local engineLib = require("./lib/native_engine")
+local Compose = Facet.Compose
+
+local engine = engineLib.new()
+local runtime = Facet.Roblox.createRuntime(engine)
+local Host = runtime.constructors
+local UI = Facet.controls(runtime, { types = engine.types })
+
+local function Counter()
+    local count = Compose.cell(0)
+    return Host.Frame "Counter" {
+        UI.Label "Count" {
+            text = function(use) return `Count: {use(count)}` end,
+        },
+        UI.Button "Add" {
+            label = "Add one",
+            onActivate = function()
+                count:update(function(n) return n + 1 end)
+            end,
+        },
+    }
+end
+
+local screen = engine.new("ScreenGui")
+local stop, root = runtime.mount(Counter, screen)
+root:FindFirstChild("Add").Activated.fire()
+assert(root:FindFirstChild("Count").Text == "Count: 1")
+stop()
+assert(screen:FindFirstChild("Counter") == nil)
+runtime:dispose()
+```
+
+- `engineLib.new()` makes the fake engine. Give it to
+  `Facet.Roblox.createRuntime`.
+- `Facet.controls` needs `types = engine.types`, because Lune does not have
+  the Roblox datatypes as globals.
+- `runtime.mount` returns the stop function and the mounted root.
+- `Activated.fire()` sends the event that a click or a gamepad press sends.
+
+The [standalone consumer test](../../tests/native_gallery.spec.luau) mounts the
+screen module of `examples/consumer` in the same way.
+
+A headless test proves state, events, structure and cleanup. It does not prove
+native layout, `StyleSheet` paint, text measurement, device input or engine
+performance. Those need a Studio check.
+
+Inside this repository, put a spec under `tests/` and run it with
+`lune run tests/run_one <name>`.
+
+## Using Facet in a game that already uses Compose
+
+`Facet.Compose` is a pinned copy of Compose. If your game requires its own
+Compose, the game and Facet must use the same Compose instance. Two instances
+make two reactive graphs, two schedulers and two owner trees. A control then
+does not reliably update when your cell changes, and its cleanup does not
+belong to your owner.
+
+Bind Facet to your Compose one time. Use the bound table everywhere:
+
+```luau
+local Compose = require(game.ReplicatedStorage.Packages.Compose.core)
+local ComposeRoblox = require(game.ReplicatedStorage.Packages.Compose.roblox)
+local Facet = require(game.ReplicatedStorage.Packages.Facet).bind(Compose, ComposeRoblox)
+
+local runtime = ComposeRoblox.createRuntime()
+local UI = Facet.controls(runtime)
+local enabled = Compose.cell(false)
+local stop = runtime.mount(function()
+    local sheet = Facet.themes.createStyleSheet(runtime)
+    return runtime.constructors.ScreenGui {
+        sheet,
+        runtime.constructors.StyleLink { StyleSheet = Compose.static(sheet) },
+        UI.Toggle { value = enabled, label = "Music" },
+    }
+end, game.Players.LocalPlayer.PlayerGui)
+```
+
+- Give the core module and the Roblox module from the same Compose copy.
+- Make the runtime with that Roblox module.
+- The Facet tests use the commit in `Facet.COMPOSE_COMMIT`. Facet supports a
+  later commit when it keeps the functions that Facet uses. `bind` stops with an
+  error that names a missing function.
+- When a runtime or a cell from a different Compose instance reaches a control,
+  the control stops with an error that names the control. The error tells you
+  to use `Facet.bind`.
+
+The [API reference](../reference/api.md#your-own-compose) gives the full
+contract.
 
 ## Cleanup
 

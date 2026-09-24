@@ -185,6 +185,7 @@ t.describe("performance lab evidence", function()
 
 	t.it("run all continues past a failing workload and ends with the dump instruction", function()
 		local app, probe, root = labFixture("collection-mutation")
+		probe.select("idle-baseline", 100)
 		probe.sweep()
 		t.expect(probe.state().playing).toBe(true)
 		for _ = 1, #lab.WORKLOADS do
@@ -203,6 +204,7 @@ t.describe("performance lab evidence", function()
 
 	t.it("stop halts run all between workloads and reset unmounts the workload", function()
 		local app, probe = labFixture()
+		probe.select("idle-baseline", 100)
 		probe.sweep()
 		app.frame()
 		app.frame()

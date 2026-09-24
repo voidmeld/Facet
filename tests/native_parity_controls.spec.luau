@@ -250,7 +250,7 @@ t.describe("native parity controls", function()
 				end,
 			},
 			{
-				"Unknown Facet option typo",
+				"unknown option 'typo'",
 				function(UI)
 					return UI.LevelPicker({ value = value, typo = 1 })
 				end,
@@ -508,7 +508,7 @@ t.describe("native parity controls", function()
 				{ "lines require line form", { form = "box", lines = 2 } },
 				{ "lines must be positive", { form = "line", lines = 0 } },
 				{ "circle owns its corners", { form = "circle", corners = "pill" } },
-				{ "Unknown Facet option surprise", { form = "box", surprise = true } },
+				{ "unknown option 'surprise'", { form = "box", surprise = true } },
 			} :: { { any } }
 		do
 			t.expect(refuses(case[1], function(UI)
@@ -1439,7 +1439,7 @@ t.describe("native parity controls", function()
 		t.expect(after.live).toBe(baseline.live)
 		t.expect(after.connections).toBe(baseline.connections)
 		world.stop()
-		t.expect(refuses("Unknown Facet option bogus", function(UI)
+		t.expect(refuses("unknown option 'bogus'", function(UI)
 			return UI.RowActions({ content = UI.Button({ label = "Row" }), bogus = 1 })
 		end)).toBe(true)
 		t.expect(mountError(function(UI)

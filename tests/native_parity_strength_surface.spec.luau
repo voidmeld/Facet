@@ -694,28 +694,28 @@ t.describe("declaration refusals", function()
 	local CASES: { { name: string, message: string, build: (any, any, any) -> any } } = {
 		{
 			name = "unknown Button option",
-			message = "Unknown Facet option bogusOption",
+			message = "Facet UI.Button: unknown option 'bogusOption'",
 			build = function(UI)
 				return UI.Button({ label = "x", bogusOption = 1 })
 			end,
 		},
 		{
 			name = "unknown Picker option",
-			message = "Unknown Facet option bogus",
+			message = "Facet UI.Picker: unknown option 'bogus'",
 			build = function(UI)
 				return UI.Picker({ selected = Compose.cell("a"), options = { { value = "a", label = "A" } }, bogus = 1 })
 			end,
 		},
 		{
 			name = "unknown Alert option",
-			message = "Unknown Facet option bogus",
+			message = "Facet UI.Alert: unknown option 'bogus'",
 			build = function(UI)
 				return UI.Alert({ isPresented = Compose.cell(false), title = "t", bogus = 1 })
 			end,
 		},
 		{
 			name = "Picker without options",
-			message = "Picker requires options",
+			message = "Facet UI.Picker: options must be an array of { value, label } entries",
 			build = function(UI)
 				return UI.Picker({ selected = Compose.cell("a") })
 			end,
@@ -929,11 +929,15 @@ t.describe("declaration refusals", function()
 	end
 
 	t.it("refuses unknown options, missing required options and closed sets with a named error", function()
+		local mismatches: { string } = {}
 		for _, case in CASES do
 			local message = refusal(case.build)
 			if case.message ~= "" and not string.find(message, case.message, 1, true) then
-				error(`{case.name}: expected "{case.message}", got {message}`)
+				table.insert(mismatches, `{case.name}: expected "{case.message}", got {message}`)
 			end
+		end
+		if #mismatches > 0 then
+			error(table.concat(mismatches, "\n"))
 		end
 	end)
 
