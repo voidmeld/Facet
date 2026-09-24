@@ -154,8 +154,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 				})
 				if reduced() then
 					fired = true
-					invoke(action)
 					settle()
+					invoke(action)
 				else
 					departure:restart()
 				end
@@ -174,8 +174,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 				local commit = committing:peek()
 				if commit then
 					fired = true
-					invoke(commit.action)
 					settle()
+					invoke(commit.action)
 				end
 			end
 		end)

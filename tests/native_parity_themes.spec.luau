@@ -340,6 +340,54 @@ t.describe("native parity themes", function()
 		t.expect(cycle.errors[1].message).toBe("Theme packages cannot contain cycles")
 	end)
 
+	t.it("terminates on a self-referential metrics table and rejects it as a cycle", function()
+		for _, shape in { "self", "nested" } do
+			local definition: any = themes.neutralPackage()
+			if shape == "self" then
+				definition.metrics.self = definition.metrics
+			else
+				local loop: any = {}
+				loop.self = loop
+				definition.metrics.controlSizes.cycle = loop
+			end
+			local package, report = themes.define(definition)
+			t.expect(package).toBe(nil)
+			t.expect(report.ok).toBe(false)
+			local found = false
+			for _, entry in report.errors do
+				found = found or entry.message == "Theme packages cannot contain cycles"
+			end
+			t.expect(found).toBe(true)
+		end
+	end)
+
+	t.it("slices the slider rail and paints a sliced = false thumb as a whole image", function()
+		local definition = themes.neutralPackage()
+		definition.identity.id = "sliced-slider"
+		definition.assets = {
+			a = { content = "rbxassetid://1", sliceCenter = { x0 = 4, y0 = 4, x1 = 12, y1 = 12 } },
+		}
+		definition.chrome.sliderTrack = { kind = "nineSlice", asset = "a" }
+		definition.chrome.sliderThumb = { kind = "nineSlice", asset = "a", sliced = false }
+		local package, report = themes.define(definition)
+		t.expect(report.ok).toBe(true)
+		local h = harness({ theme = package })
+		local root, stop = mount(h, function()
+			return h.UI.Slider({ Name = "Volume", value = Compose.cell(0.5) })
+		end)
+		local Enum = h.engine.types.Enum
+		local rail = find(root, "sliderTrack1")
+		local thumb = find(root, "sliderThumb1")
+		t.expect(rail.Image).toBe("rbxassetid://1")
+		t.expect(thumb.Image).toBe("rbxassetid://1")
+		t.expect(rail.ScaleType).toBe(Enum.ScaleType.Slice)
+		t.expect(rail.SliceCenter).toBe(h.engine.types.Rect.new(4, 4, 12, 12))
+		t.expect(thumb.ScaleType).toBe(Enum.ScaleType.Stretch)
+		t.expect(thumb.SliceCenter).toBe(h.engine.types.Rect.new(0, 0, 0, 0))
+		stop()
+		h.dispose()
+	end)
+
 	t.it("paints omitted semantic pairs from the neutral fallbacks in every palette", function()
 		local neutral = themes.neutralPackage().style.themes[1].colors
 		local definition = {
