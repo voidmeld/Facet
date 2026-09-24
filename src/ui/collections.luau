@@ -140,6 +140,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local focusedPath: { string } = {}
 		local focusOwned = false
 		local mounted: { [K]: Frame? } = {}
+		local placed: { [K]: ComposeTypes.Readable<ComposeTypes.Placement> } = {}
 		local poolOwner = assert(Compose.currentOwner()).createChild()
 		local pool: ComposeTypes.Pool<PooledRow> = Compose.createPool({
 			maxRetained = spec.maxRetained or 32,
@@ -270,6 +271,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 						end,
 					})
 					mounted[key] = node
+					placed[key] = placement
 					local stop, mountedContent = runtime.mount(function(): Frame
 						local rendered = spec.render(current, placement, key)
 						if wrapReorder then
@@ -327,6 +329,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 							gui.SelectedObject = nil
 						end
 						mounted[key] = nil
+						placed[key] = nil
 						stop()
 						lease.release()
 					end)
@@ -412,6 +415,10 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end
 		end)
 		local focusGeometry = Compose.formula(function(use: ComposeTypes.Use)
+			use(mountedVersion)
+			for _, placement in placed do
+				use(placement)
+			end
 			local current = use(status)
 			if current.total == 0 then
 				return ""

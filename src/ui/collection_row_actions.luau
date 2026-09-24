@@ -37,7 +37,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local trailing: Types.Value<{ RowAction }> = spec.trailing or {}
 		local content = if type(spec.content) == "function" then spec.content() else spec.content
 		assert(typeof(content) == "Instance" or type(content) == "table", "Facet.RowActions requires content")
-		local open: ComposeTypes.Cell<RowEdge?> = spec.open or Compose.cell(nil :: RowEdge?)
+		local open: ComposeTypes.Cell<RowEdge?> = spec.open
+			or Compose.cell(nil :: RowEdge?) :: ComposeTypes.Cell<RowEdge?>
 		local menuOpen = Compose.cell(false)
 		local drag: ComposeTypes.Cell<number?> = Compose.cell(nil :: number?)
 		local dimensions = Compose.cell(V2.zero)

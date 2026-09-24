@@ -132,7 +132,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			spec.iconPosition == nil or spec.iconPosition == "leading" or spec.iconPosition == "trailing",
 			"Facet Badge invalid iconPosition"
 		)
-		local caption = Compose.formula(function(use: ComposeTypes.Use)
+		local function caption(use: ComposeTypes.Use): string
 			local value = read(spec.label, use)
 			assert(value == nil or type(value) == "string", "Facet Badge label must be a string")
 			assert(
@@ -140,7 +140,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				"Facet Badge requires meaningful text or a named icon"
 			)
 			return value or ""
-		end)
+		end
 		local native = ctx.props(
 			spec,
 			{ "label", "status", "icon", "iconPosition", "name", "appearance", "corners", "controlSize" },
@@ -851,7 +851,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.AsyncImage = ctx.construct("AsyncImage", function(spec: Media.AsyncImageProps): Frame
-		local state: ComposeTypes.Cell<Media.ImageState> = Compose.cell("loading" :: Media.ImageState)
+		local state = Compose.cell("loading" :: Media.ImageState) :: ComposeTypes.Cell<Media.ImageState>
 		local loaded = Compose.cell("")
 		local failure = Compose.cell(nil :: unknown)
 		local root = Host.Frame(ctx.props(spec, {
