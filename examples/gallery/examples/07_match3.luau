@@ -2,6 +2,8 @@
 
 local assets = require("./assets")
 
+type Use = (any) -> any
+
 local ROWS = 6
 local COLS = 6
 local KINDS = { "a", "b", "c", "d", "e" }
@@ -314,7 +316,7 @@ local function build(ctx: any)
 		})
 		local marked = Compose.cell(false)
 
-		local dragOrigin, dragDelta
+		local dragOrigin: Vector2?, dragDelta: Vector2?
 		local dragMoved = false
 		function tile.setKind(value)
 			kind:set(value)
@@ -346,7 +348,7 @@ local function build(ctx: any)
 			local ready = use(kindHandle[current].state) == "ready"
 			return if ready then "" else assets.match3Tiles[current].label
 		end)
-		local picked = Compose.formula(function(use)
+		local picked = Compose.formula(function(use: Use)
 			if use(marked) then
 				return true
 			end
@@ -354,7 +356,7 @@ local function build(ctx: any)
 			local at = use(position)
 			return sel ~= nil and sel[1] == at.row and sel[2] == at.col
 		end)
-		local targetPosition = Compose.formula(function(use)
+		local targetPosition = Compose.formula(function(use: Use)
 			local at = use(position)
 			return UDim2.fromOffset((at.col - 1) * 48, (at.row - 1) * 48)
 		end)
@@ -434,18 +436,19 @@ local function build(ctx: any)
 					Enabled = function(use)
 						return not use(resolving)
 					end,
-					DragStart = function(at)
+					DragStart = function(at: Vector2)
 						dragOrigin = if resolving:peek() then nil else at
 						dragDelta = nil
 						dragMoved = false
 					end,
-					DragContinue = function(at)
+					DragContinue = function(at: Vector2)
 						if dragOrigin then
-							dragDelta = at - dragOrigin
-							dragMoved = dragMoved or dragDelta.Magnitude >= 16
+							local delta = at - dragOrigin
+							dragDelta = delta
+							dragMoved = dragMoved or delta.Magnitude >= 16
 						end
 					end,
-					DragEnd = function(at)
+					DragEnd = function(at: Vector2?)
 						local origin = dragOrigin
 						local delta = if origin and at then at - origin else dragDelta
 						dragOrigin, dragDelta = nil, nil

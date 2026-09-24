@@ -249,8 +249,9 @@ Set `haptic = true` on a Button to play `pressHaptic` for a game-specific
 action. `haptic` can be a readable. An explicit `PressHapticEffect` always
 wins.
 
-The `theme` option does not install paint. Parent a `createStyleSheet` result
-and its StyleLink in the native tree, with the same theme package source.
+The `theme` option of `controls` does not install paint. Parent a
+`createStyleSheet` result and its StyleLink in the native tree, with the same
+theme package source. `Facet.app` does this for you.
 Ordinary Roblox consumers use the ambient services and datatypes. The runtime
 that you supply must use the Compose Roblox host.
 

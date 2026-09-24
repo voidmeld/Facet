@@ -2,6 +2,8 @@
 
 local words = require("./words")
 
+type Use = (any) -> any
+
 local example = {}
 example.title = "Word Game (Wordle-style)"
 
@@ -293,7 +295,7 @@ function example.build(ctx: any)
 		for r = 1, ROWS do
 			for c = 1, COLS do
 				local rr, cc = r, c
-				local state = Compose.formula(function(use)
+				local state = Compose.formula(function(use: Use)
 					return tileState(use(rowsSig), use(activeSig), rr, cc)
 				end)
 				tileStateOf[`{rr}:{cc}`] = state
@@ -372,7 +374,7 @@ function example.build(ctx: any)
 			end
 			table.insert(keyboard, UI.HStack("kbrow" .. ri)(row))
 		end
-		statusSig = Compose.formula(function(use)
+		statusSig = Compose.formula(function(use: Use)
 			local notice = use(noticeSig)
 			if notice ~= "" then
 				return notice

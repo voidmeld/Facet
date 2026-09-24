@@ -86,7 +86,7 @@ function example.build(ctx: any)
 							result:set("cancelled")
 						end,
 					},
-				},
+				} :: { { id: string, label: string, compactLabel: string?, role: string, onActivate: () -> () } },
 			},
 		}
 	end

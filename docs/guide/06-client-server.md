@@ -34,8 +34,8 @@ local function Purchase()
             errorMessage:set(response.message)
         end
     end)
-    return Host.Frame {
-        Host.UIListLayout { Padding = UDim.new(0, 8) },
+    return UI.VStack {
+        gap = "s",
         UI.Button {
             label = "Purchase",
             busy = pending,

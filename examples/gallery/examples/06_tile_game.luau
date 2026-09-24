@@ -2,6 +2,8 @@
 
 local words = require("./words")
 
+type Use = (any) -> any
+
 local example = {}
 example.title = "Crossword (Scrabble-style)"
 
@@ -85,7 +87,7 @@ rules.DISTRIBUTION = table.freeze({
 	{ "X", 1 },
 	{ "Y", 2 },
 	{ "Z", 1 },
-})
+} :: { { string | number } })
 
 rules.SAY = table.freeze({
 	centre = "Your first word has to cover the starred centre square.",
@@ -712,7 +714,7 @@ function example.build(ctx: any)
 	local hintText: any
 	local cellStateOf: { [string]: any } = {}
 	local function Crossword()
-		turnsLeft = Compose.formula(function(use)
+		turnsLeft = Compose.formula(function(use: Use)
 			return math.max(0, TURNS - (use(turnSig) - 1))
 		end)
 		scoreText = Compose.formula(function(use)
@@ -722,25 +724,25 @@ function example.build(ctx: any)
 			local left = use(turnsLeft)
 			return `{left} {if left == 1 then "turn" else "turns"} left`
 		end)
-		verdictSig = Compose.formula(function(use)
+		verdictSig = Compose.formula(function(use: Use): Verdict?
 			local pending = use(pendingSig)
 			if next(pending) == nil then
 				return nil
 			end
 			return rules.validate(use(boardSig), pending, use(turnSig))
 		end)
-		wordText = Compose.formula(function(use)
+		wordText = Compose.formula(function(use: Use)
 			local notice = use(noticeSig)
 			if notice ~= "" then
 				return notice
 			end
-			local verdict = use(verdictSig)
+			local verdict: Verdict? = use(verdictSig)
 			if verdict == nil then
 				return "No tiles placed this turn."
 			end
 			return verdict.message
 		end)
-		hintText = Compose.formula(function(use)
+		hintText = Compose.formula(function(use: Use)
 			local phase = use(phaseSig)
 			if phase == "won" then
 				return `You reached {use(scoreSig)} points in {use(turnSig) - 1} of {TURNS} turns — you win! `
@@ -765,7 +767,7 @@ function example.build(ctx: any)
 			for c = 1, SIZE do
 				local rr, cc = r, c
 				local key = rules.key(r, c)
-				local state = Compose.formula(function(use)
+				local state = Compose.formula(function(use: Use)
 					if use(pendingSig)[key] ~= nil then
 						return "pending"
 					end
@@ -798,7 +800,7 @@ function example.build(ctx: any)
 						UI.Label "mark" { text = mark, textRole = "caption" },
 						UI.Button "tap" {
 							Size = UDim2.fromScale(1, 1),
-							label = function(use)
+							label = function(use: Use)
 								return use(label) .. use(mark)
 							end,
 							name = function(use)

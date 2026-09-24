@@ -6,7 +6,7 @@ function example.build(ctx: any)
 	local draft = Compose.cell({ music = false, volume = 10 })
 	local status = Compose.cell("idle")
 	local history = Compose.cell({ "Ready. Nothing sent yet." })
-	local pending = nil
+	local pending: { music: boolean, volume: number }? = nil
 	local function log(message)
 		local lines = { message }
 		for _, old in history:peek() do

@@ -1,5 +1,17 @@
 --!strict
 
+type Use = (any) -> any
+type Column = {
+	id: string,
+	label: string,
+	width: number,
+	minWidth: number?,
+	resizable: boolean,
+	sortable: boolean,
+	value: (any) -> any,
+	render: ((any) -> any)?,
+}
+
 local example = {}
 example.title = "Playlist Table"
 local TRACKS = {
@@ -60,7 +72,7 @@ function example.build(ctx: any)
 		end)
 		return out
 	end)
-	local filteredRows = Compose.formula(function(use)
+	local filteredRows = Compose.formula(function(use: Use)
 		local query = string.lower(use(filterText))
 		local all = use(sortedRows) :: { any }
 		if query == "" then
@@ -189,7 +201,7 @@ function example.build(ctx: any)
 					end,
 					render = starCell,
 				},
-			},
+			} :: { Column },
 
 			from = filteredRows,
 			key = "id",
@@ -244,15 +256,21 @@ function example.build(ctx: any)
 				ratings[track.id]:set(track.rating)
 			end
 		end
-		local COLUMN_LABELS = { { "name", "Name", true }, { "artist", "Artist", true }, { "rating", "Rating", false } }
+		local COLUMN_LABELS = {
+			{ id = "name", label = "Name", resizable = true },
+			{ id = "artist", label = "Artist", resizable = true },
+			{ id = "rating", label = "Rating", resizable = false },
+		}
 		local widthsText = Compose.formula(function(use)
 			local overrides = use(columnWidths) :: { [string]: number }
 			local parts = {}
 			for _, column in COLUMN_LABELS do
-				local id, label, resizable = column[1] :: string, column[2] :: string, column[3] :: boolean
-				local px = overrides[id]
-				local shown = if px ~= nil then `{math.floor(px + 0.5)}px` elseif resizable then "auto" else "locked"
-				table.insert(parts, `{label} {shown}`)
+				local px = overrides[column.id]
+				local shown = if px ~= nil
+					then `{math.floor(px + 0.5)}px`
+					elseif column.resizable then "auto"
+					else "locked"
+				table.insert(parts, `{column.label} {shown}`)
 			end
 			return table.concat(parts, " · ")
 		end)
