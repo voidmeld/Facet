@@ -42,6 +42,17 @@ function Sipworks.build(ctx)
 		local item = catalog.blend(id)
 		return i18n.nameAt(use(i18n.locale), "blend", id, item.title)
 	end
+	local function botanicalName(item, use)
+		return i18n.nameAt(use(i18n.locale), "botanical", item.id, item.name)
+	end
+	local function paragraph(id, index, body)
+		return function(use)
+			return i18n.nameAt(use(i18n.locale), "paragraph", id .. "#" .. index, body)
+		end
+	end
+	local function number(value, use)
+		return i18n.numberAt(use(i18n.locale), value)
+	end
 	local function openBlend(id)
 		selected:set(id)
 		recipe:set(false)
@@ -55,7 +66,7 @@ function Sipworks.build(ctx)
 		if result.started then
 			taskModel.notePlacing()
 		else
-			notice:set(i18n.t(result.reasonKey or "guard.paymentsDisabled"))
+			notice:set(result.reasonKey or "guard.paymentsDisabled")
 		end
 		return result.started
 	end
@@ -67,20 +78,16 @@ function Sipworks.build(ctx)
 				rewards.earn(1)
 			end
 			taskModel.noteConfirmed(info.mode)
-			notice:set(
-				if info.mode == "redeem"
-					then i18n.t("order.redeemed")
-					else "Your order is confirmed. Your stamp is on the card."
-			)
+			notice:set(if info.mode == "redeem" then "order.redeemed" else "notice.confirmed")
 		elseif event == "rejected" then
 			taskModel.noteRejected()
-			notice:set("The counter is closed. Your stamps are unchanged; try again.")
+			notice:set("notice.rejected")
 		elseif event == "ready" then
-			notice:set("Your pour is ready.")
+			notice:set("notice.ready")
 		end
 	end))
 	Compose.cleanup(unlock.onResolved(function(ok)
-		notice:set(if ok then "Your Blend Book is unlocked." else "The purchase was declined. Try again.")
+		notice:set(if ok then "notice.unlocked" else "notice.declined")
 	end))
 	local heartbeat = ctx.heartbeat or (if game then game:GetService("RunService").Heartbeat else nil)
 	if heartbeat then
@@ -113,23 +120,24 @@ function Sipworks.build(ctx)
 	end)
 	local function menuPage()
 		return view.page("Menu", {
-			view.text("Sipworks", 30),
-			view.text("Browse house blends, collect Steam Stamps, and make your next pour on us."),
+			view.text(text("app.title"), 30),
+			view.text(text("menu.intro")),
 			view.text(function(use)
-				return "Today's order: "
-					.. use(taskModel.phase)
-					.. " · "
-					.. tostring(use(taskModel.stamps))
-					.. " of 10 stamps"
+				local locale = use(i18n.locale)
+				return i18n.at(locale, "menu.status", {
+					phase = i18n.at(locale, "task.phase." .. use(taskModel.phase)),
+					n = i18n.numberAt(locale, use(taskModel.stamps)),
+				})
 			end),
 			view.action("Task", function(use)
-				return if use(taskModel.phase) == "redeem" then "Redeem a Mistral Mint" else "Order Amber Harvest"
+				local key = if use(taskModel.phase) == "redeem" then "task.cta.redeemOne" else "task.cta.order"
+				return i18n.at(use(i18n.locale), key, { title = blendName(use(taskModel.ctaBlendId), use) })
 			end, function()
 				place(taskModel.ctaBlendId:peek(), if taskModel.phase:peek() == "redeem" then "redeem" else "paid")
 			end, function(use)
 				return use(order.status) ~= "pending" and use(taskModel.phase) ~= "done"
 			end),
-			UI.TextInput "Search" { value = search, placeholder = "Search blends and botanicals" },
+			UI.TextInput "Search" { value = search, placeholder = text("search.placeholder") },
 			view.column("Blends", {
 				view.list(visible, function(current)
 					local blend = current:peek()
@@ -140,10 +148,13 @@ function Sipworks.build(ctx)
 						end, function()
 							openBlend(blend.id)
 						end),
-						view.text(blend.paragraphs[1].text),
+						view.text(paragraph(blend.id, 1, blend.paragraphs[1].text)),
 						view.action("Favorite", function(use)
 							use(favorites.set)
-							return if favorites.isFavorite(blend.id) then "Remove favorite" else "Save favorite"
+							return i18n.at(
+								use(i18n.locale),
+								if favorites.isFavorite(blend.id) then "row.remove" else "row.save"
+							)
 						end, function()
 							favorites.toggle(blend.id)
 						end),
@@ -154,8 +165,8 @@ function Sipworks.build(ctx)
 	end
 	local function recipeContent(id)
 		local rows = {
-			view.text("Recipe", 24),
-			UI.Stepper "Batch" { value = batchSize, min = 1, max = 9, step = 1, label = "Batch size" },
+			view.text(text("recipe.title"), 24),
+			UI.Stepper "Batch" { value = batchSize, min = 1, max = 9, step = 1, label = text("recipe.batchSize") },
 		}
 		for _, measure in catalog.recipeMeasures(id) do
 			local ingredient = catalog.botanical(measure.botanicalId)
@@ -167,9 +178,11 @@ function Sipworks.build(ctx)
 					Name = ingredient.id,
 					value = gathered[key],
 					label = function(use)
-						return ingredient.name
-							.. " · "
-							.. i18n.measureAt(use(i18n.locale), measure.value * use(batchSize), measure.unit)
+						local locale = use(i18n.locale)
+						return i18n.at(locale, "recipe.line", {
+							name = botanicalName(ingredient, use),
+							measure = i18n.measureAt(locale, measure.value * use(batchSize), measure.unit),
+						})
 					end,
 				})
 			)
@@ -182,20 +195,26 @@ function Sipworks.build(ctx)
 		local children = { view.text(function(use)
 			return blendName(id, use)
 		end, 26) }
-		for _, paragraph in blend.paragraphs do
-			table.insert(children, view.text(paragraph.text, if paragraph.emphasis then 18 else 16))
+		for index, entry in blend.paragraphs do
+			table.insert(children, view.text(paragraph(id, index, entry.text), if entry.emphasis then 18 else 16))
 		end
 		table.insert(
 			children,
-			view.text(
-				`{catalog.caffeineMg(id)} mg caffeine · {catalog.leafGrams(id)} g leaves · {catalog.steepMinutes(id)} min steep`
-			)
+			view.text(function(use)
+				return i18n.at(use(i18n.locale), "detail.stats", {
+					caffeine = number(catalog.caffeineMg(id), use),
+					grams = number(catalog.leafGrams(id), use),
+					minutes = number(catalog.steepMinutes(id), use),
+				})
+			end)
 		)
 		for _, botanicalId in catalog.tileBotanicals(id) do
 			local item = catalog.botanical(botanicalId)
 			table.insert(
 				children,
-				view.action(item.id, item.name, function()
+				view.action(item.id, function(use)
+					return botanicalName(item, use)
+				end, function()
 					botanical:set(item.id)
 					botanicalOpen:set(true)
 				end)
@@ -204,7 +223,9 @@ function Sipworks.build(ctx)
 		table.insert(
 			children,
 			view.action("Order", function(use)
-				return if use(order.status) == "pending" then "Confirming…" else "Order · " .. order.price
+				return if use(order.status) == "pending"
+					then i18n.at(use(i18n.locale), "detail.confirming")
+					else i18n.at(use(i18n.locale), "detail.order", { price = order.price })
 			end, function()
 				place(id, "paid")
 			end, function(use)
@@ -213,7 +234,7 @@ function Sipworks.build(ctx)
 		)
 		table.insert(
 			children,
-			view.action("Recipe", "View recipe", function()
+			view.action("Recipe", text("detail.viewRecipe"), function()
 				recipe:set(not recipe:peek())
 			end)
 		)
@@ -229,7 +250,7 @@ function Sipworks.build(ctx)
 						view.text(text("unlock.description")),
 						view.action(
 							"Buy",
-							"Unlock Blend Book · " .. unlock.product.price,
+							text("detail.unlock", { price = unlock.product.price }),
 							unlock.purchase,
 							function(use)
 								return use(unlock.availability) == "available" and use(unlock.status) ~= "pending"
@@ -243,43 +264,68 @@ function Sipworks.build(ctx)
 	end
 	local function stampsPage()
 		return view.page("Rewards", {
-			view.text("Steam Stamps", 28),
+			view.text(text("rewards.title"), 28),
 			UI.Picker "Locale" {
 				selected = i18n.locale,
-				options = { { value = "en", label = "English" }, { value = "xa", label = "Expanded" } },
+				options = function(use)
+					local locale = use(i18n.locale)
+					local options = {}
+					for _, id in i18nService.LOCALES do
+						table.insert(options, { value = id, label = i18n.at(locale, "locale." .. id) })
+					end
+					return options
+				end,
 			},
 			view.text(function(use)
-				return tostring(use(rewards.earned) - use(rewards.spent)) .. " stamps · ten stamps earn a free pour"
+				local locale = use(i18n.locale)
+				return i18n.at(
+					locale,
+					"rewards.summary",
+					{ n = i18n.numberAt(locale, use(rewards.earned) - use(rewards.spent)) }
+				)
 			end),
 			UI.ProgressView({
 				value = function(use)
 					return math.clamp((use(rewards.earned) - use(rewards.spent)) / 10, 0, 1)
 				end,
-				label = "Stamp card",
+				label = text("rewards.card"),
 			}),
-			view.action("Redeem", "Redeem a free Mistral Mint", function()
+			view.action("Redeem", function(use)
+				return i18n.at(
+					use(i18n.locale),
+					"rewards.redeemFree",
+					{ title = blendName(taskService.FREE_POUR_BLEND, use) }
+				)
+			end, function()
 				place(taskService.FREE_POUR_BLEND, "redeem")
 			end, function(use)
 				return use(rewards.earned) - use(rewards.spent) >= 10 and use(order.status) ~= "pending"
 			end),
-			view.action("Acknowledge", "Acknowledge new stamps", rewards.clearUnstamped),
+			view.action("Acknowledge", text("rewards.acknowledge"), rewards.clearUnstamped),
 		})
 	end
 	local function bookPage()
 		return view.page("BlendBook", {
-			view.text("Blend Book", 28),
+			view.text(text("nav.book"), 28),
 			view.text(text("unlock.description")),
 			Compose.show(function(use)
 				return not use(unlock.unlocked)
 			end, function()
-				return view.action("Buy", "Unlock · " .. unlock.product.price, unlock.purchase, function(use)
-					return use(unlock.availability) == "available" and use(unlock.status) ~= "pending"
-				end)
+				return view.action(
+					"Buy",
+					text("book.unlock", { price = unlock.product.price }),
+					unlock.purchase,
+					function(use)
+						return use(unlock.availability) == "available" and use(unlock.status) ~= "pending"
+					end
+				)
 			end),
 			view.column("Recipes", {
 				view.list(catalog.blends, function(current)
 					local blend = current:peek()
-					return view.action(blend.id, blend.title, function()
+					return view.action(blend.id, function(use)
+						return blendName(blend.id, use)
+					end, function()
 						openBlend(blend.id)
 						recipe:set(true)
 					end)
@@ -296,14 +342,17 @@ function Sipworks.build(ctx)
 				style = "sidebarAdaptable",
 				Size = ctx.types.UDim2.new(1, 0, 1, -64),
 				tabs = {
-					{ id = "menu", label = "Menu", content = menuPage },
-					{ id = "favorites", label = "Favorites", content = menuPage },
-					{ id = "rewards", label = "Steam Stamps", content = stampsPage },
-					{ id = "book", label = "Blend Book", content = bookPage },
+					{ id = "menu", label = text("nav.menu"), content = menuPage },
+					{ id = "favorites", label = text("nav.favorites"), content = menuPage },
+					{ id = "rewards", label = text("nav.stamps"), content = stampsPage },
+					{ id = "book", label = text("nav.book"), content = bookPage },
 				},
 			},
 			UI.Label({
-				label = notice,
+				label = function(use)
+					local key = use(notice)
+					return if key == "" then "" else i18n.at(use(i18n.locale), key)
+				end,
 				Position = ctx.types.UDim2.new(0, 16, 1, -60),
 				Size = ctx.types.UDim2.new(1, -32, 0, 56),
 				TextWrapped = true,
@@ -311,22 +360,24 @@ function Sipworks.build(ctx)
 			UI.Sheet "Blend" {
 				isPresented = selectedOpen,
 				detent = Compose.cell("large"),
-				title = "House blend",
+				title = text("sheet.blend"),
 				closeButton = text("common.done"),
 				content = detail,
 			},
 			UI.Sheet "Botanical" {
 				isPresented = botanicalOpen,
 				detent = Compose.cell("medium"),
-				title = "Botanical",
+				title = text("sheet.botanical"),
 				closeButton = text("common.done"),
 				content = function()
 					local item = catalog.botanical(botanical:peek())
 					local showFacts = Compose.cell(false)
 					local rows = {
-						view.text(item.name, 26),
+						view.text(function(use)
+							return botanicalName(item, use)
+						end, 26),
 						view.text(art.of("botanical", item.id).mark, 42),
-						view.action("Flip", "Brew facts", function()
+						view.action("Flip", text("card.factsOpen"), function()
 							showFacts:set(not showFacts:peek())
 						end),
 						Compose.show(showFacts, function()
@@ -334,18 +385,27 @@ function Sipworks.build(ctx)
 							for _, fact in catalog.factsFor(selected:peek(), item.id) do
 								table.insert(
 									facts,
-									view.text(
-										i18n.t(fact.key)
-											.. ": "
-											.. i18n.t("facts." .. fact.kind, { value = fact.value })
-									)
+									view.text(function(use)
+										local locale = use(i18n.locale)
+										return i18n.at(locale, "facts.line", {
+											label = i18n.at(locale, fact.key),
+											value = i18n.at(
+												locale,
+												"facts." .. fact.kind,
+												{ value = i18n.numberAt(locale, fact.value) }
+											),
+										})
+									end)
 								)
 							end
 							return view.column("MeasuredFacts", facts)
 						end, function()
-							return view.text(
-								`{item.gramsPerTsp} g per teaspoon · {item.caffeinePerGram} mg caffeine per gram`
-							)
+							return view.text(function(use)
+								return i18n.at(use(i18n.locale), "botanical.summary", {
+									grams = number(item.gramsPerTsp, use),
+									caffeine = number(item.caffeinePerGram, use),
+								})
+							end)
 						end),
 					}
 					return view.column("BotanicalCard", rows)

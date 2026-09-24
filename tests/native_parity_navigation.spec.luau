@@ -109,6 +109,61 @@ local function V2(world: World, x: number, y: number): any
 	return world.engine.types.Vector2.new(x, y)
 end
 
+local function showcase(): (any, any, any, any, () -> ())
+	local engine: any = engineLib.new()
+	local runtime = Facet.Roblox.createRuntime(engine)
+	local gui = engine.new("GuiService")
+	local input = engine.new("UserInputService")
+	input.GetFocusedTextBox = function()
+		return nil
+	end
+	input.IsKeyDown = function()
+		return false
+	end
+	input.PreferredInput = engine.types.Enum.PreferredInput.KeyboardAndMouse
+	local target = engine.new("Folder")
+	local viewport = Compose.cell({ width = 1280, height = 800 })
+	local ctx = {
+		Facet = Facet,
+		Compose = Compose,
+		runtime = runtime,
+		Host = runtime.constructors,
+		types = engine.types,
+		viewport = viewport,
+		inputTarget = target,
+		guiService = gui,
+		runService = { Heartbeat = engine.heartbeat },
+		UI = Facet.controls(
+			runtime,
+			{
+				types = engine.types,
+				viewport = viewport,
+				guiService = gui,
+				services = { GuiService = gui, UserInputService = input },
+				reducedMotion = true,
+			} :: any
+		),
+	}
+	local built
+	local stop, screen = runtime.mount(function()
+		built = require("../examples/gallery/scenarios/all_controls").build(ctx)
+		return ctx.Host.ScreenGui({ built.screen() })
+	end, target)
+	return engine, gui, screen, built, function()
+		stop()
+		runtime:dispose()
+	end
+end
+
+local function tabView(root: any, name: string): any
+	for _, node in root:GetDescendants() do
+		if node.Name == name and node:FindFirstChild("Tabs") and node:FindFirstChild("Content") then
+			return node
+		end
+	end
+	return nil
+end
+
 local function page(Host: any, name: string, builds: { [string]: number }?, cleanups: { [string]: number }?): () -> any
 	return function()
 		if builds then
@@ -352,8 +407,8 @@ t.describe("native parity navigation", function()
 		find(world.screen, "Accessory-foot").AbsoluteSize = V2(world, 240, 60)
 		local UDim2 = world.engine.types.UDim2
 		local tabs = view:FindFirstChild("Tabs")
-		t.expect(tabs.Size).toBe(UDim2.new(0, 240, 1, -112))
-		t.expect(tabs.Position).toBe(UDim2.fromOffset(0, 52))
+		t.expect(tabs.Size).toBe(UDim2.new(0, 240 - 16, 1, -112))
+		t.expect(tabs.Position).toBe(UDim2.fromOffset(8, 52))
 		t.expect(find(world.screen, "Accessory-head").Position).toBe(UDim2.fromOffset(0, 0))
 		t.expect(find(world.screen, "Accessory-foot").Position).toBe(UDim2.new(0, 0, 1, -60))
 		table.sort(placements)
@@ -445,8 +500,8 @@ t.describe("native parity navigation", function()
 		end
 	)
 
-	t.it("uses a plain native frame and hides the old page immediately when no transition is declared", function()
-		for _, declared in { "none", "false" } do
+	t.it("uses a plain native frame and hides the old page immediately when transition is false", function()
+		for _, declared in { "false" } do
 			local selection = Compose.cell("a")
 			local world = setup(function(UI, Host)
 				return UI.TabView({
@@ -581,14 +636,15 @@ t.describe("native parity navigation", function()
 			end
 		end
 		placement:set("sidebar")
-		t.expect(tabs.Size.X.Offset).toBe(240)
+		t.expect(tabs.Size.X.Offset).toBe(240 - 16)
+		t.expect(tabs.Position.X.Offset).toBe(8)
 		t.expect(content.Position.X.Offset).toBe(240)
 		railWidth:set(260)
-		t.expect(tabs.Size.X.Offset).toBe(260)
+		t.expect(tabs.Size.X.Offset).toBe(260 - 16)
 		t.expect(content.Position.X.Offset).toBe(260)
 		view.AbsoluteSize = V2(world, 2000, 800)
 		railWidth:set(nil)
-		t.expect(tabs.Size.X.Offset).toBe(280)
+		t.expect(tabs.Size.X.Offset).toBe(280 - 16)
 		t.expect(find(tabs, "a").TextSize).toBe(16)
 		textSize:set(22)
 		t.expect(find(tabs, "a").TextSize).toBe(22)
@@ -775,6 +831,264 @@ t.describe("native parity navigation", function()
 			world.stop()
 		end
 	end)
+	for _, case in { { "VirtualGrid", false }, { "Table", false }, { "Table", true } } do
+		local kind, editing = case[1], case[2]
+		t.it("restores " .. kind .. " keys across a retained tab switch with editing=" .. tostring(editing), function()
+			local data = {}
+			for index = 1, 100 do
+				data[index] = { id = tostring(index), label = "Item " .. index }
+			end
+			local rows, selection, edit = Compose.cell(data), Compose.cell("a"), Compose.cell(editing)
+			local builds = 0
+			local world = setup(function(UI, Host)
+				local function render(current)
+					builds += 1
+					return Host.TextLabel({
+						Name = "Label",
+						Text = function(use)
+							return use(current).label
+						end,
+					})
+				end
+				return UI.TabView({
+					selection = selection,
+					placement = "topBar",
+					tabs = {
+						{
+							id = "a",
+							label = "A",
+							content = function()
+								if kind == "Table" then
+									return UI.Table("Collection")({
+										from = rows,
+										key = function(item)
+											return item.id
+										end,
+										itemSize = 100,
+										overscan = 0,
+										editing = edit,
+										reorderable = true,
+										onReorder = function() end,
+										columns = { { id = "label", label = "Item", render = render } },
+									})
+								end
+								return UI.VirtualGrid("Collection")({
+									from = rows,
+									key = function(item)
+										return item.id
+									end,
+									columns = 2,
+									itemSize = 100,
+									gap = 0,
+									overscan = 0,
+									render = render,
+								})
+							end,
+						},
+						{ id = "b", label = "B", content = page(Host, "b") },
+					},
+				})
+			end)
+			local collection = find(world.screen, "Collection")
+			local scroll = if kind == "Table" then collection:FindFirstChild("Body") else collection
+			scroll.AbsoluteWindowSize = V2(world, 200, 300)
+			scroll.CanvasPosition = V2(world, 0, 2050)
+			selection:set("b")
+			local shifted = table.clone(data)
+			table.insert(shifted, 1, table.remove(shifted))
+			if kind == "VirtualGrid" then
+				table.insert(shifted, 1, table.remove(shifted))
+			end
+			rows:set(shifted)
+			selection:set("a")
+			t.expect(find(world.screen, "Collection")).toBe(collection)
+			t.expect(scroll.CanvasPosition.Y).toBe(2150)
+			t.expect(builds < 100).toBe(true)
+			selection:set("b")
+			local shorter = {}
+			for index = 1, 8 do
+				shorter[index] = { id = "new-" .. index, label = "Replacement " .. index }
+			end
+			rows:set(shorter)
+			selection:set("a")
+			t.expect(scroll.CanvasPosition.Y).toBe(if kind == "VirtualGrid" then 100 else 500)
+			selection:set("b")
+			rows:set({})
+			selection:set("a")
+			t.expect(scroll.CanvasPosition.Y).toBe(0)
+			edit:set(not editing)
+			t.expect(find(world.screen, "Collection")).toBe(collection)
+			world.stop()
+		end)
+	end
+
+	t.it("keeps both showcase tab levels at the 44 pixel floor, marks each selection and reveals once", function()
+		local engine, _, screen, built, stop = showcase()
+		local Enum = engine.types.Enum
+		local catalog = require("../examples/gallery/scenarios/all_controls")
+		local categories = tabView(screen, "Categories")
+		categories.AbsoluteSize = engine.types.Vector2.new(1280, 800)
+		local outer = categories:FindFirstChild("Tabs")
+		t.expect(outer:FindFirstChildWhichIsA("UIListLayout").FillDirection).toBe(Enum.FillDirection.Vertical)
+		local function floor(button: any)
+			t.expect(button:IsA("TextButton") and button.Selectable and button.Visible).toBe(true)
+			t.expect(button:FindFirstChildWhichIsA("UISizeConstraint").MinSize).toBe(engine.types.Vector2.new(44, 44))
+		end
+		for _, group in catalog.groups do
+			local button = find(outer, group.id)
+			floor(button)
+			button.Activated.fire()
+			t.expect(built.report().selected.Categories).toBe(group.id)
+			for _, other in catalog.groups do
+				local tab = find(outer, other.id)
+				t.expect(tab:HasTag("facet-tab-current")).toBe(other == group)
+				t.expect(tab:HasTag("facet-tab-filled")).toBe(other == group)
+			end
+			local inner = tabView(screen, group.id)
+			local strip = inner:FindFirstChild("Tabs")
+			t.expect(strip:FindFirstChildWhichIsA("UIListLayout").FillDirection).toBe(Enum.FillDirection.Horizontal)
+			for index, tab in group.tabs do
+				local innerButton = find(strip, tab.id)
+				floor(innerButton)
+				t.expect(innerButton.Size.Y.Offset).toBe(44)
+				t.expect(innerButton:FindFirstChild("SelectionIndicator") ~= nil).toBe(index == 1)
+			end
+		end
+		find(outer, "actions").Activated.fire()
+		local strip = tabView(screen, "actions"):FindFirstChild("Tabs")
+		strip.AbsoluteSize = engine.types.Vector2.new(300, 44)
+		strip.AbsolutePosition = engine.types.Vector2.new(0, 0)
+		for index, tab in catalog.groups[2].tabs do
+			local button = find(strip, tab.id)
+			button.AbsolutePosition = engine.types.Vector2.new((index - 1) * 100, 0)
+			button.AbsoluteSize = engine.types.Vector2.new(100, 44)
+		end
+		local writes = 0
+		strip:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+			writes += 1
+		end)
+		find(strip, "shortcuts").Activated.fire()
+		find(strip, "recipes").Activated.fire()
+		find(strip, "buttons").Activated.fire()
+		t.expect(writes).toBe(0)
+		find(strip, "help").Activated.fire()
+		t.expect(built.report().active).toBe("help")
+		t.expect(writes).toBe(1)
+		t.expect(strip.CanvasPosition.X).toBe(500)
+		for index, tab in catalog.groups[2].tabs do
+			find(strip, tab.id).AbsolutePosition = engine.types.Vector2.new((index - 1) * 100 - 500, 0)
+		end
+		find(strip, "help").Activated.fire()
+		strip.AbsoluteSize = engine.types.Vector2.new(301, 44)
+		t.expect(writes).toBe(1)
+		stop()
+	end)
+
+	t.it("climbs a badge on an unselected tab whose content was never built", function()
+		local builds = {}
+		local unread = Compose.cell(3)
+		local selection = Compose.cell("home")
+		local world = setup(function(UI, Host)
+			return UI.TabView({
+				selection = selection,
+				placement = "bottomBar",
+				tabs = {
+					{ id = "home", label = "Home", content = page(Host, "home", builds) },
+					{ id = "inbox", label = "Inbox", badge = unread, content = page(Host, "inbox", builds) },
+					{ id = "me", label = "Me", content = page(Host, "me", builds) },
+				},
+			})
+		end)
+		local inbox = find(find(world.screen, "Tabs"), "inbox")
+		local function shown()
+			local label = inbox:FindFirstChild("Title", true)
+			return if label then label.Text else inbox.Text
+		end
+		t.expect(shown()).toBe("Inbox (3)")
+		selection:set("me")
+		unread:update(function(value)
+			return value + 1
+		end)
+		unread:update(function(value)
+			return value + 1
+		end)
+		t.expect(builds.inbox).toBeNil()
+		t.expect(shown()).toBe("Inbox (5)")
+		t.expect(find(find(world.screen, "Tabs"), "inbox")).toBe(inbox)
+		selection:set("inbox")
+		t.expect(builds.inbox).toBe(1)
+		world.stop()
+	end)
+
+	t.it("pages each showcase tab strip by shoulder, traps the alert and restores its launcher on Back", function()
+		local _, gui, screen, built, stop = showcase()
+		local categories = tabView(screen, "Categories")
+		local outer = categories:FindFirstChild("Tabs")
+		find(outer, "actions").Activated.fire()
+		local inner = tabView(screen, "actions"):FindFirstChild("Tabs")
+		gui.SelectedObject = find(inner, "buttons")
+		action(screen, "NextTab").Pressed.fire()
+		t.expect(built.report().selected.actions).toBe("shortcuts")
+		t.expect(built.report().selected.Categories).toBe("actions")
+		action(screen, "PreviousTab").Pressed.fire()
+		action(screen, "PreviousTab").Pressed.fire()
+		t.expect(built.report().selected.actions).toBe("buttons")
+		gui.SelectedObject = find(outer, "actions")
+		action(screen, "NextTab").Pressed.fire()
+		t.expect(built.report().selected.Categories).toBe("indicators")
+		t.expect(built.report().selected.actions).toBe("buttons")
+		action(screen, "PreviousTab").Pressed.fire()
+		t.expect(built.report().selected.Categories).toBe("actions")
+		find(inner, "alerts").Activated.fire()
+		t.expect(built.report().active).toBe("alerts")
+		local launcher = find(tabView(screen, "actions"):FindFirstChild("Content"), "Open")
+		gui.SelectedObject = launcher
+		launcher.Activated.fire()
+		t.expect(built.report().example.alert.presented).toBe(true)
+		local modal = find(screen, "AlertModal")
+		local panel = find(modal, "AlertPanel")
+		t.expect(panel.SelectionGroup).toBe(true)
+		for _, side in { "Up", "Down", "Left", "Right" } do
+			t.expect(panel["SelectionBehavior" .. side].Name).toBe("Stop")
+		end
+		local held = gui.SelectedObject
+		t.expect(held ~= nil and held:IsDescendantOf(panel)).toBe(true)
+		t.expect(action(screen, "NextTab")).toBeNil()
+		gui.SelectedObject = find(inner, "alerts")
+		t.expect(action(screen, "NextTab")).toBeNil()
+		t.expect(action(screen, "PreviousTab")).toBeNil()
+		gui.SelectedObject = find(outer, "actions")
+		t.expect(action(screen, "NextTab")).toBeNil()
+		gui.SelectedObject = held
+		local back = action(screen, "ModalBack")
+		local keys = {}
+		for _, binding in back:GetChildren() do
+			if binding:IsA("InputBinding") then
+				table.insert(keys, binding.KeyCode.Name)
+			end
+		end
+		t.expect(table.find(keys, "ButtonB") ~= nil).toBe(true)
+		back.Pressed.fire()
+		t.expect(built.report().example.alert.presented).toBe(false)
+		t.expect(gui.SelectedObject).toBe(launcher)
+		t.expect(built.report().selected.Categories).toBe("actions")
+		t.expect(built.report().active).toBe("alerts")
+		find(outer, "navigation").Activated.fire()
+		local journey = tabView(screen, "navigation")
+		local continue = find(journey:FindFirstChild("Content"), "Continue")
+		gui.SelectedObject = continue
+		continue.Activated.fire()
+		t.expect(built.report().example.navigation.depth).toBe(1)
+		t.expect(gui.SelectedObject ~= continue and gui.SelectedObject:IsDescendantOf(journey)).toBe(true)
+		action(screen, "NavigationBack").Pressed.fire()
+		t.expect(built.report().example.navigation.depth).toBe(0)
+		t.expect(gui.SelectedObject).toBe(continue)
+		action(screen, "NextTab").Pressed.fire()
+		t.expect(built.report().selected.Categories).toBe("navigation")
+		t.expect(built.report().active).toBe("pages")
+		stop()
+	end)
+
 	t.it("opens a menu only through its declared triggers and binds the keyboard and gamepad chords", function()
 		local restricted, activateOnly = Compose.cell(false), Compose.cell(false)
 		local world = setup(function(UI, Host)
@@ -1047,6 +1361,7 @@ t.describe("native parity navigation", function()
 			t.expect(panel.Size.X.Offset).toBe(348)
 			t.expect(panel.Size.Y.Offset).toBe(104)
 			panel.AbsoluteSize = V2(world, 348, 104)
+			world.engine.heartbeat.fire(1)
 			t.expect(panel.Position).toBe(world.engine.types.UDim2.fromOffset(100, 148))
 			find(find(panel, "long"), "Content").AbsoluteSize = V2(world, 500, 44)
 			t.expect(panel.Size.X.Offset).toBe(400)
@@ -1547,6 +1862,7 @@ t.describe("native parity navigation", function()
 			anchor.AbsoluteSize = V2(world, 240, 44)
 			local panel = find(world.screen, "CalloutPanel")
 			panel.AbsoluteSize = V2(world, 280, 100)
+			world.engine.heartbeat.fire(1)
 			t.expect(panel.Position.Y.Offset).toBe(660 - 100 - 8)
 			t.expect(panel.Position.X.Offset).toBe(140)
 			align:set("leading")

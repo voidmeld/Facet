@@ -19,7 +19,31 @@ local function world()
 		services = { GuiService = gui, UserInputService = input },
 		reducedMotion = true,
 	})
-	return engine, runtime, root, UI
+	return engine, runtime, root, UI, input, gui
+end
+
+local function find(node, name)
+	if node.Name == name then
+		return node
+	end
+	for _, child in node:GetChildren() do
+		local found = find(child, name)
+		if found then
+			return found
+		end
+	end
+	return nil
+end
+
+local function within(node, ancestor)
+	local current = node
+	while current do
+		if current == ancestor then
+			return true
+		end
+		current = current.Parent
+	end
+	return false
 end
 
 local function sameCensus(engine, baseline, label)
@@ -312,5 +336,129 @@ t.describe("native stress invariants", function()
 			runtime.dispose()
 			sameCensus(engine, before, `preference seed={seed} teardown`)
 		end
+	end)
+
+	t.it("keeps mounted controls and activation through 200 seeded preferred input storms", function()
+		for seed = 1, 200 do
+			local rng = random(917359 + seed)
+			local engine, runtime, root, UI, input, gui = world()
+			local before = engine.census()
+			local builds, activations, value = 0, 0, Compose.cell(3)
+			local stop, panel = runtime.mount(function()
+				builds += 1
+				return runtime.constructors.Frame({
+					UI.Button "A" {
+						label = "A",
+						onActivate = function()
+							activations += 1
+						end,
+					},
+					UI.Button "B" { label = "B" },
+					UI.Stepper "Stepper" { value = value, max = 10 },
+				})
+			end, root)
+			local a, b, stepper = find(panel, "A"), find(panel, "B"), find(panel, "Stepper")
+			local inputs = {
+				engine.types.Enum.PreferredInput.Touch,
+				engine.types.Enum.PreferredInput.Gamepad,
+				engine.types.Enum.PreferredInput.KeyboardAndMouse,
+			}
+			local pressed = 0
+			for step = 1, rng(5, 40) do
+				local choice = inputs[rng(1, #inputs)]
+				if rng(1, 10) <= 3 then
+					gui.SelectedObject = a
+					input.PreferredInput = choice
+					a.Activated.fire()
+					pressed += 1
+				else
+					input.PreferredInput = choice
+				end
+				assert(builds == 1, `seed={seed} step={step}: the input switch rebuilt the screen`)
+				assert(
+					find(panel, "A") == a and find(panel, "B") == b and find(panel, "Stepper") == stepper,
+					`seed={seed} step={step}: the input switch remounted a control`
+				)
+			end
+			assert(activations == pressed, `seed={seed}: {pressed} presses produced {activations} activations`)
+			gui.SelectedObject = b
+			assert(gui.SelectedObject == b, `seed={seed}: selection is lost after the storm`)
+			stop()
+			runtime.dispose()
+			sameCensus(engine, before, `input switch seed={seed} teardown`)
+		end
+	end)
+
+	t.it("disposes with pending changes, twice, and from inside a change notification", function()
+		local engine, runtime, root, UI = world()
+		local before = engine.census()
+		local text = Compose.cell("hello")
+		local stop = runtime.mount(function()
+			return UI.Label "Text" { text = text }
+		end, root)
+		text:set("dirty now")
+		stop()
+		stop()
+		sameCensus(engine, before, "dispose with a pending change, then again")
+		local flag = Compose.cell(false)
+		local disposed = 0
+		local stopNotify, panel = runtime.mount(function()
+			return runtime.constructors.Frame({
+				Compose.show(flag, function()
+					return UI.Label "On" { text = "on" }
+				end),
+			})
+		end, root)
+		local connection = panel.ChildAdded:Connect(function()
+			disposed += 1
+			stopNotify()
+		end)
+		flag:set(true)
+		connection:Disconnect()
+		t.expect(disposed >= 1).toBe(true)
+		t.expect(panel.Parent).toBe(nil)
+		stopNotify()
+		runtime.dispose()
+		sameCensus(engine, before, "dispose from a notification")
+	end)
+
+	t.it("keeps the top modal active and selected when a covered modal dismisses, 50 times", function()
+		local engine, runtime, root, UI, _, gui = world()
+		local before = engine.census()
+		local sheet, alert = Compose.cell(false), Compose.cell(false)
+		local stop = runtime.mount(function()
+			return runtime.constructors.Frame({
+				UI.Button "Base" { label = "Base" },
+				UI.Sheet({
+					isPresented = sheet,
+					detent = Compose.cell("medium"),
+					content = function()
+						return UI.Button "SheetAction" { label = "Sheet" }
+					end,
+				}),
+				UI.Alert({
+					isPresented = alert,
+					title = "Confirm",
+					actions = { { id = "ok", label = "OK" }, { id = "cancel", label = "Cancel", role = "cancel" } },
+				}),
+			})
+		end, root)
+		for cycle = 1, 50 do
+			gui.SelectedObject = find(root, "Base")
+			sheet:set(true)
+			alert:set(true)
+			local alertPanel = find(root, "AlertPanel")
+			assert(alertPanel ~= nil, `cycle {cycle}: the alert is presented`)
+			assert(within(gui.SelectedObject, alertPanel), `cycle {cycle}: the selection is not in the top alert`)
+			sheet:set(false)
+			assert(find(root, "SheetPanel") == nil, `cycle {cycle}: the covered sheet stayed`)
+			assert(find(root, "AlertPanel") == alertPanel, `cycle {cycle}: the alert remounted`)
+			assert(within(gui.SelectedObject, alertPanel), `cycle {cycle}: the selection left the top alert`)
+			alert:set(false)
+			assert(find(root, "AlertPanel") == nil, `cycle {cycle}: the alert stayed`)
+		end
+		stop()
+		runtime.dispose()
+		sameCensus(engine, before, "modal stack teardown")
 	end)
 end)

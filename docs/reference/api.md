@@ -20,7 +20,8 @@ and styling. This reference describes the `0.12.0` surface.
 
 The exported Luau types include `Facet`, `ComposeModule`, `ComposeRobloxModule`,
 `Controls`, `ControlOptions`, `ThemePackage`,
-and the `Props` and `Spec` contracts of each control. `Cell<T>`, `Readable<T>`,
+and the `Props` and `Spec` contracts of each control. The layout types include
+`Space`, `Padding` and `Extent`. `Cell<T>`, `Readable<T>`,
 `Runtime`, `Owner` and `Use` are the Compose types. Collection, menu and picker
 contracts keep the item and value types through callbacks. Native properties use
 the Roblox property types. For example, `Size` accepts a `UDim2` or a reactive
@@ -152,9 +153,8 @@ document their own write-then-notify behavior below.
 - `reducedMotion` and `icons`: these can also be reactive. Control motion also
   follows `GuiService.ReducedMotionEnabled`. Motion is reduced when either one
   is true.
-- `pressHaptic`: a native `HapticEffect`. Each button that has no
-  `PressHapticEffect` uses it as its native `PressHapticEffect`. Thus buttons,
-  segments and toggles play the effect when they are pressed.
+- `pressHaptic`: a native `HapticEffect`. Only a control that changes a state
+  or a value plays it. See [Haptics](#haptics).
 - `controlSize`: the control-size step (`compact`, `regular` or `large`) for
   theme icons.
 - `onError`: receives a failure from the content of a presented Alert. The
@@ -162,10 +162,155 @@ document their own write-then-notify behavior below.
 - `services`, `guiService`, `userInputService` and `types`: native dependencies.
 - `inputParent` and `overlayParent`: placement targets.
 
+### Motion
+
+The controls animate navigation and presentation by default. All motion uses
+the Compose runtime. Motion does not block input or focus. An exiting element
+cannot be interacted with, and the selection never stays on it.
+
+| Control | Enter | Exit |
+|---|---|---|
+| NavigationStack push | The new page slides in from the trailing edge. The old page moves 30 percent to the leading edge and dims. Critically damped spring with a 0.3 second period, visually complete in approximately 0.35 seconds. | Pop is the reverse. |
+| TabView page change | Crossfade, 0.2 seconds, Quad Out. | The same. |
+| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. The scrim fades in. | Slides down, 0.2 seconds. |
+| Alert | Scales from 0.94 to 1 and fades in, 0.2 seconds, Cubic Out. The scrim fades in. | The reverse, 0.15 seconds. |
+| Callout, Button `help`, Menu, Picker menu | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+
+- Reduced motion (`reducedMotion` or `GuiService.ReducedMotionEnabled`) removes
+  all of this motion. The change is immediate.
+- A presentation that has not drawn a frame, or whose anchor is no longer
+  available, leaves immediately.
+- If you present a control again during its exit, the exit reverses.
+- PageView keeps its native page swipe.
+
+### Haptics
+
+`pressHaptic` plays only for a control that changes a state or a value:
+
+- Toggle and a Chip with `selected`.
+- A Picker option that is not selected. A multiple Picker option always plays.
+- A Stepper step.
+- A Slider with a `step`. The effect plays once for each detent, not for each
+  frame.
+- Rating and LevelPicker.
+- An Alert action with the `destructive` role or the `defaultAction` shortcut.
+
+A plain Button, a tab, a menu row, a keyboard key and a link do not play it.
+Set `haptic = true` on a Button to play `pressHaptic` for a game-specific
+action. `haptic` can be a readable. An explicit `PressHapticEffect` always
+wins.
+
 The `theme` option does not install paint. Parent a `createStyleSheet` result
 and its StyleLink in the native tree, with the same theme package source.
 Ordinary Roblox consumers use the ambient services and datatypes. The runtime
 that you supply must use the Compose Roblox host.
+
+## Layout
+
+The layout constructors make ordinary native containers. A container is a
+`Frame` or a `ScrollingFrame` with a `UIListLayout` or a `UIGridLayout`, and a
+`UIPadding` when you set `padding`. Roblox does the layout. Facet adds no
+solver and no measurement pass. Each constructor accepts the native properties
+of its root, and a native property that you set replaces the default value.
+
+Write the children as dense numeric children. The container sets the
+`LayoutOrder` of each child to its position in the list. Nodes that a
+`Compose.show` or `Compose.keyed` child adds get the position of that child.
+Nodes in one keyed child share that position. Set `LayoutOrder` in the row
+when their order is important.
+
+```luau
+local sound = Compose.cell(true)
+local function save() print("Saved") end
+return UI.Screen "Settings" {
+    gap = "s",
+    UI.Label { text = "Settings", textRole = "title" },
+    UI.ScrollView "Page" {
+        gap = "s",
+        UI.Toggle { label = "Sound", value = sound },
+        UI.Button { label = "Save", onActivate = save },
+    },
+}
+```
+
+### Layout options
+
+| Option | Values | Native result |
+|---|---|---|
+| `gap` | a spacing step or a number of pixels | `UIListLayout.Padding` |
+| `padding` | a spacing step, a number, or `{ top?, right?, bottom?, left? }` | a `UIPadding` child |
+| `width`, `height` | `"fill"`, `"hug"` or a number of pixels | `Size` and `AutomaticSize` |
+| `align` | `start`, `center`, `end` or `stretch` | cross-axis alignment and `ItemLineAlignment` |
+| `distribute` | `start`, `center`, `end`, `spaceBetween`, `spaceAround` or `spaceEvenly` | main-axis alignment and `HorizontalFlex` or `VerticalFlex` |
+
+- The spacing steps are `xs`, `s`, `m`, `l` and `xl`. They come from
+  `metrics.space` of the theme package in the `theme` factory option. The
+  neutral values are 4, 8, 16, 24 and 40 pixels. A package without a step uses
+  the neutral value.
+- When the theme package changes, the containers write the new pixel values.
+  The native layout objects stay the same.
+- An unknown step, alignment or size causes an error that names the valid
+  values.
+- `"fill"` sets the scale of that axis to 1. `"hug"` sets `AutomaticSize` on
+  that axis. A number sets the pixel offset.
+- `align = "stretch"` sets `ItemLineAlignment.Stretch`, so each child fills the
+  cross axis.
+- A container writes an alignment property only when you set `align` or
+  `distribute`.
+- All options accept a value, a readable or a `function(use)` body.
+
+### Screen
+
+`UI.Screen(spec) -> Frame` is the root of a screen. It fills its parent
+(`width` and `height` are `"fill"`) and stacks its children vertically. It has
+`padding = "m"` by default. The ScreenGui `ScreenInsets` property keeps the
+screen inside the device safe area. Options: `gap`, `padding`, `align`,
+`distribute`, `width` and `height`.
+
+### VStack and HStack
+
+`UI.VStack(spec) -> Frame` stacks its children vertically. `UI.HStack(spec) ->
+Frame` stacks them horizontally. Both hug their content by default. Options:
+`gap`, `padding`, `align`, `distribute`, `wrap`, `width` and `height`. `wrap`
+sets `UIListLayout.Wraps`. The shared props type is `StackProps`.
+
+### ZStack
+
+`UI.ZStack(spec) -> Frame` puts its children on top of each other. It has no
+layout object. A later child gets a higher `ZIndex`. A child that sets its own
+`ZIndex` keeps it. `alignH` and `alignV` (`start`, `center` or `end`) set the
+`AnchorPoint` and the scale `Position` of each child. Options: `padding`,
+`alignH`, `alignV`, `width` and `height`.
+
+### ScrollView
+
+`UI.ScrollView(spec) -> ScrollingFrame` scrolls its children. It fills its
+parent by default. It contains a `UIListLayout` and sets `AutomaticCanvasSize`
+and `ScrollingDirection` for its axis. Thus the content fits the scroll window
+beside the scroll bar. `axis` is `"y"` (the default), `"x"` or `"xy"`. The
+`"x"` axis stacks the children horizontally. Options: `axis`, `gap`, `padding`,
+`align`, `distribute`, `width` and `height`.
+
+### Grid
+
+`UI.Grid(spec) -> Frame` puts its children in a `UIGridLayout`. `columns` is
+required. It must be a whole number, 1 or more. The grid divides its width into
+that number of cells. `gap` spaces the cells on both axes, and `rowGap`
+replaces the vertical space. `cellHeight` is the cell height in pixels. The
+default is the regular control height of the theme package. `aspectRatio` adds
+a `UIAspectRatioConstraint` to the grid layout, which sets the cell height
+from the cell width. `align` (`start`, `center` or `end`) aligns the cells
+horizontally. The grid fills the width and hugs the height by default.
+
+### fill
+
+`UI.fill(weight?) -> UIFlexItem` makes a child grow along the main axis of its
+stack. Put the result in the children of the control:
+`UI.Label { text = "Name", UI.fill() }`. Without a weight, the item uses
+`UIFlexMode.Fill`. With a weight, it uses `UIFlexMode.Custom` with that
+`GrowRatio` and `ShrinkRatio`. The weight must be a positive number. For the
+cross axis, use `align = "stretch"` on the stack or `width = "fill"` on a
+container.
 
 ## Actions and input
 
@@ -181,7 +326,8 @@ Presentation options:
 - `appearance`, `role`, `selected`, `name`, `hint` and `pop`.
 - `controlSize`: `compact`, `regular` or `large`.
 - `corners`: `pill` or `square`, or a readable of one.
-- `shape`: `rect` or `circle`.
+- `shape`: `rect` or `circle`. A circle with an authored `Size` on one axis
+  only keeps that axis and matches the other axis to it.
 - `icon` and `trailingIcon`.
 - `image`, `imageAspectRatio` (default `16/9`) and `imageFraming` (`fit` or
   `crop`).
@@ -191,6 +337,8 @@ Presentation options:
   button has `onActivate` and no `trailingIcon`, it also shows a disclosure
   chevron. `value` and `icon` are static strings. `hint` shows as a second
   line of text below the label.
+- `haptic`: a boolean or a readable. When it is true, the button plays the
+  `pressHaptic` of the controls. The default is false. See [Haptics](#haptics).
 - `help`: one sentence that describes the action. It shows in a small panel
   when a pointer rests on the button for 0.45 seconds, or when a gamepad
   selects the button. It does not show on touch, so do not put information in
@@ -296,6 +444,8 @@ menus keep the control-specific navigation of the menu.
 - When the player navigates by selection, an open menu selects its first
   enabled item. Back and Left close one level and return the selection to the
   item that opened it.
+- The menu panel scales and fades from the edge nearest to its trigger. See
+  [Motion](#motion).
 
 SplitButton combines a primary `label` and `onActivate` action with the
 secondary `items` of the menu. Use it when the secondary operations supplement
@@ -356,9 +506,10 @@ cannot be hidden.
 not look like user input. The control owns scroll and focus restoration and
 shoulder navigation.
 
-Native fades accept direct Compose tween options, such as
-`transition = { seconds = 0.18, ease = Compose.easing.outQuad }`. Use `false`
-to disable motion. Named Facet transition presets do not exist.
+A page change uses a native crossfade. The default is
+`transition = { seconds = 0.2, ease = Compose.easing.outQuad }`. Supply other
+direct Compose tween options to change it. Use `false` to disable motion. Named
+Facet transition presets do not exist. The first page shows without motion.
 
 ### NavigationStack
 
@@ -371,6 +522,15 @@ is an array of `{ id, value }` entries. `root` and each `destinations[id]` are
 
 `backLabel` sets the text of the native Back chrome. Compose `LayerStack` owns
 the retained pages and their disposal.
+
+A push slides the new page in from the trailing edge. The covered page moves
+30 percent to the leading edge and dims. A pop plays the reverse. The popped
+page stays until its motion completes. It cannot be interacted with, and it
+cannot hold the selection. The default motion is a critically damped Compose
+spring. `transition = { seconds, ease }` replaces the slide with a crossfade
+that uses those Compose tween options.
+`transition = false` disables motion. The pages that are present when the
+stack mounts show without motion.
 
 ### PageView
 
@@ -425,7 +585,9 @@ Motion options:
   it still exists. Compose owns the snapshot and the departing presentation.
   The source stays mounted.
 - Native reduced motion makes the handoff immediate.
-- Without `transition`, the presentation is immediate.
+- Without `transition`, the alert scales from 0.94 to 1 and fades in. See
+  [Motion](#motion).
+- `transition = false` makes the presentation immediate.
 
 The alert clears a writable `error` on dismissal. Use an alert for a brief
 decision. `icon`, `severity`, suppression and custom content refine the
@@ -485,7 +647,9 @@ lowest detent and blocks Back and the backdrop. An outside detent change
 during a drag ends the drag. Only one drag runs at a time.
 
 The grabber is also a selectable button that moves to the next detent. Its
-accessible label reads `Size: Medium`, and `Size: Fit` for `hug`.
+accessible label reads `Size: Medium`, and `Size: Fit` for `hug`. A bottom
+sheet slides up from the bottom and slides down when it closes. See
+[Motion](#motion).
 
 ### DisclosureGroup and CollapsibleView
 
@@ -502,6 +666,9 @@ callout is suspended. `seen`, `sessions`, `afterSessions`, `featureUsed` and
 priority set eligibility and queue order. Each fact can be a value, a readable
 or a function of `use`. Retirement is delivered once. A callout is contextual
 teaching attached to a control. It is not a second application presenter.
+`edge = "top"` puts the callout above the anchor. If there is no room above
+and there is room below, the callout goes below the anchor. The callout
+scales and fades from the edge nearest to its anchor. See [Motion](#motion).
 
 The plate parts are optional, but the plate must show something:
 
@@ -859,7 +1026,7 @@ measured width.
 |---|---|
 | `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Without an icon, it returns a TextLabel. With an icon, it returns a Frame row that holds the icon and a TextLabel. Native properties then apply to that Frame, so give it Frame properties only. |
 | `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
-| `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max` and `diameter`. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
+| `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max`, `diameter` and `name`. The `name` sets the accessible label. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
 | `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. The endLabel shows after the value. With a label, a bar shows the value and the endLabel on the label row. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
 | `Skeleton` | A loading placeholder with a configurable form and line count. |
 | `AsyncImage` | An image or source, an optional resource or loader, a placeholder, a failure label and a status callback. `imageProperties` forwards native properties and children to the inner ImageLabel. |
@@ -890,7 +1057,8 @@ weight. The derived role keeps the family, style, size and line height.
 - `define(definition)` derives from `base` (neutral by default) and returns
   `package?, report`. Check `report.ok` before use. An accepted theme package is
   recursively frozen. Callbacks, cycles and malformed definitions are rejected.
-  A type role needs a positive size, and a chrome shadow name must be a
+  A type role needs a positive size. Each `metrics.space` step needs a pixel
+  size of 0 or more. A chrome shadow name must be a
   package shadow or a preset (`raised` or `overlay`). Each palette pair needs a
   contrast of at least 4.5:1, which includes `onSelected` (or `content`) on
   `controlSelected`.

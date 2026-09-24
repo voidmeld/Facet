@@ -15,23 +15,24 @@ where.
 
 - 894 main cases test behavior that `api.md`, a guide or `src`
   still promises, but no candidate case tested it. The parity tests close
-  837 of these cases. One case moved to class c, because `api.md`
-  no longer makes its promise. 56 cases remain.
-- 1,290 of the 3,131 covered cases have a weaker
+  884 of these cases. One case moved to class c, because `api.md`
+  no longer makes its promise. 9 cases remain. Only a live Studio check
+  can close them. See [Gap list](#gap-list).
+- 893 of the 3,367 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
-- 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
-  845 of them, no candidate test and no live Studio record show that
+- 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
+  704 of them, no candidate test and no live Studio record show that
   Facet uses the mechanism correctly.
-- Of 130 main `full` producers, no producer is a gap. Five producers run
-  but wait for live Studio evidence, and four are weaker replacements. See
+- Of 130 main `full` producers, no producer is a gap and no producer is a
+  weaker replacement. Four producers run but wait for live Studio evidence. See
   [Producers](#producers).
 - A complete run writes `artifacts/verify/latest-<tier>.json` with release
   gate evidence. `tools/package.sh publish` reads the `release` file and
   refuses anything but a clean, passing run of the same source.
 - The audit found 10 defects in `src` and 3 in the examples. All of them
-  are fixed. The parity tests found and fixed 16 more defects in `src` and
-  4 more in the examples. [Fixed after the audit](#fixed-after-the-audit)
+  are fixed. The parity tests found and fixed 18 more defects in `src` and
+  7 more in the examples. [Fixed after the audit](#fixed-after-the-audit)
   names the test for each fix.
 
 ## Method
@@ -64,10 +65,10 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 1139 | 2,294 | 3,131 |
+| a | Covered by a candidate case | 1158 | 2,294 | 3,178 |
 | b | Retired. The Roblox Engine or Compose owns the mechanism | 306 | 1,581 | 1,581 |
 | c | Retired. The feature or code was deleted and is not promised | 823 | 6,079 | 6,080 |
-| d | Gap. A promise remains and no candidate case verifies it | 22 | 894 | 56 |
+| d | Gap. A promise remains and no candidate case verifies it | 3 | 894 | 9 |
 
 Class c is the largest class. Most of it tested the deleted solver,
 renderer, focus graph, input system, presenter, paint layer and their seams.
@@ -81,36 +82,36 @@ last column names the candidate specs that the group cites most.
 
 | Group | Main cases | a | Weaker | b | c | d | Candidate coverage |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Reactive core | 63 | 23 | 16 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
-| Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,326 | 94 | 58 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 497 | 54 | 38 | 232 | 202 | 9 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
-| Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Reactive core | 63 | 23 | 0 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
+| Lifetime and ownership | 316 | 142 | 6 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
+| Layout and geometry | 1,326 | 280 | 211 | 218 | 827 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Text measurement and fit | 497 | 63 | 27 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Focus and selection | 532 | 103 | 3 | 257 | 172 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Input actions | 332 | 101 | 13 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
+| Pointer, touch and drag | 368 | 63 | 0 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
-| Motion | 581 | 142 | 80 | 33 | 404 | 2 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 379 | 146 | 68 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
-| Icons and media | 251 | 110 | 66 | 37 | 98 | 6 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 394 | 94 | 57 | 1 | 297 | 2 | `native_inputs`, `native_navigation`, `native_themes_media` |
-| Value controls | 249 | 221 | 128 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
-| Text input | 119 | 69 | 26 | 28 | 21 | 1 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 141 | 103 | 58 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
-| Navigation containers | 72 | 64 | 36 | 1 | 2 | 5 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 287 | 124 | 81 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
-| Virtual collections | 214 | 156 | 6 | 3 | 52 | 3 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
-| Tables | 156 | 97 | 9 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
-| Row actions | 264 | 149 | 19 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 166 | 46 | 30 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 419 | 28 | 17 | 51 | 336 | 4 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
-| Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
+| Motion | 581 | 144 | 4 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
+| Paint and theming | 709 | 199 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
+| Theme packages | 379 | 149 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Icons and media | 251 | 116 | 0 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
+| Action controls | 394 | 96 | 9 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Value controls | 249 | 221 | 8 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
+| Text input | 119 | 70 | 0 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
+| Menus and pickers | 141 | 103 | 8 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Navigation containers | 72 | 69 | 4 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
+| Presented surfaces | 287 | 124 | 33 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Virtual collections | 214 | 159 | 6 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
+| Tables | 156 | 97 | 1 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
+| Row actions | 264 | 149 | 13 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
+| HUD and world targets | 166 | 46 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| Adaptive environment | 419 | 32 | 3 | 51 | 336 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| Public surface | 366 | 89 | 0 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 0 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
-| Gallery and examples | 425 | 237 | 58 | 113 | 66 | 9 | `native_gallery`, `native_games`, `native_gallery_collections` |
-| Reference apps | 327 | 151 | 2 | 22 | 153 | 1 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
-| Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
+| Gallery and examples | 425 | 246 | 51 | 113 | 66 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
+| Reference apps | 327 | 152 | 2 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
+| Performance | 792 | 84 | 6 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
-| Error handling and refusals | 220 | 69 | 16 | 2 | 146 | 3 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
+| Error handling and refusals | 220 | 72 | 0 | 2 | 146 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
 
@@ -126,9 +127,25 @@ results:
 - the fit of the showcase on each viewport (`overflow_sweep`, 124 cases),
 - selection visuals and scroll-into-view geometry.
 
-`tools/lune/parity_blockers.json` still lists three pending live risks. The
-`coverage` producer fails for this reason. Studio evidence for the other
-native mechanisms is not recorded per contract.
+`tools/lune/parity_blockers.json` still lists one pending live risk: haptic
+motor output on a physical phone and gamepad. The `coverage` producer fails
+for this reason. Studio shows only that the controls request the effects.
+
+The live Studio harness in `tools/studio/live` records engine geometry for 34
+contracts in the `liveEvidence` field of each contract. The results are in
+`artifacts/studio-live`. The runs use the device emulator at 844x369 and
+388x824, at the Medium and Largest preferred text sizes. The harness found
+four defects, and the branch fixes them:
+
+- The collection toolbar took the whole page on a short landscape phone, so
+  the list had no height.
+- The gallery shell reserved a fixed 56 px, and a taller Settings button
+  overlapped the demo tabs.
+- A top callout with no room above covered its anchor.
+- A circle Button with a Size on one axis only collapsed to 0x0.
+
+[Device verification](11-device-verification.md#live-assertion-harness)
+describes the harness and its limits.
 
 ### Workloads
 
@@ -162,11 +179,11 @@ of each one after the producer restoration. The data is in `producers.rows`.
 
 | Status | Main `full` producers |
 |---|---:|
-| Equivalent candidate producer | 45 |
-| Replaced by a different check | 15 |
-| Replaced by a weaker check | 4 |
-| Producer runs; its live evidence is not recorded | 5 |
-| Retired with its subject | 61 |
+| Equivalent candidate producer | 48 |
+| Replaced by a different check | 16 |
+| Replaced by a weaker check | 0 |
+| Producer runs; its live evidence is not recorded | 4 |
+| Retired with its subject | 62 |
 | Total | 130 |
 
 No main producer is a gap now. Each main producer is equivalent, replaced,
@@ -270,34 +287,37 @@ Studio sessions during the run, so its timings are not reference timings.
 | `corpus_cli` | `suite` | fast, full, release | native_a11y_l10n_corpus spec in the suite: accessible names of controls and gallery demos, and a localization string corpus. |
 | `verify-selftest` | `verification-selftest` | fast, full, release |  |
 
-### Weaker replacements
+### Former weaker replacements
 
-These producers run, but they cover less than the main producer.
+These four producers were weaker than on `main`. They are now at the
+strength of `main`, or their subject is deleted.
 
 | Main producer | Candidate producer | Tier | Note |
 |---|---|---|---|
-| `check_example_drift_cli` | `native_documentation`, `architecture` |  | No guide/example source drift check. |
-| `faults` | `native_stress (200 seeded fault storms)` |  | Main ran 9 fault scenarios x 200 iterations. |
-| `fuzz-replication` | `native_stress (400 seeded deliveries)` |  | Facet replication module deleted; test covers an example model. |
-| `soak` | `native_stress (200 modal cycles, 100 structural cycles)` |  | Main soak ran the full presenter and scene soak fixtures. |
+| `check_example_drift_cli` | `example-drift`, `example-drift-selftest` | full, release | `tools/check_example_drift.py` scans the tutorial and reference examples for a literal `TextSize`, a literal paint colour, a raw colour, an unknown `textRole` and an engine reach-around. Each allowed literal has a reason, and a stale entry fails. |
+| `faults` | `suite` (`native_stress`) | fast, full, release | Six of the nine main scenarios run at 200 iterations or more: async storms, locale and UTF8 text, preferred input switches, teardown and the covered modal dismissal. The other three tested deleted subjects: the Facet scheduler (now Compose), the Facet resource cache and the Facet environment facts. |
+| `fuzz-replication` | `suite` (`native_stress`) | fast, full, release | Retired. `src/replication` is deleted. The example authority model converges under 400 seeded deliveries, the same count as `main`. |
+| `soak` | `suite` (`native_stress`) | fast, full, release | The same two fixtures as `main`: 200 modal cycles and 100 structural cycles, each twice, with a census after each cycle. |
 
 ### Producers that wait for live evidence
 
-These producers run in `full` and `release`. Each one exits 2 until a
+These producers run in `full` and `release`. Each one exits 2 until its
 Studio capture of the native performance lab is recorded under
 `artifacts/performance-stress-places/studio`. The lab place is
-`examples/performance.project.json`. The capture schema is in
-`examples/performance/lab/capture.luau`. The theme-cost and large-text modes
-also need a lab change: the lab captures only the neutral theme, and a capture
-row has no preferred text size.
+`examples/performance.project.json`, and `workspace.FacetPerfLabAPI` drives
+it (`select`, `theme`, `clean`, `run`, `stop`, `capture`). The capture schema
+is in `examples/performance/lab/capture.luau`. A capture row records the
+theme and the preferred text size.
+
+`perf-gate-evidence-studio` passes with one clean capture. See
+[the lab in Roblox Studio](19-paired-performance.md#the-performance-lab-in-roblox-studio).
 
 | Main producer | Candidate producer | Tier | Note |
 |---|---|---|---|
-| `check_perf_gate_evidence-device-matrix` | `perf-gate-evidence-device-matrix` | full, release | No emulator-class capture matrix is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-large-text` | `perf-gate-evidence-large-text` | full, release | The native lab capture has no preferred text size field. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-native-reference` | `perf-gate-evidence-native-reference` | full, release | No dense-scroll versus dense-scroll-native Studio pair is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-studio` | `perf-gate-evidence-studio` | full, release | No native Studio capture of the performance lab is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
-| `check_perf_gate_evidence-theme-cost` | `perf-gate-evidence-theme-cost` | full, release | The native lab captures only the neutral theme; no ornate capture exists. The producer runs and reports FAIL_ENVIRONMENT. |
+| `check_perf_gate_evidence-device-matrix` | `perf-gate-evidence-device-matrix` | full, release | Five emulator-class viewports are not recorded. Set `workspace.Facet_PerfEvidenceClass` to `emulator` for these rows. |
+| `check_perf_gate_evidence-large-text` | `perf-gate-evidence-large-text` | full, release | Only the Largest text size is recorded. Scripts cannot set the preference, so each size needs the Roblox menu. |
+| `check_perf_gate_evidence-native-reference` | `perf-gate-evidence-native-reference` | full, release | In Studio the lab did not mount the next workload after `dense-scroll-native`. Those captures were discarded. |
+| `check_perf_gate_evidence-theme-cost` | `perf-gate-evidence-theme-cost` | full, release | The ornate capture came after the fault above and was discarded. |
 
 ### Retired producers
 
@@ -514,6 +534,34 @@ defects. The same change fixes it.
 | `WA5` | `examples/gallery/scenarios/action_controls.luau` | The Distant TV preview scales the gallery by 1.5, but the action controls demo read the unscaled viewport width. At 1440 px the Showroom and Race Setup sections stayed side by side under the preview. The gallery now gives demos `ctx.sceneViewport`, the viewport divided by the preview scale, and the demo reads it. |
 | `WA6` | `src/ui/collections.luau` | VirtualList and VirtualGrid wrote an equal CanvasSize again on each scroll and on each edit to a row outside the window. Table wrote its outer Size, body Size, body CanvasSize and header Position again on each vertical scroll. These properties now bind to the numeric extent and the horizontal scroll offset, so only a real change writes. |
 | `WA7` | `src/ui/media.luau` | AvatarGroup kept the old resource lease and image when the resource of a member changed under the same id. A member with a resource is now keyed by its id and its resource, so only that face mounts again with a new lease. |
+| `WB1` | `src/ui/input_value.luau` | The default value format showed `-0` for a value between -0.005 and 0. |
+| `WB2` | `src/ui/media.luau` | Badge accepted an incorrect `iconPosition` and put the icon on the leading side. |
+| `WB3` | `src/ui/media.luau` | Badge and StatusIndicator read a `false` status as `neutral`. Now it causes an error. |
+| `WB4` | `src/ui/media.luau` | StatusIndicator ignored `name`. Now `name` sets the accessible label. |
+| `WB5` | `src/ui/inputs.luau` | The Rating and Slider value actions had a lower priority than the collection arrows. In a VirtualList or Table row, the arrow keys did not change the value. |
+| `WB6` | `src/ui/inputs.luau` | ShortcutHint raised an error when the native key service failed. Now it shows the key name. |
+| `WB7` | `src/ui/inputs.luau` | ShortcutHint accepted an unknown `over` option, and `separator` with `action`. |
+| `WB8` | `src/ui/inputs.luau` | The Stepper buttons and the TextInput clear button were less than 44 px high. |
+| `WB9` | `src/ui/nav_menu.luau` | The current cascade submenu level overlapped its parent level. |
+| `WB10` | `src/ui/nav_menu.luau` | Picker accepted incorrect callback, flag and option field types. |
+| `WB11` | `src/ui/nav_menu.luau` | A `navigationLink` Picker dropped the native properties of its trigger. |
+| `WB12` | `src/ui/nav_radial.luau` | RadialMenu Back left the selection on the removed child item. Now it selects the parent item. |
+| `WB13` | `src/ui/nav_radial.luau` | After a pointer press on the launcher with no native echo, the launcher ignored the next gamepad or keyboard activation. |
+| `WB14` | `src/ui/nav_pages.luau` | A TabView with `retention = "top"` lost the focus bookmark of an evicted page. |
+
+### Fixed with the final gap tests
+
+A case in the table of [Final gap tests](#final-gap-tests) shows each of
+these defects. The same change fixes it. `bugs` in the data file has each
+reproduction.
+
+| ID | File | Defect |
+|---|---|---|
+| `B22` | `src/ui/context.luau` | A theme metric that was not finite stopped the construction of a control. A metric that is not finite now falls back to the neutral metric, as a missing metric does. |
+| `B23` | `src/ui/collection_row_actions.luau` | A destructive commit that removed its row left a heartbeat connection after dispose. The row now settles before it runs the action. |
+| `E6` | `examples/gallery/scenarios/collection_demo.luau` | A short landscape kept the collection title. The title is now hidden when the viewport is less than 480 pixels high. |
+| `E7` | `examples/gallery/scenarios/demo_tabs.luau` | The shoulders did not page the showcase inner tabs from page content. The inner tab views now set `shoulderNavigation = "content"`. |
+| `E8` | `examples/reference/p3_sipworks/init.luau`, `examples/reference/p3_sipworks/content/strings.luau` | Sipworks wrote most player copy as literals, so a locale switch kept it in English. The copy is now in the locale table. |
 
 ## Gaps closed by this audit
 
@@ -644,7 +692,7 @@ on its first case.
 | `native_parity_navigation` | places sidebar head and foot accessories around the strip and passes the placement to builders | navigation-5-35 | 3 | - |
 | `native_parity_navigation` | docks trailing and above-bar accessories against the band and re-homes them with the placement | navigation-5-36, navigation-5-38, navigation-5-40 | 7 | - |
 | `native_parity_navigation` | refuses unknown accessory slots, non-function builders, unhostable slots and malformed transitions | navigation-5-26, navigation-5-42, navigation-5-52 | 6 | - |
-| `native_parity_navigation` | uses a plain native frame and hides the old page immediately when no transition is declared | navigation-5-25, navigation-5-50 | 2 | - |
+| `native_parity_navigation` | uses a plain native frame and hides the old page immediately when transition is false | navigation-5-25, navigation-5-50 | 2 | - |
 | `native_parity_navigation` | labels tabs by id, keeps icon-only names accessible and badges unselected tabs in place | navigation-5-21 | 3 | - |
 | `native_parity_navigation` | underlines the selected top tab by default, fills bottom and sidebar tabs and follows the indicator | - | 0 | - |
 | `native_parity_navigation` | keeps every tab at the 44 pixel target floor and reads a bound text size and rail width | navigation-5-23, navigation-5-30, navigation-5-31 | 4 | - |
@@ -760,6 +808,55 @@ assertion. A contract that gets no new case is not in this table. Its
 | `native_parity_weaker_scrolling` | Scrolling | `apps2-267`, `apps-225`, `apps-231`, `collections-03`, `collections-15`, `collections-32`, `collections-125`, `collections-127`, `collections-176`, `collections-183`, `collections-231`, `collections-242`, `navigation-5-05` | 50 | `collections-262`, `navigation-1-18` | 7 |
 | `native_parity_weaker_tables` | Tables | `apps2-168`, `apps2-171`, `apps2-173`, `apps-242`, `collections-36`, `collections-37`, `collections-137`, `collections-142`, `collections-144`, `collections-151`, `collections-164`, `inputs-06` | 34 | `apps2-175`, `collections-133`, `collections-134`, `collections-203`, `collections-207` | 9 |
 | `native_parity_weaker_virtual` | Virtual collections | `apps2-141`, `apps2-243`, `apps-122`, `collections-07`, `collections-09`, `collections-19`, `collections-20`, `collections-208`, `collections-222`, `collections-223`, `collections-240`, `collections-249`, `collections-258`, `collections-274`, `collections-296`, `collections-299`, `collections-300`, `collections-305`, `mech1-72`, `mech1-96`, `mech2-30`, `mech3-03`, `mech3-97`, `themes-P1-35` | 121 | `apps2-57`, `apps2-231`, `navigation-4-68` | 6 |
+| `native_parity_weaker_values` | Value controls | `apps-129`, `apps-167`, `apps2-36`, `apps2-254`, `inputs-03`, `inputs-53`, `inputs-113`, `inputs-115`, `inputs-119`, `inputs-155`, `inputs-177`, `inputs-200`, `inputs-201`, `inputs-203`, `inputs-204`, `inputs-212`, `inputs-215`, `navigation-3-66`, `navigation-3-67`, `navigation-4-27`, `navigation-4-32`, `paint-19`, `paint-45`, `themes-P1-50`, `themes-P1-51`, `themes-P1-54`, `themes-P1-63`, `themes-P1-80`, `themes-P1-109`, `themes-P1-110`, `themes-P1-115`, `themes-P4-24`, `themes-P5-37` | 120 | `mech3-14`, `themes-P5-29` | 8 |
+| `native_parity_weaker_actions` | Action controls | `apps2-65`, `apps2-219`, `inputs-02`, `inputs-16`, `inputs-35`, `inputs-38`, `inputs-74`, `inputs-76`, `inputs-87`, `mech1-25`, `mech2-23`, `mech3-69`, `navigation-2-14`, `navigation-2-73`, `navigation-3-40`, `navigation-4-50`, `navigation-4-51`, `paint-07` | 48 | `navigation-2-17`, `paint-04` | 9 |
+| `native_parity_weaker_actions` | Text input | `apps2-28`, `apps2-31`, `apps2-263`, `inputs-07`, `inputs-138`, `inputs-179`, `inputs-180`, `inputs-182`, `inputs-184` | 26 | - | 0 |
+| `native_parity_weaker_focus` | Focus and selection | `apps-137`, `apps-147`, `apps-159`, `apps-185`, `apps2-179`, `apps2-185`, `apps2-276`, `collections-17`, `collections-147`, `collections-149`, `collections-196`, `collections-259`, `inputs-158`, `navigation-1-13`, `navigation-1-57`, `navigation-2-18`, `navigation-2-63`, `navigation-4-41`, `navigation-5-12` | 46 | `apps-160`, `apps-181` | 3 |
+| `native_parity_weaker_focus` | Input actions | `apps2-210`, `collections-79`, `inputs-19`, `inputs-167`, `inputs-171`, `inputs-172`, `navigation-2-67`, `navigation-3-21`, `navigation-4-36`, `navigation-4-66` | 35 | `apps-162`, `collections-84`, `navigation-4-38` | 13 |
+| `native_parity_weaker_menus` | Menus and pickers | `apps-135`, `apps-136`, `apps-195`, `apps-197`, `apps-198`, `apps2-121`, `apps2-269`, `collections-81`, `collections-82`, `navigation-1-08`, `navigation-2-26`, `navigation-2-34`, `navigation-2-35`, `navigation-2-40`, `navigation-2-54`, `navigation-3-75`, `navigation-3-78`, `navigation-3-82`, `navigation-4-01`, `navigation-4-02`, `navigation-4-03`, `navigation-4-04`, `navigation-4-19`, `navigation-4-21`, `navigation-4-55` | 50 | `apps-196`, `apps-237`, `navigation-3-85` | 8 |
+| `native_parity_weaker_navigation` | Navigation containers | `apps-189`, `apps-190`, `apps-191`, `apps-245`, `apps2-106`, `apps2-199`, `apps2-201`, `apps2-260`, `mech1-74`, `navigation-1-01`, `navigation-1-10`, `navigation-2-05`, `navigation-2-20`, `navigation-3-01`, `navigation-3-06`, `navigation-3-12`, `navigation-3-39`, `navigation-5-01`, `navigation-5-11`, `paint-33` | 32 | `apps2-225`, `navigation-4-60` | 4 |
+| `native_parity_weaker_pointer` | Adaptive environment | `apps2-134`, `apps2-257`, `mech1-88`, `mech1-121`, `navigation-1-63`, `navigation-3-73`, `themes-P5-51` | 14 | `apps2-191` | 3 |
+| `native_parity_weaker_pointer` | Pointer, touch and drag | `apps2-15`, `apps2-204`, `apps2-205`, `apps2-206`, `apps2-209`, `apps2-215`, `collections-70`, `collections-112`, `collections-177`, `inputs-117`, `inputs-157`, `mech1-42`, `mech2-107`, `navigation-2-28`, `navigation-4-39` | 48 | - | 0 |
+| `native_parity_weaker_surfaces` | Presented surfaces | `apps2-226`, `apps2-255`, `apps2-270`, `inputs-12`, `inputs-90`, `mech3-89`, `navigation-1-11`, `navigation-1-23`, `navigation-1-50`, `navigation-1-59`, `navigation-2-02`, `navigation-2-30`, `navigation-2-65`, `navigation-2-69`, `navigation-2-70`, `navigation-3-08`, `navigation-4-37`, `navigation-4-47`, `navigation-5-53`, `navigation-5-55` | 48 | `apps2-44`, `apps2-247`, `mech1-120`, `mech2-104`, `mech3-87`, `navigation-1-14` | 33 |
+
+### Final gap tests
+
+These cases close 19 of the last 22 gap contracts, with 47 main cases.
+
+| Spec | Candidate case | Closes | Main cases |
+|---|---|---|---:|
+| `native_parity_themes` | terminates on a self-referential metrics table and rejects it as a cycle | themes-P4-42 | 1 |
+| `native_parity_themes` | slices the slider rail and paints a sliced = false thumb as a whole image | themes-P2-23 | 2 |
+| `native_parity_paint` | tints framework icons with the content role of each palette and never leaves them white | themes-P2-38, themes-P2-46 | 2 |
+| `native_parity_paint` | re-letters the icon on a status plate with the plate partner color as a direct child | themes-P2-47, themes-P2-62 | 2 |
+| `native_parity_paint` | compiles every type role to native font rules and tags labels with their role | paint-148 | 9 |
+| `native_parity_gaps` | refuses picker selection and disclosure toggling while disabled and resumes when enabled | paint-30 | 2 |
+| `native_parity_gaps` | estimates table rows from a regular control height that falls back when the theme metric is missing or not finite | collections-50 | 2 |
+| `native_parity_gaps` | keeps the value when custom combo box validation unmounts the control | navigation-2-12 | 1 |
+| `native_parity_navigation` | restores VirtualGrid and Table keys across a retained tab switch (three cases) | navigation-4-69 | 3 |
+| `native_parity_navigation` | keeps both showcase tab levels at the 44 pixel floor, marks each selection and reveals once | navigation-5-47 | 5 |
+| `native_parity_navigation` | pages each showcase tab strip by shoulder, traps the alert and restores its launcher on Back | apps2-232 | 2 |
+| `native_gallery_collections` | opens the mail row menu with Shift+Return on a selected row and runs a chosen item | collections-102 | 1 |
+| `native_gallery_collections` | reaches the mail table edit minus by selection and swipes a table row open without reordering | collections-106 | 2 |
+| `native_gallery_collections` | mounts the virtual mail surface alone and swipes deletes and opens row menus from each input | collections-108 | 6 |
+| `native_gallery_collections` | drops the mail heading on a short landscape and keeps the first row on every surface | collections-110 | 4 |
+| `native_parity_media` | follows a readable alert source that moves in flight and keeps the last origin when it goes nil | apps-258 | 2 |
+| `native_parity_apps` | draws every player-facing string from the locale table and relabels all of them on a locale switch | apps-70 | 1 |
+
+`closeNote` in the data file records what each of these cases does not
+prove:
+
+- paint-148: The neutral package sets `strong` to Bold and `numeral` to
+  Regular. On `main` they were SemiBold and Bold. A package that sets `body`
+  or `control` gets the derivation that `api.md` describes.
+- collections-108: The hosted gesture engine was deleted, so its laziness
+  is not tested. TabView keeps visited pages, so the list page is hidden,
+  not removed.
+- collections-110 and apps2-232: The fake engine does no layout and does
+  not move the selection. A live check must show that the first row is on
+  the screen at 844x390 and that the D-pad reaches both tab strips.
+- apps-70: The Sheet close button label "Done" is fixed English and has no
+  option. The case skips it.
 
 ## Proposed tests for the largest gaps
 
@@ -775,32 +872,16 @@ Each proposal is headless. Use the fake engine in `tests/lib/native_engine.luau`
 
 ## Gap list
 
-These 22 contracts (56 main cases) still have a promise and no candidate case.
+These 3 contracts (9 main cases) still have a promise and no candidate case
+that proves all of it. Each has a partial headless case. Only a live Studio
+check can prove the rest, because the fake engine does no layout and does
+not deliver engine input.
 
-| ID | Group | Main cases | Contract |
-|---|---|---:|---|
-| apps2-35 | row-actions | 3 | Scrolling the page closes a swiped-open tray; a swipe never plays the track (touch and mouse) |
-| apps2-232 | focus-selection | 2 | D-pad reaches both tab strips and an alert, traps focus, restores its launcher; shoulders route to inner tabs and Back through the journey |
-| apps-70 | reference-apps | 1 | Every player-facing string comes from the locale table |
-| apps-163 | input-actions | 5 | Exactly one Activate per press across the InputAction and native Activated paths |
-| apps-258 | motion | 2 | Source that moves or is a readable during flight; keeps last origin when it disappears |
-| collections-50 | error-handling | 2 | A theme metrics snapshot without derived row keys, or with NaN scale, falls back |
-| collections-102 | gallery-examples | 1 | Shift+Return opens the mail row menu |
-| collections-106 | gallery-examples | 2 | Table surface: the pad reaches the edit minus; a horizontal drag reveals the tray |
-| collections-108 | gallery-examples | 6 | Virtual mail surface: switching, laziness, swipe commit, keyboard Delete, ButtonX, dispose |
-| collections-110 | adaptive-environment | 4 | A short landscape drops the heading; the first row is visible on all surfaces |
-| navigation-1-69 | layout-geometry | 1 | Nothing on the callout page crosses a lateral edge at swept sizes |
-| navigation-2-12 | controls-text-input | 1 | Custom validation that disposes the control cannot commit |
-| navigation-4-69 | collections-virtual | 3 | VirtualGrid and Table keep keyed scroll anchors across insertion while their tab is away (editing on/off) |
-| navigation-5-47 | navigation-containers | 5 | Scenario behaviors still promised but untested: pill in adaptable nav, badge on unselected tab, 44px floor, shoulders, reveal-once |
-| paint-30 | controls-actions | 2 | Disabled Picker and DisclosureGroup refuse interaction |
-| paint-148 | text-measure-fit | 9 | Type roles compile to native font rules and tags |
-| themes-P2-23 | icons-media | 2 | Slider rail paints sliced and the thumb paints whole (sliced=false) |
-| themes-P2-38 | icons-media | 1 | A flat package still tints framework icons (with no instance paint) |
-| themes-P2-46 | icons-media | 1 | Framework icons are tinted by the palette content role, not left white |
-| themes-P2-47 | icons-media | 1 | A status plate re-letters the picture on it |
-| themes-P2-62 | icons-media | 1 | A status plate re-letters the picture: kind tag and direct child |
-| themes-P4-42 | error-handling | 1 | Self-referential definition terminates (cycles rejected) |
+| ID | Group | Main cases | Contract | Live check |
+|---|---|---:|---|---|
+| apps2-35 | row-actions | 3 | Scrolling the page closes a swiped-open tray; a swipe never plays the track (touch and mouse) | A swipe on a playlist row does not also fire `RowHit.Activated`. |
+| apps-163 | input-actions | 5 | Exactly one Activate per press across the InputAction and native Activated paths | One physical Return press on a selected Button reaches `onActivate` once. |
+| navigation-1-69 | layout-geometry | 1 | Nothing on the callout page crosses a lateral edge at swept sizes | Nothing on the callout page crosses a lateral edge at 390, 768, 1280 and 1920 pixels. |
 
 ## Use the data
 

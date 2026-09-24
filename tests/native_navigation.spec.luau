@@ -28,6 +28,7 @@ local function setup(build, options)
 		types = engine.types,
 		services = { GuiService = gui, UserInputService = input },
 		theme = options and options.theme,
+		pressHaptic = options and options.pressHaptic and options.pressHaptic(engine),
 	})
 	local target = engine.new("Folder")
 	local stop, screen = runtime.mount(function()
@@ -39,6 +40,11 @@ local function setup(build, options)
 		input = input,
 		runtime = runtime,
 		screen = screen,
+		settle = function()
+			for _ = 1, 60 do
+				engine.heartbeat.fire(1 / 60)
+			end
+		end,
 		stop = function()
 			stop()
 			runtime:dispose()
@@ -200,6 +206,7 @@ t.describe("native navigation controls", function()
 		find(world.screen, "Run").Activated.fire()
 		t.expect(count).toBe(1)
 		t.expect(opened:peek()).toBe(false)
+		world.settle()
 		t.expect(find(world.screen, "MenuPanel")).toBe(nil)
 		world.stop()
 	end)
@@ -242,6 +249,7 @@ t.describe("native navigation controls", function()
 		t.expect(presented:peek()).toBe(false)
 		t.expect(cancelled).toBe(1)
 		t.expect(world.gui.SelectedObject.Name).toBe("Original")
+		world.settle()
 		t.expect(back.isDestroyed()).toBe(true)
 		world.stop()
 	end)
@@ -921,6 +929,7 @@ t.describe("native navigation controls", function()
 		world.engine.heartbeat.fire(0.3)
 		t.expect(find(world.screen, "HelpText").Text).toBe("Posts this avatar")
 		plus.GuiState = Enum.GuiState.Idle
+		world.settle()
 		t.expect(find(world.screen, "HelpText")).toBe(nil)
 		world.input.PreferredInput = Enum.PreferredInput.Touch
 		plus.GuiState = Enum.GuiState.Hover
@@ -1109,6 +1118,7 @@ t.describe("native navigation controls", function()
 		advance()
 		t.expect(changed(shown, snapshot()) > 0).toBe(true)
 		selection:set("two")
+		advance()
 		local hidden = snapshot()
 		advance()
 		t.expect(changed(hidden, snapshot())).toBe(0)
@@ -1193,6 +1203,7 @@ t.describe("native navigation controls", function()
 		t.expect(find(world.screen, "FirstTip")).toBe(nil)
 		t.expect(find(world.screen, "PriorityTip") ~= nil).toBe(true)
 		used:set(true)
+		world.settle()
 		t.expect(find(world.screen, "PriorityTip")).toBe(nil)
 		t.expect(find(world.screen, "FirstTip") ~= nil).toBe(true)
 		find(world.screen, "Dismiss").Activated.fire()
@@ -1719,6 +1730,7 @@ t.describe("native navigation controls", function()
 		anchor.AbsolutePosition = V.new(280, 20)
 		anchor.AbsoluteSize = V.new(32, 44)
 		panel.AbsoluteSize = V.new(280, 100)
+		world.settle()
 		t.expect(panel.Position.X.Offset).toBe(32)
 		t.expect(world.gui.SelectedObject).toBe(anchor)
 		anchor.Activated.fire()
@@ -1729,6 +1741,7 @@ t.describe("native navigation controls", function()
 		)
 		t.expect(retired).toBe("tapAway")
 		t.expect(shown:peek()).toBe(true)
+		world.settle()
 		t.expect(find(world.screen, "CalloutPanel")).toBe(nil)
 		world.stop()
 	end)
@@ -1862,6 +1875,7 @@ t.describe("native navigation controls", function()
 		t.expect(arrow:HasTag("facet-panel")).toBe(true)
 		t.expect(arrow:HasTag("facet-callout")).toBe(true)
 		t.expect(arrow.ZIndex < panel.ZIndex).toBe(true)
+		world.settle()
 		for _, height in { 96, 128, 96 } do
 			panel.AbsoluteSize = V.new(280, height)
 			t.expect(panel.Position.Y.Offset).toBe(560 - height - 8)
@@ -1870,6 +1884,40 @@ t.describe("native navigation controls", function()
 		anchor.Visible = false
 		t.expect(find(world.screen, "Arrow")).toBe(nil)
 		t.expect(find(world.screen, "CalloutPanel")).toBe(nil)
+		world.stop()
+	end)
+
+	t.it("moves a top callout below its anchor when only the bottom has room", function()
+		local world = setup(function(UI, Host)
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
+			return Host.Frame({
+				anchor,
+				UI.Callout({
+					anchor = anchor,
+					edge = "top",
+					onRetire = function() end,
+					content = function()
+						return UI.Label({ text = "Tip" })
+					end,
+				}),
+			})
+		end)
+		local V = world.engine.types.Vector2
+		world.screen.AbsoluteSize = V.new(844, 311)
+		local anchor, panel, arrow =
+			find(world.screen, "Anchor"), find(world.screen, "CalloutPanel"), find(world.screen, "Arrow")
+		anchor.AbsolutePosition = V.new(8, 18)
+		anchor.AbsoluteSize = V.new(109, 44)
+		panel.AbsoluteSize = V.new(280, 106)
+		world.settle()
+		t.expect(find(panel, "PresentationScale").Scale).toBe(1)
+		t.expect(panel.Position.Y.Offset).toBe(18 + 44 + 8)
+		t.expect(arrow.Position.Y.Offset).toBe(18 + 44 + 8 - 5)
+		anchor.AbsolutePosition = V.new(8, 200)
+		t.expect(panel.Position.Y.Offset).toBe(200 - 106 - 8)
+		anchor.AbsolutePosition = V.new(8, 100)
+		panel.AbsoluteSize = V.new(280, 250)
+		t.expect(panel.Position.Y.Offset).toBe(8)
 		world.stop()
 	end)
 
@@ -2077,6 +2125,7 @@ t.describe("native navigation controls", function()
 		t.expect(alertArt.Image).toBe("rbxassetid://42")
 		alert:set(false)
 		sheet:set(true)
+		world.settle()
 		panel = find(world.screen, "SheetPanel")
 		t.expect(panel.BackgroundTransparency).toBe(0)
 		t.expect(alertArt.isDestroyed()).toBe(true)
@@ -2348,6 +2397,322 @@ t.describe("native navigation controls", function()
 		t.expect(outer:peek()).toBe(true)
 		backdrop.Activated.fire({ Position = world.engine.types.Vector2.new(50, 150) })
 		t.expect(outer:peek()).toBe(false)
+		world.stop()
+	end)
+	t.it("slides a pushed page over a dimmed parallax page and reverses the pop without holding selection", function()
+		local path = Compose.cell({})
+		local world = setup(function(UI)
+			return UI.NavigationStack({
+				path = path,
+				root = {
+					title = "Root",
+					content = function()
+						return UI.Button "RootAction" { label = "Root" }
+					end,
+				},
+				destinations = {
+					detail = {
+						title = "Detail",
+						content = function()
+							return UI.Button "DetailAction" { label = "Detail" }
+						end,
+					},
+				},
+			})
+		end)
+		local stack = find(world.screen, "NavigationStack")
+		local root = find(stack, "@root")
+		world.gui.SelectedObject = find(root, "RootAction")
+		path:set({ { id = "detail" } })
+		local detail = find(stack, "detail")
+		t.expect(detail.Position.X.Scale).toBe(1)
+		t.expect(detail.Interactable).toBe(true)
+		t.expect(root.Interactable).toBe(false)
+		t.expect(world.gui.SelectedObject:IsDescendantOf(detail)).toBe(true)
+		local previous, elapsed = 1, 0
+		while elapsed < 0.35 do
+			world.engine.heartbeat.fire(1 / 60)
+			elapsed += 1 / 60
+			local front, back = detail.Position.X.Scale, root.Position.X.Scale
+			t.expect(front < previous).toBe(true)
+			t.expect(back).toBeCloseTo(-0.3 * (1 - front), 1e-6)
+			t.expect(root.Visible).toBe(true)
+			t.expect(root.ClipsDescendants).toBe(true)
+			t.expect(stack.ClipsDescendants).toBe(true)
+			t.expect(find(root, "Dim").BackgroundTransparency).toBeCloseTo(1 - 0.1 * (1 - front), 1e-6)
+			previous = front
+		end
+		t.expect(previous < 0.01).toBe(true)
+		world.settle()
+		t.expect(detail.Position.X.Scale).toBe(0)
+		t.expect(root.Visible).toBe(false)
+		t.expect(find(root, "Dim")).toBe(nil)
+		t.expect(stack.ClipsDescendants).toBe(false)
+		path:set({})
+		t.expect(detail.isDestroyed()).toBe(false)
+		t.expect(detail.Interactable).toBe(false)
+		t.expect(root.Interactable).toBe(true)
+		t.expect(world.gui.SelectedObject.Name).toBe("RootAction")
+		previous = 0
+		for _ = 1, 12 do
+			world.engine.heartbeat.fire(1 / 60)
+			local front = detail.Position.X.Scale
+			t.expect(front > previous).toBe(true)
+			t.expect(root.Position.X.Scale).toBeCloseTo(-0.3 * (1 - front), 1e-6)
+			t.expect(world.gui.SelectedObject == nil or not world.gui.SelectedObject:IsDescendantOf(detail)).toBe(true)
+			previous = front
+		end
+		world.settle()
+		t.expect(detail.isDestroyed()).toBe(true)
+		t.expect(root.Position.X.Scale).toBe(0)
+		t.expect(root.Visible).toBe(true)
+		world.stop()
+	end)
+
+	t.it("pushes and pops without motion under reduced motion or a false transition", function()
+		for _, mode in { "reduced", "false" } do
+			local path = Compose.cell({})
+			local world = setup(function(UI, Host)
+				return UI.NavigationStack({
+					path = path,
+					transition = if mode == "false" then false else nil,
+					root = { title = "Root", content = Host.Frame "RootBody" {} },
+					destinations = { detail = { title = "Detail", content = Host.Frame "DetailBody" {} } },
+				})
+			end)
+			world.gui.ReducedMotionEnabled = mode == "reduced"
+			local stack = find(world.screen, "NavigationStack")
+			local root = find(stack, "@root")
+			path:set({ { id = "detail" } })
+			local detail = find(stack, "detail")
+			t.expect(detail.Position.X.Scale).toBe(0)
+			t.expect(root.Visible).toBe(false)
+			t.expect(stack.ClipsDescendants).toBe(false)
+			world.engine.heartbeat.fire(1 / 60)
+			t.expect(world.engine.heartbeat.count()).toBe(0)
+			path:set({})
+			t.expect(detail.isDestroyed()).toBe(true)
+			t.expect(root.Visible).toBe(true)
+			world.stop()
+		end
+	end)
+
+	t.it("crossfades tab pages without blocking the incoming page and shows the first page at once", function()
+		local selection = Compose.cell("one")
+		local world = setup(function(UI, Host)
+			return UI.TabView({
+				selection = selection,
+				tabs = {
+					{ id = "one", content = Host.Frame "OneBody" {} },
+					{ id = "two", content = Host.Frame "TwoBody" {} },
+				},
+			})
+		end)
+		local one = find(world.screen, "OneBody").Parent
+		t.expect(one.ClassName).toBe("CanvasGroup")
+		t.expect(one.GroupTransparency).toBe(0)
+		selection:set("two")
+		local two = find(world.screen, "TwoBody").Parent
+		t.expect(two.GroupTransparency).toBe(1)
+		t.expect(two.Interactable).toBe(true)
+		t.expect(one.Interactable).toBe(false)
+		local previous = 1
+		for _ = 1, 6 do
+			world.engine.heartbeat.fire(1 / 60)
+			t.expect(two.GroupTransparency < previous).toBe(true)
+			t.expect(one.GroupTransparency).toBeCloseTo(1 - two.GroupTransparency, 1e-6)
+			t.expect(one.Visible).toBe(true)
+			previous = two.GroupTransparency
+		end
+		t.expect(previous > 0).toBe(true)
+		for _ = 1, 7 do
+			world.engine.heartbeat.fire(1 / 60)
+		end
+		t.expect(two.GroupTransparency).toBe(0)
+		t.expect(one.Visible).toBe(false)
+		world.gui.ReducedMotionEnabled = true
+		selection:set("one")
+		t.expect(one.GroupTransparency).toBe(0)
+		t.expect(one.Visible).toBe(true)
+		t.expect(two.Visible).toBe(false)
+		world.stop()
+	end)
+
+	t.it("slides a sheet up over a fading scrim and releases input when its dismissal starts", function()
+		local shown, detent = Compose.cell(false), Compose.cell("medium")
+		local world = setup(function(UI, Host)
+			return Host.Frame({
+				UI.Button "Opener" { label = "Open" },
+				UI.Sheet({ isPresented = shown, detent = detent, title = "Sheet", content = Host.Frame({}) }),
+			})
+		end)
+		world.gui.SelectedObject = find(world.screen, "Opener")
+		shown:set(true)
+		local panel = find(world.screen, "SheetPanel")
+		local fade = find(world.screen, "ScrimFade")
+		t.expect(panel.Position.Y.Offset > 0).toBe(true)
+		t.expect(fade.Transparency.Keypoints[1].Value).toBe(1)
+		local previous = panel.Position.Y.Offset
+		for _ = 1, 10 do
+			world.engine.heartbeat.fire(1 / 60)
+			t.expect(panel.Position.Y.Offset < previous).toBe(true)
+			previous = panel.Position.Y.Offset
+		end
+		world.settle()
+		t.expect(panel.Position).toBe(world.engine.types.UDim2.fromScale(0.5, 1))
+		t.expect(fade.Transparency.Keypoints[1].Value).toBe(0)
+		shown:set(false)
+		local modal = find(world.screen, "Modal")
+		t.expect(modal.Interactable).toBe(false)
+		t.expect(world.gui.SelectedObject.Name).toBe("Opener")
+		world.engine.heartbeat.fire(0.1)
+		t.expect(panel.Position.Y.Offset > 0).toBe(true)
+		t.expect(fade.Transparency.Keypoints[1].Value > 0).toBe(true)
+		world.engine.heartbeat.fire(0.11)
+		t.expect(panel.isDestroyed()).toBe(true)
+		world.gui.ReducedMotionEnabled = true
+		shown:set(true)
+		panel = find(world.screen, "SheetPanel")
+		t.expect(panel.Position).toBe(world.engine.types.UDim2.fromScale(0.5, 1))
+		shown:set(false)
+		t.expect(panel.isDestroyed()).toBe(true)
+		world.stop()
+	end)
+
+	t.it("scales and fades an alert in and dismisses it faster than it entered", function()
+		local shown = Compose.cell(false)
+		local world = setup(function(UI)
+			return UI.Alert({
+				isPresented = shown,
+				title = "Leave?",
+				actions = { { id = "stay", label = "Stay", role = "cancel" } },
+			})
+		end)
+		shown:set(true)
+		local panel = find(world.screen, "AlertPanel")
+		local scale = find(panel, "PresentationScale")
+		t.expect(scale.Scale).toBe(0.94)
+		t.expect(panel.GroupTransparency).toBe(1)
+		world.engine.heartbeat.fire(0.1)
+		t.expect(scale.Scale > 0.94 and scale.Scale < 1).toBe(true)
+		t.expect(panel.GroupTransparency > 0 and panel.GroupTransparency < 1).toBe(true)
+		world.engine.heartbeat.fire(0.1)
+		t.expect(scale.Scale).toBe(1)
+		t.expect(panel.GroupTransparency).toBe(0)
+		shown:set(false)
+		world.engine.heartbeat.fire(0.1)
+		t.expect(panel.isDestroyed()).toBe(false)
+		t.expect(panel.GroupTransparency > 0).toBe(true)
+		world.engine.heartbeat.fire(0.06)
+		t.expect(panel.isDestroyed()).toBe(true)
+		world.stop()
+	end)
+
+	t.it("grows callouts, help and menus from their anchor and settles them exactly", function()
+		local opened = Compose.cell(false)
+		local world = setup(function(UI, Host)
+			local anchor = Host.TextButton "Anchor" {}
+			return Host.Frame({
+				anchor,
+				UI.Button "Plus" { label = "+", help = "Adds one" },
+				UI.Callout({
+					anchor = anchor,
+					content = Host.TextLabel "Tip" {},
+					onRetire = function() end,
+				}),
+				UI.Menu({ isPresented = opened, items = { { id = "Run", label = "Run", onSelect = function() end } } }),
+			})
+		end)
+		local V = world.engine.types.Vector2
+		world.screen.AbsoluteSize = V.new(960, 720)
+		local anchor = find(world.screen, "Anchor")
+		anchor.AbsolutePosition = V.new(160, 100)
+		anchor.AbsoluteSize = V.new(240, 44)
+		local callout = find(world.screen, "CalloutPanel")
+		callout.AbsoluteSize = V.new(280, 100)
+		local scale = find(callout, "PresentationScale")
+		t.expect(scale.Scale).toBe(0.9)
+		t.expect(callout.GroupTransparency).toBe(1)
+		t.expect(callout.Position.X.Offset).toBe(140 + math.floor(0.1 * 140))
+		t.expect(callout.Position.Y.Offset).toBe(152)
+		world.engine.heartbeat.fire(0.075)
+		t.expect(scale.Scale > 0.9 and scale.Scale < 1).toBe(true)
+		world.engine.heartbeat.fire(0.075)
+		t.expect(scale.Scale).toBe(1)
+		t.expect(callout.GroupTransparency).toBe(0)
+		t.expect(callout.Position).toBe(world.engine.types.UDim2.fromOffset(140, 152))
+		local plus = find(world.screen, "Plus")
+		world.input.PreferredInput = world.engine.types.Enum.PreferredInput.KeyboardAndMouse
+		plus.GuiState = world.engine.types.Enum.GuiState.Hover
+		world.engine.heartbeat.fire(0.5)
+		local help = find(world.screen, "Help")
+		t.expect(help.ClassName).toBe("CanvasGroup")
+		t.expect(find(help, "PresentationScale").Scale).toBe(0.9)
+		world.settle()
+		t.expect(find(help, "PresentationScale").Scale).toBe(1)
+		t.expect(help.GroupTransparency).toBe(0)
+		plus.GuiState = world.engine.types.Enum.GuiState.Idle
+		world.engine.heartbeat.fire(0.05)
+		t.expect(help.isDestroyed()).toBe(false)
+		world.engine.heartbeat.fire(0.06)
+		t.expect(help.isDestroyed()).toBe(true)
+		opened:set(true)
+		local menu = find(world.screen, "MenuPanel")
+		local group = find(menu, "MenuGroup")
+		t.expect(group.GroupTransparency).toBe(1)
+		t.expect(find(menu, "PresentationFade").Transparency.Keypoints[1].Value).toBe(1)
+		t.expect(find(menu, "PresentationScale").Scale).toBe(0.9)
+		world.settle()
+		t.expect(group.GroupTransparency).toBe(0)
+		t.expect(find(menu, "PresentationScale").Scale).toBe(1)
+		find(menu, "Run").Activated.fire()
+		t.expect(find(world.screen, "Modal").Interactable).toBe(false)
+		world.engine.heartbeat.fire(0.11)
+		t.expect(menu.isDestroyed()).toBe(true)
+		world.stop()
+	end)
+
+	t.it("plays the press haptic for selection changes and decisive alert actions only", function()
+		local selected, shown, opened = Compose.cell("a"), Compose.cell(true), Compose.cell(true)
+		local effect
+		local world = setup(function(UI, Host)
+			return Host.Frame({
+				UI.Picker "Mode" {
+					selected = selected,
+					style = "segmented",
+					options = { { value = "a", label = "A" }, { value = "b", label = "B" } },
+				},
+				UI.TabView({
+					selection = Compose.cell("one"),
+					tabs = { { id = "one", content = Host.Frame({}) }, { id = "two", content = Host.Frame({}) } },
+				}),
+				UI.Menu({ isPresented = opened, items = { { id = "Run", label = "Run", onSelect = function() end } } }),
+				UI.Alert({
+					isPresented = shown,
+					title = "Delete?",
+					actions = {
+						{ id = "Keep", label = "Keep", role = "cancel" },
+						{ id = "Erase", label = "Delete", role = "destructive" },
+					},
+				}),
+			})
+		end, {
+			pressHaptic = function(engine)
+				effect = engine.new("HapticEffect")
+				return effect
+			end,
+		})
+		local mode = find(world.screen, "Mode")
+		t.expect(find(mode, "a").PressHapticEffect).toBe(nil)
+		t.expect(find(mode, "b").PressHapticEffect).toBe(effect)
+		selected:set("b")
+		t.expect(find(mode, "a").PressHapticEffect).toBe(effect)
+		t.expect(find(mode, "b").PressHapticEffect).toBe(nil)
+		t.expect(find(find(world.screen, "Tabs"), "one").PressHapticEffect).toBe(nil)
+		t.expect(find(find(world.screen, "MenuPanel"), "Run").PressHapticEffect).toBe(nil)
+		t.expect(find(world.screen, "Trigger").PressHapticEffect).toBe(nil)
+		t.expect(find(world.screen, "Erase").PressHapticEffect).toBe(effect)
+		t.expect(find(world.screen, "Keep").PressHapticEffect).toBe(nil)
 		world.stop()
 	end)
 end)

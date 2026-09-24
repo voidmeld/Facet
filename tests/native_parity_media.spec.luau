@@ -2146,6 +2146,154 @@ t.describe("native parity media", function()
 			t.expect(w.gui.SelectedObject).toBe(base)
 			w.stop()
 		end)
+
+		local function facetErrors(screen: any): number
+			local count = 0
+			for _, node in screen:GetDescendants() do
+				if node:GetAttribute("FacetError") ~= nil then
+					count += 1
+				end
+			end
+			return count
+		end
+
+		t.it(
+			"follows a readable alert source that moves in flight and keeps the last origin when it goes nil",
+			function()
+				local shown = Compose.cell(false)
+				local origin: any = nil
+				local w = session(function(UI, Host)
+					local a = Host.Frame "CardA" {}
+					local b = Host.Frame "CardB" {}
+					origin = Compose.cell(a)
+					return Host.Frame({
+						a,
+						b,
+						UI.Alert({
+							isPresented = shown,
+							title = "Detail",
+							transition = { source = origin, seconds = 0.2 },
+						}),
+					})
+				end)
+				local V2 = w.engine.types.Vector2
+				local a, b = w.find("CardA"), w.find("CardB")
+				a.AbsolutePosition, a.AbsoluteSize = V2.new(20, 30), V2.new(100, 60)
+				b.AbsolutePosition, b.AbsoluteSize = V2.new(500, 400), V2.new(50, 40)
+				shown:set(true)
+				local panel = w.find("AlertPanel")
+				local scale = w.find("PresentationScale")
+				t.expect(panel.Position.X.Offset).toBe(70)
+				t.expect(panel.Position.Y.Offset).toBe(60)
+				w.find("AlertModal").AbsoluteSize = V2.new(800, 600)
+				w.engine.heartbeat.fire(0.1)
+				local rest = 100 / 440
+				local progress = (scale.Scale - rest) / (1 - rest)
+				t.expect(progress > 0 and progress < 1).toBe(true)
+				local before = panel.Position.X.Offset
+				t.expect(math.abs(before - (70 * (1 - progress) + 400 * progress)) <= 1).toBe(true)
+				a.AbsolutePosition = V2.new(220, 130)
+				local moved = panel.Position.X.Offset
+				t.expect(math.abs(moved - before - 200 * (1 - progress)) <= 1).toBe(true)
+				t.expect(math.abs(panel.Position.Y.Offset - (160 * (1 - progress) + 300 * progress)) <= 1).toBe(true)
+				origin:set(nil)
+				t.expect(panel.Position.X.Offset).toBe(moved)
+				t.expect(scale.Scale > rest).toBe(true)
+				w.engine.heartbeat.fire(0.05)
+				t.expect(panel.Position.X.Offset > moved).toBe(true)
+				w.engine.heartbeat.fire(0.2)
+				t.expect(panel.Position.X.Offset).toBe(400)
+				t.expect(scale.Scale).toBe(1)
+				shown:set(false)
+				w.engine.heartbeat.fire(0.1)
+				local back = (scale.Scale - rest) / (1 - rest)
+				t.expect(back > 0 and back < 1).toBe(true)
+				t.expect(math.abs(panel.Position.X.Offset - (270 * (1 - back) + 400 * back)) <= 1).toBe(true)
+				w.engine.heartbeat.fire(0.2)
+				t.expect(w.find("AlertPanel")).toBeNil()
+				origin:set(b)
+				shown:set(true)
+				local next = w.find("AlertPanel")
+				t.expect(next ~= panel).toBe(true)
+				w.find("AlertModal").AbsoluteSize = V2.new(800, 600)
+				t.expect(next.Position.X.Offset).toBe(525)
+				t.expect(next.Position.Y.Offset).toBe(420)
+				w.engine.heartbeat.fire(0.3)
+				t.expect(next.Position.X.Offset).toBe(400)
+				b.Parent = nil
+				shown:set(false)
+				w.engine.heartbeat.fire(0.1)
+				t.expect(next.Position.X.Offset).toBe(400)
+				t.expect(next.Position.Y.Offset).toBe(300)
+				t.expect(next.GroupTransparency > 0 and next.GroupTransparency < 1).toBe(true)
+				w.engine.heartbeat.fire(0.2)
+				t.expect(w.find("AlertPanel")).toBeNil()
+				t.expect(b.isDestroyed()).toBe(false)
+				t.expect(a.Parent ~= nil).toBe(true)
+				t.expect(facetErrors(w.screen)).toBe(0)
+				w.stop()
+			end
+		)
+
+		t.it("dismisses a full-screen alert in place and destroys its snapshot when the source is gone", function()
+			local shown = Compose.cell(false)
+			local origin: any = nil
+			local w = session(function(UI, Host)
+				local card = Host.Frame "Card" { Host.UICorner({}) }
+				origin = Compose.cell(card)
+				return Host.Frame({
+					card,
+					UI.Alert({
+						isPresented = shown,
+						title = "Detail",
+						surface = "fullScreen",
+						transition = { source = origin, seconds = 0.4 },
+					}),
+				})
+			end)
+			local V2 = w.engine.types.Vector2
+			local card = w.find("Card")
+			card.AbsolutePosition, card.AbsoluteSize = V2.new(20, 30), V2.new(120, 80)
+			shown:set(true)
+			local panel = w.find("AlertPanel")
+			local modal = w.find("AlertModal")
+			modal.AbsolutePosition, modal.AbsoluteSize = V2.new(10, 10), V2.new(800, 600)
+			local snapshot = w.find("SourceSnapshot")
+			t.expect(snapshot ~= nil and snapshot ~= card).toBe(true)
+			t.expect(panel.Position.X.Offset).toBe(10)
+			t.expect(panel.Position.Y.Offset).toBe(20)
+			w.engine.heartbeat.fire(0.1)
+			local progress = (panel.Size.X.Offset - 120) / 680
+			t.expect(progress > 0 and progress < 1).toBe(true)
+			t.expect(math.abs(panel.Position.X.Offset - 10 * (1 - progress)) <= 1).toBe(true)
+			card.AbsolutePosition = V2.new(210, 330)
+			t.expect(math.abs(panel.Position.X.Offset - 200 * (1 - progress)) <= 1).toBe(true)
+			t.expect(math.abs(panel.Position.Y.Offset - 320 * (1 - progress)) <= 1).toBe(true)
+			local width = panel.Size.X.Offset
+			origin:set(nil)
+			t.expect(panel.Size.X.Offset).toBe(width)
+			w.engine.heartbeat.fire(0.05)
+			t.expect(panel.Size.X.Offset > width).toBe(true)
+			w.engine.heartbeat.fire(0.4)
+			t.expect(panel.Size.X.Offset).toBe(800)
+			t.expect(panel.Position.X.Offset).toBe(0)
+			card:Destroy()
+			shown:set(false)
+			w.engine.heartbeat.fire(0.1)
+			t.expect(w.find("AlertPanel")).toBe(panel)
+			t.expect(panel.Position.X.Offset).toBe(0)
+			t.expect(panel.Position.Y.Offset).toBe(0)
+			t.expect(panel.Size.X.Offset).toBe(800)
+			t.expect(panel.Size.Y.Offset).toBe(600)
+			t.expect(panel.GroupTransparency > 0 and panel.GroupTransparency < 1).toBe(true)
+			t.expect(w.find("SourcePreview").Visible).toBe(false)
+			t.expect(snapshot.isDestroyed()).toBe(false)
+			w.engine.heartbeat.fire(0.4)
+			t.expect(w.find("AlertPanel")).toBeNil()
+			t.expect(snapshot.isDestroyed()).toBe(true)
+			t.expect(facetErrors(w.screen)).toBe(0)
+			w.stop()
+		end)
 	end)
 
 	t.describe("icon coverage", function()

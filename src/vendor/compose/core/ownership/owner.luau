@@ -38,26 +38,35 @@ type Entry = { any }
 
 local function noop() end
 
-local function raiseAll(errors: { string })
-	if #errors == 0 then
+local function raiseAll(failures: { unknown })
+	local count = #failures
+	if count == 0 then
 		return
 	end
-	if #errors == 1 then
-		error(errors[1], 0)
+	if count == 1 then
+		error(failures[1], 0)
 	end
-	local parts = { ("Compose: %d errors while disposing an owner:"):format(#errors) }
-	for index, message in errors do
-		table.insert(parts, ("  [%d] %s"):format(index, message))
+	local parts = { ("Compose: %d errors while disposing an owner:"):format(count) }
+	for index, failure in failures do
+		table.insert(parts, ("  [%d] %s"):format(index, tostring(failure)))
 	end
 	error(table.concat(parts, "\n"), 0)
 end
 
-local function releaseEntry(entry: Entry)
-	entry[DISPOSE]()
+local function releaseEntry(entry: Entry, failures: { unknown })
 	local afterDispose = entry[AFTER_DISPOSE]
-	if afterDispose ~= nil then
-		entry[AFTER_DISPOSE] = nil
-		afterDispose()
+	if afterDispose == nil then
+		entry[DISPOSE]()
+		return
+	end
+	entry[AFTER_DISPOSE] = nil
+	local ok, failure: any = pcall(entry[DISPOSE])
+	if not ok then
+		table.insert(failures, failure)
+	end
+	local settled, later: any = pcall(afterDispose)
+	if not settled then
+		table.insert(failures, later)
 	end
 end
 
@@ -107,7 +116,13 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 				return
 			end
 			unlink(entry)
-			releaseEntry(entry)
+			if entry[AFTER_DISPOSE] == nil then
+				entry[DISPOSE]()
+				return
+			end
+			local failures: { unknown } = {}
+			releaseEntry(entry, failures)
+			raiseAll(failures)
 		end
 	end
 
@@ -117,7 +132,7 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 
 	local function rollbackTo(token: unknown)
 		local boundaryEntry = token :: Entry?
-		local errors: { string } = {}
+		local failures: { unknown } = {}
 		local pending = head
 
 		local function releaseRest()
@@ -125,17 +140,17 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 				local entry = pending
 				pending = entry[NEXT]
 				unlink(entry)
-				releaseEntry(entry)
+				releaseEntry(entry, failures)
 			end
 		end
 
 		while pending ~= nil and pending ~= boundaryEntry do
-			local ok, err: any = pcall(releaseRest)
+			local ok, failure: any = pcall(releaseRest)
 			if not ok then
-				table.insert(errors, tostring(err))
+				table.insert(failures, failure)
 			end
 		end
-		raiseAll(errors)
+		raiseAll(failures)
 	end
 
 	local function disposeOwner()
@@ -162,7 +177,7 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 			return
 		end
 
-		local errors: { string } = {}
+		local failures: { unknown } = {}
 		local function releaseRest()
 			while pending ~= nil do
 				local entry = pending
@@ -170,17 +185,17 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 				entry[PREVIOUS] = nil
 				entry[NEXT] = nil
 				entry[ATTACHED] = false
-				releaseEntry(entry)
+				releaseEntry(entry, failures)
 			end
 		end
 
 		repeat
-			local ok, err: any = pcall(releaseRest)
+			local ok, failure: any = pcall(releaseRest)
 			if not ok then
-				table.insert(errors, tostring(err))
+				table.insert(failures, failure)
 			end
 		until pending == nil
-		raiseAll(errors)
+		raiseAll(failures)
 	end
 
 	local owner: Owner

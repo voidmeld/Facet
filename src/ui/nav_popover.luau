@@ -25,6 +25,7 @@ local KEYS = {
 	"maxHeight",
 	"compact",
 }
+local POPOVER = table.freeze({ enter = 0.15, exit = 0.1 })
 local MARGIN = 8
 local TAIL = 10
 local PADDING = 8
@@ -186,10 +187,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			check()
 		end
 		local input = surfaces.service("UserInputService")
-		local preferred: ComposeTypes.Readable<Enum.PreferredInput?> = if input
+		local preferred: ComposeTypes.Readable<Enum.PreferredInput>? = if input
 				and input.GetPropertyChangedSignal
 			then ctx.observe(input, "PreferredInput")
-			else Compose.cell(nil :: Enum.PreferredInput?)
+			else nil
 		local layerSize = Compose.cell(V2.zero)
 		local layerOwner: ComposeTypes.Owner? = nil
 		local function locateLayer()
@@ -218,7 +219,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				return "popover"
 			end
 			local width = use(layerSize).X
-			return if use(preferred) == E.PreferredInput.Touch and width > 0 and width < 600 then "sheet" else "popover"
+			local kind = if preferred then use(preferred) else nil
+			return if kind == E.PreferredInput.Touch and width > 0 and width < 600 then "sheet" else "popover"
 		end)
 		Compose.watch(function(use: ComposeTypes.Use)
 			if read(spec.isPresented, use) ~= true then
@@ -234,7 +236,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			return want and ready and not use(lost)
 		end
-		local function anchored(): Frame
+		local function anchored(phase: Nav.PresencePhase?): Frame
+			local amount = surfaces.appearance(phase, POPOVER)
 			local layer = assert(root:FindFirstAncestorWhichIsA("LayerCollector"))
 			local extent = ctx.observe(layer, "AbsoluteSize")
 			local origin = ctx.observe(layer, "AbsolutePosition")
@@ -282,7 +285,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			table.insert(bodyProps, content)
 			local body = Host.ScrollingFrame(bodyProps)
 			local panel = ctx.styled(
-				Host.Frame({
+				Host.CanvasGroup({
 					Name = "Panel",
 					BackgroundTransparency = 0,
 					BorderSizePixel = 0,
@@ -322,26 +325,16 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					tailInset = 8,
 				})
 			end)
-			local gui = surfaces.service("GuiService")
-			local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
-			local ready = Compose.cell(false)
-			local grow = runtime.tween(function(use: ComposeTypes.Use)
-				return if use(ready) then 1 else 0.97
-			end, { seconds = 0.12 })
-			runtime.decorate(panel, {
-				Position = function(use: ComposeTypes.Use)
-					local at = use(solved)
-					return D2.fromOffset(at.x, at.y)
-				end,
-			})
-			surfaces.attach(panel, {
-				Host.UIScale({
-					Name = "Grow",
-					Scale = function(use: ComposeTypes.Use)
-						return if read(ctx.config.reducedMotion, use) == true or use(reduced) then 1 else use(grow)
-					end,
-				}),
-			})
+			surfaces.popover(panel, amount, function(use: ComposeTypes.Use): (Vector2, Vector2)
+				local at = use(solved)
+				local size = use(measured)
+				local origin = if at.edge == "bottom"
+					then V2.new(math.clamp((at.tailX or at.x) - at.x, 0, size.X), 0)
+					elseif at.edge == "top" then V2.new(math.clamp((at.tailX or at.x) - at.x, 0, size.X), size.Y)
+					elseif at.edge == "right" then V2.new(0, math.clamp((at.tailY or at.y) - at.y, 0, size.Y))
+					else V2.new(size.X, math.clamp((at.tailY or at.y) - at.y, 0, size.Y))
+				return V2.new(at.x, at.y), origin
+			end)
 			local children: { Types.Child } = { panel }
 			if tailed then
 				table.insert(
@@ -357,6 +350,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Visible = function(use: ComposeTypes.Use)
 								return not use(solved).tailSuppressed
 							end,
+							Host.UIGradient "PresentationFade" {
+								Transparency = function(use: ComposeTypes.Use)
+									return ctx.types.NumberSequence.new(1 - amount(use))
+								end,
+							} :: Types.Child,
 							Position = function(use: ComposeTypes.Use)
 								local at = use(solved)
 								return D2.fromOffset(at.tailX or 0, at.tailY or 0)
@@ -381,13 +379,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				onOutside = function()
 					propose(false, "outside")
 				end,
+				exiting = if phase then phase.exiting else nil,
+				appearance = amount,
 			})
-			local parent = ctx.observe(modal, "Parent")
-			Compose.watch(function(use: ComposeTypes.Use)
-				if use(parent) then
-					ready:set(true)
-				end
-			end)
 			modal:SetAttribute("FacetRoute", "popover")
 			return modal
 		end
@@ -416,7 +410,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return if at == base then path else nil
 		end
 		surfaces.attach(root, {
-			surfaces.overlay(root, condition, function()
+			surfaces.overlay(root, condition, function(phase: Nav.PresencePhase?)
 				presented = true
 				Compose.cleanup(function()
 					presented = false
@@ -445,7 +439,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							return { use(route) }
 						end,
 						render = function(item: ComposeTypes.Readable<string>): Instance
-							local modal = if item:peek() == "sheet" then sheeted() else anchored()
+							local modal = if item:peek() == "sheet" then sheeted() else anchored(phase)
 							local restore = pending
 							pending = nil
 							if restore and gui then
@@ -471,7 +465,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end,
 					}),
 				})
-			end),
+			end, { motion = POPOVER }),
 		})
 		Compose.cleanup(function()
 			disposed = true

@@ -484,6 +484,15 @@
       "Type"
     ]
   },
+  "UIGridLayout": {
+    "sha256": "d9a9cd4816984fd82bac3c05f1daff9a5034e927b9b72f6a1abda52e2a36af0e",
+    "writable": [
+      "CellPadding",
+      "CellSize",
+      "FillDirectionMaxCells",
+      "StartCorner"
+    ]
+  },
   "UIGridStyleLayout": {
     "sha256": "ddbf9e453f12aeecc622b1ecb28c34f4d2db281b1e7469d7aec3eb5ba0163443",
     "writable": [

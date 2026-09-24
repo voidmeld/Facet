@@ -42,6 +42,7 @@ export type ButtonVisualOptions = EnabledOptions & {
 	row: Row?,
 }
 export type ButtonInputOptions = {
+	haptic: Value<boolean>?,
 	repeatDelay: number?,
 	repeatInterval: number?,
 	shortcut: Shortcut?,

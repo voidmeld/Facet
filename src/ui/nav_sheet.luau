@@ -44,6 +44,7 @@ local KEYS = {
 }
 local PLACEMENTS = table.freeze({ automatic = true, bottom = true, side = true, center = true })
 local HANDLE = 20
+local SHEET = table.freeze({ enter = 0.3, exit = 0.2 })
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
@@ -54,7 +55,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	end
 
 	local function prepare(spec: Nav.SheetSpec): Prepared
-		assert(spec.detent and spec.detent.set, "Sheet.detent requires a writable Compose cell")
+		assert(type(spec.detent) == "table" and spec.detent.set, "Sheet.detent requires a writable Compose cell")
 		local placement = spec.placement or "automatic"
 		assert(PLACEMENTS[placement], "Sheet.placement must be automatic, bottom, side or center")
 		assert(
@@ -168,10 +169,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local gui = surfaces.service("GuiService")
 		local input = surfaces.service("UserInputService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
-		local preferred: ComposeTypes.Readable<Enum.PreferredInput?> = if input
+		local preferred: ComposeTypes.Readable<Enum.PreferredInput>? = if input
 				and input.GetPropertyChangedSignal
 			then ctx.observe(input, "PreferredInput")
-			else Compose.cell(nil :: Enum.PreferredInput?)
+			else nil
 		local function reduce(use: ComposeTypes.Use?): boolean
 			return read(ctx.config.reducedMotion, use) == true or read(reduced, use) == true
 		end
@@ -277,7 +278,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if session then
 				return false
 			end
-			local kind = preferred:peek()
+			local kind = if preferred then preferred:peek() else nil
 			session = {
 				source = source,
 				origin = y,
@@ -656,17 +657,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 		local anchorX = if placement == "side" then (if edge == "left" then 0 else 1) else 0.5
 		local anchorY = if placement == "center" then 0.5 else 1
-		local slide = Compose.cell(if placement == "side" and not reduce() then 0 else 1)
-		local progress = runtime.tween(function(use: ComposeTypes.Use)
-			return if phase and use(phase.exiting) then 0 else use(slide)
-		end, { seconds = 0.2 })
-		local function travel(use: ComposeTypes.Use): number
-			if placement ~= "side" then
-				return 0
+		local shown = surfaces.appearance(phase, SHEET)
+		local function travel(use: ComposeTypes.Use): (number, number)
+			local rest = 1 - shown(use)
+			if rest <= 0 then
+				return 0, 0
 			end
-			local t = if reduce(use) then (if phase and use(phase.exiting) then 0 else 1) else use(progress)
-			local width = use(panelWidth)
-			return (1 - t) * (if edge == "left" then -width else width)
+			if placement == "side" then
+				local width = use(panelWidth)
+				return rest * (if edge == "left" then -width else width), 0
+			end
+			if placement == "center" then
+				return 0, 0
+			end
+			return 0, math.ceil(painted(use) * rest)
 		end
 		local panel = ctx.column({
 			handle,
@@ -680,7 +684,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			AnchorPoint = V2.new(anchorX, anchorY),
 			Position = function(use: ComposeTypes.Use)
 				local y = if anchorY == 1 then -keyboard(use) else -keyboard(use) / 2
-				return D2.new(anchorX, travel(use), anchorY, y)
+				local dx, dy = travel(use)
+				return D2.new(anchorX, dx, anchorY, y + dy)
 			end,
 			AutomaticSize = E.AutomaticSize.None,
 			Size = function(use: ComposeTypes.Use)
@@ -711,6 +716,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			onOutside = function()
 				interactive("outside")
 			end,
+			exiting = if phase then phase.exiting else nil,
+			appearance = shown,
 		})
 		local size = ctx.observe(overlay, "AbsoluteSize")
 		Compose.watch(function(use: ComposeTypes.Use)
@@ -719,41 +726,23 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				extent:set(value)
 			end
 		end)
-		local parent = ctx.observe(overlay, "Parent")
-		Compose.watch(function(use: ComposeTypes.Use)
-			if use(parent) then
-				slide:set(1)
-			end
-		end)
 		return overlay
 	end
 
 	UI.Sheet = ctx.construct("Sheet", function(spec: Nav.SheetSpec): Frame
 		local prepared = prepare(spec)
-		assert(spec.isPresented and spec.isPresented.set, "Sheet.isPresented requires a writable Compose cell")
+		assert(
+			type(spec.isPresented) == "table" and spec.isPresented.set,
+			"Sheet.isPresented requires a writable Compose cell"
+		)
 		local root = Host.Frame(
 			ctx.props(spec, KEYS, { Name = "Sheet", BackgroundTransparency = 1, Size = D2.fromOffset(0, 0) })
 		)
-		local side = spec.placement == "side"
-		local gui = surfaces.service("GuiService")
-		local reduced: ComposeTypes.Readable<boolean> = if gui
-			then ctx.observe(gui, "ReducedMotionEnabled")
-			else Compose.cell(false)
 		surfaces.attach(root, {
 			surfaces.overlay(root, spec.isPresented, function(phase)
 				return modalFor(spec, prepared, nil, phase)
 			end, {
-				presence = if side
-					then {
-						exit = function()
-							if read(ctx.config.reducedMotion) == true or read(reduced) == true then
-								return { completed = Compose.cell(true) }
-							end
-							local motion = runtime.timeline({ duration = 0.2 })
-							return { completed = motion.completed }
-						end,
-					}
-					else nil,
+				motion = SHEET,
 				failure = function(failure)
 					root:SetAttribute("FacetError", tostring(failure))
 					spec.isPresented:set(false)

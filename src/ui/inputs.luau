@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local decoration = require("./native_decoration")
 local help = require("./help")
@@ -7,6 +8,7 @@ local valueModel = require("./input_value")
 local InputTypes = require("./input_types")
 local Shared = require("./types")
 local ThemeTypes = require("./theme_types")
+local EngineTypes = require("./engine_types")
 local ComposeTypes = require("../vendor/compose/core")
 type ValueState<T> = {
 	value: Shared.Value<T>,
@@ -30,6 +32,7 @@ type ToggleButtonProps = InputTypes.ButtonProps & {
 }
 
 return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
+	local lists = layoutKit.of(ctx)
 	local runtime, Host, Compose = ctx.runtime, ctx.Host, ctx.Compose
 	local read, props = ctx.read, ctx.props
 	local D, D2, V2, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
@@ -176,7 +179,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 								end)
 							end
 						end, {
-							priority = 100,
+							priority = 250,
 							onReleased = function()
 								if heldAction == action then
 									stopRepeat()
@@ -221,6 +224,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 	local icon = ctx.icon
 
 	local buttonKeys = {
+		"haptic",
 		"label",
 		"compactLabel",
 		"pop",
@@ -304,7 +308,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local iconState: ComposeTypes.Cell<ThemeTypes.SkinState>?
 		if spec.icon or spec.trailingIcon then
 			local initial: ThemeTypes.SkinState = "default"
-			iconState = Compose.cell(initial)
+			iconState = Compose.cell(initial) :: ComposeTypes.Cell<ThemeTypes.SkinState>
 		end
 		local held, repeated, elapsed = false, false, 0
 		local repeatDelay, repeatInterval = spec.repeatDelay or 0.4, spec.repeatInterval or 0.1
@@ -391,7 +395,18 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 			end
 			p.AutomaticSize = E.AutomaticSize.None
-			table.insert(p, Host.UIAspectRatioConstraint({ AspectRatio = 1 }))
+			local aspect: EngineTypes.UIAspectRatioConstraintProps = { AspectRatio = 1 }
+			local authored = spec.Size
+			if authored ~= nil and not dynamic(authored) then
+				local size = authored :: UDim2
+				local wide = size.X.Scale ~= 0 or size.X.Offset ~= 0
+				local tall = size.Y.Scale ~= 0 or size.Y.Offset ~= 0
+				if wide ~= tall then
+					aspect.AspectType = E.AspectType.ScaleWithParentSize
+					aspect.DominantAxis = if wide then E.DominantAxis.Width else E.DominantAxis.Height
+				end
+			end
+			table.insert(p, Host.UIAspectRatioConstraint(aspect))
 			table.insert(p, Host.UICorner({ CornerRadius = D.new(1, 0) }))
 		elseif spec.corners then
 			table.insert(
@@ -543,7 +558,20 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local layout = assert(contentFrame:FindFirstChildWhichIsA("UIListLayout"))
 				layout.VerticalAlignment = E.VerticalAlignment.Center
 				if not spec.row and not description then
-					layout.HorizontalAlignment = E.HorizontalAlignment.Center
+					local alignment = spec.TextXAlignment
+					if alignment == nil then
+						layout.HorizontalAlignment = E.HorizontalAlignment.Center
+					else
+						runtime.decorate(layout, {
+							HorizontalAlignment = function(use: ComposeTypes.Use): Enum.HorizontalAlignment
+								local value = read(alignment, use)
+								return if value == E.TextXAlignment.Left
+									then E.HorizontalAlignment.Left
+									elseif value == E.TextXAlignment.Right then E.HorizontalAlignment.Right
+									else E.HorizontalAlignment.Center
+							end,
+						})
+					end
 				end
 			end
 			table.insert(p, contentFrame)
@@ -564,11 +592,17 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end)
 		)
 		local pressHaptic = ctx.config.pressHaptic
-		if p.PressHapticEffect == nil and pressHaptic then
+		local hapticSwitch = p.PressHapticEffect == nil and pressHaptic ~= nil and dynamic(spec.haptic)
+		if p.PressHapticEffect == nil and pressHaptic and not hapticSwitch and read(spec.haptic) == true then
 			p.PressHapticEffect = Compose.static(pressHaptic)
 		end
 		node = ctx.styled(Host.TextButton(p), "button")
 		activation.mark(node)
+		if hapticSwitch then
+			Compose.watch(function(use: ComposeTypes.Use)
+				node.PressHapticEffect = (if read(spec.haptic, use) == true then pressHaptic else nil) :: HapticEffect
+			end)
+		end
 		if rich and (spec.subtitle ~= nil or spec.hint ~= nil or (spec.row ~= nil and spec.row.description ~= nil)) then
 			node:AddTag("facet-button-described")
 		end
@@ -1009,6 +1043,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				table.insert(p, indicator)
 			end
 		end
+		if spec.haptic == nil then
+			p.haptic = true
+		end
 		local toggle = ctx.styled(UI.Button(p), "toggle")
 		if presentation ~= "button" then
 			toggle:AddTag("facet-toggle-row")
@@ -1352,7 +1389,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				p,
 				UI.Button "Clear" {
 					label = "Clear",
-					Size = D2.fromOffset(44, 32),
+					Size = D2.fromOffset(44, 44),
 					AutomaticSize = E.AutomaticSize.None,
 					AnchorPoint = V2.new(1, 0.5),
 					Position = D2.fromScale(1, 0.5),
@@ -1493,8 +1530,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			local button = UI.Button(name)({
 				icon = glyph,
 				name = name,
+				haptic = true,
 				LayoutOrder = if direction < 0 then 1 else 3,
-				Size = D2.fromOffset(44, 36),
+				Size = D2.fromOffset(44, 44),
 				AutomaticSize = E.AutomaticSize.None,
 				enabled = allowed,
 				onActivate = function()
@@ -1507,21 +1545,17 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local controls = ctx.styled(
 			Host.Frame "Controls" {
 				LayoutOrder = 2,
-				Size = D2.fromOffset(0, 40),
+				Size = D2.fromOffset(0, 44),
 				AutomaticSize = E.AutomaticSize.X,
-				Host.UIListLayout({
-					FillDirection = E.FillDirection.Horizontal,
-					SortOrder = E.SortOrder.LayoutOrder,
-					VerticalAlignment = E.VerticalAlignment.Center,
-				}) :: ComposeTypes.Child,
-				Host.UIPadding({ PaddingLeft = D.new(0, 2), PaddingRight = D.new(0, 2) }) :: ComposeTypes.Child,
+				lists.list({ align = "center" }, false) :: ComposeTypes.Child,
+				lists.insets({ left = 2, right = 2 }) :: ComposeTypes.Child,
 				stepButton("Decrease", "decrement", -1, function(use: ComposeTypes.Use)
 					return enabled(spec, use) and read(spec.value, use) > model.min
 				end),
 				ctx.text({
 					Name = "Value",
 					LayoutOrder = 2,
-					Size = D2.fromOffset(40, 36),
+					Size = D2.fromOffset(40, 44),
 					AutomaticSize = E.AutomaticSize.X,
 					TextXAlignment = E.TextXAlignment.Center,
 					TextYAlignment = E.TextYAlignment.Center,
@@ -1536,12 +1570,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"stepper-track"
 		)
 		local parts: { ComposeTypes.Child } = {
-			Host.UIListLayout({
-				FillDirection = E.FillDirection.Horizontal,
-				SortOrder = E.SortOrder.LayoutOrder,
-				VerticalAlignment = E.VerticalAlignment.Center,
-				Padding = D.new(0, 12),
-			}),
+			lists.list({ gap = 12, align = "center" }, false),
 			controls,
 		}
 		if spec.label then
@@ -1612,9 +1641,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local track: Frame
 		local dragging: boolean?
 		local snapshot: number?
+		local detent = ctx.config.pressHaptic
 		local function apply(value)
 			if enabled(spec) then
-				return changed(spec, model.quantize(value))
+				local moved = changed(spec, model.quantize(value))
+				if moved and detent and spec.step ~= nil then
+					detent:Play()
+				end
+				return moved
 			end
 			return false
 		end
@@ -1903,12 +1937,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			BackgroundTransparency = 1,
 			AnchorPoint = V2.new(0.5, 0.5),
 			Position = D2.fromScale(0.5, 0.5),
-			Host.UIListLayout({
-				FillDirection = E.FillDirection.Horizontal,
-				SortOrder = E.SortOrder.LayoutOrder,
-				VerticalAlignment = E.VerticalAlignment.Bottom,
-				Padding = D.new(0, 2),
-			}),
+			lists.list({ gap = 2, align = "end" }, false),
 		}
 		for index, mark in marks do
 			runtime.decorate(mark, { LayoutOrder = index })
@@ -1951,6 +1980,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				"onChange",
 			},
 			{
+				PressHapticEffect = if spec.PressHapticEffect == nil and ctx.config.pressHaptic
+					then Compose.static(ctx.config.pressHaptic)
+					else nil,
 				Text = "",
 				BackgroundTransparency = 1,
 				AutoButtonColor = false,
@@ -2093,6 +2125,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 
 			p.Name = "Body"
 		end
+		if p.haptic == nil and spec.selected ~= nil then
+			p.haptic = true
+		end
 		local body = UI.Button(p)
 		if not spec.onRemove then
 			return ctx.styled(body, "chip")
@@ -2180,7 +2215,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		"ShortcutHint",
 		function(spec: InputTypes.ShortcutHintImplementationProps): TextLabel | Frame
 			assert((spec.action == nil) ~= (spec.keys == nil), "Facet.ShortcutHint: supply action or keys")
-			local semantic = { "action", "keys", "separator", "controlSize", "over" }
+			assert(spec.action == nil or spec.separator == nil, "Facet.ShortcutHint: separator applies only to keys")
+			local semantic = { "action", "keys", "separator", "controlSize" }
 			if spec.keys then
 				return ctx.styled(
 					ctx.text(props(spec, semantic, {
@@ -2268,8 +2304,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 								return content
 							end
 							if input and input.GetImageForKeyCode then
-								local asset = input:GetImageForKeyCode(use(key))
-								if asset ~= "" then
+								local ok, asset = pcall(input.GetImageForKeyCode, input, use(key))
+								if ok and type(asset) == "string" and asset ~= "" then
 									return asset
 								end
 							end
@@ -2320,10 +2356,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 											local keys = {}
 											for _, code in { use(primary), use(secondary), use(key) } do
 												if code and code ~= noKey then
-													local text = if input and input.GetStringForKeyCode
-														then input:GetStringForKeyCode(code)
-														else ""
-													if text == nil or text == "" then
+													local ok, found = true, ""
+													if input and input.GetStringForKeyCode then
+														ok, found = pcall(input.GetStringForKeyCode, input, code)
+													end
+													local text = if ok and type(found) == "string" then found else ""
+													if text == "" then
 														text = keyNames[code.Name] or code.Name
 													end
 													table.insert(keys, text)

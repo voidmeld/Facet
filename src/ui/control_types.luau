@@ -4,9 +4,17 @@ local Inputs = require("./input_types")
 local Navigation = require("./navigation_types")
 local Collections = require("./collection_types")
 local Media = require("./media_types")
+local Layout = require("./layout_types")
 local Overlay = require("./overlay_types")
 
 export type Controls = {
+	Screen: typeof(((nil :: unknown) :: Layout.LayoutControls).Screen),
+	VStack: typeof(((nil :: unknown) :: Layout.LayoutControls).VStack),
+	HStack: typeof(((nil :: unknown) :: Layout.LayoutControls).HStack),
+	ZStack: typeof(((nil :: unknown) :: Layout.LayoutControls).ZStack),
+	ScrollView: typeof(((nil :: unknown) :: Layout.LayoutControls).ScrollView),
+	Grid: typeof(((nil :: unknown) :: Layout.LayoutControls).Grid),
+	fill: typeof(((nil :: unknown) :: Layout.LayoutControls).fill),
 	Button: typeof(((nil :: unknown) :: Inputs.InputControls).Button),
 	Toggle: typeof(((nil :: unknown) :: Inputs.InputControls).Toggle),
 	TextInput: typeof(((nil :: unknown) :: Inputs.InputControls).TextInput),

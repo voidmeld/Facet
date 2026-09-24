@@ -11,7 +11,7 @@ type Controls = {
 	Snackbar: Types.Constructor<Overlay.SnackbarSpec, Frame>,
 	Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
 }
-type Phase = "queued" | "active" | "retiring"
+type Phase = string
 type Record = {
 	serial: number,
 	spec: Overlay.SnackbarSpec,
@@ -248,10 +248,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			)
 		end
 		serial += 1
+		local phase: ComposeTypes.Cell<Phase> = Compose.cell("queued" :: Phase)
 		local rec: Record = {
 			serial = serial,
 			spec = spec,
-			phase = Compose.cell("queued" :: Phase),
+			phase = phase,
 			readable = 0,
 			pending = nil,
 			reported = false,

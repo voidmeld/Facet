@@ -36,16 +36,16 @@ PRODUCTION = {
     "screen-lifecycle-churn": lambda x: None,
     "alert-present-dismiss": lambda x: (
         None
-        if _count(x, "opens") > 0 and x.get("surfaceItems") == 3 and x.get("closes") == x.get("opens")
-        else f"the alert did not present its three actions and dismiss each time: {x!r}"
+        if _count(x, "opens") > 0 and x.get("surfaceItems") == 3 and x.get("settled") == x.get("opens")
+        else f"the alert did not present its three actions and settle dismissed each time: {x!r}"
     ),
     "picker-menu-open-close": lambda x: (
         None
         if _count(x, "opens") > 0
         and x.get("surfaceItems") == 6
         and x.get("presentation") == "picker"
-        and x.get("closes") == x.get("opens")
-        else f"the picker menu did not open with six rows and close each time: {x!r}"
+        and x.get("settled") == x.get("opens")
+        else f"the picker menu did not open with six rows and settle closed each time: {x!r}"
     ),
     "picker-segmented-textsize": lambda x: (
         None

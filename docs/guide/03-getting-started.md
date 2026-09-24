@@ -19,10 +19,8 @@ local stop = runtime.mount(function()
         Name = "Counter", ResetOnSpawn = false,
         sheet,
         Host.StyleLink { StyleSheet = Compose.static(sheet) },
-        Host.Frame {
-            BackgroundTransparency = 1,
-            Size = UDim2.fromOffset(320, 120),
-            Host.UIListLayout { Padding = UDim.new(0, 8) },
+        UI.Screen {
+            gap = "s",
             UI.Label {
                 text = function(use) return `Clicked {use(count)} times` end,
             },
@@ -46,6 +44,9 @@ end)
 - `runtime.constructors` is the table of native constructors. The script names
   it `Host`.
 - `Facet.controls(runtime)` returns the control constructors for that runtime.
+- `UI.Screen` fills the ScreenGui and pads its content by the `m` spacing
+  step. `gap = "s"` puts the `s` step between the children. See
+  [Layout](../reference/api.md#layout).
 - `runtime.mount` runs the component and mounts its result into PlayerGui. It
   returns a stop function.
 - `Facet.themes.createStyleSheet(runtime)` makes a StyleSheet. The sheet is a

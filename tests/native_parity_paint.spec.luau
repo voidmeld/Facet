@@ -688,7 +688,7 @@ t.describe("native parity paint", function()
 		local sheet, stop = sheetFor(h, package)
 		local sizes =
 			{ caption = 12, label = 14, body = 16, heading = 20, title = 24, control = 18, strong = 16, numeral = 18 }
-		local weights = { strong = "Bold", heading = "Bold", title = "Bold" }
+		local weights = { strong = "SemiBold", numeral = "Bold", heading = "Bold", title = "Bold" }
 		for _, role in themes.TYPE_ROLES do
 			local properties = style(sheet, ".facet-type-" .. role)
 			t.expect(properties.TextSize).toBe(sizes[role])
@@ -1042,6 +1042,88 @@ t.describe("native parity paint", function()
 		t.expect(style(sheet, ".facet-icon").ImageColor3).toBe(color(h.engine, colors.content))
 		t.expect(style(sheet, ".facet-icon").BackgroundTransparency).toBe(1)
 		stopSheet()
+		stop()
+		h.dispose()
+	end)
+
+	t.it("tints framework icons with the content role of each palette and never leaves them white", function()
+		local h = harness()
+		local package = themes.neutralPackage()
+		local dark = package.style.themes[1]
+		local light = table.clone(dark)
+		light.name = "Light"
+		light.colors = table.clone(dark.colors)
+		light.colors.content = { r = 0.1, g = 0.15, b = 0.2 }
+		package.style.themes = { dark, light }
+		local white = h.engine.types.Color3.new(1, 1, 1)
+		for _, palette in package.style.themes do
+			local colors = paletteOf(package, palette)
+			local sheet, stop = sheetFor(h, package, { theme = palette.name })
+			local tint = style(sheet, ".facet-icon").ImageColor3
+			t.expect(tint).toBe(color(h.engine, colors.content))
+			t.expect(tint == white).toBe(false)
+			stop()
+		end
+		for _, name in SHIPPED do
+			local shippedPackage = shipped(name)
+			for _, palette in shippedPackage.style.themes do
+				local colors = paletteOf(shippedPackage, palette)
+				local sheet, stop = sheetFor(h, shippedPackage, { theme = palette.name })
+				t.expect(style(sheet, ".facet-icon").ImageColor3).toBe(color(h.engine, colors.content))
+				stop()
+			end
+		end
+		h.dispose()
+	end)
+
+	t.it("re-letters the icon on a status plate with the plate partner color as a direct child", function()
+		local partners = {
+			neutral = "surface",
+			info = "onAccent",
+			success = "onSuccess",
+			warning = "onWarning",
+			error = "onDanger",
+			accent = "onAccent",
+		}
+		local h = harness({ theme = themes.neutralPackage() })
+		local package = themes.neutralPackage()
+		for _, palette in package.style.themes do
+			local colors, extra = paletteOf(package, palette)
+			local sheet, stop = sheetFor(h, package, { theme = palette.name })
+			local base = ruleNode(sheet, ".facet-icon").Priority
+			for status, partner in partners do
+				local selector = ".facet-status-" .. status .. " > .facet-icon"
+				local expected = colors[partner] or extra[partner]
+				t.expect(expected ~= nil).toBe(true)
+				t.expect(style(sheet, selector).ImageColor3).toBe(color(h.engine, expected))
+				t.expect(ruleNode(sheet, selector).Priority > base).toBe(true)
+				t.expect(ruleNode(sheet, selector).Priority > ruleNode(sheet, ".facet-icon-" .. status).Priority)
+					.toBe(true)
+			end
+			stop()
+		end
+		local status = Compose.cell("warning")
+		local root, stop = mount(h, function()
+			return h.Host.Frame({
+				h.UI.Badge({ Name = "Warn", label = "!", icon = "status.warning", status = status }),
+				h.UI.Badge({ Name = "Fail", label = "!", icon = "status.error", status = "error" }),
+			})
+		end)
+		for name, tag in { Warn = "facet-status-warning", Fail = "facet-status-error" } do
+			local plate = find(root, name)
+			t.expect(plate:HasTag(tag)).toBe(true)
+			local icons = tagged(plate, "facet-icon")
+			t.expect(#icons).toBe(1)
+			t.expect(icons[1].Parent).toBe(plate)
+			t.expect(icons[1].ClassName).toBe("ImageLabel")
+		end
+		local warn = find(root, "Warn")
+		local icon = tagged(warn, "facet-icon")[1]
+		status:set("error")
+		t.expect(warn:HasTag("facet-status-error")).toBe(true)
+		t.expect(warn:HasTag("facet-status-warning")).toBe(false)
+		t.expect(tagged(warn, "facet-icon")[1]).toBe(icon)
+		t.expect(icon.Parent).toBe(warn)
 		stop()
 		h.dispose()
 	end)

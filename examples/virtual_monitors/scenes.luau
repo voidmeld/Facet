@@ -101,7 +101,7 @@ function scenes.card(runtime: any, target: Instance, item: any, motionPolicy: an
 				part("Tower", Vector3.new(1.8, height, 1.8), Vector3.new(x, height / 2, z), tone)
 				for level = 1, math.floor(height / 1.2) do
 					part(
-						"Windows",
+						"Lights",
 						Vector3.new(1.84, 0.12, 1.84),
 						Vector3.new(x, level * 1.1, z),
 						Color3.fromRGB(255, 214, 140),

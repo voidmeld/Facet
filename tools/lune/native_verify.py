@@ -257,6 +257,8 @@ def producers_for(tier):
         producer("doc-style-selftest", ["python3", "tools/check_doc_style.py", "--selftest"], COMPLETE, replaces=["check_doc_style-selftest"]),
         producer("maintainer-map", ["lune", "run", "tools/lune/check_maintainer_map_cli"], COMPLETE, replaces=["check_maintainer_map_cli"]),
         producer("maintainer-map-selftest", ["lune", "run", "tools/lune/check_maintainer_map_cli", "--selftest"], COMPLETE, replaces=["check_maintainer_map_cli-selftest"]),
+        producer("example-drift", ["python3", "tools/check_example_drift.py"], COMPLETE, replaces=["check_example_drift_cli"]),
+        producer("example-drift-selftest", ["python3", "tools/check_example_drift.py", "--selftest"], COMPLETE),
         producer("brand-drift", ["python3", "tools/check_brand_drift.py"], COMPLETE, replaces=["check_brand_drift"]),
         producer("brand-drift-selftest", ["python3", "tools/check_brand_drift.py", "--selftest"], COMPLETE, replaces=["check_brand_drift-selftest"]),
         producer("brand-drift-skip-builds", ["python3", "tools/check_brand_drift.py", "--skip-builds"], COMPLETE, replaces=["check_brand_drift-skip-builds"]),

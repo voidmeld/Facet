@@ -8,37 +8,32 @@ function desktop.create(Facet: any, runtime: any, views: any, model: any, progre
 	local UI = Facet.controls(runtime, options)
 	return function()
 		local tabs = {}
+		local icons = { Discover = "facet:search", Avatar = "person", Chat = "edit" }
 		for _, name in { "Discover", "Avatar", "Chat" } do
-			table.insert(tabs, { id = name, label = name, content = views[name] })
+			table.insert(tabs, { id = name, label = name, icon = icons[name], content = views[name] })
 		end
-		return Host.Frame "Desktop" {
+		local root = Host.CanvasGroup "Desktop" {
 			Size = UDim2.fromScale(1, 1),
-			BackgroundTransparency = 1,
+			BackgroundTransparency = 0,
+			BorderSizePixel = 0,
+			GroupTransparency = function(use)
+				local t = math.clamp((use(progress) - 0.55) / 0.45, 0, 1)
+				return 1 - t * t * (3 - 2 * t)
+			end,
 			UI.TabView "Apps" {
 				selection = model.selectedTab,
 				tabs = tabs,
 				style = "sidebarAdaptable",
-				sidebarPreference = "topBar",
+				sidebarPreference = "sidebar",
+				railWidth = 176,
 				restoreScroll = false,
 				transition = { seconds = 0.18 },
 				retention = "top",
 				Size = UDim2.fromScale(1, 1),
 			},
-			Compose.show(function(use)
-				return use(progress) < 1
-			end, function()
-				local veil = Host.Frame "PresentationVeil" {
-					Size = UDim2.fromScale(1, 1),
-					ZIndex = 100,
-					BorderSizePixel = 0,
-					BackgroundTransparency = function(use)
-						return math.clamp((use(progress) - 0.45) / 0.55, 0, 1)
-					end,
-				}
-				veil:AddTag("facet-surface")
-				return veil
-			end),
 		}
+		root:AddTag("facet-surface")
+		return root
 	end
 end
 return desktop

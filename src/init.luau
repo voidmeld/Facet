@@ -10,6 +10,7 @@ local RadialTypes = require("@self/ui/radial_types")
 local CollectionTypes = require("@self/ui/collection_types")
 local MediaTypes = require("@self/ui/media_types")
 local ThemeTypes = require("@self/ui/theme_types")
+local LayoutTypes = require("@self/ui/layout_types")
 local OverlayTypes = require("@self/ui/overlay_types")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
@@ -60,6 +61,14 @@ export type AvatarProps = MediaTypes.AvatarProps
 export type AvatarMember = MediaTypes.AvatarMember
 export type AvatarGroupProps = MediaTypes.AvatarGroupProps
 export type StageProps = MediaTypes.StageProps
+export type Space = LayoutTypes.Space
+export type Padding = LayoutTypes.Padding
+export type Extent = LayoutTypes.Extent
+export type StackProps = LayoutTypes.StackProps
+export type ScreenProps = LayoutTypes.ScreenProps
+export type ZStackProps = LayoutTypes.ZStackProps
+export type ScrollViewProps = LayoutTypes.ScrollViewProps
+export type GridProps = LayoutTypes.GridProps
 export type OverlayAction = OverlayTypes.Action
 export type OverlayMedia = OverlayTypes.Media
 export type OverlayHero = OverlayTypes.Hero
@@ -89,7 +98,7 @@ export type Facet = {
 }
 
 local VERSION = "0.12.0"
-local COMPOSE_COMMIT = "974b7527709a4db61024cc8994cdce30adc49790"
+local COMPOSE_COMMIT = "cbab6e0f828b68faaf676ee718cb0036c20ed935"
 local USED = {
 	"boundary",
 	"cell",

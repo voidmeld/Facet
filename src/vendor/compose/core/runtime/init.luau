@@ -66,6 +66,7 @@ local function createRuntime(host: Host.Host): Runtime
 	local reactor = Reactor.create()
 
 	local rootOwner = Owner.createOwner(reactor)
+	local runtimeDisposed = false
 	Host.validate(host)
 	local render = host.render
 
@@ -212,6 +213,27 @@ local function createRuntime(host: Host.Host): Runtime
 		) :: Constructor
 	end
 
+	local function refuseAfterDispose(operation: string, label: string)
+		if runtimeDisposed then
+			Diagnostics.raise("runtime/disposed", ("%s ran after runtime:dispose()"):format(operation), {
+				component = label,
+				contract = "a disposed runtime starts no new work",
+				fix = "create a new runtime, or mount before disposing this one",
+			})
+		end
+	end
+
+	local function releaseInOrder(first: Dispose, second: Dispose)
+		local firstOk, firstErr: any = pcall(first)
+		local secondOk, secondErr: any = pcall(second)
+		if not firstOk then
+			error(firstErr, 0)
+		end
+		if not secondOk then
+			error(secondErr, 0)
+		end
+	end
+
 	local function claimTarget(target: Node)
 		if not Nodes.isDestructible(target) then
 			Nodes.markBorrowed(target)
@@ -237,6 +259,7 @@ local function createRuntime(host: Host.Host): Runtime
 				expected = "a node belonging to the host this runtime renders to",
 			})
 		end
+		refuseAfterDispose("mount", label)
 		claimTarget(target)
 
 		local parent = Active.current()
@@ -263,8 +286,7 @@ local function createRuntime(host: Host.Host): Runtime
 		end
 
 		local detach = Root.hold(function()
-			block.dispose()
-			owner.dispose()
+			releaseInOrder(block.dispose, owner.dispose)
 		end)
 		return orderAgainstTarget(target, detach), block.nodes
 	end
@@ -286,6 +308,7 @@ local function createRuntime(host: Host.Host): Runtime
 				expected = "a node belonging to the host this runtime renders to",
 			})
 		end
+		refuseAfterDispose("mountFragment", label)
 		claimTarget(target)
 
 		local parent = Active.current()
@@ -360,8 +383,7 @@ local function createRuntime(host: Host.Host): Runtime
 			return blockOwner.dispose, roots
 		end
 		local detach = Root.hold(function()
-			blockOwner.dispose()
-			owner.dispose()
+			releaseInOrder(blockOwner.dispose, owner.dispose)
 		end)
 		return orderAgainstTarget(target, detach), roots
 	end
@@ -506,6 +528,7 @@ local function createRuntime(host: Host.Host): Runtime
 			return reactor:pending()
 		end,
 		dispose = function(_self: any)
+			runtimeDisposed = true
 			rootOwner.dispose()
 		end,
 		connect = connect,
