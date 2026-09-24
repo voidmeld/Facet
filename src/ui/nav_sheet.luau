@@ -746,42 +746,32 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end)
 		if frames and not ready:peek() then
 			local panelSize = ctx.observe(panel, "AbsoluteSize")
+			local started = Compose.cell(false)
+			local clock = runtime.tween(function(use: ComposeTypes.Use): number
+				return if use(started) then 1 else 0
+			end, { seconds = SETTLE_LIMIT / 60 })
+			started:set(true)
 			local previous: string? = nil
-			local count = 0
-			local stop: (() -> ())? = nil
-			local function finish()
-				if stop then
-					stop()
-					stop = nil
-				end
-				ready:set(true)
-			end
-			stop = frames.onFrame(function()
-				count += 1
-				if not measured:peek() then
-					if count >= SETTLE_LIMIT then
-						finish()
-					end
+			Compose.watch(function(use: ComposeTypes.Use)
+				local elapsed = use(clock)
+				local finished = elapsed >= 1
+				if ready:peek() or elapsed <= 0 then
 					return
 				end
-				local signature = string.format(
-					"%d %d %d %d %d",
-					extent:peek().X,
-					extent:peek().Y,
-					panelSize:peek().X,
-					contentSize:peek().Y,
-					room.pinned:peek()
-				)
-				if signature == previous or count >= SETTLE_LIMIT then
-					finish()
+				local signature = if measured:peek()
+					then string.format(
+						"%d %d %d %d %d",
+						extent:peek().X,
+						extent:peek().Y,
+						panelSize:peek().X,
+						contentSize:peek().Y,
+						room.pinned:peek()
+					)
+					else nil
+				if finished or (signature ~= nil and signature == previous) then
+					ready:set(true)
 				end
 				previous = signature
-			end)
-			Compose.cleanup(function()
-				if stop then
-					stop()
-					stop = nil
-				end
 			end)
 		end
 		return overlay
