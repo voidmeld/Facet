@@ -623,7 +623,6 @@ return function(
 		"sizing",
 		"iconOnly",
 		"textSize",
-		"valueAlignment",
 		"isPresented",
 	}
 	UI.Picker = ctx.construct(function<V>(spec: Nav.PickerSpec<V>): GuiObject
@@ -701,7 +700,10 @@ return function(
 					type(read(option.label, use)) == "string" and string.find(read(option.label, use), "%S") ~= nil,
 					"Picker options require nonempty labels"
 				)
-				assert(not spec.iconOnly or option.icon ~= nil, "Picker.iconOnly requires an icon on each option")
+				assert(
+					read(spec.iconOnly) ~= true or option.icon ~= nil,
+					"Picker.iconOnly requires an icon on each option"
+				)
 				local label = tostring(read(option.label, use) or "")
 				if query == "" or string.find(string.lower(label), query, 1, true) then
 					table.insert(result, option)
@@ -782,7 +784,6 @@ return function(
 								sizing = spec.sizing,
 								iconOnly = spec.iconOnly,
 								textSize = spec.textSize,
-								valueAlignment = spec.valueAlignment,
 								Name = "Presentation",
 								style = presentation,
 								isPresented = opened,
@@ -807,7 +808,6 @@ return function(
 								sizing = spec.sizing,
 								iconOnly = spec.iconOnly,
 								textSize = spec.textSize,
-								valueAlignment = spec.valueAlignment,
 								Name = "Presentation",
 								style = presentation,
 								isPresented = opened,
@@ -1021,7 +1021,8 @@ return function(
 							local option = use(source)
 							local badge = read(option.badge, use)
 							local label: string = read(option.label, use)
-							return label .. (if badge ~= nil then " (" .. tostring(badge) .. ")" else "")
+							return label
+								.. (if badge ~= nil and badge ~= "" then " (" .. tostring(badge) .. ")" else "")
 						end,
 						subtitle = if source:peek().description ~= nil
 								or Compose.isReadable(spec.options)
@@ -1071,7 +1072,8 @@ return function(
 						layout.HorizontalAlignment = E.HorizontalAlignment.Left
 					end
 					Compose.watch(function(use: Core.Use)
-						local current = selected(use) and read(spec.indicator, use) ~= "none"
+						local indicator = read(spec.indicator, use)
+						local current = selected(use) and indicator ~= "none" and indicator ~= "underline"
 						if current then
 							button:AddTag(family .. "-current")
 						elseif button:HasTag(family .. "-current") then

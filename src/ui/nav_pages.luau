@@ -139,7 +139,6 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"shoulderNavigation",
 			"restoreFocus",
 			"indicator",
-			"sizing",
 			"iconOnly",
 			"textSize",
 			"enabled",

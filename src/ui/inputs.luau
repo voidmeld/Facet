@@ -1447,7 +1447,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			allowed: (ComposeTypes.Use) -> boolean
 		)
 			local button = UI.Button(name)({
-				label = glyph,
+				icon = glyph,
+				name = name,
 				LayoutOrder = if direction < 0 then 1 else 3,
 				Size = D2.fromOffset(44, 36),
 				AutomaticSize = E.AutomaticSize.None,
@@ -1470,7 +1471,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					VerticalAlignment = E.VerticalAlignment.Center,
 				}) :: ComposeTypes.Child,
 				Host.UIPadding({ PaddingLeft = D.new(0, 2), PaddingRight = D.new(0, 2) }) :: ComposeTypes.Child,
-				stepButton("Decrease", "−", -1, function(use: ComposeTypes.Use)
+				stepButton("Decrease", "decrement", -1, function(use: ComposeTypes.Use)
 					return enabled(spec, use) and read(spec.value, use) > model.min
 				end),
 				ctx.text({
@@ -1484,7 +1485,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						return model.format(read(spec.value, use))
 					end,
 				}),
-				stepButton("Increase", "+", 1, function(use: ComposeTypes.Use)
+				stepButton("Increase", "increment", 1, function(use: ComposeTypes.Use)
 					return enabled(spec, use) and read(spec.value, use) < model.max
 				end),
 			},

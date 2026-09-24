@@ -204,14 +204,19 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end
 		if spec.corners then
 			runtime.mount(function()
-				local radius = read(spec.corners)
-				if type(radius) == "string" then
-					radius = ({ square = 0, rounded = 8, capsule = 999 })[radius]
-				end
-				assert(type(radius) == "number", "Facet Badge invalid corners")
-				return ctx.corner(radius)
+				return Host.UICorner({
+					CornerRadius = function(use: Compose.Use)
+						local radius = read(spec.corners, use)
+						if type(radius) == "string" then
+							radius = ({ square = 0, rounded = 8, capsule = 999 })[radius]
+						end
+						assert(type(radius) == "number", "Facet Badge invalid corners")
+						return D.new(0, radius)
+					end,
+				})
 			end, pill)
 		end
+		skin(pill, "badge")
 		return pill
 	end)
 

@@ -127,6 +127,35 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("reads a bound iconOnly, drops an empty badge and paints only the underline indicator", function()
+		local selected = Compose.cell("one")
+		local world = setup(function(UI, Host)
+			return Host.Frame({
+				UI.Picker "Plain" {
+					selected = selected,
+					style = "segmented",
+					iconOnly = Compose.cell(false),
+					options = {
+						{ value = "one", label = "One", badge = "" },
+						{ value = "two", label = "Two", badge = 3 },
+					},
+				},
+				UI.Picker "Underlined" {
+					selected = selected,
+					style = "segmented",
+					indicator = "underline",
+					options = { { value = "one", label = "One" }, { value = "two", label = "Two" } },
+				},
+			})
+		end)
+		local plain, underlined = find(world.screen, "Plain"), find(world.screen, "Underlined")
+		t.expect(find(plain, "one"):GetAttribute("label")).toBe("One")
+		t.expect(find(plain, "two"):GetAttribute("label")).toBe("Two (3)")
+		t.expect(find(underlined, "one"):HasTag("facet-segment-current")).toBe(false)
+		t.expect(find(find(underlined, "one"), "SelectionIndicator") ~= nil).toBe(true)
+		world.stop()
+	end)
+
 	t.it("retains model values and updates picker font bindings", function()
 		local selected, textSize = Compose.cell("one"), Compose.cell(16)
 		local world = setup(function(UI)

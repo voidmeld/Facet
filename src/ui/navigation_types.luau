@@ -85,7 +85,6 @@ export type PickerCommon<V> = Types.GuiObjectProps & {
 	sizing: Value<"fill" | "hug">?,
 	iconOnly: Value<boolean>?,
 	textSize: Value<number>?,
-	valueAlignment: "leading" | "center" | "trailing"?,
 	isPresented: Compose.Cell<boolean>?,
 }
 export type SinglePickerSpec<V = string> = PickerCommon<V> & {
@@ -227,7 +226,6 @@ export type TabViewSpec = Types.FrameProps & {
 	restoreFocus: boolean?,
 	shoulderNavigation: "strip" | "content"?,
 	indicator: Value<Indicator>?,
-	sizing: Value<"automatic" | "fill" | "hug">?,
 	iconOnly: Value<boolean>?,
 	textSize: Value<number>?,
 	enabled: Value<boolean>?,

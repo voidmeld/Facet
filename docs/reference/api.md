@@ -259,7 +259,7 @@ edge of the row and the value on the trailing edge.
 `onChanging(next, previous)` can return `false` to veto a change. The control
 writes `selected`, and then calls `onChange(next)`. An optional writable `query`
 filters the labels. The other options include `label`, `placeholder`, `axis`,
-`sizing`, `iconOnly`, `textSize`, `valueAlignment`, `isPresented` and `enabled`.
+`sizing`, `iconOnly`, `textSize`, `isPresented` and `enabled`.
 
 ### ComboBox
 

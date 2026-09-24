@@ -655,6 +655,22 @@ t.describe("native themes and media", function()
 		runtime:dispose()
 	end)
 
+	t.it("follows a bound badge corner radius", function()
+		local engine, runtime, UI = setup()
+		local corners = Compose.cell("rounded")
+		local badge
+		local stop = runtime.mount(function()
+			badge = UI.Badge({ label = "New", corners = corners })
+			return badge
+		end, engine.new("Folder"))
+		local corner = badge:FindFirstChildWhichIsA("UICorner")
+		t.expect(corner.CornerRadius.Offset).toBe(8)
+		corners:set("square")
+		t.expect(corner.CornerRadius.Offset).toBe(0)
+		stop()
+		runtime:dispose()
+	end)
+
 	t.it("rejects malformed media policy and retains valid reactive captions", function()
 		for _, build in
 			{
