@@ -207,6 +207,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local gui = surfaces.service("GuiService")
 		local selectedObject = if gui then ctx.observe(gui, "SelectedObject") else Compose.cell(nil)
 		local previous: string?
+		local handoff: string?
 		Compose.watch(function(use: Core.Use)
 			local id = use(spec.selection)
 			byId = use(tabMap)
@@ -233,8 +234,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if previous == id then
 				return
 			end
-			if previous and gui and panels[previous] and surfaces.within(gui.SelectedObject, panels[previous]) then
-				bookmarks[previous] = gui.SelectedObject
+			local leaving = previous ~= nil
+				and gui ~= nil
+				and panels[previous] ~= nil
+				and surfaces.within(gui.SelectedObject, panels[previous])
+			if leaving then
+				bookmarks[previous :: string] = gui.SelectedObject
 			end
 			local order = table.clone(visited:peek())
 			local at = table.find(order, id)
@@ -244,9 +249,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			table.insert(order, id)
 			visited:set(order)
 			local bookmark = bookmarks[id]
-			if spec.restoreFocus ~= false and gui and bookmark and bookmark.Parent then
-				gui.SelectedObject = bookmark
-			end
+			handoff = if spec.restoreFocus ~= false
+					and gui
+					and (leaving or (bookmark and bookmark.Parent))
+				then id
+				else nil
 			if spec.restoreScroll == false and panels[id] then
 				local function reset(node: Instance): ()
 					if node:IsA("ScrollingFrame") then
@@ -480,6 +487,25 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							else nil
 					)
 					panels[id] = panel
+					local shown = ctx.observe(panel, "Visible")
+					Compose.watch(function(use: Core.Use)
+						if not use(shown) or handoff ~= id or not gui then
+							return
+						end
+						handoff = nil
+						local bookmark = bookmarks[id]
+						local button = tabButtons[id]
+						gui.SelectedObject = if bookmark
+								and surfaces.within(bookmark, panel)
+								and bookmark.Visible
+								and bookmark.Interactable
+							then bookmark
+							else surfaces.firstSelectable(panel) or (if button
+									and button.Parent
+									and button.Visible
+								then button
+								else nil)
+					end)
 					Compose.cleanup(function()
 						panels[id], bookmarks[id] = nil, nil
 					end)

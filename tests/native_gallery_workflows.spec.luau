@@ -265,7 +265,9 @@ t.describe("native gallery workflows", function()
 		end
 		headers.Rules.Activated.fire()
 		local body = find(find(accordion, "Rules"), "Body")
+		body.Selectable = true
 		ctx.guiService.SelectedObject = body
+		t.expect(ctx.guiService.SelectedObject).toBe(body)
 		headers.Rules.Activated.fire()
 		t.expect(ctx.guiService.SelectedObject).toBe(headers.Rules)
 		t.expect(body.isDestroyed()).toBe(true)

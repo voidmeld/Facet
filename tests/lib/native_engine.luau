@@ -32,6 +32,7 @@ local function signal()
 end
 local function new(options: any?)
 	local made = {}
+	local rejectedSelections = {}
 	local defaultsByClass = {}
 	local cloneRecords = setmetatable({}, { __mode = "k" })
 	local events = {
@@ -368,6 +369,24 @@ local function new(options: any?)
 				if previous == value then
 					return
 				end
+				if className == "GuiService" and key == "SelectedObject" and value ~= nil then
+					-- Roblox ignores a selection target that is hidden or not selectable and warns
+					-- "Setting GuiService.SelectedObject to invalid GuiObject".
+					local shown = value.Selectable ~= false
+					local cursor = value
+					while shown and cursor and cursor:IsA("GuiBase2d") do
+						if cursor:IsA("GuiObject") and cursor.Visible == false then
+							shown = false
+						elseif cursor:IsA("LayerCollector") and cursor.Enabled == false then
+							shown = false
+						end
+						cursor = cursor.Parent
+					end
+					if not shown then
+						table.insert(rejectedSelections, value)
+						return
+					end
+				end
 				if key == "Parent" then
 					if previous then
 						local siblings = previous._children
@@ -495,6 +514,7 @@ local function new(options: any?)
 			return { live = live, connections = connections }
 		end,
 		made = made,
+		rejectedSelections = rejectedSelections,
 		types = types,
 	}
 end

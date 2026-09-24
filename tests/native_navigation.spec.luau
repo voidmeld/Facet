@@ -795,6 +795,26 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("hands selection to the shown tab panel and restores it on return", function()
+		local selection = Compose.cell("one")
+		local world = setup(function(UI)
+			return UI.TabView({
+				selection = selection,
+				tabs = {
+					{ id = "one", content = UI.Button({ Name = "OneAction", label = "One" }) },
+					{ id = "two", content = UI.Button({ Name = "TwoAction", label = "Two" }) },
+				},
+			})
+		end)
+		world.gui.SelectedObject = find(world.screen, "OneAction")
+		selection:set("two")
+		t.expect(world.gui.SelectedObject.Name).toBe("TwoAction")
+		selection:set("one")
+		t.expect(world.gui.SelectedObject.Name).toBe("OneAction")
+		t.expect(#world.engine.rejectedSelections).toBe(0)
+		world.stop()
+	end)
+
 	t.it("queues callouts by priority and retires once without writing model facts", function()
 		local seen, used, retired = Compose.cell(false), Compose.cell(false), {}
 		local world = setup(function(UI, Host)
