@@ -158,6 +158,11 @@ local function frozen<T>(value: T): T
 	return (table.freeze(value) :: unknown) :: T
 end
 
+local derivedTypeRoles: { [string]: { base: string, weight: string } } = {
+	strong = { base = "body", weight = "SemiBold" },
+	numeral = { base = "control", weight = "Bold" },
+}
+
 local shadowPresets: { [string]: ThemeTypes.Shadow } = {
 	raised = { blurRadius = { offset = 14 }, transparency = 0.35, offset = { y = { offset = 3 } } },
 	overlay = { blurRadius = { offset = 24 }, transparency = 0.45, offset = { y = { offset = 8 } } },
@@ -210,6 +215,25 @@ function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.Them
 		return nil, { ok = false, errors = errors, missing = {}, contrast = {} }
 	end
 	local typography = (package.metrics.typography :: unknown) :: { [string]: unknown }
+	local definedMetrics = (definition :: { metrics: unknown? }).metrics
+	local authored: { [string]: unknown } = if type(definedMetrics) == "table"
+			and type((definedMetrics :: { typography: unknown? }).typography) == "table"
+		then (definedMetrics :: { typography: { [string]: unknown } }).typography
+		else {}
+	for role, derivation in derivedTypeRoles do
+		local source = typography[derivation.base]
+		if authored[role] == nil and authored[derivation.base] ~= nil and type(source) == "table" then
+			local entry = source :: { size: unknown, lineHeight: unknown, font: unknown }
+			if type(entry.font) == "table" then
+				local face = entry.font :: ThemeTypes.FontSpec
+				typography[role] = {
+					size = entry.size,
+					lineHeight = entry.lineHeight,
+					font = { family = face.family, weight = derivation.weight, style = face.style },
+				}
+			end
+		end
+	end
 	for _, role in themes.TYPE_ROLES do
 		local entry = typography[role]
 		local size = if type(entry) == "table" then (entry :: { size: unknown }).size else nil
@@ -914,7 +938,13 @@ function themes.createStyleSheet(
 	)
 	local function withPreference(definition: NativeRule, preference: number): NativeRule
 		local translucent = definition.properties.BackgroundTransparency
-		if preference >= 1 or type(translucent) ~= "number" or translucent <= 0 or translucent >= 1 then
+		if
+			preference >= 1
+			or definition.selector ~= ".facet-scrim"
+			or type(translucent) ~= "number"
+			or translucent <= 0
+			or translucent >= 1
+		then
 			return definition
 		end
 		local cached = scaled[definition]

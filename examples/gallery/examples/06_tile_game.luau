@@ -826,6 +826,14 @@ function example.build(ctx: any)
 							onActivate = function()
 								activateCell(rr, cc)
 							end,
+							Host.UIStroke "Outline" {
+								ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+								Color = Color3.fromRGB(236, 239, 245),
+								Thickness = 2,
+								Enabled = function(use)
+									return use(surface) == CELL_SURFACE.pending
+								end,
+							},
 							Host.UIPadding({
 								PaddingTop = UDim.new(0, 0),
 								PaddingBottom = UDim.new(0, 0),

@@ -1047,9 +1047,7 @@ return function(
 						icon = source:peek().icon,
 						TextSize = spec.textSize,
 						selected = function(use: Core.Use)
-							return selected(use)
-								and read(spec.indicator, use) ~= "none"
-								and read(spec.indicator, use) ~= "underline"
+							return selected(use) and read(spec.indicator, use) ~= "underline"
 						end,
 						enabled = function(use: Core.Use)
 							return read(spec.enabled, use) ~= false and read(use(source).enabled, use) ~= false
@@ -1085,8 +1083,7 @@ return function(
 						layout.HorizontalAlignment = E.HorizontalAlignment.Left
 					end
 					Compose.watch(function(use: Core.Use)
-						local indicator = read(spec.indicator, use)
-						local current = selected(use) and indicator ~= "none" and indicator ~= "underline"
+						local current = selected(use) and read(spec.indicator, use) ~= "underline"
 						if current then
 							button:AddTag(family .. "-current")
 						elseif button:HasTag(family .. "-current") then

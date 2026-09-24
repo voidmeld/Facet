@@ -42,21 +42,15 @@ local owner = Compose.createRootOwner(function()
 	local neutral = assert(Facet.themes.define(Facet.themes.neutralPackage()))
 	local theme = Compose.cell(neutral)
 	local selectedTheme = Compose.cell(neutral.style.defaultTheme)
-	local packages = { Neutral = neutral }
 	local themeFolder = storage:FindFirstChild("FacetThemes")
-	if themeFolder then
-		for _, module in themeFolder:GetChildren() do
-			if module:IsA("ModuleScript") then
-				local ok, definition = pcall(require, module)
-				if ok and not definition.testOnly then
-					local built, package = pcall(definition.build, Facet.themes)
-					if built and package then
-						packages[module.Name] = package
-					end
-				end
-			end
+	local packages = gallery.themePackages(
+		Facet.themes,
+		if themeFolder then themeFolder:GetChildren() else {},
+		function(module)
+			return require(module)
 		end
-	end
+	)
+	packages.Neutral = neutral
 	local context = {
 		Facet = Facet,
 		Compose = Compose,

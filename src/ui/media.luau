@@ -54,18 +54,24 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			node:AddTag(previous :: string)
 		end)
 	end
+	local function roleTag(value: string?): string
+		local name = value or "body"
+		assert(table.find(themes.TYPE_ROLES, name), "Facet Label invalid textRole")
+		return "facet-type-" .. name
+	end
 	local function textRole(node: TextLabel, role: Types.Value<Media.TextRole>?): TextLabel
 		if not Compose.isReadable(role) and type(role) ~= "function" then
-			node:AddTag("facet-type-" .. (read(role) or "body"))
+			node:AddTag(roleTag(read(role)))
 			return node
 		end
 		local previous: string?
 		Compose.watch(function(use: Compose.Use)
+			local tag = roleTag(read(role, use))
 			if previous then
 				node:RemoveTag(previous)
 			end
-			previous = "facet-type-" .. (read(role, use) or "body")
-			node:AddTag(previous :: string)
+			previous = tag
+			node:AddTag(tag)
 		end)
 		return node
 	end
