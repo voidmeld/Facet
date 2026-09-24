@@ -19,6 +19,7 @@ function model.new(Compose: any)
 		chatScroll = Compose.cell(nil),
 		genre = Compose.cell("all"),
 		launch = Compose.cell(nil),
+		avatarPath = Compose.cell({}),
 		sort = Compose.cell("recommended"),
 		shelf = Compose.cell("browse"),
 		selectedGame = Compose.cell(nil),
