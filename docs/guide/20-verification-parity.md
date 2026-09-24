@@ -902,6 +902,140 @@ not deliver engine input.
 | apps-163 | input-actions | 5 | Exactly one Activate per press across the InputAction and native Activated paths | One physical Return press on a selected Button reaches `onActivate` once. |
 | navigation-1-69 | layout-geometry | 1 | Nothing on the callout page crosses a lateral edge at swept sizes | Nothing on the callout page crosses a lateral edge at 390, 768, 1280 and 1920 pixels. |
 
+## Main cases after the baseline
+
+Some cases were added on `main` after the baseline. Each family records them here and in `postBaseline` of the data file.
+
+### Content and navigation
+
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 123 contracts and 135 main cases (a: 111, b: 6, c: 15, d: 3). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
+
+| Contract | Main spec | Main cases | Class | Candidate cases | Note |
+|---|---|---:|---|---|---|
+| post-pagination-01 | `pagination` | 1 | a | `shows the seven-slot pattern near each edge and in the middle, and a gap of one shows the page` |  |
+| post-pagination-02 | `pagination` | 1 | a | `mounts the window, marks the current page and proposes without writing` |  |
+| post-pagination-03 | `pagination` | 1 | a | `keeps the overlapping page nodes when the window moves` |  |
+| post-pagination-04 | `pagination` | 1 | a | `shows zero pages as inert context and one page with no enabled navigation` |  |
+| post-pagination-05 | `pagination` | 1 | a | `follows the flags of an unknown count, shows the page label and never a last page` |  |
+| post-pagination-06 | `pagination` | 1 | a | `shows an outside page clamped with a diagnostic and never writes it back` |  |
+| post-pagination-07 | `pagination` | 1 | a | `refuses malformed construction and keeps the last legal value for a late one` | Main refused width = hug; the native control refuses AutomaticSize on X, the equivalent native declaration. |
+| post-pagination-08 | `pagination` | 1 | a | `drops the farthest boundary page, then the farthest neighbour, then shows the label as room narrows` | Text widths come from injected TextBounds on the measure labels; real glyph widths need Studio. |
+| post-pagination-09 | `pagination` | 1 | b | - | Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize. |
+| post-pagination-10 | `pagination` | 1 | a | `reverses the row once in rtl and keeps the meaning of previous and next` |  |
+| post-pagination-11 | `pagination` | 1 | a | `hands the selection of a page that leaves the window to the current page` | Arrival from the neighbours is native gamepad selection and is not simulated headlessly. |
+| post-pagination-12 | `pagination` | 1 | a | `hands the selection of an arrow that disables at an edge to the current page` |  |
+| post-pagination-13 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Slot and arrow sizes are asserted; hit rectangles need the native layout. |
+| post-pagination-14 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Anchor, position and compact size are asserted; the centred rectangle needs the native layout. |
+| post-pagination-15 | `pagination` | 1 | a | `keeps the label reservation while the label gains a digit, ltr and rtl, known and unknown` | The label reservation and its measure text are asserted; the arrow X positions need the native layout. |
+| post-pagination-16 | `pagination` | 1 | a | `leaves no stop inside the row when the count drops to zero` | The landing on a live neighbour is native selection. |
+| post-pagination-17 | `pagination` | 1 | a | `stays safe when a callback changes the count and removes the control` |  |
+| post-pagination-18 | `pagination` | 1 | a | `follows an accepted page in the Paging scenario context and changes nothing on a refusal` |  |
+| post-step-01 | `step_indicator` | 1 | a | `makes only navigable, enabled steps with onSelect into Buttons and the rest into content` |  |
+| post-step-02 | `step_indicator` | 1 | a | `moves the underline and the summary only with current, and a refused selection changes nothing` | The cell rectangles are injected AbsolutePosition and AbsoluteSize values. |
+| post-step-03 | `step_indicator` | 1 | a | `stretches the row cells to one height on one top edge` | The native ItemLineAlignment, VerticalAlignment and underline anchor are asserted; the solved heights need Studio. |
+| post-step-04 | `step_indicator` | 1 | a | `keeps the own cue and state word of an errored or completed current step` |  |
+| post-step-05 | `step_indicator` | 1 | a | `keeps the number marker a circle when the text grows` | The number TextBounds are injected; the largest player text size needs Studio. |
+| post-step-06 | `step_indicator` | 1 | a | `never guesses a missing current and rebuilds empty and repopulated lists` |  |
+| post-step-07 | `step_indicator` | 1 | a | `keeps each step node across a reorder and renumbers it` | The underline follow is asserted in the current-step case from injected rectangles. |
+| post-step-08 | `step_indicator` | 1 | a | `refuses conflicts at construction and keeps the last legal snapshot later` |  |
+| post-step-09 | `step_indicator` | 1 | a | `shows Step n of m and a list that selects through the same path when the width is narrow` | The list is a UI.Menu anchored to the Steps trigger, not a UI.Popover; Popover is not a control of this family. |
+| post-step-10 | `step_indicator` | 1 | a | `follows its offer both ways between the row and the summary, for fill and hug` | Label widths are injected TextBounds on the measure labels. |
+| post-step-11 | `step_indicator` | 1 | b | - | Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize. |
+| post-step-12 | `step_indicator` | 1 | a | `leaves nothing open when a callback removes the control` |  |
+| post-step-13 | `step_indicator` | 1 | a | `moves the narrow summary with a row selection in the Steps scenario and refuses both` |  |
+| post-vote-01 | `vote` | 1 | a | `accepts, swaps in one change, and proposes none when the chosen side is pressed again` |  |
+| post-vote-02 | `vote` | 1 | a | `never paints a refused proposal and never touches the caller's cell` |  |
+| post-vote-03 | `vote` | 1 | a | `proposes from a selected side through the keyboard Activate action` | The keyboard Activate action is fired; native gamepad selection and ButtonA are engine paths. |
+| post-vote-04 | `vote` | 1 | a | `reads a function value and keeps the last legal paint for an invalid late value` |  |
+| post-vote-05 | `vote` | 1 | a | `leaves no stale state when a callback removes the vote` |  |
+| post-vote-06 | `vote` | 1 | a | `shows a read-only choice with nothing to press or select and uses ordinary disabled paint` |  |
+| post-vote-07 | `vote` | 1 | a | `refuses to become interactive without onChange` | The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard. |
+| post-vote-08 | `vote` | 1 | a | `keeps two votes and a chip as separate targets at the floor, with a disclosed summary` | Minimum target constraints and separate nodes are asserted; overlap of hit rectangles needs the native layout. |
+| post-vote-09 | `vote` | 1 | a | `repaints the Choices vote only from its caller's value and follows the summary` |  |
+| post-card-01 | `card` | 1 | a | `refuses malformed specs before building anything` |  |
+| post-card-02 | `card` | 1 | a | `keeps body, primary and More as sibling targets so one press runs one intent` |  |
+| post-card-03 | `card` | 1 | a | `gives an informational body no activation target and keeps its actions at rest` |  |
+| post-card-04 | `card` | 1 | a | `keeps the semantics of disabled cards and busy actions` |  |
+| post-card-05 | `card` | 1 | a | `keeps the last legal paint for an invalid late title or image and recovers` |  |
+| post-card-06 | `card` | 1 | a | `leaves nothing behind when a callback removes its own card` | Main checked the presenter focus scope name; the native case checks that the card and its Cancel context are gone. |
+| post-card-07 | `card` | 1 | a | `reveals on a pointer within and keeps the action plate in the card's layout` | The plate stays visible, laid out and ordered after the body, and the root Size never changes; the solved rectangles need Studio. |
+| post-card-08 | `card` | 1 | a | `measures the envelope height at rest, before anything reveals` | The root AbsoluteSize is injected. |
+| post-card-09 | `card` | 1 | a | `keeps hidden actions out of reach at rest and lets a selected body reveal them` |  |
+| post-card-10 | `card` | 1 | a | `reveals on focus within, keeps it when the pointer leaves and ends it when focus leaves` | The Tab walk is native selection; the case moves GuiService.SelectedObject. |
+| post-card-11 | `card` | 1 | a | `holds the reveal while its menu is open and releases it when the menu closes` | The pad route (ButtonY opens the menu from a selected More and B returns selection to it) is the Menu control route and is not repeated here. |
+| post-card-12 | `card` | 1 | a | `keeps the reveal while a press is held on an action after the pointer leaves` | The press is the native GuiState of the action Button, set directly. |
+| post-card-13 | `card` | 1 | a | `keeps the actions at rest while touch is present and runs the body on the first tap` |  |
+| post-card-14 | `card` | 1 | a | `takes no tap on hidden actions and never fires a press cut off by disabling` |  |
+| post-card-15 | `card` | 1 | a | `retargets the fade from where it is on a rapid reversal` |  |
+| post-card-16 | `card` | 1 | a | `reveals the action row at rest with reveal always` |  |
+| post-card-17 | `card` | 1 | a | `follows a live change of the measured envelope while revealed` | The measured root height is injected; a real theme and text change needs Studio. |
+| post-card-18 | `card` | 1 | a | `lifts the card with a raised shadow for hover, selection and a held press and lands it after` |  |
+| post-card-19 | `card` | 1 | a | `lifts a card with no body action without a shadow` |  |
+| post-card-20 | `card` | 1 | a | `puts the card lift on its grid browse stop so the selection ring marks the lifted card` |  |
+| post-card-21 | `card` | 1 | a | `keeps only the raised shadow under reduced motion` | The ten-foot half is retired: the native architecture deleted the viewing-distance profile and its tenFootFocusScale, so no focus lift competes with the card scale. |
+| post-card-22 | `card` | 1 | a | `reveals only the card whose grid browse stop is selected and moves with the selection` | A parked focus without a painted ring does not exist natively: a pointer session has no GuiService.SelectedObject. |
+| post-card-23 | `card` | 1 | a | `enters the actions at the first action, traps the selection and restores the stop on Cancel` | The trap is the native SelectionGroup with Stop behavior on all four sides; the engine moves the selection, so arrow presses are a live check. |
+| post-card-24 | `card` | 1 | a | `leaves no trap, menu or controls behind when an entered card is removed or replaced` |  |
+| post-card-25 | `card` | 1 | a | `recycles an entered card scrolled out of the window without stranding its trap` |  |
+| post-card-26 | `card` | 1 | a | `keeps separate cards and entries in two grids with identical keys` |  |
+| post-card-27 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The scenario step enters and Play runs; that each line holds its card and plate needs the native layout. |
+| post-card-28 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The half-gutter padding, lane width, canvas extent and both scroll ends are asserted; the lifted footprint against the clip is a live check. |
+| post-card-29 | `card` | 1 | a | `keeps the mounted cards and their controls bounded across a thousand items` |  |
+| post-grid-01 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-02 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-03 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-04 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-05 | `virtual_grid` | 1 | a | `collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent` |  |
+| post-grid-06 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-07 | `virtual_hgrid` | 1 | a | `collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent` |  |
+| post-menu-01 | `menu` | 1 | a | `opens on ButtonA, closes on ButtonB with the selection back on the trigger, and opens again` | ButtonA is the native Activated event of the trigger; ButtonB is the ModalBack action. |
+| post-menu-02 | `menu` | 1 | a | `places the root panel by edge and align and keeps bottom and start when they are absent` | The trigger and panel rectangles are injected; the native popover draws the panel. |
+| post-menu-03 | `menu` | 1 | a | `sets the floating panel width from width` |  |
+| post-menu-04 | `menu` | 1 | a | `keeps the panel width for rows with a badge, a shortcut label or a section heading` |  |
+| post-menu-05 | `menu` | 1 | a | `leads plain rows like accessory rows and gives every row the target floor` | Row heights and the left content alignment are asserted; label x positions and hit rectangles need Studio. |
+| post-menu-06 | `menu` | 1 | a | `bounds a floating panel by the screen so a long list scrolls` |  |
+| post-menu-07 | `menu` | 1 | a | `opens a level on its selected row, centred in the scrolled list` | The row and list rectangles are injected; the centring is computed from them. |
+| post-menu-08 | `menu` | 1 | a | `bounds the whole panel by maxHeight while the rows keep their ids and activation` | The keyboard walk to the last row and its scroll into view are native ScrollingFrame selection behavior. |
+| post-menu-09 | `menu` | 1 | a | `keeps submenus anchored to their parent level in a bounded list` |  |
+| post-menu-10 | `menu` | 1 | a | `shares one row recipe for badge, avatar, sectionTitle and a display-only shortcutLabel` |  |
+| post-menu-11 | `menu` | 1 | a | `refuses malformed placement and bounds by name` | width is a number of pixels natively; main refused a bare number because it took a dimension table. The native control refuses 0 and a string. |
+| post-menu-12 | `menu` | 4 | c | - | The solver path shape and its hairline card geometry are not native. Native rows are TextButtons named by id under MenuRows in a ScrollingFrame; the row fill is the native button background. |
+| post-menu-13 | `menu_scenario` | 1 | c | - | A path rename of the solver tree only; the native scenario rows are found by id. |
+| post-menu-14 | `stateful_menu` | 1 | c | - | A path rename of the solver tree only; native_parity_navigation toggles checked and selected rows by id. |
+| post-menu-15 | `popup_button` | 1 | a | `carries a Picker option badge into its menu row as the count seal` | The badge reaches the menu row; a Picker option sectionTitle belongs to the Picker option type of the pickers family. |
+| post-tab-01 | `tab_view` | 1 | a | `nests a TabView that a page builds later inside one of its branches` |  |
+| post-tab-02 | `tab_view` | 1 | a | `paints a tab indicator as a StatusIndicator in its own tab and keeps it through every switch` |  |
+| post-tab-03 | `tab_view` | 1 | a | `refuses a tab indicator that is not a StatusIndicator spec by name` |  |
+| post-tab-04 | `tab_view` | 1 | a | `keeps a disabled tab in the strip and refuses its selection on every route` |  |
+| post-tab-05 | `tab_view_scenario` | 4 | c | - | A path shape of the solver tree only; native tab rows are named TabRow-<id> when sections exist. |
+| post-showcase-01 | `showcase_tabs` | 1 | a | `shrinks tab words toward the caption role in a filling bottom bar before they truncate` | The measured word width and the tab width are injected; the real glyph widths at 320 and 389 px need Studio. |
+| post-showcase-02 | `showcase_tabs` | 4 | a | `names the Status and Menus groups and the Paging and Steps tabs in All controls` | native_gallery mounts every all_controls tab; the category bar walk is the native TabView. |
+| post-showcase-03 | `showcase_tabs` | 1 | b | - | Native TabView content frame and ScrollingFrame canvas. |
+| post-showcase-04 | `showcase_tabs` | 1 | b | - | Native AutomaticSize X on each tab button follows the engine text bounds. |
+| post-showcase-05 | `showcase_tabs` | 1 | c | - | UI.ViewThatFits and the candidate solver were deleted (contracts mech1-04, mech1-126). A screen chooses a form with Compose.show on observed native bounds. |
+| post-fits-01 | `container_memo` | 1 | c | - | UI.ViewThatFits was deleted with the solver (mech1-04, mech1-126); there is no candidate rule to verify. |
+| post-lab-01 | `error_boundary` | 1 | c | - | UI.ErrorBoundary and the text primitive were deleted (mech1-115). Containment stays for presented Alert content and NavigationStack destinations; constructors take the native Name or the constructor name form. |
+| post-lab-02 | `theme_package` | 3 | d | - |  |
+| post-lab-03 | `tab_view` | 1 | a | `nests a TabView that a page builds later inside one of its branches` |  |
+| post-lab-04 | `preview` | 1 | c | - | The environment and its preview were deleted with the application shell. The engine owns the preferred text size and transparency; Studio emulates them. The gallery previews only viewing distance. |
+| post-lab-05 | `gallery_chrome` | 1 | c | - | The showcase settings have no device, orientation or input preview; the native gallery keeps only the viewing-distance preview. |
+| post-lab-06 | `disclosure_group` | 1 | a | `closes up a collapsed outline section in a scroller and reopens it` | The content leaves and returns and the canvas is native AutomaticCanvasSize; the canvas height needs Studio. |
+| post-lab-07 | `api` | 1 | a | `fades a subtree as one group and keeps a transparent group laid out while removal closes up` | The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false; Compose.show removes the node. Guide 17 documents both. |
+| post-navh-01 | `focus_chrome_mixed` | 2 | b | `yields native directional navigation at value bounds and rearms on focus return` | Native gamepad and arrow selection owns horizontal movement; a selected Slider or Stepper binds Left and Right only while it is selected and yields them at its bounds. No focus chrome host exists. |
+| post-recipes-01 | `view_recipes` | 1 | a | `runs one activation in a styled group and disables it by inheritance` | The disabled group is native Interactable on the ancestor. |
+| post-recipes-02 | `view_recipes` | 1 | a | `declares fixed, quarter and fill axes as native sizes and flex` | Native Size and UIFlexItem are asserted; hug, minimum and the overflow rectangle need Studio. |
+| post-recipes-03 | `view_recipes` | 1 | a | `sizes 1:1, 16:9 and 9:16 subjects inside the same 96 by 96 offer and centres them` | The subject sizes and centred anchors are asserted; solved rectangles need Studio. |
+| post-recipes-04 | `view_recipes` | 1 | a | `scales paint with a UIScale while the declared box stays` | The UIScale and the unchanged box are asserted; the painted footprint needs Studio. |
+| post-recipes-05 | `view_recipes` | 1 | a | `fades a subtree as one group and keeps a transparent group laid out while removal closes up` | Zero-transparency focus is native CanvasGroup behavior; selection of a faded button needs Studio. |
+| post-recipes-06 | `view_recipes` | 1 | a | `moves a child through spare room with nine alignments` | Anchor and scale position are asserted; the hugging parent case needs Studio. |
+| post-recipes-07 | `view_recipes` | 1 | a | `spaces siblings with a gap and moves only the named edges with padding` | Padding values are asserted; sibling rectangles need Studio. |
+| post-recipes-08 | `view_recipes` | 1 | a | `wraps a row to a second line, or keeps it on one line in a sideways scroller` | Wraps and the X scroller are asserted; the overrun and clip rectangles need Studio. |
+| post-recipes-09 | `view_recipes` | 1 | a | `rounds, strokes and shadows one node with native modifiers` | A UICorner rounds every corner with one radius natively; main painted per-corner radii. |
+| post-recipes-10 | `recipes_common` | 1 | a | `insets and paints the recipe dividers from the installed theme` | The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported. |
+| post-badge-01 | `badge` | 1 | a | `centres a count seal on the top-right corner of its host without changing the host` | The zero-size Corner frame, the centred anchor, 99+ and no selection stop are asserted; the painted centre needs Studio. |
+| post-badge-02 | `badge` | 1 | a | `mirrors the seal to the top-left in rtl and shows true as a dot` |  |
+| post-badge-03 | `badge` | 1 | a | `puts an icon tab count on the icon corner and keeps a text tab count in its words` | TabView icon tabs are covered; the segmented Picker icon option corner belongs to the pickers family. A text tab keeps the count in its words, not a separate pill. |
+
 ## Use the data
 
 - `totals` has the class counts before and after the new tests.

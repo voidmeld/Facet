@@ -546,13 +546,16 @@ t.describe("native parity navigation", function()
 		local function shown()
 			return if label then label.Text else feed.Text
 		end
-		t.expect(shown()).toBe("Feed (12)")
+		t.expect(shown()).toBe("Feed")
+		local seal = feed:FindFirstChild("CornerBadge", true)
+		t.expect(seal ~= nil and seal.Text == "12").toBe(true)
 		for _ = 1, 3 do
 			selection:set("feed")
 			selection:set("home")
 		end
 		t.expect(find(tabs, "feed")).toBe(feed)
-		t.expect(shown()).toBe("Feed (12)")
+		t.expect(shown()).toBe("Feed")
+		t.expect(feed:FindFirstChild("CornerBadge", true)).toBe(seal)
 		iconOnly:set(true)
 		t.expect(shown()).toBe("")
 		t.expect(feed:GetAttribute("FacetLabel")).toBe("Feed")

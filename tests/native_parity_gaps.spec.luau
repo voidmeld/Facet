@@ -232,6 +232,27 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		ErrorBoundary = function()
 			return { view = content, fallback = content }
 		end,
+		Pagination = function()
+			return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
+		end,
+		Card = function()
+			return {
+				image = "rbxassetid://1",
+				title = "Card",
+				onActivate = function() end,
+				primaryAction = { label = "Play", onActivate = function() end },
+			}
+		end,
+		Vote = function()
+			return { value = Compose.cell("none"), onChange = function() end }
+		end,
+		StepIndicator = function()
+			return {
+				steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+				current = "a",
+				onSelect = function() end,
+			}
+		end,
 		StatusIndicator = function()
 			return { status = "info" }
 		end,
@@ -281,12 +302,12 @@ t.describe("native parity gaps", function()
 		local probe: any = engineLib.new()
 		local names: { string } = {}
 		for name in Facet.controls(Facet.Roblox.createRuntime(probe), { types = probe.types } :: any) do
-			if name ~= "fill" then
+			if name ~= "fill" and name ~= "badged" then
 				table.insert(names, name :: string)
 			end
 		end
 		table.sort(names)
-		t.expect(#names).toBe(42)
+		t.expect(#names).toBe(46)
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()

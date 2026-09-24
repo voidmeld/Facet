@@ -197,7 +197,7 @@ return {
 				LayoutOrder = 1,
 				Name = "Line",
 				Size = function(use)
-					return UDim2.new(1, 0, 0, thickness or metrics(use).strokes.hairline)
+					return UDim2.new(1, 0, 0, (thickness or 1) * metrics(use).strokes.hairline)
 				end,
 			})
 			line:AddTag("facet-divider")

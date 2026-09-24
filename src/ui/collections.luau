@@ -163,7 +163,26 @@ return function(ctx: Types.Context, UI: Controls): ()
 				record.owner.dispose()
 			end,
 		})
-		local function setOffset(offset: number): ()
+		local function edgeOf(gutter: Types.Value<number>?, use: ComposeTypes.Use?): number
+			return if kind == "grid" then math.ceil(math.max(0, read(gutter or 0, use)) / 2) else 0
+		end
+		local function mainEdge(use: ComposeTypes.Use?): number
+			return edgeOf(spec.gap, use)
+		end
+		local function crossEdge(use: ComposeTypes.Use?): number
+			return edgeOf(spec.crossGap or spec.gap, use)
+		end
+		local function setOffset(requested: number): ()
+			local edge = mainEdge()
+			local offset = requested
+			if edge > 0 then
+				local current, box = status:peek(), viewport:peek()
+				local last = if current and current.extent then current.extent - box.size else math.huge
+				offset = if requested <= 0
+					then 0
+					elseif requested >= last then math.max(0, last + 2 * edge)
+					else requested + edge
+			end
 			local position = root.CanvasPosition
 			local nextPosition = if horizontal then V2.new(offset, position.Y) else V2.new(position.X, offset)
 			if position ~= nextPosition then
@@ -249,7 +268,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 						itemSize = read(spec.itemSize or 40, use),
 						gap = gap,
 						crossGap = crossGap,
-						crossSize = math.max(0, (use(cross) - crossGap * (columns - 1)) / columns),
+						crossSize = math.max(0, (use(cross) - 2 * crossEdge(use) - crossGap * (columns - 1)) / columns),
 					}
 				end,
 				render = function(current, placement, key)
@@ -359,7 +378,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 			else orderedRows(followOf())
 		local contentExtent = Compose.formula(function(use: ComposeTypes.Use): number
 			local current = use(status)
-			return if current then current.extent else 0
+			local extent = if current and current.extent then current.extent else 0
+			return if extent > 0 then extent + 2 * mainEdge(use) else 0
 		end)
 		local native = props(spec, behavior, {
 			BackgroundTransparency = 1,
@@ -381,6 +401,25 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end, function()
 				local nativeProps: Types.FrameProps =
 					{ Name = "Items", BackgroundTransparency = 1, Size = D2.fromScale(1, 1), directive }
+				if kind == "grid" then
+					table.insert(
+						nativeProps,
+						Host.UIPadding({
+							PaddingLeft = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then mainEdge(use) else crossEdge(use))
+							end,
+							PaddingRight = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then 0 else crossEdge(use))
+							end,
+							PaddingTop = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then crossEdge(use) else mainEdge(use))
+							end,
+							PaddingBottom = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then crossEdge(use) else 0)
+							end,
+						}) :: Types.Child
+					)
+				end
 				return Host.Frame(nativeProps)
 			end)
 		)
@@ -394,7 +433,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local position: ComposeTypes.Cell<Vector2> = observe(root, "CanvasPosition")
 		Compose.watch(function(use: ComposeTypes.Use)
 			local dimensions, at = use(size), use(position)
-			local offset = if horizontal then at.X else at.Y
+			local offset = math.max(0, (if horizontal then at.X else at.Y) - mainEdge(use))
 			local extent = if horizontal then dimensions.X else dimensions.Y
 			cross:set(if horizontal then dimensions.Y else dimensions.X)
 			local previous = viewport:peek()

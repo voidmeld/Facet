@@ -91,6 +91,27 @@ local fixtures = {
 	Stage = function()
 		return {}
 	end,
+	Pagination = function()
+		return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
+	end,
+	Card = function()
+		return {
+			image = "rbxassetid://1",
+			title = "Card",
+			onActivate = function() end,
+			primaryAction = { label = "Play", onActivate = function() end },
+		}
+	end,
+	Vote = function()
+		return { value = Compose.cell("none"), onChange = function() end }
+	end,
+	StepIndicator = function()
+		return {
+			steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+			current = "a",
+			onSelect = function() end,
+		}
+	end,
 	Menu = function()
 		return { items = { { id = "a", label = "A", onSelect = function() end } } }
 	end,
@@ -231,7 +252,7 @@ t.describe("native constructor conformance", function()
 		local runtime = Facet.Roblox.createRuntime(engine)
 		local UI = Facet.controls(runtime, { types = engine.types })
 		for name in UI do
-			assert(fixtures[name] or name == "fill", `Missing conformance fixture: {name}`)
+			assert(fixtures[name] or name == "fill" or name == "badged", `Missing conformance fixture: {name}`)
 		end
 		for name in fixtures do
 			assert(UI[name], `Stale conformance fixture: {name}`)

@@ -21,7 +21,14 @@ export type MenuItemBase = {
 	marked: Value<boolean>?,
 	dismiss: boolean?,
 	divider: false?,
+	badge: Value<string | number>?,
+	avatar: MenuAvatar?,
+	sectionTitle: Value<string>?,
+	shortcutLabel: Value<string>?,
 }
+export type MenuAvatar = { name: string, image: string?, userId: number? }
+export type MenuEdge = "top" | "bottom" | "leading" | "trailing"
+export type MenuAlign = "start" | "center" | "end"
 export type MenuAction<V = string> =
 	(MenuItemBase & {
 		children: Value<{ MenuItem<V> }>,
@@ -60,6 +67,10 @@ export type MenuSpec<V = string> = Types.FrameProps & {
 	onClose: (() -> ())?,
 	enabled: Value<boolean>?,
 	isPresented: ComposeTypes.Cell<boolean>?,
+	edge: MenuEdge?,
+	align: MenuAlign?,
+	width: Value<number>?,
+	maxHeight: number?,
 }
 export type PickerOption<V = string> = {
 	id: string?,
@@ -204,6 +215,14 @@ export type Tab = {
 	content: Content,
 	section: string?,
 	required: boolean?,
+	indicator: TabIndicator?,
+	enabled: Value<boolean>?,
+}
+export type TabIndicator = {
+	form: ("dot" | "ring" | "square" | "dash")?,
+	status: ("neutral" | "info" | "success" | "warning" | "error" | "accent")?,
+	count: Value<number?>?,
+	max: number?,
 }
 export type TabViewSpec = Types.FrameProps & {
 	selection: ComposeTypes.Cell<string>,
@@ -227,7 +246,7 @@ export type TabViewSpec = Types.FrameProps & {
 	shoulderNavigation: "strip" | "content"?,
 	indicator: Value<Indicator>?,
 	iconOnly: Value<boolean>?,
-	textSize: Value<number>?,
+	textSize: Value<number | "fit">?,
 	enabled: Value<boolean>?,
 	onChange: ((string) -> ())?,
 }

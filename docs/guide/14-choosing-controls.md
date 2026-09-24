@@ -15,6 +15,7 @@ surface only when the existing surface cannot express the task clearly.
 | Edit text or a number | TextInput. |
 | Adjust a bounded value | Slider; Stepper for exact increments. |
 | Select a rating or a level | Rating or LevelPicker. |
+| Vote up or down on an item | Vote. |
 | Show or remove compact selections | Chip. |
 | Show secondary document content | DisclosureGroup. |
 | Expand a compact preview | CollapsibleView. |
@@ -24,8 +25,11 @@ surface only when the existing surface cannot express the task clearly.
 | Organize named peer destinations | TabView. |
 | Navigate a hierarchy | NavigationStack. |
 | Step through peer pages | PageView. |
+| Select a page of numbered results | Pagination. |
+| Show the progress of a workflow | StepIndicator. |
 | Compare sortable columns | Table. |
 | Show large scrolling data | VirtualList or VirtualGrid. |
+| Show a browsable item with a picture and actions | Card, in a VirtualGrid for many items. |
 | Add operations for one row | RowActions. |
 
 ## Compose in the existing screen
@@ -50,6 +54,11 @@ destinations. Inside one destination, ordinary page tabs can select local
 views. A label such as "game" or "gallery" does not change the navigation role.
 Use NavigationStack for drill-down. Do not encode a path as a set of unrelated
 tabs.
+
+Leave the placement automatic at both levels. Build the inner TabView anywhere
+under an outer page: in its content factory, or later in a `Compose.show` or
+`Compose.keyed` branch of that page. The inner TabView is then nested and uses a
+top band.
 
 ## Radial actions
 

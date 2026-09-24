@@ -431,6 +431,37 @@ Both take a numeric `value`, a positive integer `count` (default `5`),
 
 The named sizes are `small` (20), `medium` (28) and `large` (36).
 
+### Vote
+
+Vote is up, down or none over your value. It requires `value` (`up`, `down`
+or `none`, or a readable of one) and `onChange(next)`, unless `readOnly` is
+true. `summary` is your own text, such as "99% liked". The optional
+`controlSize`, `enabled` and `controls` apply. The control sets
+`controls.diagnostics()`.
+
+- The caller owns `value`. A press calls `onChange(next)` once. The strip
+  changes only when your value changes. Thus a refused vote never paints, and
+  a change from up to down is one change.
+- A press on the chosen side proposes `none`.
+- The two sides are icon Buttons (`vote.up`, `vote.down`) with the names
+  "Upvote" and "Downvote", in the `facet-segmented` strip that Picker uses.
+  The chosen side has `facet-segment-current`. Each side is at least the
+  target size (`targetSizes.minimum`).
+- The summary is one line. Its whole text is in the `FacetLabel` attribute.
+  Vote counts nothing.
+- `readOnly = true` shows the same icons with your choice marked, with no
+  Button and no selection stop. It is not disabled paint. A later
+  `readOnly = false` without `onChange` keeps the vote read-only, with a
+  warning and a diagnostic line.
+- `enabled = false` gives the ordinary disabled Buttons. A late value that is
+  not legal keeps the last legal value.
+
+Pointer and touch press a side. Native gamepad selection moves between the
+sides. The Activate action (Return or Space) and ButtonA propose the selected
+side. The root has the attributes `FacetValue` and `FacetReadOnly`. For a
+score out of five, use Rating. For a number that the player adjusts, use
+Stepper.
+
 ### Chip and ShortcutHint
 
 Chip takes `label` and either a boolean `selected` or `onRemove`.
@@ -462,6 +493,25 @@ menus keep the control-specific navigation of the menu.
   item that opened it.
 - The menu panel scales and fades from the edge nearest to its trigger. See
   [Motion](#motion).
+- `edge` (`top`, `bottom`, `leading` or `trailing`) and `align` (`start`,
+  `center` or `end`) place the root panel against its trigger. The default is
+  `bottom` and `start`. When the panel does not fit on its edge and fits on
+  the opposite edge, it flips. Submenus keep their position beside their
+  parent level. A malformed value causes an error that names the option.
+- `width` is the width of the floating panel in pixels, or a readable of one.
+  `maxHeight` bounds the whole floating panel in pixels. The panel is always
+  bounded by the screen, and its rows scroll inside it. The row ids and the
+  activation do not change.
+- A level whose `selected` group holds one of its rows opens with the
+  selection on that row, and scrolls that row to the center of the list. A
+  `checked` item does not move the landing.
+- Every row is at least the target size (44) tall, and the label leads the row.
+  A row can also have `badge` (a string, a number or a readable, shown as a
+  Badge named `Count`), `avatar` (`{ name, image?, userId? }`, a compact
+  Avatar that takes no selection), `sectionTitle` (a caption heading before the
+  row, never a selection stop) and `shortcutLabel` (display text such as
+  "Ctrl+B"). `shortcutLabel` binds no key. Bind the key where the action is.
+  Picker passes the option `badge` to its menu rows.
 
 SplitButton combines a primary `label` and `onActivate` action with the
 secondary `items` of the menu. Use it when the secondary operations supplement
@@ -522,6 +572,21 @@ cannot be hidden.
 not look like user input. The control owns scroll and focus restoration and
 shoulder navigation.
 
+A tab can have `indicator`, a StatusIndicator spec `{ form?, status?, count?,
+max? }`. It shows in that tab's own button. The whole-control `indicator` is a
+different setting. A tab with `enabled = false` stays in the strip, but no
+route selects it: a press, shoulder navigation and the collapsed menu skip or
+refuse it. A malformed tab indicator causes an error that names `indicator`.
+
+`textSize` defaults to `fit`. In a bottom bar each tab gets an equal share of
+the width, and its words shrink from the `control` type size toward the
+`caption` size to fit that share before the engine truncates them. The control
+measures the words at the control size. A number or a readable number sets a
+fixed size.
+
+A TabView that is built inside the page of another TabView is nested, also
+when a branch of that page builds it later. A nested TabView uses a top band.
+
 A page change uses a native crossfade. The default is
 `transition = { seconds = 0.2, ease = Compose.easing.outQuad }`. Supply other
 direct Compose tween options to change it. Use `false` to disable motion. Named
@@ -554,6 +619,93 @@ PageView requires a writable `selection` and `pages` with unique ids and
 content factories. It supplies page navigation, indicators, and previous and
 next actions. Use it for a sequential set of peer pages. TabView is for named
 destinations. NavigationStack is for a drill-down path.
+
+### Pagination
+
+Pagination selects one page of numbered results. It does not fetch data.
+It requires `page` (a number or a readable) and `onChange(nextPage)`.
+
+- `pageCount` is a whole number of 0 or more, or a readable of one. `nil`
+  means that the count is unknown.
+- `hasNext` and `hasPrevious` (default false) set the arrows for an unknown
+  count. A known `pageCount` ignores them.
+- `siblingCount` and `boundaryCount` are whole numbers from 0 to 20. The
+  default of each is 1.
+- `showFirstLast` (default false) adds First and Last arrows. Last shows only
+  for a known count.
+- `form` is `numbers` (default), `arrows` or `label`. `direction` is `ltr`
+  (default) or `rtl`. `controlSize` and `enabled` are optional.
+- `controls` is an optional table. The control sets `controls.diagnostics()`,
+  which returns the refusal lines.
+
+The caller owns `page`. A press proposes one page through `onChange`. The row
+changes only when your value changes. Thus a refused proposal changes nothing.
+A page outside the range shows clamped, with a warning and a diagnostic line.
+The control never writes it back. A late value that is not legal keeps the
+last legal value. A malformed value at construction causes an error.
+
+The numbers form shows the boundary pages, the current page and
+`siblingCount` pages on each side. An ellipsis replaces a gap of two or more
+pages. The work is bounded by the two counts, not by `pageCount`. The control
+measures the width of its root (`AbsoluteSize.X`). When the row does not fit,
+the farthest boundary page goes first, then the farthest neighbour (the higher
+page on a tie). When only the current page and the arrows do not fit, the row
+shows "Page n of m". An unknown count always shows "Page n". Zero pages shows
+"No pages" with no stops. One page has no enabled arrow.
+
+Each page is a compact Button in a slot that is at least the target size
+(`targetSizes.minimum`) wide. The arrows are icon Buttons of the same size.
+The label keeps the width of the widest label that the count can make, so the
+arrows do not move when the page gains a digit. Page nodes are keyed by page
+number. When the selected page leaves the window, or a selected arrow becomes
+disabled at an edge, the selection moves to the current page. `rtl` reverses
+the row once. The root is a Frame that fills its width. `AutomaticSize` on X
+causes an error, because the window narrows to the width that it gets.
+
+The root has the attributes `FacetCurrent`, `FacetCount`, `FacetForm` and
+`FacetDirection`. Use Pagination for results that you load one page at a time.
+Use VirtualList for one long list and PageView to swipe between screens.
+
+### StepIndicator
+
+StepIndicator shows where a workflow is. It shows a list of step states. It
+is not a number control. It requires `steps` (an array or a readable) and
+`current` (a step id, `nil` or a readable). A step is `{ id, label,
+description?, state?, navigable?, enabled? }`. `state` is `complete`,
+`current`, `upcoming` or `error`.
+
+- Step ids are nonempty and unique. Labels are nonempty and can repeat.
+- `current` alone sets the current step. It places the underline and the
+  summary "Step n of m — Label". `state = "current"` is accepted only on the
+  step that `current` names.
+- A step's `state` sets its cue and its state word: a check for `complete`,
+  the error icon for `error`, and otherwise the step number in a circle. Thus
+  an errored current step keeps its error cue. The state word shows under the
+  label.
+- A `current` that names no step shows "No current step". An empty list shows
+  "No steps" and has no Steps button.
+- A step is a Button only when it is `navigable`, it is not disabled, and you
+  supply `onSelect`. Other steps are plain content and never selectable. A
+  press on a permitted step calls `onSelect(id)` once. The control never
+  writes `current`. Thus a refused step changes nothing.
+- `sizing` is `fill` (default, each step gets the share of the widest label)
+  or `hug` (each step gets its own label width). `listLabel` (default
+  "Steps"), `controlSize`, `enabled` and `controls` are optional. The control
+  sets `controls.diagnostics()`.
+
+A malformed snapshot at construction causes an error. A later malformed
+snapshot keeps the last legal one, with a warning and a diagnostic line. The
+control measures its root width and the label text. When the steps do not
+fit, the row changes to the summary and a Steps Menu. The menu lists every
+step. Permitted steps select through the same `onSelect`. The menu closes
+when your `current` changes, so a refused step leaves it open. The number
+circle keeps an aspect ratio of 1 at every text size. The row stretches its
+cells to one height with a native `ItemLineAlignment`.
+
+The underline is a `facet-selection-indicator` frame. It moves to the new
+current step on a spring. Reduced motion places it immediately. The root has
+the attributes `FacetCurrent`, `FacetSummary`, `FacetForm` (`row` or
+`summary`) and `FacetListOpen`.
 
 ### RadialMenu
 
@@ -663,7 +815,7 @@ render owner.
 | `mode` | `windowed`; `all` deliberately mounts the entire collection. |
 | `direction` | `vertical`; `horizontal` changes the scrolling axis. |
 | `itemSize` | `40`, the estimated main-axis extent. |
-| `gap`, `crossGap` | `0`; the cross gap defaults to the gap. |
+| `gap`, `crossGap` | `0`; the cross gap defaults to the gap. A VirtualGrid keeps half of each gap (rounded up) at its outer edges, as a `UIPadding` on its `Items` frame and in its canvas extent. Thus content that paints past its cell, such as a lifted Card, is not cut by the scroll clip. |
 | `columns` | The grid column count, default `1`; can be reactive. |
 | `overscan` | `2`. |
 | `measure` | `false`; set to observe the rendered native `AbsoluteSize`. |
@@ -720,6 +872,93 @@ local list = UI.VirtualList {
             onActivate = function() inspect(current:peek().id) end,
             Size = UDim2.new(1, 0, 0, 52),
         }
+    end,
+}
+```
+
+### Card
+
+Card shows one item of a browsable collection: artwork, a title and an
+optional caption, with a primary action and a More menu that show on
+engagement. It requires `image` and `title` (nonempty strings or readables).
+The other options are `caption`, `imageAspectRatio` (default `16/9`),
+`imageFraming` (`fit` or `crop`), `onActivate`, `primaryAction = { label,
+icon?, onActivate, enabled?, busy? }`, `menu = { items, label? }`, `reveal`
+(`automatic` or `always`), `browseTarget`, `enabled` and `controls`.
+
+Use a Card for a game, a track or a kart, where the picture helps the player
+choose. For rows of text, use VirtualList or Table.
+
+- With `onActivate`, the body is a Button. Without it, the body is plain
+  artwork and text. The primary action is a Button. `menu` is a Menu behind a
+  More trigger (`menu.label`, default "More"). The body, the primary action
+  and More are sibling targets under a root that is not a Button. Thus a press
+  runs exactly one of them. `enabled = false` applies to all three.
+- A late value of `title` or `image` that is empty or of the wrong type keeps
+  the last legal paint, with a warning and a diagnostic line.
+- `always` keeps the action plate visible. `automatic` (the default) shows it
+  at rest when the session has touch (`TouchEnabled` or a touch
+  `PreferredInput`), and otherwise while the card is engaged. The card is
+  engaged while the pointer is in it, the selection is in it, a press is held
+  on one of its actions, its menu is open, its actions are entered, or the
+  `browseTarget` is selected. A card with no body action and no
+  `browseTarget` has no stop of its own, so it shows its actions at rest.
+- The plate is a CanvasGroup below the body in the card's own layout. It is
+  always laid out, so the card size never changes and the siblings never move.
+  At rest it is transparent and not `Interactable`, so its actions take no
+  press and no selection. The fade uses a Compose tween, so a quick reversal
+  continues from the current value. Reduced motion shows and hides it
+  immediately.
+- While engaged, the card's `UIScale` named `Lift` rises to 1.04 on a spring,
+  and a body Button shows its `UIShadow` named `LiftShadow`. A card with no
+  body action has no shadow. The scale is paint only. Keep gutters of at least
+  the scaled growth around each card. Reduced motion keeps only the shadow.
+  When a `browseTarget` exists, the card puts a `UIScale` named `CardLift` with
+  the same scale on it, so the selection ring grows with the card.
+
+`browseTarget` is a function that returns the browse stop of the card, such
+as the `RowHit` of a VirtualGrid cell. `controls` is an optional table. The
+card sets `enterActions()`, `leaveActions()`, `diagnostics()` and the readables
+`engaged`, `revealed`, `scale` and `revealExtent` (`{ body }`, the measured
+root height). `enterActions()` holds the reveal and selects the first eligible
+action. It returns false for a disabled or unmounted card, or when no action
+is eligible. It never runs the primary action. While the actions are entered,
+the action row is a `SelectionGroup` whose selection behavior is `Stop` on all
+four sides. Escape or ButtonB leaves the actions and selects the browse stop.
+The menu closes first when it is open. A press outside the card also leaves.
+When the card is removed or recycled, it releases the entry.
+
+The root has the attributes `FacetReveal`, `FacetRevealed`, `FacetEngaged`,
+`FacetHovered`, `FacetFocusWithin`, `FacetPressing`, `FacetBrowsing`,
+`FacetEntered`, `FacetMenuOpen` and `FacetBody` (`button` or `informational`).
+
+```luau
+local controls = {}
+local cards = {}
+UI.VirtualGrid {
+    from = games,
+    key = "id",
+    columns = 3,
+    itemSize = 320,
+    measure = true,
+    gap = 16,
+    onActivate = function(_item, key) local entry = controls[key]; if entry then entry.enterActions() end end,
+    render = function(current, _placement, key)
+        controls[key] = {}
+        local card = UI.Card {
+            image = art,
+            title = function(use) return use(current).title end,
+            controls = controls[key],
+            browseTarget = function()
+                local node = cards[key]
+                return node and node.Parent and node.Parent:FindFirstChild("RowHit")
+            end,
+            primaryAction = { label = "Play", onActivate = function() play(key) end },
+            menu = { items = { { id = "hide", label = "Not interested", onSelect = function() hide(key) end } } },
+        }
+        cards[key] = card
+        Compose.cleanup(function() cards[key], controls[key] = nil, nil end)
+        return card
     end,
 }
 ```
@@ -864,6 +1103,21 @@ Resource lifetime uses Compose ownership and shared resources.
 The Stage content callback mounts into its WorldModel. It can return a teardown
 function. Use the `Host.Part`, `Host.Model` and other native constructors of the
 same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
+
+### badged
+
+`UI.badged(host, value, direction?) -> Frame` puts a count or a dot on the
+corner of a host, such as a Button, an icon Button or an Avatar. It returns a
+Frame named `<host name>+badge` that hugs the host and takes its
+`LayoutOrder`. A zero-size `Corner` frame sits at the top-right corner of the
+host, or at the top-left when `direction` is `"rtl"`. It holds a Badge named
+`CornerBadge`, centred on the corner. The Corner frame has no size, so the host
+keeps its layout box, its hit area and its selection. `value` is a string, a
+whole count (above 99 shows "99+"), `true` for a dot, or a readable of one.
+`nil`, `false`, `0` and `""` show nothing. A TabView tab with an `icon` shows
+its `badge` on the corner of the icon. A text tab keeps the count in its words.
+The seal paints past the host by half its size, so give a host at a clipping
+edge that much room.
 
 ## Themes
 

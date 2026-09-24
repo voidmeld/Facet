@@ -3942,7 +3942,7 @@ t.describe("native parity reference applications", function()
 			local runtime = Facet.Roblox.createRuntime(engine)
 			local names = {}
 			for name in Facet.controls(runtime, { types = engine.types } :: any) do
-				if name ~= "fill" then
+				if name ~= "fill" and name ~= "badged" then
 					table.insert(names, name :: string)
 				end
 			end
@@ -3964,7 +3964,7 @@ t.describe("native parity reference applications", function()
 				HStack = "StackProps",
 			}
 			local names = controlNames()
-			t.expect(#names).toBe(42)
+			t.expect(#names).toBe(46)
 			for _, name in names do
 				local contract = shared[name]
 				local found = if contract

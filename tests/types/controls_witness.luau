@@ -67,6 +67,53 @@ local avatarProps: Facet.AvatarProps = { name = "Alder", presence = "online" :: 
 local avatar: GuiObject = UI.Avatar(avatarProps)
 local avatars: GuiObject = UI.AvatarGroup({ items = { { id = "a", name = "Alder" } } })
 local stage: ViewportFrame = UI.Stage({ fieldOfView = 60 })
+local pageCell = Compose.cell(1)
+local paginationProps: Facet.PaginationSpec = {
+	page = pageCell,
+	pageCount = 12,
+	form = "numbers" :: "numbers",
+	onChange = function(nextPage: number)
+		pageCell:set(nextPage)
+	end,
+}
+local pagination: Frame = UI.Pagination(paginationProps)
+local stepCell = Compose.cell("a")
+local stepList: { Facet.Step } = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } }
+local stepProps: Facet.StepIndicatorSpec = {
+	steps = stepList,
+	current = function(use: Use): string?
+		return use(stepCell)
+	end,
+	onSelect = function(id: string)
+		stepCell:set(id)
+	end,
+}
+local stepIndicator: Frame = UI.StepIndicator(stepProps)
+type VoteValue = "up" | "down" | "none"
+local initialVote: VoteValue = "none"
+local voteCell = (Compose.cell(initialVote) :: unknown) :: Facet.Cell<VoteValue>
+local voteProps: Facet.VoteSpec = {
+	value = function(use: Use): VoteValue
+		return use(voteCell)
+	end,
+	summary = "92% liked",
+	onChange = function(nextValue: VoteValue)
+		voteCell:set(nextValue)
+	end,
+}
+local vote: Frame = UI.Vote(voteProps)
+local cardControls: Facet.CardControls = {}
+local cardProps: Facet.CardSpec = {
+	image = "rbxassetid://1",
+	title = text,
+	caption = "Friends playing",
+	onActivate = nothing,
+	primaryAction = { label = "Play", onActivate = nothing },
+	menu = { items = { { id = "hide", label = "Not interested", onSelect = nothing } } },
+	controls = cardControls,
+}
+local card: Frame = UI.Card(cardProps)
+local sealed: Frame = UI.badged(UI.Button({ label = "Inbox" }), 3)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -161,6 +208,11 @@ local mounted: { GuiObject } = {
 	avatar,
 	avatars,
 	stage,
+	pagination,
+	stepIndicator,
+	vote,
+	card,
+	sealed,
 	menu,
 	split,
 	picker,

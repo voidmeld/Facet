@@ -461,9 +461,9 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3426,
-      "c": 5973,
-      "b": 1440,
+      "a": 3540,
+      "c": 5988,
+      "b": 1446,
       "d": 9
     },
     "auditByClass": {
@@ -473,9 +473,9 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1174,
-      "c": 811,
-      "b": 302,
+      "a": 1283,
+      "c": 820,
+      "b": 307,
       "d": 3
     },
     "mainCases": 10848,
@@ -494,7 +494,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 482
+    "coveredButWeaker": 536
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -34863,6 +34863,1923 @@
         "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency",
         "native_parity_strength_paint::native paint strength: theme sheets::composes the sheet scrim and the full-screen backdrop from the same clamped preference"
       ]
+    },
+    {
+      "id": "post-pagination-01",
+      "group": "navigation-containers",
+      "title": "The seven-slot window near each edge and in the middle; a gap of one shows the page; bounded work",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::shows the seven-slot pattern near each edge and in the middle, and a gap of one shows the page"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-02",
+      "group": "navigation-containers",
+      "title": "Mounts the window, marks the current page and proposes without writing",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::mounts the window, marks the current page and proposes without writing"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-03",
+      "group": "navigation-containers",
+      "title": "Keeps overlapping page nodes when the window moves",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::keeps the overlapping page nodes when the window moves"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-04",
+      "group": "navigation-containers",
+      "title": "Zero pages is inert context; one page has no enabled navigation",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::shows zero pages as inert context and one page with no enabled navigation"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-05",
+      "group": "navigation-containers",
+      "title": "An unknown count follows its flags, shows the page label and never a last page",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::follows the flags of an unknown count, shows the page label and never a last page"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-06",
+      "group": "error-handling",
+      "title": "An outside page is shown clamped with a diagnostic and never written back",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::shows an outside page clamped with a diagnostic and never writes it back"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-07",
+      "group": "error-handling",
+      "title": "Malformed construction is refused and a late illegal value keeps the last legal one",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::refuses malformed construction and keeps the last legal value for a late one"
+      ],
+      "weaker": "Main refused width = hug; the native control refuses AutomaticSize on X, the equivalent native declaration.",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-08",
+      "group": "text-measure-fit",
+      "title": "Four-digit pages keep full targets; narrow room drops the farthest boundary page, then neighbours, then labels",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::drops the farthest boundary page, then the farthest neighbour, then shows the label as room narrows"
+      ],
+      "weaker": "Text widths come from injected TextBounds on the measure labels; real glyph widths need Studio.",
+      "needsLive": "pagination-fit",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-09",
+      "group": "layout-geometry",
+      "title": "A hugging parent settles on the same window a filling one shows at that width",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "needsLive": "pagination-hug",
+      "nativeMechanism": "Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize.",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-10",
+      "group": "navigation-containers",
+      "title": "rtl reverses the row once and keeps previous/next meaning",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::reverses the row once in rtl and keeps the meaning of previous and next"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-11",
+      "group": "focus-selection",
+      "title": "Reached from its neighbours; a vanished focused page leaves focus inside",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::hands the selection of a page that leaves the window to the current page"
+      ],
+      "weaker": "Arrival from the neighbours is native gamepad selection and is not simulated headlessly.",
+      "needsLive": "pagination-neighbours",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-12",
+      "group": "focus-selection",
+      "title": "An arrow that disables at an edge hands focus to the current page",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::hands the selection of an arrow that disables at an edge to the current page"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-13",
+      "group": "layout-geometry",
+      "title": "Page buttons and arrows reserve the target floor: no two hit bands overlap",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::gives every page and arrow a slot at the target floor and a compact plate centred in it"
+      ],
+      "weaker": "Slot and arrow sizes are asserted; hit rectangles need the native layout.",
+      "needsLive": "pagination-targets",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-14",
+      "group": "layout-geometry",
+      "title": "A page is a small plate centred in a target-wide slot",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::gives every page and arrow a slot at the target floor and a compact plate centred in it"
+      ],
+      "weaker": "Anchor, position and compact size are asserted; the centred rectangle needs the native layout.",
+      "needsLive": "pagination-targets",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-15",
+      "group": "text-measure-fit",
+      "title": "The arrows hold still while the label grows a digit, ltr and rtl, known and unknown",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::keeps the label reservation while the label gains a digit, ltr and rtl, known and unknown"
+      ],
+      "weaker": "The label reservation and its measure text are asserted; the arrow X positions need the native layout.",
+      "needsLive": "pagination-arrows-still",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-16",
+      "group": "focus-selection",
+      "title": "Count to zero leaves no internal stop and focus returns to a live neighbour",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::leaves no stop inside the row when the count drops to zero"
+      ],
+      "weaker": "The landing on a live neighbour is native selection.",
+      "needsLive": "pagination-neighbours",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-17",
+      "group": "lifetime-ownership",
+      "title": "A callback that changes the count or disposes the control is safe",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::stays safe when a callback changes the count and removes the control"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-18",
+      "group": "gallery-examples",
+      "title": "The Paging scenario results context follows an accepted page, and a refusal changes nothing",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::follows an accepted page in the Paging scenario context and changes nothing on a refusal"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-01",
+      "group": "navigation-containers",
+      "title": "Only navigable, enabled steps with onSelect are Buttons; the rest are content",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::makes only navigable, enabled steps with onSelect into Buttons and the rest into content"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-02",
+      "group": "navigation-containers",
+      "title": "current alone moves the underline and the summary; a refused selection changes nothing",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::moves the underline and the summary only with current, and a refused selection changes nothing"
+      ],
+      "weaker": "The cell rectangles are injected AbsolutePosition and AbsoluteSize values.",
+      "needsLive": "steps-underline",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-03",
+      "group": "layout-geometry",
+      "title": "The row's cells share one height and a top edge, so the underline stays on one line",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::stretches the row cells to one height on one top edge"
+      ],
+      "weaker": "The native ItemLineAlignment, VerticalAlignment and underline anchor are asserted; the solved heights need Studio.",
+      "needsLive": "steps-underline",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-04",
+      "group": "navigation-containers",
+      "title": "An errored or completed current step keeps its own cue and state word",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::keeps the own cue and state word of an errored or completed current step"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-05",
+      "group": "text-measure-fit",
+      "title": "The number marker stays a circle at the largest text size",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::keeps the number marker a circle when the text grows"
+      ],
+      "weaker": "The number TextBounds are injected; the largest player text size needs Studio.",
+      "needsLive": "steps-circle",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-06",
+      "group": "navigation-containers",
+      "title": "A missing current is unavailable, never guessed; empty and repopulated lists rebuild cleanly",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::never guesses a missing current and rebuilds empty and repopulated lists"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-07",
+      "group": "navigation-containers",
+      "title": "A reorder keeps each step's node and the underline follows the current step's solved rect",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::keeps each step node across a reorder and renumbers it"
+      ],
+      "weaker": "The underline follow is asserted in the current-step case from injected rectangles.",
+      "needsLive": "steps-underline",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-08",
+      "group": "error-handling",
+      "title": "Conflicts are refused at construction and the last legal snapshot stays later",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::refuses conflicts at construction and keeps the last legal snapshot later"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-09",
+      "group": "navigation-containers",
+      "title": "A narrow width shows Step n of m and a list that selects through the same path",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::shows Step n of m and a list that selects through the same path when the width is narrow"
+      ],
+      "weaker": "The list is a UI.Menu anchored to the Steps trigger, not a UI.Popover; Popover is not a control of this family.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-10",
+      "group": "text-measure-fit",
+      "title": "hug sizing follows its offer both ways: narrow to the summary and wide back to the row",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::follows its offer both ways between the row and the summary, for fill and hug"
+      ],
+      "weaker": "Label widths are injected TextBounds on the measure labels.",
+      "needsLive": "steps-fit",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-11",
+      "group": "layout-geometry",
+      "title": "A hugging parent settles on the same form a filling one shows at that width",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "needsLive": "steps-fit",
+      "nativeMechanism": "Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-12",
+      "group": "lifetime-ownership",
+      "title": "A callback that removes the control leaves nothing open",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::leaves nothing open when a callback removes the control"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-13",
+      "group": "gallery-examples",
+      "title": "The Steps scenario: a row selection moves the narrow summary too; refusing changes neither",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::moves the narrow summary with a row selection in the Steps scenario and refuses both"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-01",
+      "group": "controls-values",
+      "title": "Accepts, swaps in one transition, and reselecting proposes none",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::accepts, swaps in one change, and proposes none when the chosen side is pressed again"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-02",
+      "group": "controls-values",
+      "title": "A refused proposal never paints and never touches the caller's cell",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::never paints a refused proposal and never touches the caller's cell"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-03",
+      "group": "input-actions",
+      "title": "Keyboard and pad reach the strip and propose through the same path",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::proposes from a selected side through the keyboard Activate action"
+      ],
+      "weaker": "The keyboard Activate action is fired; native gamepad selection and ButtonA are engine paths.",
+      "needsLive": "vote-pad",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-04",
+      "group": "error-handling",
+      "title": "A getter or formula value works; an invalid late value keeps the last legal paint",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::reads a function value and keeps the last legal paint for an invalid late value"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-05",
+      "group": "lifetime-ownership",
+      "title": "A callback that disposes the vote leaves no stale state",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::leaves no stale state when a callback removes the vote"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-06",
+      "group": "controls-values",
+      "title": "readOnly shows the choice with nothing to press or focus; disabled is ordinary disabled paint",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::shows a read-only choice with nothing to press or select and uses ordinary disabled paint"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-07",
+      "group": "error-handling",
+      "title": "A readOnly vote without onChange refuses to become interactive; the Picker seam stays private",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::refuses to become interactive without onChange"
+      ],
+      "weaker": "The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-08",
+      "group": "layout-geometry",
+      "title": "Two votes beside a chip keep separate targets that never overlap, with a disclosed summary",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::keeps two votes and a chip as separate targets at the floor, with a disclosed summary"
+      ],
+      "weaker": "Minimum target constraints and separate nodes are asserted; overlap of hit rectangles needs the native layout.",
+      "needsLive": "vote-targets",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-09",
+      "group": "gallery-examples",
+      "title": "The Choices tab's vote repaints only from its caller's value, and its summary follows",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::repaints the Choices vote only from its caller's value and follows the summary"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-01",
+      "group": "error-handling",
+      "title": "Malformed specs are refused before anything is built",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::refuses malformed specs before building anything"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-02",
+      "group": "controls-actions",
+      "title": "Body, primary and More are sibling targets: one press runs exactly one intent",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps body, primary and More as sibling targets so one press runs one intent"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-03",
+      "group": "controls-actions",
+      "title": "An informational body has no activation target, and actions still work",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::gives an informational body no activation target and keeps its actions at rest"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-04",
+      "group": "controls-actions",
+      "title": "Disabled cards and busy actions keep their controls own semantics",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the semantics of disabled cards and busy actions"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-05",
+      "group": "error-handling",
+      "title": "An invalid late title or image keeps the last legal paint and recovers",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the last legal paint for an invalid late title or image and recovers"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-06",
+      "group": "lifetime-ownership",
+      "title": "A callback that removes its own card leaves nothing behind",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::leaves nothing behind when a callback removes its own card"
+      ],
+      "weaker": "Main checked the presenter focus scope name; the native case checks that the card and its Cancel context are gone.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-07",
+      "group": "controls-actions",
+      "title": "automatic: pointer within reveals; siblings and the card envelope never move",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals on a pointer within and keeps the action plate in the card's layout"
+      ],
+      "weaker": "The plate stays visible, laid out and ordered after the body, and the root Size never changes; the solved rectangles need Studio.",
+      "needsLive": "card-envelope",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-08",
+      "group": "layout-geometry",
+      "title": "The envelope height is measured at rest, before anything reveals",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::measures the envelope height at rest, before anything reveals"
+      ],
+      "weaker": "The root AbsoluteSize is injected.",
+      "needsLive": "card-envelope",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-09",
+      "group": "focus-selection",
+      "title": "Hidden actions are out of the focus order at rest",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps hidden actions out of reach at rest and lets a selected body reveal them"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-10",
+      "group": "focus-selection",
+      "title": "Focus within reveals; pointer departure never hides focused content; focus departure does",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals on focus within, keeps it when the pointer leaves and ends it when focus leaves"
+      ],
+      "weaker": "The Tab walk is native selection; the case moves GuiService.SelectedObject.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-11",
+      "group": "controls-actions",
+      "title": "An open menu holds the reveal across its portal and releases it on close",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::holds the reveal while its menu is open and releases it when the menu closes"
+      ],
+      "weaker": "The pad route (ButtonY opens the menu from a selected More and B returns selection to it) is the Menu control route and is not repeated here.",
+      "needsLive": "card-pad",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-12",
+      "group": "controls-actions",
+      "title": "A press held on an action keeps the reveal after the pointer leaves",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the reveal while a press is held on an action after the pointer leaves"
+      ],
+      "weaker": "The press is the native GuiState of the action Button, set directly.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-13",
+      "group": "adaptive-environment",
+      "title": "Touch-only keeps actions at rest and the first tap does the body promised action",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the actions at rest while touch is present and runs the body on the first tap"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-14",
+      "group": "controls-actions",
+      "title": "Hidden actions take no tap, and a press cut off by disabling never fires on release",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::takes no tap on hidden actions and never fires a press cut off by disabling"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-15",
+      "group": "motion",
+      "title": "A rapid reversal retargets the fade from where it is, never from rest",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::retargets the fade from where it is on a rapid reversal"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-16",
+      "group": "controls-actions",
+      "title": "always reserves the action row in the card own layout",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals the action row at rest with reveal always"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-17",
+      "group": "text-measure-fit",
+      "title": "A live theme and text change while revealed re-measures without moving siblings",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::follows a live change of the measured envelope while revealed"
+      ],
+      "weaker": "The measured root height is injected; a real theme and text change needs Studio.",
+      "needsLive": "card-envelope",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-18",
+      "group": "motion",
+      "title": "Hover, painted focus and a held press all lift the card; disengaging lands it",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::lifts the card with a raised shadow for hover, selection and a held press and lands it after"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-19",
+      "group": "motion",
+      "title": "A card with no body action lifts without a shadow",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::lifts a card with no body action without a shadow"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-20",
+      "group": "motion",
+      "title": "A grid cell stop wears its card lift, so the ring marks the lifted card",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::puts the card lift on its grid browse stop so the selection ring marks the lifted card"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-21",
+      "group": "motion",
+      "title": "Reduced motion keeps only the raised shadow, and ten feet leaves the scale to the focus lift",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps only the raised shadow under reduced motion"
+      ],
+      "weaker": "The ten-foot half is retired: the native architecture deleted the viewing-distance profile and its tenFootFocusScale, so no focus lift competes with the card scale.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-22",
+      "group": "collections-virtual",
+      "title": "The grid Hit is the browse stop: its ring reveals that card alone",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals only the card whose grid browse stop is selected and moves with the selection"
+      ],
+      "weaker": "A parked focus without a painted ring does not exist natively: a pointer session has no GuiService.SelectedObject.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-23",
+      "group": "focus-selection",
+      "title": "Activate enters the actions at the first action; arrows stay inside; Cancel restores the stop",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::enters the actions at the first action, traps the selection and restores the stop on Cancel"
+      ],
+      "weaker": "The trap is the native SelectionGroup with Stop behavior on all four sides; the engine moves the selection, so arrow presses are a live check.",
+      "needsLive": "card-pad",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-24",
+      "group": "lifetime-ownership",
+      "title": "Removing, scrolling away or replacing an entered card leaves no trap, menu or ref behind",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::leaves no trap, menu or controls behind when an entered card is removed or replaced"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-25",
+      "group": "lifetime-ownership",
+      "title": "Scrolling an entered card out of the window recycles it without stranding its trap",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::recycles an entered card scrolled out of the window without stranding its trap"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-26",
+      "group": "collections-virtual",
+      "title": "Two grids with identical keys keep separate cards and entries",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps separate cards and entries in two grids with identical keys"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-27",
+      "group": "gallery-examples",
+      "title": "The gallery Cards scenario: its lines hold each card and its plate, and its step enters",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped"
+      ],
+      "weaker": "The scenario step enters and Play runs; that each line holds its card and plate needs the native layout.",
+      "needsLive": "card-grid",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-28",
+      "group": "layout-geometry",
+      "title": "A lifted, ringed card in every corner cell stays inside the grid that clips it",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped"
+      ],
+      "weaker": "The half-gutter padding, lane width, canvas extent and both scroll ends are asserted; the lifted footprint against the clip is a live check.",
+      "needsLive": "card-grid",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-29",
+      "group": "collections-virtual",
+      "title": "A thousand items keep the mounted cards, refs and owners bounded",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the mounted cards and their controls bounded across a thousand items"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-01",
+      "group": "collections-virtual",
+      "title": "VirtualGrid content extent includes half a gutter at each end (virtual_grid extent index)",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-02",
+      "group": "collections-virtual",
+      "title": "VirtualGrid window and band follow the edged index",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-03",
+      "group": "collections-virtual",
+      "title": "A short last line keeps its lanes inside the half-gutter edges",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-04",
+      "group": "collections-virtual",
+      "title": "Column arithmetic subtracts both half-gutter edges",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-05",
+      "group": "collections-virtual",
+      "title": "Canvas height and band offset include the leading edge",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-06",
+      "group": "collections-virtual",
+      "title": "dump reports the lane width inside the edges",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-07",
+      "group": "collections-virtual",
+      "title": "A horizontal grid keeps its edges on the x axis",
+      "mainSpecs": [
+        "virtual_hgrid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-01",
+      "group": "input-actions",
+      "title": "ButtonA opens, ButtonB closes, and the next ButtonA opens again",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::opens on ButtonA, closes on ButtonB with the selection back on the trigger, and opens again"
+      ],
+      "weaker": "ButtonA is the native Activated event of the trigger; ButtonB is the ModalBack action.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-02",
+      "group": "layout-geometry",
+      "title": "edge and align place the root panel; absent keeps bottom/start",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::places the root panel by edge and align and keeps bottom and start when they are absent"
+      ],
+      "weaker": "The trigger and panel rectangles are injected; the native popover draws the panel.",
+      "needsLive": "menu-placement",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-03",
+      "group": "menus-pickers",
+      "title": "width sets the panel width",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::sets the floating panel width from width"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-04",
+      "group": "menus-pickers",
+      "title": "Rows with a badge, a shortcut or a section heading never collapse the panel",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::keeps the panel width for rows with a badge, a shortcut label or a section heading"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-05",
+      "group": "layout-geometry",
+      "title": "Plain rows lead like accessory rows, and every row reserves the target floor",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::leads plain rows like accessory rows and gives every row the target floor"
+      ],
+      "weaker": "Row heights and the left content alignment are asserted; label x positions and hit rectangles need Studio.",
+      "needsLive": "menu-rows",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-06",
+      "group": "menus-pickers",
+      "title": "A floating panel never outgrows the screen: a long list scrolls",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::bounds a floating panel by the screen so a long list scrolls"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-07",
+      "group": "focus-selection",
+      "title": "A menu opens on its selected row, centred in the scrolled list",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::opens a level on its selected row, centred in the scrolled list"
+      ],
+      "weaker": "The row and list rectangles are injected; the centring is computed from them.",
+      "needsLive": "menu-landing",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-08",
+      "group": "menus-pickers",
+      "title": "maxHeight bounds the whole panel and the rows scroll, with ids and activation intact",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::bounds the whole panel by maxHeight while the rows keep their ids and activation"
+      ],
+      "weaker": "The keyboard walk to the last row and its scroll into view are native ScrollingFrame selection behavior.",
+      "needsLive": "menu-landing",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-09",
+      "group": "menus-pickers",
+      "title": "A bounded list keeps submenus anchored to their parent row",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::keeps submenus anchored to their parent level in a bounded list"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-10",
+      "group": "menus-pickers",
+      "title": "badge, avatar, sectionTitle and a display-only shortcutLabel share the row recipe",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::shares one row recipe for badge, avatar, sectionTitle and a display-only shortcutLabel"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-11",
+      "group": "error-handling",
+      "title": "Malformed placement and bounds are refused by name",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::refuses malformed placement and bounds by name"
+      ],
+      "weaker": "width is a number of pixels natively; main refused a bare number because it took a dimension table. The native control refuses 0 and a string.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-12",
+      "group": "layout-geometry",
+      "title": "Floating rows sit one path level deeper (List/Rows); the fill spans the card inside its hairline",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 4,
+      "class": "c",
+      "removal": "The solver path shape and its hairline card geometry are not native. Native rows are TextButtons named by id under MenuRows in a ScrollingFrame; the row fill is the native button background.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-13",
+      "group": "gallery-examples",
+      "title": "Menu scenario rows use the List/Rows path",
+      "mainSpecs": [
+        "menu_scenario"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "A path rename of the solver tree only; the native scenario rows are found by id.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-14",
+      "group": "menus-pickers",
+      "title": "Stateful menu rows use the List/Rows path",
+      "mainSpecs": [
+        "stateful_menu"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "A path rename of the solver tree only; native_parity_navigation toggles checked and selected rows by id.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-15",
+      "group": "menus-pickers",
+      "title": "Picker menu rows carry badge and sectionTitle on every list engine",
+      "mainSpecs": [
+        "popup_button"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::carries a Picker option badge into its menu row as the count seal"
+      ],
+      "weaker": "The badge reaches the menu row; a Picker option sectionTitle belongs to the Picker option type of the pickers family.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-01",
+      "group": "navigation-containers",
+      "title": "A page TabView built later inside a branch of the page is nested too",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::nests a TabView that a page builds later inside one of its branches"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-02",
+      "group": "navigation-containers",
+      "title": "A tab's indicator is a StatusIndicator in its own segment, and survives every switch",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::paints a tab indicator as a StatusIndicator in its own tab and keeps it through every switch"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-03",
+      "group": "error-handling",
+      "title": "An indicator that is not a StatusIndicator spec is refused by name",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::refuses a tab indicator that is not a StatusIndicator spec by name"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-04",
+      "group": "navigation-containers",
+      "title": "A disabled tab cannot be selected by a tap and keeps its place in the strip",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::keeps a disabled tab in the strip and refuses its selection on every route"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-05",
+      "group": "gallery-examples",
+      "title": "Bottom tabs lost their SectionRow wrapper",
+      "mainSpecs": [
+        "tab_view_scenario"
+      ],
+      "mainCases": 4,
+      "class": "c",
+      "removal": "A path shape of the solver tree only; native tab rows are named TabRow-<id> when sections exist.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-01",
+      "group": "text-measure-fit",
+      "title": "The phone bottom bar shrinks its category words to fit before it truncates one",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::shrinks tab words toward the caption role in a filling bottom bar before they truncate"
+      ],
+      "weaker": "The measured word width and the tab width are injected; the real glyph widths at 320 and 389 px need Studio.",
+      "needsLive": "tab-fit",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-02",
+      "group": "gallery-examples",
+      "title": "Showcase categories are Status and Menus; every inner tab is visited",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 4,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::names the Status and Menus groups and the Paging and Steps tabs in All controls"
+      ],
+      "weaker": "native_gallery mounts every all_controls tab; the category bar walk is the native TabView.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-03",
+      "group": "layout-geometry",
+      "title": "A category page is the room under its bar: Choices' Vote row is not below the fold",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "needsLive": "showcase-room",
+      "nativeMechanism": "Native TabView content frame and ScrollingFrame canvas.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-04",
+      "group": "text-measure-fit",
+      "title": "Every inner tab widens to its engine width when the words arrive",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "needsLive": "tab-fit",
+      "nativeMechanism": "Native AutomaticSize X on each tab button follows the engine text bounds.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-05",
+      "group": "layout-geometry",
+      "title": "The Basics footer stacks its actions at 320x640 Largest (ViewThatFits measure and arrange agree)",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "UI.ViewThatFits and the candidate solver were deleted (contracts mech1-04, mech1-126). A screen chooses a form with Compose.show on observed native bounds.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-fits-01",
+      "group": "layout-geometry",
+      "title": "ViewThatFits: an honest candidate that fits wins; measure and arrange choose at the same box",
+      "mainSpecs": [
+        "container_memo"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "UI.ViewThatFits was deleted with the solver (mech1-04, mech1-126); there is no candidate rule to verify.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-01",
+      "group": "error-handling",
+      "title": "G1: app.controls.ErrorBoundary takes the region dispatch; the id refusal names the naming form",
+      "mainSpecs": [
+        "error_boundary"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "UI.ErrorBoundary and the text primitive were deleted (mech1-115). Containment stays for presented Alert content and NavigationStack destinations; constructors take the native Name or the constructor name form.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-02",
+      "group": "theme-packages",
+      "title": "G3: Facet Neutral declares its Light theme; a derived package keeps its own variant list",
+      "mainSpecs": [
+        "theme_package"
+      ],
+      "mainCases": 3,
+      "class": "a",
+      "apiPromise": "main api.md: neutralPackage() is the compiled package behind it (themes Dark and Light); a derived package inherits only its first theme.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Facet Neutral Light::declares Dark then Light and both palettes pass the contrast gate",
+        "native_parity_restore::native parity restore: Facet Neutral Light::keeps a derived package to its own palettes and inherits only the first",
+        "native_parity_restore::native parity restore: Facet Neutral Light::paints each Neutral palette through the native sheet and follows a palette change",
+        "native_parity_strength_themepkg::theme contrast gate::reports every semantic pair of an accepted package with its measured ratio",
+        "native_parity_strength_themepkg::theme contrast gate::refuses each unreadable pair at define time and names the pair, palette and ratio"
+      ],
+      "restoredBy": "parity/restore"
+    },
+    {
+      "id": "post-lab-03",
+      "group": "navigation-containers",
+      "title": "G4: a TabView built later in a branch of a page is nested",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::nests a TabView that a page builds later inside one of its branches"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-04",
+      "group": "adaptive-environment",
+      "title": "G5: the environment preview previews text size and transparency, and reset returns every fact to automatic",
+      "mainSpecs": [
+        "preview"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "The environment and its preview were deleted with the application shell. The engine owns the preferred text size and transparency; Studio emulates them. The gallery previews only viewing distance.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-05",
+      "group": "gallery-examples",
+      "title": "G5: Reset everything to Automatic clears every preview choice",
+      "mainSpecs": [
+        "gallery_chrome"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "The showcase settings have no device, orientation or input preview; the native gallery keeps only the viewing-distance preview.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-06",
+      "group": "layout-geometry",
+      "title": "G7: a collapsed outline section closes up in a ScrollView",
+      "mainSpecs": [
+        "disclosure_group"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::closes up a collapsed outline section in a scroller and reopens it"
+      ],
+      "weaker": "The content leaves and returns and the canvas is native AutomaticCanvasSize; the canvas height needs Studio.",
+      "needsLive": "outline-closeup",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-07",
+      "group": "layout-geometry",
+      "title": "hidden keeps its layout space; UI.When removes it",
+      "mainSpecs": [
+        "api"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::fades a subtree as one group and keeps a transparent group laid out while removal closes up"
+      ],
+      "weaker": "The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false; Compose.show removes the node. Guide 17 documents both.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-navh-01",
+      "group": "input-actions",
+      "title": "A focused horizontal value control and live chrome share one owner of the arrows",
+      "mainSpecs": [
+        "focus_chrome_mixed"
+      ],
+      "mainCases": 2,
+      "class": "b",
+      "candidateCases": [
+        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return"
+      ],
+      "nativeMechanism": "Native gamepad and arrow selection owns horizontal movement; a selected Slider or Stepper binds Left and Right only while it is selected and yields them at its bounds. No focus chrome host exists.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-01",
+      "group": "layout-geometry",
+      "title": "a styled group with one activation, disabled by inheritance",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::runs one activation in a styled group and disables it by inheritance"
+      ],
+      "weaker": "The disabled group is native Interactable on the ancestor.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-02",
+      "group": "layout-geometry",
+      "title": "fixed, percent, fill, hug and minimum axes; a fixed axis lets its child overflow",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::declares fixed, quarter and fill axes as native sizes and flex"
+      ],
+      "weaker": "Native Size and UIFlexItem are asserted; hug, minimum and the overflow rectangle need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-03",
+      "group": "layout-geometry",
+      "title": "1:1, 16:9 and 9:16 all fit inside the same 96x96 offer",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::sizes 1:1, 16:9 and 9:16 subjects inside the same 96 by 96 offer and centres them"
+      ],
+      "weaker": "The subject sizes and centred anchors are asserted; solved rectangles need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-04",
+      "group": "layout-geometry",
+      "title": "scale paints larger or smaller while the solved and input rects stay put",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::scales paint with a UIScale while the declared box stays"
+      ],
+      "weaker": "The UIScale and the unchanged box are asserted; the painted footprint needs Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-05",
+      "group": "layout-geometry",
+      "title": "group opacity fades a nested subtree as one group; zero still focuses, hidden does not",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::fades a subtree as one group and keeps a transparent group laid out while removal closes up"
+      ],
+      "weaker": "Zero-transparency focus is native CanvasGroup behavior; selection of a faded button needs Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-06",
+      "group": "layout-geometry",
+      "title": "nine alignments move a child through spare room; a hugging parent has none",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::moves a child through spare room with nine alignments"
+      ],
+      "weaker": "Anchor and scale position are asserted; the hugging parent case needs Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-07",
+      "group": "layout-geometry",
+      "title": "gaps space siblings without insetting them; a per-edge padding moves only its edge",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::spaces siblings with a gap and moves only the named edges with padding"
+      ],
+      "weaker": "Padding values are asserted; sibling rectangles need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-08",
+      "group": "layout-geometry",
+      "title": "wrap moves children to a second line; no-wrap overruns; clip cuts at the edge",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::wraps a row to a second line, or keeps it on one line in a sideways scroller"
+      ],
+      "weaker": "Wraps and the X scroller are asserted; the overrun and clip rectangles need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-09",
+      "group": "layout-geometry",
+      "title": "mixed per-corner rounding, an authored stroke and a shadow are data on one node",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::rounds, strokes and shadows one node with native modifiers"
+      ],
+      "weaker": "A UICorner rounds every corner with one radius natively; main painted per-corner radii.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-10",
+      "group": "paint-theming",
+      "title": "The heavy divider is three theme hairlines; the leading inset starts at the text",
+      "mainSpecs": [
+        "recipes_common"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_paint::native parity paint::insets and paints the recipe dividers from the installed theme"
+      ],
+      "weaker": "The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-badge-01",
+      "group": "icons-media",
+      "title": "Centres the seal on the top-right corner, paint only: the host's box and target are unchanged",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::centres a count seal on the top-right corner of its host without changing the host"
+      ],
+      "weaker": "The zero-size Corner frame, the centred anchor, 99+ and no selection stop are asserted; the painted centre needs Studio.",
+      "needsLive": "badge-corner",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-badge-02",
+      "group": "icons-media",
+      "title": "Mirrors to the top-left in rtl, and true is a dot",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::mirrors the seal to the top-left in rtl and shows true as a dot"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-badge-03",
+      "group": "icons-media",
+      "title": "A tab icon wears its count on the icon corner; a text tab keeps the trailing pill",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::puts an icon tab count on the icon corner and keeps a text tab count in its words"
+      ],
+      "weaker": "TabView icon tabs are covered; the segmented Picker icon option corner belongs to the pickers family. A text tab keeps the count in its words, not a separate pill.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
     }
   ],
   "bugs": [
@@ -35326,5 +37243,42 @@
       "failingTest": "Switch Sipworks to xa. Expect every player string wrapped. Actual: tabs, headings and buttons stayed English.",
       "fixedBy": "native_parity_apps::Sipworks::draws every player-facing string from the locale table and relabels all of them on a locale switch"
     }
-  ]
+  ],
+  "postBaseline": {
+    "content-navigation": {
+      "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
+      "contracts": 123,
+      "mainCases": 135,
+      "mainCasesByClass": {
+        "a": 111,
+        "b": 6,
+        "c": 15,
+        "d": 3
+      },
+      "needsLive": [
+        "badge-corner",
+        "card-envelope",
+        "card-grid",
+        "card-pad",
+        "containers-rects",
+        "menu-landing",
+        "menu-placement",
+        "menu-rows",
+        "outline-closeup",
+        "pagination-arrows-still",
+        "pagination-fit",
+        "pagination-hug",
+        "pagination-neighbours",
+        "pagination-targets",
+        "showcase-room",
+        "steps-circle",
+        "steps-fit",
+        "steps-underline",
+        "tab-fit",
+        "vote-pad",
+        "vote-targets"
+      ]
+    }
+  }
 }

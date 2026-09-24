@@ -4,6 +4,7 @@ local Inputs = require("./input_types")
 local Navigation = require("./navigation_types")
 local Collections = require("./collection_types")
 local Media = require("./media_types")
+local Content = require("./content_types")
 local Layout = require("./layout_types")
 
 export type Controls = {
@@ -50,6 +51,11 @@ export type Controls = {
 	Avatar: typeof(((nil :: unknown) :: Media.MediaControls).Avatar),
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
+	Pagination: typeof(((nil :: unknown) :: Content.ContentControls).Pagination),
+	StepIndicator: typeof(((nil :: unknown) :: Content.ContentControls).StepIndicator),
+	Vote: typeof(((nil :: unknown) :: Content.ContentControls).Vote),
+	Card: typeof(((nil :: unknown) :: Content.ContentControls).Card),
+	badged: typeof(((nil :: unknown) :: Content.ContentControls).badged),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

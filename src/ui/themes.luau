@@ -787,6 +787,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-menu-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
 	rule(".facet-menu-destructive >> .facet-icon", { ImageColor3 = c("danger") })
 	rule(".facet-menu::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
+	rule(".facet-step-circle::UIStroke", { Color = c("contentSecondary"), Thickness = 1 })
 	for _, member in { ".facet-avatar", ".facet-button" } do
 		rule(".facet-avatar-stack > " .. member .. "::UIStroke", {
 			Color = c("surface"),

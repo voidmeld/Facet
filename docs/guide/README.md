@@ -46,16 +46,20 @@ to select a control. Then read the exact contract of that control in the
 | Native editing and numeric input | `UI.TextInput` |
 | Numeric adjustment | `UI.Stepper`, `UI.Slider` |
 | Rating and discrete levels | `UI.Rating`, `UI.LevelPicker` |
+| Up and down votes | `UI.Vote` |
 | Selected and removable chips | `UI.Chip` |
 | Shortcut display | `UI.ShortcutHint` |
 | Action menus, and primary and secondary actions | `UI.Menu`, `UI.SplitButton` |
 | Choice and accepted custom text | `UI.Picker`, `UI.ComboBox` |
 | Named destinations, drill-down and sequential pages | `UI.TabView`, `UI.NavigationStack`, `UI.PageView` |
+| Numbered result pages and workflow steps | `UI.Pagination`, `UI.StepIndicator` |
 | Contextual radial actions | `UI.RadialMenu` |
 | Brief decisions and substantial presented content | `UI.Alert`, `UI.Sheet` |
 | Inline disclosure and larger content presentation | `UI.DisclosureGroup`, `UI.CollapsibleView` |
 | Contextual teaching | `UI.Callout` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
+| Browsable items with artwork and revealed actions | `UI.Card` |
+| A count or dot seal on a host's corner | `UI.badged` |
 | Sorting, selection, resizing and row reorder | `UI.Table` |
 | Row swipe and context actions | `UI.RowActions` |
 | Text and compact status | `UI.Label`, `UI.Badge`, `UI.StatusIndicator` |
