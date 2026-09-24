@@ -34546,6 +34546,146 @@
       ],
       "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-01",
+      "group": "controls-values",
+      "title": "Accepts, swaps in one transition, and reselecting proposes none",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::accepts, swaps in one change, and proposes none when the chosen side is pressed again"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-02",
+      "group": "controls-values",
+      "title": "A refused proposal never paints and never touches the caller's cell",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::never paints a refused proposal and never touches the caller's cell"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-03",
+      "group": "input-actions",
+      "title": "Keyboard and pad reach the strip and propose through the same path",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::proposes from a selected side through the keyboard Activate action"
+      ],
+      "weaker": "The keyboard Activate action is fired; native gamepad selection and ButtonA are engine paths.",
+      "needsLive": "vote-pad",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-04",
+      "group": "error-handling",
+      "title": "A getter or formula value works; an invalid late value keeps the last legal paint",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::reads a function value and keeps the last legal paint for an invalid late value"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-05",
+      "group": "lifetime-ownership",
+      "title": "A callback that disposes the vote leaves no stale state",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::leaves no stale state when a callback removes the vote"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-06",
+      "group": "controls-values",
+      "title": "readOnly shows the choice with nothing to press or focus; disabled is ordinary disabled paint",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::shows a read-only choice with nothing to press or select and uses ordinary disabled paint"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-07",
+      "group": "error-handling",
+      "title": "A readOnly vote without onChange refuses to become interactive; the Picker seam stays private",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::refuses to become interactive without onChange"
+      ],
+      "weaker": "The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-08",
+      "group": "layout-geometry",
+      "title": "Two votes beside a chip keep separate targets that never overlap, with a disclosed summary",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::keeps two votes and a chip as separate targets at the floor, with a disclosed summary"
+      ],
+      "weaker": "Minimum target constraints and separate nodes are asserted; overlap of hit rectangles needs the native layout.",
+      "needsLive": "vote-targets",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-vote-09",
+      "group": "gallery-examples",
+      "title": "The Choices tab's vote repaints only from its caller's value, and its summary follows",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_vote::native Vote::repaints the Choices vote only from its caller's value and follows the summary"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
     }
   ],
   "bugs": [
@@ -34969,10 +35109,10 @@
     "content-navigation": {
       "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
-      "contracts": 31,
-      "mainCases": 31,
+      "contracts": 40,
+      "mainCases": 40,
       "mainCasesByClass": {
-        "a": 29,
+        "a": 38,
         "b": 2
       },
       "needsLive": [
@@ -34983,7 +35123,9 @@
         "pagination-targets",
         "steps-circle",
         "steps-fit",
-        "steps-underline"
+        "steps-underline",
+        "vote-pad",
+        "vote-targets"
       ]
     }
   }

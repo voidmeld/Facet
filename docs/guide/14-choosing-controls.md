@@ -15,6 +15,7 @@ surface only when the existing surface cannot express the task clearly.
 | Edit text or a number | TextInput. |
 | Adjust a bounded value | Slider; Stepper for exact increments. |
 | Select a rating or a level | Rating or LevelPicker. |
+| Vote up or down on an item | Vote. |
 | Show or remove compact selections | Chip. |
 | Show secondary document content | DisclosureGroup. |
 | Expand a compact preview | CollapsibleView. |

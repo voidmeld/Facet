@@ -808,7 +808,7 @@ Some cases were added on `main` after the baseline. Each family records them her
 
 ### Content and navigation
 
-`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 31 contracts and 31 main cases (a: 29, b: 2). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 40 contracts and 40 main cases (a: 38, b: 2). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
 
 | Contract | Main spec | Main cases | Class | Candidate cases | Note |
 |---|---|---:|---|---|---|
@@ -843,6 +843,15 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-step-11 | `step_indicator` | 1 | b | - | Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize. |
 | post-step-12 | `step_indicator` | 1 | a | `leaves nothing open when a callback removes the control` |  |
 | post-step-13 | `step_indicator` | 1 | a | `moves the narrow summary with a row selection in the Steps scenario and refuses both` |  |
+| post-vote-01 | `vote` | 1 | a | `accepts, swaps in one change, and proposes none when the chosen side is pressed again` |  |
+| post-vote-02 | `vote` | 1 | a | `never paints a refused proposal and never touches the caller's cell` |  |
+| post-vote-03 | `vote` | 1 | a | `proposes from a selected side through the keyboard Activate action` | The keyboard Activate action is fired; native gamepad selection and ButtonA are engine paths. |
+| post-vote-04 | `vote` | 1 | a | `reads a function value and keeps the last legal paint for an invalid late value` |  |
+| post-vote-05 | `vote` | 1 | a | `leaves no stale state when a callback removes the vote` |  |
+| post-vote-06 | `vote` | 1 | a | `shows a read-only choice with nothing to press or select and uses ordinary disabled paint` |  |
+| post-vote-07 | `vote` | 1 | a | `refuses to become interactive without onChange` | The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard. |
+| post-vote-08 | `vote` | 1 | a | `keeps two votes and a chip as separate targets at the floor, with a disclosed summary` | Minimum target constraints and separate nodes are asserted; overlap of hit rectangles needs the native layout. |
+| post-vote-09 | `vote` | 1 | a | `repaints the Choices vote only from its caller's value and follows the summary` |  |
 
 ## Use the data
 

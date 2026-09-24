@@ -89,6 +89,17 @@ local stepProps: Facet.StepIndicatorSpec = {
 	end,
 }
 local stepIndicator: Frame = UI.StepIndicator(stepProps)
+type VoteValue = "up" | "down" | "none"
+local initialVote: VoteValue = "none"
+local voteCell: Facet.Cell<VoteValue> = Compose.cell(initialVote)
+local voteProps: Facet.VoteSpec = {
+	value = voteCell,
+	summary = "92% liked",
+	onChange = function(nextValue: VoteValue)
+		voteCell:set(nextValue)
+	end,
+}
+local vote: Frame = UI.Vote(voteProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -185,6 +196,7 @@ local mounted: { GuiObject } = {
 	stage,
 	pagination,
 	stepIndicator,
+	vote,
 	menu,
 	split,
 	picker,

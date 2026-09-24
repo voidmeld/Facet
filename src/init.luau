@@ -63,6 +63,7 @@ export type StageProps = MediaTypes.StageProps
 export type PaginationSpec = ContentTypes.PaginationSpec
 export type StepIndicatorSpec = ContentTypes.StepIndicatorSpec
 export type Step = ContentTypes.Step
+export type VoteSpec = ContentTypes.VoteSpec
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage

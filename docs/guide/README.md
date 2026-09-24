@@ -42,6 +42,7 @@ to select a control. Then read the exact contract of that control in the
 | Native editing and numeric input | `UI.TextInput` |
 | Numeric adjustment | `UI.Stepper`, `UI.Slider` |
 | Rating and discrete levels | `UI.Rating`, `UI.LevelPicker` |
+| Up and down votes | `UI.Vote` |
 | Selected and removable chips | `UI.Chip` |
 | Shortcut display | `UI.ShortcutHint` |
 | Action menus, and primary and secondary actions | `UI.Menu`, `UI.SplitButton` |

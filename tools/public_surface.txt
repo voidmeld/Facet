@@ -117,6 +117,7 @@ controls(runtime).TextInput : function
 controls(runtime).Toggle : function
 controls(runtime).VirtualGrid : function
 controls(runtime).VirtualList : function
+controls(runtime).Vote : function
 type AlertAction
 type AlertSpec
 type AsyncImageProps
@@ -180,3 +181,4 @@ type TextInputProps
 type ThemePackage
 type ToggleProps
 type Use
+type VoteSpec
