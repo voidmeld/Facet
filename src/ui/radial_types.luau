@@ -1,5 +1,5 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./engine_types")
 local Shapes = require("./nav_path_shapes")
 
@@ -34,8 +34,11 @@ export type RadialItemBase<V> = {
 	onSelect: (() -> ())?,
 }
 export type RadialItem<V = string> =
-	(RadialItemBase<V> & { checked: Compose.Cell<boolean>, selected: nil?, value: nil?, onChange: ((boolean) -> ())? })
-	| (RadialItemBase<V> & { checked: nil?, selected: Compose.Cell<V>, value: V, onChange: ((V) -> ())? })
+	(
+		RadialItemBase<V>
+		& { checked: ComposeTypes.Cell<boolean>, selected: nil?, value: nil?, onChange: ((boolean) -> ())? }
+	)
+	| (RadialItemBase<V> & { checked: nil?, selected: ComposeTypes.Cell<V>, value: V, onChange: ((V) -> ())? })
 	| (RadialItemBase<V> & { checked: nil?, selected: nil?, value: nil?, onChange: nil? })
 export type RadialMenuSpec<V = string> = Types.FrameProps & {
 	items: Types.Value<{ RadialItem<V> }>,
@@ -64,7 +67,7 @@ export type RadialMenuSpec<V = string> = Types.FrameProps & {
 	skin: { item: SkinImages?, center: SkinImages?, launcher: SkinImages?, background: SkinImages? }?,
 	onOpen: (() -> ())?,
 	onClose: (() -> ())?,
-	isPresented: Compose.Cell<boolean>?,
+	isPresented: ComposeTypes.Cell<boolean>?,
 	transition: boolean?,
 }
 export type RadialMenuBuilder = <V>(RadialMenuSpec<V>) -> Frame

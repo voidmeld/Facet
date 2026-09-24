@@ -4,13 +4,14 @@ local Types = require("./types")
 local Engine = require("./engine_types")
 local Media = require("./media_types")
 local Theme = require("./theme_types")
-local Compose = require("../vendor/compose/core")
-local themes = require("./themes")
+local ComposeTypes = require("../vendor/compose/core")
+local bindThemes = require("./themes")
 local pathShapes = require("./nav_path_shapes")
 export type MediaControls = Media.MediaControls
 
 return function(ctx: Types.Context, controls: Media.MediaControls?): Media.MediaControls
-	local Host, runtime = ctx.Host, ctx.runtime
+	local Host, runtime, Compose = ctx.Host, ctx.runtime, ctx.Compose
+	local themes = bindThemes(Compose)
 	local types, read = ctx.types, ctx.read
 	local E, D2, D, V2 = types.Enum, types.UDim2, types.UDim, types.Vector2
 	local UI: Media.MediaControls = controls or ({} :: Media.MediaControls)
@@ -35,14 +36,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if not Compose.isReadable(source) and type(source) ~= "function" then
 			return if source == nil then fallback else source :: T
 		end
-		return function(use: Compose.Use)
+		return function(use: ComposeTypes.Use)
 			local value = read(source, use)
 			return if value == nil then fallback else value
 		end
 	end
 	local function statusTag(node: GuiObject, source: Types.Value<Media.Status>?)
 		local previous: string?
-		Compose.watch(function(use: Compose.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local status = read(source, use) or "neutral"
 			assert(
 				({ neutral = true, info = true, success = true, warning = true, error = true, accent = true })[status],
@@ -66,7 +67,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			return node
 		end
 		local previous: string?
-		Compose.watch(function(use: Compose.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local tag = roleTag(read(role, use))
 			if previous then
 				node:RemoveTag(previous)
@@ -114,7 +115,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		)
 		if spec.gap then
 			runtime.decorate(root:FindFirstChildWhichIsA("UIListLayout"), {
-				Padding = function(use: Compose.Use)
+				Padding = function(use: ComposeTypes.Use)
 					return D.new(0, read(spec.gap, use))
 				end,
 			})
@@ -123,7 +124,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.Badge = ctx.construct("Badge", function(spec: Media.BadgeProps): GuiObject
-		local caption = Compose.formula(function(use: Compose.Use)
+		local caption = Compose.formula(function(use: ComposeTypes.Use)
 			local value = read(spec.label, use)
 			assert(value == nil or type(value) == "string", "Facet Badge label must be a string")
 			assert(
@@ -139,7 +140,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				Text = caption,
 				Attributes = { AccessibleLabel = spec.name or caption },
 				AutomaticSize = E.AutomaticSize.XY,
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					return D2.fromOffset(0, controlSize(spec.controlSize, "iconSize", use) + 4)
 				end,
 			}
@@ -151,7 +152,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			node.BackgroundTransparency = 1
 			node.Size = D2.fromOffset(0, 0)
 			local icon = ctx.icon(spec.icon, {
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					local pixels = math.floor(controlSize(spec.controlSize, "iconSize", use) * 0.7 + 0.5)
 					return D2.fromOffset(pixels, pixels)
 				end,
@@ -162,7 +163,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			pill = Host.Frame({
 				Name = spec.Name or "Badge",
 				AutomaticSize = E.AutomaticSize.XY,
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					return D2.fromOffset(0, controlSize(spec.controlSize, "iconSize", use) + 4)
 				end,
 				Host.UIListLayout({
@@ -170,9 +171,9 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					VerticalAlignment = E.VerticalAlignment.Center,
 					SortOrder = E.SortOrder.LayoutOrder,
 					Padding = D.new(0, 4),
-				}) :: Compose.Child,
-				icon :: Compose.Child,
-				node :: Compose.Child,
+				}) :: ComposeTypes.Child,
+				icon :: ComposeTypes.Child,
+				node :: ComposeTypes.Child,
 			})
 		end
 		ctx.styled(pill, "badge")
@@ -180,7 +181,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			statusTag(pill, spec.status)
 		end
 		local previousAppearance: string?
-		Compose.watch(function(use: Compose.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			local appearance = read(spec.appearance, use) or "standard"
 			assert(
 				appearance == "standard" or appearance == "status" or appearance == "utility",
@@ -195,7 +196,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if spec.appearance then
 			runtime.mountFragment(function()
 				return {
-					Compose.show(function(use: Compose.Use)
+					Compose.show(function(use: ComposeTypes.Use)
 						return read(spec.appearance, use) == "status"
 					end, function()
 						return UI.StatusIndicator "Status" {
@@ -212,7 +213,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if spec.corners then
 			runtime.mount(function()
 				return Host.UICorner({
-					CornerRadius = function(use: Compose.Use)
+					CornerRadius = function(use: ComposeTypes.Use)
 						local radius = read(spec.corners, use)
 						if type(radius) == "string" then
 							radius = ({
@@ -232,7 +233,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.StatusIndicator = ctx.construct("StatusIndicator", function(spec: Media.StatusIndicatorProps): TextLabel
-		local size = function(use: Compose.Use)
+		local size = function(use: ComposeTypes.Use)
 			return read(spec.diameter, use)
 				or (
 					if spec.controlSize
@@ -240,7 +241,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 						else if spec.count ~= nil then 24 else 12
 				)
 		end
-		local form = Compose.formula(function(use: Compose.Use)
+		local form = Compose.formula(function(use: ComposeTypes.Use)
 			local value = read(spec.form, use) or "dot"
 			assert(
 				value == "dot" or value == "ring" or value == "square" or value == "dash",
@@ -252,14 +253,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			spec,
 			{ "status", "form", "count", "max", "name", "diameter", "controlSize", "cutout" },
 			{
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					return D2.fromOffset(
 						if spec.count ~= nil then 0 else size(use),
 						if use(form) == "dash" then math.max(3, size(use) / 3) else size(use)
 					)
 				end,
 				AutomaticSize = if spec.count ~= nil then E.AutomaticSize.X else nil,
-				Text = function(use: Compose.Use)
+				Text = function(use: ComposeTypes.Use)
 					local count = read(spec.count, use)
 					if count == nil then
 						return ""
@@ -286,18 +287,18 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 				TextXAlignment = E.TextXAlignment.Center,
 				Host.UICorner({
-					CornerRadius = function(use: Compose.Use)
+					CornerRadius = function(use: ComposeTypes.Use)
 						return D.new(if use(form) == "square" then 0 else 1, 0)
 					end,
-				}) :: Compose.Child,
-				Compose.show(function(use: Compose.Use)
+				}) :: ComposeTypes.Child,
+				Compose.show(function(use: ComposeTypes.Use)
 					return use(form) == "ring"
 				end, function()
 					return ctx.styled(
 						Host.UIStroke "Ring" {
 							ApplyStrokeMode = E.ApplyStrokeMode.Border,
 							BorderStrokePosition = E.BorderStrokePosition.Inner,
-							Thickness = function(use: Compose.Use)
+							Thickness = function(use: ComposeTypes.Use)
 								return math.max(2, math.floor(size(use) / 6 + 0.5))
 							end,
 						},
@@ -310,7 +311,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			table.insert(
 				native,
 				Host.UISizeConstraint({
-					MinSize = function(use: Compose.Use)
+					MinSize = function(use: ComposeTypes.Use)
 						return V2.new(size(use), size(use))
 					end,
 				})
@@ -319,7 +320,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			table.insert(
 				native,
 				Host.UIAspectRatioConstraint({
-					AspectRatio = function(use: Compose.Use)
+					AspectRatio = function(use: ComposeTypes.Use)
 						return if use(form) == "dash" then 3 else 1
 					end,
 					AspectType = E.AspectType.FitWithinMaxSize,
@@ -341,7 +342,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end
 		local node = ctx.styled(ctx.styled(Host.TextLabel(native), "text"), "badge")
 		statusTag(node, spec.status)
-		Compose.watch(function(use: Compose.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			if use(form) == "ring" then
 				node:AddTag("facet-status-hollow")
 			elseif node:HasTag("facet-status-hollow") then
@@ -384,7 +385,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end
 		local indeterminate = spec.value == nil
 		local timeline = if indeterminate then runtime.timeline({ duration = 1, repeats = math.huge }) else nil
-		local progress = Compose.formula(function(use: Compose.Use)
+		local progress = Compose.formula(function(use: ComposeTypes.Use)
 			if timeline then
 				local phase = use(timeline.progress)
 				return if motionReduced(use) then math.floor(phase * 4) / 4 else phase
@@ -393,22 +394,22 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			assert(maximum > minimum, "Facet ProgressView max must exceed min")
 			return math.clamp(((read(spec.value, use) :: number) - minimum) / (maximum - minimum), 0, 1)
 		end)
-		local trail: Compose.Formula<number>?
+		local trail: ComposeTypes.Formula<number>?
 		if spec.trail and not indeterminate then
 			local clock = runtime.timeline({ delay = delay, duration = duration, autoplay = false })
 			local previous = progress:peek()
 			local origin, destination = Compose.cell(previous), Compose.cell(previous)
-			trail = Compose.formula(function(use: Compose.Use)
+			trail = Compose.formula(function(use: ComposeTypes.Use)
 				return use(origin) + (use(destination) - use(origin)) * use(clock.progress)
 			end)
-			Compose.watch(function(use: Compose.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				local value = use(progress)
 				if motionReduced(use) or value >= previous then
 					origin:set(value)
 					destination:set(value)
 					clock:seek(duration)
 				else
-					origin:set((trail :: Compose.Formula<number>):peek())
+					origin:set((trail :: ComposeTypes.Formula<number>):peek())
 					destination:set(value)
 					clock:restart()
 				end
@@ -419,7 +420,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		local ending: TextLabel? = if spec.endLabel
 			then ctx.text({
 				Name = "EndLabel",
-				Text = function(use: Compose.Use)
+				Text = function(use: ComposeTypes.Use)
 					return read(spec.endLabel, use) or ""
 				end,
 			})
@@ -427,7 +428,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if spec.showValue then
 			readout = ctx.text({
 				Name = "Value",
-				Text = function(use: Compose.Use)
+				Text = function(use: ComposeTypes.Use)
 					if indeterminate then
 						return "Loading"
 					end
@@ -438,24 +439,24 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 			})
 		end
-		local direction = Compose.formula(function(use: Compose.Use): Theme.FillDirection
+		local direction = Compose.formula(function(use: ComposeTypes.Use): Theme.FillDirection
 			local package = read(ctx.config.theme, use)
 			local recipe = if package then ((package.chrome or {}) :: { [string]: Theme.SkinLayer }).barFill else nil
 			local value = (if recipe then recipe.direction or "ltr" else "ltr") :: Theme.FillDirection
 			assert(({ ltr = true, rtl = true, ttb = true, btt = true })[value], "Facet progress invalid fill direction")
 			return value :: Theme.FillDirection
 		end)
-		local function vertical(use: Compose.Use): boolean
+		local function vertical(use: ComposeTypes.Use): boolean
 			return use(direction) == "ttb" or use(direction) == "btt"
 		end
-		local function reversed(use: Compose.Use): boolean
+		local function reversed(use: ComposeTypes.Use): boolean
 			return use(direction) == "rtl" or use(direction) == "btt"
 		end
 		local content: GuiObject
 		if presentation == "bar" then
 			local track: Engine.FrameNativeProps = {
 				Name = "Track",
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					local thickness = read(spec.thickness, use) or metric("controls.progress.trackHeight", use)
 					return if vertical(use) then D2.new(0, thickness, 1, 0) else D2.new(1, 0, 0, thickness)
 				end,
@@ -469,18 +470,18 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 							BackgroundTransparency = 0.6,
 							BorderSizePixel = 0,
 							ZIndex = 0,
-							Size = function(use: Compose.Use)
+							Size = function(use: ComposeTypes.Use)
 								local fraction = if motionReduced(use)
 									then use(progress)
-									else math.max(use(trail :: Compose.Formula<number>), use(progress))
+									else math.max(use(trail :: ComposeTypes.Formula<number>), use(progress))
 								return if vertical(use) then D2.fromScale(1, fraction) else D2.fromScale(fraction, 1)
 							end,
-							AnchorPoint = function(use: Compose.Use)
+							AnchorPoint = function(use: ComposeTypes.Use)
 								return if reversed(use)
 									then (if vertical(use) then V2.new(0, 1) else V2.new(1, 0))
 									else V2.new(0, 0)
 							end,
-							Position = function(use: Compose.Use)
+							Position = function(use: ComposeTypes.Use)
 								return if reversed(use)
 									then (if vertical(use) then D2.fromScale(0, 1) else D2.fromScale(1, 0))
 									else D2.fromScale(0, 0)
@@ -497,13 +498,13 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 						Host.Frame({
 							Name = "Fill" .. index,
 							ClipsDescendants = true,
-							AnchorPoint = function(use: Compose.Use)
+							AnchorPoint = function(use: ComposeTypes.Use)
 								return if reversed(use)
 									then (if vertical(use) then V2.new(0, 1) else V2.new(1, 0))
 									else V2.new(0, 0)
 							end,
 							BorderSizePixel = 0,
-							Size = function(use: Compose.Use)
+							Size = function(use: ComposeTypes.Use)
 								local fraction = if indeterminate
 									then 0.3
 									else math.clamp(use(progress) * count - (index - 1), 0, 1)
@@ -512,7 +513,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 									then D2.new(1, 0, fraction / count, gap)
 									else D2.new(fraction / count, gap, 1, 0)
 							end,
-							Position = function(use: Compose.Use)
+							Position = function(use: ComposeTypes.Use)
 								local position = if indeterminate
 									then use(progress) * 1.3 - 0.3
 									else (index - 1) / count
@@ -543,19 +544,19 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				if string.match(fill.Name, "^Fill%d+$") then
 					local fillIndex = tonumber(string.match(fill.Name, "%d+$")) :: number
 					skin(fill :: Frame, "barFill", {
-						Size = function(use: Compose.Use)
+						Size = function(use: ComposeTypes.Use)
 							local fraction = if indeterminate
 								then 0.3
 								else math.clamp(use(progress) * count - (fillIndex - 1), 0, 1)
 							local scale = 1 / math.max(fraction, 0.000001)
 							return if vertical(use) then D2.fromScale(1, scale) else D2.fromScale(scale, 1)
 						end,
-						AnchorPoint = function(use: Compose.Use)
+						AnchorPoint = function(use: ComposeTypes.Use)
 							return if reversed(use)
 								then (if vertical(use) then V2.new(0, 1) else V2.new(1, 0))
 								else V2.new(0, 0)
 						end,
-						Position = function(use: Compose.Use)
+						Position = function(use: ComposeTypes.Use)
 							return if reversed(use)
 								then (if vertical(use) then D2.fromScale(0, 1) else D2.fromScale(1, 0))
 								else D2.fromScale(0, 0)
@@ -564,13 +565,13 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end
 			end
 			skin(content, "barCap", {
-				direction = function(use: Compose.Use): Theme.FillDirection
+				direction = function(use: ComposeTypes.Use): Theme.FillDirection
 					return use(direction) :: Theme.FillDirection
 				end,
 			})
 			skin(content, "barCenter")
 		else
-			local diameter = function(use: Compose.Use)
+			local diameter = function(use: ComposeTypes.Use)
 				return read(spec.diameter, use)
 					or (
 						if spec.controlSize
@@ -580,7 +581,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end
 			local native: Engine.FrameNativeProps = {
 				Name = "Indicator",
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					local pixels = diameter(use)
 					return D2.fromOffset(pixels, pixels)
 				end,
@@ -598,12 +599,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 								AnchorPoint = V2.new(0.5, 0.5),
 								BorderSizePixel = 0,
 								Position = D2.fromScale(0.5 + math.cos(angle) * 0.4, 0.5 + math.sin(angle) * 0.4),
-								Size = function(use: Compose.Use)
+								Size = function(use: ComposeTypes.Use)
 									local thickness = read(spec.thickness, use)
 										or metric("controls.progress.spinnerDotSize", use)
 									return D2.fromOffset(thickness, thickness)
 								end,
-								BackgroundTransparency = function(use: Compose.Use)
+								BackgroundTransparency = function(use: ComposeTypes.Use)
 									local value = use(progress)
 									if not indeterminate then
 										return if index / count <= value then 0 else 0.85
@@ -617,7 +618,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					)
 				end
 			else
-				local thickness = function(use: Compose.Use)
+				local thickness = function(use: ComposeTypes.Use)
 					return read(spec.thickness, use)
 						or math.max(
 							metric("controls.progress.circularThickness", use),
@@ -631,13 +632,13 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 							Thickness = thickness,
 							Closed = false,
 							ZIndex = if isTrack then 1 else 2,
-							Visible = function(use: Compose.Use)
+							Visible = function(use: ComposeTypes.Use)
 								return isTrack or indeterminate or use(progress) > 0
 							end,
 						}),
 						if isTrack then "progress-ring-track" else "progress-ring-fill"
 					)
-					Compose.watch(function(use: Compose.Use)
+					Compose.watch(function(use: ComposeTypes.Use)
 						local pixels = diameter(use)
 						assert(pixels > 0, "Facet ProgressView diameter must be positive")
 						local radius = math.max(0, 1 - thickness(use) / pixels)
@@ -667,7 +668,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			content = Host.Frame(native)
 			if readout and presentation == "circular" then
 				local bounds = ctx.observe(readout, "TextBounds")
-				local centered = Compose.formula(function(use: Compose.Use)
+				local centered = Compose.formula(function(use: ComposeTypes.Use)
 					local measured, innerDiameter = use(bounds), diameter(use) * 0.6
 					return measured.X <= innerDiameter and measured.Y <= innerDiameter
 				end)
@@ -676,17 +677,17 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					AutomaticSize = E.AutomaticSize.XY,
 					TextWrapped = false,
 					TextXAlignment = E.TextXAlignment.Center,
-					AnchorPoint = function(use: Compose.Use)
+					AnchorPoint = function(use: ComposeTypes.Use)
 						return V2.new(0.5, if use(centered) then 0.5 else 0)
 					end,
-					Position = function(use: Compose.Use)
+					Position = function(use: ComposeTypes.Use)
 						return D2.new(0.5, 0, 0, if use(centered) then diameter(use) / 2 else diameter(use) + 8)
 					end,
 				})
 				content = Host.Frame "Gauge" {
 					BackgroundTransparency = 1,
 					ClipsDescendants = false,
-					Size = function(use: Compose.Use)
+					Size = function(use: ComposeTypes.Use)
 						local pixels, measured = diameter(use), use(bounds)
 						return D2.fromOffset(
 							math.max(pixels, measured.X),
@@ -699,8 +700,8 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				readout = nil
 			end
 		end
-		local children: { Compose.Child } = {}
-		local trailing: { Compose.Child } = {}
+		local children: { ComposeTypes.Child } = {}
+		local trailing: { ComposeTypes.Child } = {}
 		if readout then
 			table.insert(trailing, readout)
 		end
@@ -708,7 +709,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			table.insert(trailing, ending)
 		end
 		if presentation == "bar" and spec.label and #trailing > 0 then
-			local header: { Compose.Child } = {
+			local header: { ComposeTypes.Child } = {
 				UI.Label({
 					label = spec.label,
 					LayoutOrder = 1,
@@ -747,12 +748,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				"trail",
 				"controlSize",
 			}, {
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					return if presentation == "bar"
 						then (if vertical(use) then D2.fromOffset(24, 160) else D2.new(1, 0, 0, 0))
 						else D2.fromOffset(0, 0)
 				end,
-				AutomaticSize = function(use: Compose.Use)
+				AutomaticSize = function(use: ComposeTypes.Use)
 					return if presentation == "bar"
 						then (if vertical(use) then E.AutomaticSize.None else E.AutomaticSize.Y)
 						else E.AutomaticSize.XY
@@ -768,7 +769,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	local skeletonClock = Compose.createSharedResource(function()
 		local clock = runtime.timeline({ duration = 1.4, repeats = math.huge })
 		local motionReduced = reducedMotion(ctx)
-		Compose.watch(function(use: Compose.Use)
+		Compose.watch(function(use: ComposeTypes.Use)
 			if motionReduced(use) then
 				clock:pause()
 			else
@@ -786,21 +787,21 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		assert(count >= 1 and count % 1 == 0, "Facet Skeleton lines must be positive")
 		local clock = skeletonClock()
 		local motionReduced = reducedMotion(ctx)
-		local rows: { Compose.Child } = {}
+		local rows: { ComposeTypes.Child } = {}
 		for index = 1, count do
 			local native: Engine.FrameNativeProps = {
 				Name = "Placeholder" .. index,
-				Size = function(use: Compose.Use)
+				Size = function(use: ComposeTypes.Use)
 					local pixels = controlSize(spec.controlSize, if form == "line" then "iconSize" else "height", use)
 					return if form == "circle"
 						then D2.fromOffset(pixels, pixels)
 						else D2.new(if count > 1 and index == count then 0.6 else 1, 0, 0, pixels)
 				end,
 				Host.UIGradient "Shimmer" {
-					Enabled = function(use: Compose.Use)
+					Enabled = function(use: ComposeTypes.Use)
 						return not motionReduced(use)
 					end,
-					Offset = function(use: Compose.Use)
+					Offset = function(use: ComposeTypes.Use)
 						return V2.new(use(clock.progress) * 2 - 1, 0)
 					end,
 					Transparency = types.NumberSequence.new({
@@ -816,7 +817,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				table.insert(
 					native,
 					Host.UICorner({
-						CornerRadius = function(use: Compose.Use)
+						CornerRadius = function(use: ComposeTypes.Use)
 							local value = read(spec.corners, use)
 							if value == "pill" then
 								return D.new(1, 0)
@@ -846,7 +847,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.AsyncImage = ctx.construct("AsyncImage", function(spec: Media.AsyncImageProps): Frame
-		local state: Compose.Cell<Media.ImageState> = Compose.cell("loading" :: Media.ImageState)
+		local state: ComposeTypes.Cell<Media.ImageState> = Compose.cell("loading" :: Media.ImageState)
 		local loaded = Compose.cell("")
 		local failure = Compose.cell(nil :: unknown)
 		local root = Host.Frame(ctx.props(spec, {
@@ -865,10 +866,10 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			Size = D2.fromScale(1, 1),
 			BackgroundTransparency = 1,
 			Image = loaded,
-			ImageTransparency = function(use: Compose.Use)
+			ImageTransparency = function(use: ComposeTypes.Use)
 				return if read(spec.dimmed, use) then 0.35 else 0
 			end,
-			Visible = function(use: Compose.Use)
+			Visible = function(use: ComposeTypes.Use)
 				return use(state) == "ready"
 			end,
 		})
@@ -881,14 +882,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				Name = "Placeholder",
 				Size = D2.fromScale(1, 1),
 				BackgroundTransparency = if spec.placeholder then 1 else 0,
-				Visible = function(use: Compose.Use)
+				Visible = function(use: ComposeTypes.Use)
 					return use(state) ~= "ready"
 				end,
 			}
 			if spec.placeholder then
 				table.insert(
 					placeholder,
-					Compose.show(function(use: Compose.Use)
+					Compose.show(function(use: ComposeTypes.Use)
 						return use(state) ~= "ready"
 					end, function()
 						return spec.placeholder(state)
@@ -898,7 +899,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			if spec.failureLabel ~= nil then
 				table.insert(
 					placeholder,
-					Compose.show(function(use: Compose.Use)
+					Compose.show(function(use: ComposeTypes.Use)
 						return use(state) == "failed"
 					end, function()
 						return ctx.text({ Text = bind(spec.failureLabel, ""), Size = D2.fromScale(1, 1) })
@@ -917,12 +918,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end)
 		if spec.resource then
 			local resource = spec.resource()
-			Compose.watch(function(use: Compose.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				state:set(read(resource.state or resource.status, use) :: Media.ImageState)
 				loaded:set(read(resource.value, use) or "")
 			end)
 		else
-			Compose.watch(function(use: Compose.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				local source = read(spec.source or spec.image, use) or ""
 				generation += 1
 				local ticket = generation
@@ -981,7 +982,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end)
 		end
 		if spec.onStatus then
-			Compose.watch(function(use: Compose.Use)
+			Compose.watch(function(use: ComposeTypes.Use)
 				spec.onStatus(use(state) :: Media.ImageState, use(failure))
 			end)
 		end
@@ -990,7 +991,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 
 	UI.Avatar = ctx.construct("Avatar", function(spec: Media.AvatarProps): TextButton
 		assert(spec.form == nil or spec.form == "standard" or spec.form == "icon", "Facet Avatar invalid form")
-		local diameter = function(use: Compose.Use)
+		local diameter = function(use: ComposeTypes.Use)
 			return read(spec.diameter, use)
 				or controlSize(spec.controlSize, if spec.form == "icon" then "iconSize" else "height", use)
 		end
@@ -1010,7 +1011,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			"onStatus",
 			"resource",
 		}, {
-			Size = function(use: Compose.Use)
+			Size = function(use: ComposeTypes.Use)
 				local pixels = diameter(use)
 				return D2.fromOffset(pixels, pixels)
 			end,
@@ -1026,7 +1027,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if spec.backplate then
 			ctx.styled(root, "accent")
 		end
-		local facts = Compose.formula(function(use: Compose.Use)
+		local facts = Compose.formula(function(use: ComposeTypes.Use)
 			local name, presence = read(spec.name, use), read(spec.presence, use)
 			assert(type(name) == "string" and name ~= "", "Facet Avatar name must be nonempty")
 			assert(
@@ -1041,7 +1042,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end)
 		runtime.decorate(root, {
 			Attributes = {
-				AccessibleLabel = function(use: Compose.Use): string
+				AccessibleLabel = function(use: ComposeTypes.Use): string
 					return use(facts).label
 				end,
 			},
@@ -1050,14 +1051,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		runtime.mount(function()
 			return ctx.text({
 				Name = "Initials",
-				Visible = function(use: Compose.Use)
+				Visible = function(use: ComposeTypes.Use)
 					return not use(pictured)
 				end,
 				Size = D2.fromScale(1, 1),
-				Text = function(use: Compose.Use)
+				Text = function(use: ComposeTypes.Use)
 					return initials(use(facts).name)
 				end,
-				TextSize = function(use: Compose.Use)
+				TextSize = function(use: ComposeTypes.Use)
 					return math.max(8, math.floor(diameter(use) * 0.4 + 0.5))
 				end,
 				TextXAlignment = E.TextXAlignment.Center,
@@ -1078,14 +1079,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					end,
 					resource = spec.resource,
 					Size = D2.fromScale(1, 1),
-					image = function(use: Compose.Use)
+					image = function(use: ComposeTypes.Use)
 						return if spec.image
 							then read(spec.image, use)
 							else "rbxthumb://type=AvatarHeadShot&id="
 								.. tostring(read(spec.userId, use))
 								.. "&w=150&h=150"
 					end,
-					placeholder = function(_state: Compose.Readable<Media.ImageState>): Instance
+					placeholder = function(_state: ComposeTypes.Readable<Media.ImageState>): Instance
 						return Host.Frame({ BackgroundTransparency = 1, Size = D2.fromScale(1, 1) })
 					end,
 					Host.UICorner({ CornerRadius = D.new(1, 0) }),
@@ -1097,16 +1098,16 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				return UI.StatusIndicator "Presence" {
 					diameter = 12,
 					cutout = true,
-					Visible = function(use: Compose.Use)
+					Visible = function(use: ComposeTypes.Use)
 						return use(facts).presence ~= nil
 					end,
-					form = function(use: Compose.Use)
+					form = function(use: ComposeTypes.Use)
 						return ({ online = "dot", away = "dash", busy = "square", offline = "ring" })[use(facts).presence]
 							or "dot"
 					end,
 					AnchorPoint = V2.new(1, 1),
 					Position = D2.fromScale(1, 1),
-					status = function(use: Compose.Use)
+					status = function(use: ComposeTypes.Use)
 						return ({ online = "success", away = "warning", busy = "error", offline = "neutral" })[read(
 							spec.presence,
 							use
@@ -1119,7 +1120,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.AvatarGroup = ctx.construct("AvatarGroup", function(spec: Media.AvatarGroupProps): Frame
-		local items = Compose.formula(function(use: Compose.Use)
+		local items = Compose.formula(function(use: ComposeTypes.Use)
 			local members = read(spec.items, use)
 			assert(type(members) == "table", "Facet AvatarGroup items must be an array")
 			local seen: { [string]: boolean }, count = {}, 0
@@ -1149,7 +1150,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		)
 		local maximum = spec.max or 4
 		assert(maximum >= 1 and maximum % 1 == 0, "Facet AvatarGroup max must be positive")
-		local size = function(use: Compose.Use)
+		local size = function(use: ComposeTypes.Use)
 			return read(spec.diameter, use)
 				or controlSize(spec.controlSize, if spec.form == "icon" then "iconSize" else "height", use)
 		end
@@ -1166,7 +1167,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			"overflowLabel",
 		}, {
 			BackgroundTransparency = 1,
-			Size = function(use: Compose.Use)
+			Size = function(use: ComposeTypes.Use)
 				return D2.fromOffset(0, size(use))
 			end,
 			AutomaticSize = E.AutomaticSize.X,
@@ -1179,7 +1180,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		table.insert(
 			native,
 			Compose.keyed({
-				from = function(use: Compose.Use)
+				from = function(use: ComposeTypes.Use)
 					local items = use(items)
 					local visible: { Media.AvatarMember } = {}
 					for index = 1, math.min(#items, maximum) do
@@ -1190,16 +1191,19 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				key = function(item: Media.AvatarMember)
 					return item.id
 				end,
-				render = function(current: Compose.Readable<Media.AvatarMember>, index: Compose.Readable<number>)
+				render = function(
+					current: ComposeTypes.Readable<Media.AvatarMember>,
+					index: ComposeTypes.Readable<number>
+				)
 					return UI.Avatar({
 						resource = current:peek().resource,
-						Name = function(use: Compose.Use)
+						Name = function(use: ComposeTypes.Use)
 							return use(current).id
 						end,
-						name = function(use: Compose.Use)
+						name = function(use: ComposeTypes.Use)
 							return use(current).name
 						end,
-						image = function(use: Compose.Use)
+						image = function(use: ComposeTypes.Use)
 							local item = use(current)
 							return item.image
 								or (
@@ -1208,7 +1212,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 										else ""
 								)
 						end,
-						presence = function(use: Compose.Use): Media.Presence?
+						presence = function(use: ComposeTypes.Use): Media.Presence?
 							return use(current).presence :: Media.Presence?
 						end,
 						diameter = size,
@@ -1220,13 +1224,13 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		)
 		table.insert(
 			native,
-			Compose.show(function(use: Compose.Use)
+			Compose.show(function(use: ComposeTypes.Use)
 				return #use(items) > maximum
 			end, function()
 				return ctx.styled(
 					Host.TextButton({
 						Attributes = {
-							AccessibleLabel = (function(use: Compose.Use): string
+							AccessibleLabel = (function(use: ComposeTypes.Use): string
 								local label = read(spec.overflowLabel, use)
 								assert(
 									label == nil or type(label) == "string",
@@ -1236,12 +1240,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 							end) :: Engine.Value<Engine.AttributeValue?>,
 						},
 						Name = "Overflow",
-						Size = function(use: Compose.Use)
+						Size = function(use: ComposeTypes.Use)
 							local pixels = size(use)
 							return D2.fromOffset(pixels, pixels)
 						end,
 						LayoutOrder = maximum + 1,
-						Text = function(use: Compose.Use)
+						Text = function(use: ComposeTypes.Use)
 							return if spec.overflow == "ellipsis" then "…" else "+" .. tostring(#use(items) - maximum)
 						end,
 						Selectable = spec.onOverflow ~= nil,
@@ -1284,7 +1288,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			{
 				Size = D2.fromOffset(240, 180),
 				CurrentCamera = Compose.static(camera),
-				world :: Compose.Child,
+				world :: ComposeTypes.Child,
 				if not externalCamera then camera else nil,
 			} :: Engine.ViewportFrameNativeProps
 		)

@@ -117,6 +117,46 @@ performance. Those need a Studio check.
 Inside this repository, put a spec under `tests/` and run it with
 `lune run tests/run_one <name>`.
 
+## Using Facet in a game that already uses Compose
+
+`Facet.Compose` is a pinned copy of Compose. If your game requires its own
+Compose, the game and Facet must use the same Compose instance. Two instances
+make two reactive graphs, two schedulers and two owner trees. A control then
+does not reliably update when your cell changes, and its cleanup does not
+belong to your owner.
+
+Bind Facet to your Compose one time. Use the bound table everywhere:
+
+```luau
+local Compose = require(game.ReplicatedStorage.Packages.Compose.core)
+local ComposeRoblox = require(game.ReplicatedStorage.Packages.Compose.roblox)
+local Facet = require(game.ReplicatedStorage.Packages.Facet).bind(Compose, ComposeRoblox)
+
+local runtime = ComposeRoblox.createRuntime()
+local UI = Facet.controls(runtime)
+local enabled = Compose.cell(false)
+local stop = runtime.mount(function()
+    local sheet = Facet.themes.createStyleSheet(runtime)
+    return runtime.constructors.ScreenGui {
+        sheet,
+        runtime.constructors.StyleLink { StyleSheet = Compose.static(sheet) },
+        UI.Toggle { value = enabled, label = "Music" },
+    }
+end, game.Players.LocalPlayer.PlayerGui)
+```
+
+- Give the core module and the Roblox module from the same Compose copy.
+- Make the runtime with that Roblox module.
+- The Facet tests use the commit in `Facet.COMPOSE_COMMIT`. Facet supports a
+  later commit when it keeps the functions that Facet uses. `bind` stops with an
+  error that names a missing function.
+- When a runtime or a cell from a different Compose instance reaches a control,
+  the control stops with an error that names the control. The error tells you
+  to use `Facet.bind`.
+
+The [API reference](../reference/api.md#your-own-compose) gives the full
+contract.
+
 ## Cleanup
 
 Use Compose cleanup for external subscriptions that a component makes. The stop

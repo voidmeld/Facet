@@ -41,7 +41,7 @@ local function setup(options)
 		config.userInputService = service
 		config.services.UserInputService = service
 	end
-	local ctx = context(runtime, config)
+	local ctx = context(Compose, runtime, config)
 	local UI = {}
 	registerInputs(ctx, UI)
 	local surfaces = require("../src/ui/nav_modal")(ctx)

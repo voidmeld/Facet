@@ -49,6 +49,10 @@ t.describe("native documentation", function()
 				opt.types = engine.types
 				return Facet.controls(rt, opt)
 			end
+			facade.bind = function(core, roblox)
+				Facet.bind(core, roblox)
+				return facade
+			end
 			local sheets = {}
 			facade.themes.createStyleSheet = function(rt, pkg, opt)
 				opt = table.clone(opt or {})
@@ -105,6 +109,7 @@ t.describe("native documentation", function()
 			env.game = {
 				ReplicatedStorage = {
 					Facet = "Facet",
+					Packages = { Facet = "Facet", Compose = { core = "ComposeCore", roblox = "ComposeRoblox" } },
 					WaitForChild = function()
 						return "Facet"
 					end,
@@ -125,6 +130,8 @@ t.describe("native documentation", function()
 							return Facet.themes.neutralPackage()
 						end,
 					}
+					elseif id == "ComposeCore" then Compose
+					elseif id == "ComposeRoblox" then facade.Roblox
 					else facade
 			end
 			local bindings = {}

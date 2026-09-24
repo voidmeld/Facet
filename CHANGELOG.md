@@ -17,6 +17,8 @@
 - VirtualList, VirtualGrid and Table accept a field name as `key`, for example `key = "id"`. The key is `tostring(item[field])`.
 - The type check includes the standalone consumer in `examples/consumer`. The consumer calls `runtime:dispose()` with a colon.
 - The getting-started guide shows how to test a screen headlessly with the fake native engine. Guides and tutorial examples use `text` for `UI.Label`.
+- `Facet.bind(Compose, Roblox)` returns a Facet table whose controls and themes use the Compose instance that you give. A game that already uses Compose keeps one reactive graph. The controls in `src/ui` use the pinned copy only for types. `Facet.COMPOSE_COMMIT` names the tested Compose commit. `bind` names a missing Compose function. A control names itself when a runtime or a readable from a different Compose instance reaches it. Before this change, such a control failed with a Compose owner error, or did not update.
+- The public-surface snapshot lists the `RadialItem` and `RadialMenuSpec` types.
 
 ## Pre-0.12.0 development history
 

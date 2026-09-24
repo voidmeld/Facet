@@ -1,15 +1,15 @@
 --!strict
 local reducedMotion = require("./motion")
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
-type SnapOptions = { direction: Compose.OrderedCollectionDirection?, reducedMotion: Types.Value<boolean>? }
+type SnapOptions = { direction: ComposeTypes.OrderedCollectionDirection?, reducedMotion: Types.Value<boolean>? }
 return function<K>(
 	ctx: Types.Context,
 	spec: SnapOptions,
 	root: ScrollingFrame,
-	controls: Compose.OrderedCollectionControls<K>,
-	status: Compose.Cell<Compose.OrderedCollectionStatus>,
-	viewport: Compose.Cell<Compose.OrderedCollectionViewport>,
+	controls: ComposeTypes.OrderedCollectionControls<K>,
+	status: ComposeTypes.Cell<ComposeTypes.OrderedCollectionStatus>,
+	viewport: ComposeTypes.Cell<ComposeTypes.OrderedCollectionViewport>,
 	setOffset: (number) -> (),
 	frameworkWrite: () -> boolean
 ): ()
@@ -18,7 +18,7 @@ return function<K>(
 	local clock = frames.now
 	local motion = runtime.timeline({ duration = 0.18, autoplay = false })
 	local held, running, writing = false, false, false
-	local stopWait: Compose.Dispose? = nil
+	local stopWait: ComposeTypes.Dispose? = nil
 	local idle, from, target = 0, 0, 0
 	local previous, previousTime, velocity, gestureStart = 0, clock(), 0, 0
 	local motionReduced = reducedMotion(ctx)
@@ -105,7 +105,7 @@ return function<K>(
 			end
 		end)
 	end
-	Compose.watch(function(use: Compose.Use)
+	Compose.watch(function(use: ComposeTypes.Use)
 		local progress = use(motion.progress)
 		if running then
 			write(from + (target - from) * (1 - (1 - progress) ^ 3))

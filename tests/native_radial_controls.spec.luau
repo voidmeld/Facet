@@ -14,7 +14,7 @@ local function setup(spec, animated)
 		return now
 	end
 	local runtime = Roblox.createRuntime(engine)
-	local UI = controls(runtime, {
+	local UI = controls(Compose, runtime, {
 		types = engine.types,
 		services = { GuiService = gui, UserInputService = input },
 		reducedMotion = not animated,
@@ -313,6 +313,7 @@ t.describe("native radial interaction policies", function()
 			types = engine.types,
 			viewport = Compose.cell({ width = 1280, height = 720 }),
 			UI = controls(
+				Compose,
 				runtime,
 				{ types = engine.types, services = { GuiService = engine.new("GuiService") }, reducedMotion = true }
 			),

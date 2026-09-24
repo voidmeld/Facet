@@ -606,6 +606,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					LineHeight = ctx.observeStyled(node, "LineHeight"),
 				}
 				local boundary = decoration(
+					Compose,
 					runtime,
 					ctx.types,
 					node,

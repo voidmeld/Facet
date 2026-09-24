@@ -1,5 +1,5 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local Radial = require("./radial_types")
 local Inputs = require("./input_types")
@@ -8,8 +8,8 @@ export type Value<T> = Types.Value<T>
 export type Content = Instance | (() -> Instance)
 export type Indicator = "automatic" | "pill" | "underline" | "none"
 export type Placement = "automatic" | "topBar" | "sidebar" | "bottomBar" | "bottomBarCompact"
-export type Transition = Compose.TweenOptions
-export type SourceTransition = { seconds: Value<number>?, ease: Compose.Easing?, source: Value<GuiObject?>? }
+export type Transition = ComposeTypes.TweenOptions
+export type SourceTransition = { seconds: Value<number>?, ease: ComposeTypes.Easing?, source: Value<GuiObject?>? }
 export type MenuTrigger = "activate" | "secondary" | "longPress" | "keyboard" | "gamepad"
 export type MenuItemBase = {
 	role: Value<"default" | "cancel" | "destructive" | "onIndicator">?,
@@ -32,7 +32,7 @@ export type MenuAction<V = string> =
 	| (MenuItemBase & { children: nil, onSelect: () -> (), checked: nil, selected: nil })
 	| (MenuItemBase & {
 		children: nil,
-		checked: Compose.Cell<boolean>,
+		checked: ComposeTypes.Cell<boolean>,
 		selected: nil,
 		onChange: ((boolean) -> ())?,
 		onSelect: (() -> ())?,
@@ -40,7 +40,7 @@ export type MenuAction<V = string> =
 	| (MenuItemBase & {
 		children: nil,
 		checked: nil,
-		selected: Compose.Cell<V>,
+		selected: ComposeTypes.Cell<V>,
 		value: V,
 		onChange: ((V) -> ())?,
 		onSelect: (() -> ())?,
@@ -48,7 +48,7 @@ export type MenuAction<V = string> =
 export type MenuItem<V = string> = { id: string?, divider: true } | MenuAction<V>
 export type MenuSpec<V = string> = Types.FrameProps & {
 	items: Value<{ MenuItem<V> }>,
-	query: Compose.Cell<string>?,
+	query: ComposeTypes.Cell<string>?,
 	label: Value<string>?,
 	trigger: GuiObject | (() -> GuiObject)?,
 
@@ -59,7 +59,7 @@ export type MenuSpec<V = string> = Types.FrameProps & {
 	onOpen: (() -> ())?,
 	onClose: (() -> ())?,
 	enabled: Value<boolean>?,
-	isPresented: Compose.Cell<boolean>?,
+	isPresented: ComposeTypes.Cell<boolean>?,
 }
 export type PickerOption<V = string> = {
 	id: string?,
@@ -75,7 +75,7 @@ export type PickerCommon<V> = Types.GuiObjectProps & {
 	Style: Value<Enum.FrameStyle>?,
 	options: Value<{ PickerOption<V> }>,
 	style: PickerStyle?,
-	query: Compose.Cell<string>?,
+	query: ComposeTypes.Cell<string>?,
 	placeholder: Value<string>?,
 	label: Value<string>?,
 	required: boolean?,
@@ -85,17 +85,17 @@ export type PickerCommon<V> = Types.GuiObjectProps & {
 	sizing: Value<"fill" | "hug">?,
 	iconOnly: Value<boolean>?,
 	textSize: Value<number>?,
-	isPresented: Compose.Cell<boolean>?,
+	isPresented: ComposeTypes.Cell<boolean>?,
 }
 export type SinglePickerSpec<V = string> = PickerCommon<V> & {
 	multiple: false?,
-	selected: Compose.Cell<V>,
+	selected: ComposeTypes.Cell<V>,
 	onChanging: ((V, V) -> boolean?)?,
 	onChange: ((V) -> ())?,
 }
 export type MultiplePickerSpec<V = string> = PickerCommon<V> & {
 	multiple: true,
-	selected: Compose.Cell<{ [V]: boolean }>,
+	selected: ComposeTypes.Cell<{ [V]: boolean }>,
 	onChanging: (({ [V]: boolean }, { [V]: boolean }) -> boolean?)?,
 	onChange: (({ [V]: boolean }) -> ())?,
 }
@@ -110,8 +110,8 @@ export type SplitButtonSpec<V = string> = Types.FrameProps & {
 	menuLabel: Value<string>?,
 }
 export type ComboBoxSpec = Types.FrameProps & {
-	value: Compose.Cell<string>,
-	text: Compose.Cell<string>,
+	value: ComposeTypes.Cell<string>,
+	text: ComposeTypes.Cell<string>,
 	options: Value<{ PickerOption<string> }>,
 	enabled: Value<boolean>?,
 	acceptCustom: (string) -> (boolean, string?),
@@ -120,7 +120,7 @@ export type ComboBoxSpec = Types.FrameProps & {
 	placeholder: Value<string>?,
 }
 export type DisclosureGroupSpec = Types.FrameProps & {
-	expanded: Compose.Cell<boolean>,
+	expanded: ComposeTypes.Cell<boolean>,
 	label: Value<string>?,
 	content: Content,
 	description: Value<string>?,
@@ -131,7 +131,7 @@ export type DisclosureGroupSpec = Types.FrameProps & {
 	appearance: "plain" | "contained" | "divided"?,
 }
 export type CollapsibleViewSpec = Types.TextButtonProps & Inputs.ButtonVisualOptions & Inputs.ButtonInputOptions & {
-	expanded: Compose.Cell<boolean>,
+	expanded: ComposeTypes.Cell<boolean>,
 	content: Content,
 	initialFocus: string?,
 	dismissButton: Value<boolean>?,
@@ -148,17 +148,17 @@ export type AlertAction<P = unknown> = {
 	onActivate: ((P) -> ())?,
 }
 export type AlertSpec<P = unknown> = Types.FrameProps & {
-	isPresented: Compose.Cell<boolean>?,
-	item: Compose.Cell<P?>?,
+	isPresented: ComposeTypes.Cell<boolean>?,
+	item: ComposeTypes.Cell<P?>?,
 	presenting: Value<P>?,
 	title: string | ((P) -> string)?,
 	message: string | ((P) -> string)?,
 	actions: { AlertAction<P> } | ((P) -> { AlertAction<P> })?,
 	content: ((P) -> Instance)?,
-	error: Compose.Cell<string?>?,
+	error: ComposeTypes.Cell<string?>?,
 	icon: Value<string>?,
 	severity: "information" | "warning" | "critical"?,
-	suppression: { isSuppressed: Compose.Cell<boolean>, label: Value<string>? }?,
+	suppression: { isSuppressed: ComposeTypes.Cell<boolean>, label: Value<string>? }?,
 	maxWidth: number?,
 	padding: number?,
 	surface: "dialog" | "fullScreen"?,
@@ -170,8 +170,8 @@ export type SheetDetent =
 	| { id: string, fraction: number, height: nil }
 	| { id: string, fraction: nil, height: number }
 export type SheetSpec = Types.FrameProps & {
-	isPresented: Compose.Cell<boolean>,
-	detent: Compose.Cell<string>,
+	isPresented: ComposeTypes.Cell<boolean>,
+	detent: ComposeTypes.Cell<string>,
 	detents: { SheetDetent }?,
 	title: Value<string>?,
 	content: Content,
@@ -206,7 +206,7 @@ export type Tab = {
 	required: boolean?,
 }
 export type TabViewSpec = Types.FrameProps & {
-	selection: Compose.Cell<string>,
+	selection: ComposeTypes.Cell<string>,
 	tabs: Value<{ Tab }>,
 	sections: { { id: string, label: string } }?,
 	customization: Value<{ order: { string }?, hidden: { string }? }>?,
@@ -237,20 +237,20 @@ export type NavigationDestination<P = unknown> = {
 	content: Instance | ((NavigationEntry<P>?) -> Instance),
 }
 export type NavigationStackSpec<P = unknown> = Types.FrameProps & {
-	path: Compose.Cell<{ NavigationEntry<P> }>,
+	path: ComposeTypes.Cell<{ NavigationEntry<P> }>,
 	root: NavigationDestination<P>,
 	destinations: { [string]: NavigationDestination<P> },
 	backLabel: Value<string>?,
 	transition: Transition | false?,
 }
 export type PageViewSpec = Types.FrameProps & {
-	selection: Compose.Cell<string>,
+	selection: ComposeTypes.Cell<string>,
 	pages: { Tab },
 	indicators: boolean?,
 	summary: boolean?,
 	controls: boolean?,
 }
-export type PresencePhase = { exiting: Compose.Readable<boolean> }
+export type PresencePhase = { exiting: ComposeTypes.Readable<boolean> }
 export type ModalOptions = {
 	Name: string?,
 	ZIndex: number?,
@@ -262,17 +262,17 @@ export type ModalOptions = {
 	onOutside: (() -> ())?,
 }
 export type OverlayOptions = {
-	presence: Compose.PresenceOptions?,
+	presence: ComposeTypes.PresenceOptions?,
 	failure: ((unknown) -> Instance)?,
 }
 export type Surfaces = {
 	service: (("GuiService") -> GuiService?) & (("UserInputService") -> UserInputService?),
 	within: (Instance?, Instance) -> boolean,
 	firstSelectable: (Instance, string?) -> GuiObject?,
-	preference: () -> (Compose.Use) -> number,
-	selecting: () -> (Compose.Use) -> boolean,
+	preference: () -> (ComposeTypes.Use) -> number,
+	selecting: () -> (ComposeTypes.Use) -> boolean,
 	attach: <N>(N & Instance, { Types.Child }) -> N & Instance,
-	available: (GuiObject) -> Compose.Readable<boolean>,
+	available: (GuiObject) -> ComposeTypes.Readable<boolean>,
 	centered: (GuiObject, number) -> GuiObject,
 	skin: (GuiObject, string?) -> GuiObject,
 	modal: (() -> GuiObject, (string?) -> (), ModalOptions?) -> Frame,

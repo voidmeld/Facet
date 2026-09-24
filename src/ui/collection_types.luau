@@ -1,30 +1,30 @@
 --!strict
-local Compose = require("../vendor/compose/core")
+local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local InputTypes = require("./input_types")
 
 export type FocusControls<K> = {
-	current: typeof(((nil :: unknown) :: Compose.FocusScope<K>).current)?,
-	focus: typeof(((nil :: unknown) :: Compose.FocusScope<K>).focus)?,
-	clear: typeof(((nil :: unknown) :: Compose.FocusScope<K>).clear)?,
-	next: typeof(((nil :: unknown) :: Compose.FocusScope<K>).next)?,
-	previous: typeof(((nil :: unknown) :: Compose.FocusScope<K>).previous)?,
-	move: typeof(((nil :: unknown) :: Compose.FocusScope<K>).move)?,
-	first: typeof(((nil :: unknown) :: Compose.FocusScope<K>).first)?,
-	last: typeof(((nil :: unknown) :: Compose.FocusScope<K>).last)?,
-	isFocused: typeof(((nil :: unknown) :: Compose.FocusScope<K>).isFocused)?,
+	current: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).current)?,
+	focus: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).focus)?,
+	clear: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).clear)?,
+	next: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).next)?,
+	previous: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).previous)?,
+	move: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).move)?,
+	first: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).first)?,
+	last: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).last)?,
+	isFocused: typeof(((nil :: unknown) :: ComposeTypes.FocusScope<K>).isFocused)?,
 }
 export type Selection<K> = { [K]: boolean }
 export type Sort = { column: string, direction: "ascending" | "descending" }
 export type RowPredicate<V> = (item: V) -> boolean
 export type Follow = "end" | "none"
 export type RowRender<V, K> = (
-	current: Compose.Readable<V>,
-	placement: Compose.Readable<Compose.Placement>,
+	current: ComposeTypes.Readable<V>,
+	placement: ComposeTypes.Readable<ComposeTypes.Placement>,
 	key: K
 ) -> GuiObject
 export type SelectionOptions<V, K> = {
-	selection: Compose.Cell<Selection<K>>?,
+	selection: ComposeTypes.Cell<Selection<K>>?,
 	selectionMode: ("none" | "single" | "multi")?,
 	selectable: RowPredicate<V>?,
 	disabled: RowPredicate<V>?,
@@ -35,13 +35,13 @@ export type ReorderOptions<V, K> = SelectionOptions<V, K> & {
 	movable: RowPredicate<V>?,
 	onReorder: ((keys: { K }, slot: number) -> ())?,
 	dragLabel: ((item: V) -> string)?,
-	direction: Compose.OrderedCollectionDirection?,
+	direction: ComposeTypes.OrderedCollectionDirection?,
 }
 export type Activate<V, K> = (item: V, key: K, input: InputObject?, clickCount: number?) -> ()
 export type CollectionOptions<V, K> = Types.ScrollingFrameProps & ReorderOptions<V, K> & {
 	from: Types.Value<{ V }>,
 	render: RowRender<V, K>,
-	mode: Compose.OrderedCollectionMode?,
+	mode: ComposeTypes.OrderedCollectionMode?,
 	itemSize: Types.Value<number>?,
 	gap: Types.Value<number>?,
 	crossGap: Types.Value<number>?,
@@ -49,8 +49,8 @@ export type CollectionOptions<V, K> = Types.ScrollingFrameProps & ReorderOptions
 	overscan: number?,
 	measured: Types.Value<{ [K]: number }>?,
 	measure: boolean?,
-	status: Compose.Cell<Compose.OrderedCollectionStatus>?,
-	controls: Compose.OrderedCollectionControls<K>?,
+	status: ComposeTypes.Cell<ComposeTypes.OrderedCollectionStatus>?,
+	controls: ComposeTypes.OrderedCollectionControls<K>?,
 	follow: Types.Value<Follow>?,
 	followThreshold: number?,
 	maxRetained: number?,
@@ -90,9 +90,9 @@ export type RowActionsOptions = Types.FrameProps & {
 	trailing: Types.Value<{ RowAction }>?,
 	actionWidth: Types.Value<number>?,
 	fullSwipe: (boolean | { leading: boolean?, trailing: boolean? })?,
-	open: Compose.Cell<RowEdge?>?,
+	open: ComposeTypes.Cell<RowEdge?>?,
 	onOpenChange: ((edge: RowEdge?) -> ())?,
-	coordinator: Compose.Cell<{}?>?,
+	coordinator: ComposeTypes.Cell<{}?>?,
 	enabled: Types.Value<boolean>?,
 	reducedMotion: Types.Value<boolean>?,
 	editing: Types.Value<boolean>?,
@@ -116,16 +116,16 @@ export type TableOptions<V, K> = Types.FrameProps & ReorderOptions<V, K> & {
 	itemSize: Types.Value<number>?,
 	gap: Types.Value<number>?,
 	overscan: number?,
-	sort: Compose.Cell<Sort?>?,
+	sort: ComposeTypes.Cell<Sort?>?,
 	onSortChange: ((sort: Sort) -> ())?,
-	widths: Compose.Cell<{ [string]: number }>?,
+	widths: ComposeTypes.Cell<{ [string]: number }>?,
 	onWidthsChange: ((widths: { [string]: number }) -> ())?,
 	onActivate: Activate<V, K>?,
-	rowActions: ((current: Compose.Readable<V>, key: K) -> RowActionsOptions?)?,
+	rowActions: ((current: ComposeTypes.Readable<V>, key: K) -> RowActionsOptions?)?,
 	headerHeight: Types.Value<number>?,
 	header: boolean?,
-	status: Compose.Cell<Compose.OrderedCollectionStatus>?,
-	controls: Compose.OrderedCollectionControls<K>?,
+	status: ComposeTypes.Cell<ComposeTypes.OrderedCollectionStatus>?,
+	controls: ComposeTypes.OrderedCollectionControls<K>?,
 	focus: FocusControls<K>?,
 	measure: boolean?,
 	measured: Types.Value<{ [K]: number }>?,
@@ -134,7 +134,7 @@ export type TableOptions<V, K> = Types.FrameProps & ReorderOptions<V, K> & {
 	reducedMotion: Types.Value<boolean>?,
 	editing: Types.Value<boolean>?,
 	scrolls: boolean?,
-	mode: Compose.OrderedCollectionMode?,
+	mode: ComposeTypes.OrderedCollectionMode?,
 	snap: ("none" | "item")?,
 }
 export type KeyedTableSpec<V, K> = TableOptions<V, K> & { key: ((item: V, index: number) -> K) | string }
