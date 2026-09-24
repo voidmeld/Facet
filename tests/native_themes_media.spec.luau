@@ -7,6 +7,7 @@ local controls = require("../src/ui")
 local media = require("../src/ui/media")
 local themes = require("../src/ui/themes")
 local engineLib = require("./lib/native_engine")
+local fs = require("@lune/fs")
 
 local function setup()
 	local engine = engineLib.new()
@@ -1621,6 +1622,29 @@ t.describe("native themes and media", function()
 			t.expect(style(sheet, ".facet-selected").TextColor3).toBe(engine.types.Color3.new(1, 1, 1))
 			stop()
 		end
+		runtime:dispose()
+	end)
+
+	t.it("returns the Label root that api.md states, with and without an icon", function()
+		local engine, runtime, UI = setup()
+		local stop, root = runtime.mount(function()
+			return runtime.constructors.Frame({
+				UI.Label "Plain" { text = "Plain" },
+				UI.Label "Iconic" { text = "Iconic", icon = "rbxassetid://1" },
+			})
+		end, engine.new("Folder"))
+		local plain, iconic = root:FindFirstChild("Plain"), root:FindFirstChild("Iconic")
+		t.expect(plain.ClassName).toBe("TextLabel")
+		t.expect(iconic.ClassName).toBe("Frame")
+		t.expect(iconic:FindFirstChildWhichIsA("TextLabel").Text).toBe("Iconic")
+		local row = string.match(fs.readFile("docs/reference/api.md"), "\n| `Label` |([^\n]*)")
+		t.expect(row ~= nil and string.find(row, "Without an icon, it returns a TextLabel.", 1, true) ~= nil).toBe(true)
+		t.expect(
+			row ~= nil
+				and string.find(row, "With an icon, it returns a Frame row that holds the icon and a TextLabel.", 1, true)
+					~= nil
+		).toBe(true)
+		stop()
 		runtime:dispose()
 	end)
 end)
