@@ -256,6 +256,11 @@ t.describe("public surface registration", function()
 				or string.find(entry, `export type {name}Props`, 1, true) ~= nil
 				or string.find(entry, `export type {name}Spec`, 1, true) ~= nil
 				or (shared[name] ~= nil and string.find(entry, `export type {shared[name]}`, 1, true) ~= nil)
+				or (
+					name == "badged"
+					and string.find(fs.readFile("src/ui/content_types.luau"), "export type Badged =", 1, true) ~= nil
+					and string.find(entry, "export type BadgeValue", 1, true) ~= nil
+				)
 			if not exported then
 				error(`{name} has no exported Props or Spec type in src/init.luau`)
 			end

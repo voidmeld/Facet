@@ -113,6 +113,7 @@ local cardProps: Facet.CardSpec = {
 	controls = cardControls,
 }
 local card: Frame = UI.Card(cardProps)
+local sealed: Frame = UI.badged(UI.Button({ label = "Inbox" }), 3)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -211,6 +212,7 @@ local mounted: { GuiObject } = {
 	stepIndicator,
 	vote,
 	card,
+	sealed,
 	menu,
 	split,
 	picker,

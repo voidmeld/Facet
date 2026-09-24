@@ -1026,6 +1026,8 @@ The Stage content callback mounts into its WorldModel. It can return a teardown
 function. Use the `Host.Part`, `Host.Model` and other native constructors of the
 same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
 
+### badged
+
 `UI.badged(host, value, direction?) -> Frame` puts a count or a dot on the
 corner of a host, such as a Button, an icon Button or an Avatar. It returns a
 Frame named `<host name>+badge` that hugs the host and takes its
