@@ -5,6 +5,7 @@ local Navigation = require("./navigation_types")
 local Collections = require("./collection_types")
 local Media = require("./media_types")
 local Dates = require("./date_time_picker_types")
+local Colors = require("./color_picker_types")
 
 export type Controls = {
 	Button: typeof(((nil :: unknown) :: Inputs.InputControls).Button),
@@ -44,6 +45,7 @@ export type Controls = {
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
 	DateTimePicker: typeof(((nil :: unknown) :: Dates.DateTimePickerControls).DateTimePicker),
+	ColorPicker: typeof(((nil :: unknown) :: Colors.ColorPickerControls).ColorPicker),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

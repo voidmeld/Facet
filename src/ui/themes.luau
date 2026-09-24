@@ -732,6 +732,8 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-menu::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
 	rule(".facet-invalid::UIStroke", { Color = c("danger"), Thickness = 1 })
 	rule(".facet-date-time-picker", { BackgroundTransparency = 1 })
+	rule(".facet-color-picker", { BackgroundTransparency = 1 })
+	rule(".facet-color-swatch::UIStroke", { Color = c("hairline"), Transparency = 0, Thickness = 1 })
 	for _, member in { ".facet-avatar", ".facet-button" } do
 		rule(".facet-avatar-stack > " .. member .. "::UIStroke", {
 			Color = c("surface"),
