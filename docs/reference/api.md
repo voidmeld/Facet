@@ -569,6 +569,9 @@ same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
   transitions retarget interrupted changes.
 - Reduced motion or `transition = false` sets zero-duration paint. If you omit
   reduced motion, the sheet follows GuiService.
+- Palette colors are token attributes of the sheet, named
+  `FacetColor_<role>`. Color rules reference them as `$FacetColor_<role>`. A
+  palette change sets only the attributes whose color changes.
 - Explicit Instance paint still overrides stylesheet paint.
 
 A theme package contains `identity`, `style = { defaultTheme, themes }`,

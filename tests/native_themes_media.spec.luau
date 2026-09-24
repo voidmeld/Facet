@@ -15,10 +15,22 @@ local function setup()
 	return engine, runtime, UI
 end
 
+local function resolved(sheet, rule)
+	local properties = rule:GetProperties()
+	for key, value in properties do
+		if type(value) == "string" and string.sub(value, 1, 1) == "$" then
+			local token = sheet:GetAttribute(string.sub(value, 2))
+			assert(token ~= nil, `Unresolved style token {value}`)
+			properties[key] = token
+		end
+	end
+	return properties
+end
+
 local function style(sheet, selector)
 	for _, node in sheet:GetChildren() do
 		if node.Selector == selector then
-			return node:GetProperties()
+			return resolved(sheet, node)
 		end
 	end
 	error("No rule: " .. selector)
@@ -109,11 +121,11 @@ t.describe("native themes and media", function()
 		t.expect(surfaceRule:GetPropertyTransitions().BackgroundTransparency).toBe(timing)
 		t.expect(textRule:GetPropertyTransitions().TextSize).toBe(nil)
 		selection:set("Light")
-		t.expect(textRule:GetProperties().TextColor3).toBe(engine.types.Color3.new(0.1, 0.1, 0.1))
-		t.expect(surfaceRule:GetProperties().BackgroundColor3).toBe(engine.types.Color3.new(0.9, 0.9, 0.9))
+		t.expect(resolved(sheet, textRule).TextColor3).toBe(engine.types.Color3.new(0.1, 0.1, 0.1))
+		t.expect(resolved(sheet, surfaceRule).BackgroundColor3).toBe(engine.types.Color3.new(0.9, 0.9, 0.9))
 		selection:set("Dark")
 		t.expect(textRule:GetPropertyTransitions().TextColor3).toBe(timing)
-		t.expect(textRule:GetProperties().TextColor3).toBe(engine.types.Color3.new(236 / 255, 239 / 255, 245 / 255))
+		t.expect(resolved(sheet, textRule).TextColor3).toBe(engine.types.Color3.new(236 / 255, 239 / 255, 245 / 255))
 		t.expect(sheet:GetChildren()[1]).toBe(rules[1])
 		t.expect(#sheet:GetChildren()).toBe(#rules)
 		t.expect(engine.heartbeat.count()).toBe(0)
@@ -121,7 +133,7 @@ t.describe("native themes and media", function()
 		t.expect(textRule:GetPropertyTransitions().TextColor3.Time).toBe(0)
 		t.expect(surfaceRule:GetPropertyTransitions().BackgroundColor3.Time).toBe(0)
 		selection:set("Light")
-		t.expect(surfaceRule:GetProperties().BackgroundColor3).toBe(engine.types.Color3.new(0.9, 0.9, 0.9))
+		t.expect(resolved(sheet, surfaceRule).BackgroundColor3).toBe(engine.types.Color3.new(0.9, 0.9, 0.9))
 		reduced:set(false)
 		local override = engine.types.TweenInfo.new(0.6, engine.types.Enum.EasingStyle.Linear)
 		explicit:set(override)
@@ -1292,6 +1304,64 @@ t.describe("native themes and media", function()
 		stop()
 		t.expect(arc.isDestroyed()).toBe(true)
 		t.expect(engine.heartbeat.count()).toBe(0)
+		runtime:dispose()
+	end)
+
+	t.it("swaps palette colors through StyleSheet tokens without rewriting rules", function()
+		local engine = engineLib.new()
+		local create = engine.new
+		local writes, transitions = 0, 0
+		engine.new = function(className)
+			local node = create(className)
+			if className == "StyleRule" then
+				local mt = getmetatable(node)
+				local index, setProperties, setTransitions = mt.__index, node.SetProperties, node.SetPropertyTransitions
+				local write = function(self, properties)
+					writes += 1
+					return setProperties(self, properties)
+				end
+				local timing = function(self, properties)
+					transitions += 1
+					return setTransitions(self, properties)
+				end
+				mt.__index = function(self, key)
+					return if key == "SetProperties"
+						then write
+						elseif key == "SetPropertyTransitions" then timing
+						else index(self, key)
+				end
+			end
+			return node
+		end
+		local runtime = Roblox.createRuntime(engine)
+		local first = themes.neutralPackage()
+		local second = themes.neutralPackage()
+		second.style.themes[1].colors.accent = { r = 0.8, g = 0.3, b = 0.1 }
+		second.style.themes[1].colors.content = { r = 0.1, g = 0.1, b = 0.1 }
+		local selected = Compose.cell(first)
+		local stop, sheet = runtime.mount(function()
+			return themes.createStyleSheet(runtime, selected, { types = engine.types })
+		end, create("Folder"))
+		local accent = style(sheet, ".facet-accent")
+		local timing = sheet:GetChildren()[1]
+		for _, rule in sheet:GetChildren() do
+			if rule.Selector == ".facet-accent" then
+				timing = rule
+			end
+		end
+		local transition = timing:GetPropertyTransitions().BackgroundColor3
+		t.expect(transition ~= nil).toBe(true)
+		writes, transitions = 0, 0
+		selected:set(second)
+		t.expect(writes).toBe(0)
+		t.expect(transitions).toBe(0)
+		t.expect(style(sheet, ".facet-accent").BackgroundColor3).toBe(engine.types.Color3.new(0.8, 0.3, 0.1))
+		t.expect(style(sheet, ".facet-text").TextColor3).toBe(engine.types.Color3.new(0.1, 0.1, 0.1))
+		t.expect(timing:GetPropertyTransitions().BackgroundColor3).toBe(transition)
+		selected:set(first)
+		t.expect(writes).toBe(0)
+		t.expect(style(sheet, ".facet-accent").BackgroundColor3).toBe(accent.BackgroundColor3)
+		stop()
 		runtime:dispose()
 	end)
 

@@ -35,9 +35,16 @@ native children. Icons are images, not substitute text glyphs.
 ## Theme transitions
 
 Changes to theme color and opacity animate through native StyleRule
-transitions. The duration is `metrics.motion.normal`. A palette change updates
-the existing rules. If a switch is interrupted, Roblox retargets it from the
-colors on screen. Layout and typography changes apply immediately.
+transitions. The duration is `metrics.motion.normal`. Layout and typography
+changes apply immediately.
+
+Theme colors are StyleSheet tokens. The sheet has one attribute for each
+palette role, with the name `FacetColor_<role>`, for example
+`FacetColor_accent`. The color rules reference the tokens, for example
+`$FacetColor_accent`. A palette change sets only the token attributes. It does
+not write the rules. Game rules can reference the same tokens.
+
+Live Studio evidence for transitions that a token change starts is pending.
 
 ```luau
 local selectedPalette = Compose.cell("dark")

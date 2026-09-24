@@ -357,16 +357,27 @@ local function font(types: Engine.RobloxTypes, value: ThemeTypes.FontSpec | Font
 end
 
 type NativeRule = { id: string, selector: string, properties: ThemeTypes.RuleProperties, priority: number }
-local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, types: Engine.RobloxTypes): { NativeRule }
+local COLOR_TOKEN = "FacetColor_"
+local function rulesFor(
+	package: ThemeTypes.ThemePackage,
+	selected: string?,
+	types: Engine.RobloxTypes,
+	tokens: { [string]: Color3 }
+): { NativeRule }
 	local palette = paletteFor(package, selected)
 	local colors = merge(neutral.style.themes[1].colors, palette.colors)
 	local extra = merge(neutral.style.themes[1].extra :: ThemeTypes.PaletteExtra, palette.extra)
-	local resolvedColors: { [string]: Color3? }, typefaces: { [string]: Font? } = {}, {}
-	local function c(role: string): Color3?
-		if resolvedColors[role] == nil then
-			resolvedColors[role] = color(types, (colors[role] or extra[role]) :: ThemeTypes.RGB?)
+	local typefaces: { [string]: Font? } = {}
+	local function c(role: string): string?
+		local name = COLOR_TOKEN .. role
+		if not tokens[name] then
+			local resolved = color(types, (colors[role] or extra[role]) :: ThemeTypes.RGB?)
+			if resolved == nil then
+				return nil
+			end
+			tokens[name] = resolved
 		end
-		return resolvedColors[role]
+		return "$" .. name
 	end
 	local function f(value: ThemeTypes.FontSpec | Font): Font
 		if typeof(value) == "Font" then
@@ -814,19 +825,24 @@ function themes.createStyleSheet(
 		package: ThemeTypes.ThemePackage,
 		palette: string?,
 		rules: { NativeRule },
+		tokens: { [string]: Color3 },
 	}
 	local compiled: { CompiledRules } = {}
-	local function compiledRules(package: ThemeTypes.ThemePackage, palette: string?): { NativeRule }
+	local function compiledRules(
+		package: ThemeTypes.ThemePackage,
+		palette: string?
+	): ({ NativeRule }, { [string]: Color3 })
 		for index, cached in compiled do
 			if cached.package == package and cached.palette == palette then
 				if index > 1 then
 					table.remove(compiled, index)
 					table.insert(compiled, 1, cached)
 				end
-				return cached.rules
+				return cached.rules, cached.tokens
 			end
 		end
-		local result = rulesFor(package, palette, types)
+		local tokens: { [string]: Color3 } = {}
+		local result = rulesFor(package, palette, types, tokens)
 		if deeplyFrozen(package, {}) then
 			for _, definition in result do
 				local previous = definitions[definition.id]
@@ -834,12 +850,12 @@ function themes.createStyleSheet(
 					definition.properties = previous.properties
 				end
 			end
-			table.insert(compiled, 1, { package = package, palette = palette, rules = result })
+			table.insert(compiled, 1, { package = package, palette = palette, rules = result, tokens = tokens })
 			if #compiled > 2 then
 				table.remove(compiled)
 			end
 		end
-		return result
+		return result, tokens
 	end
 	local scaled = setmetatable(
 		{} :: { [NativeRule]: { preference: number, properties: ThemeTypes.RuleProperties } },
@@ -887,7 +903,11 @@ function themes.createStyleSheet(
 		if transitions == nil then
 			local built: { [string]: TweenInfo } = {}
 			for property, value in properties do
-				if typeof(value) == "Color3" or string.find(property, "Transparency$") then
+				if
+					typeof(value) == "Color3"
+					or (type(value) == "string" and string.sub(value, 1, #COLOR_TOKEN + 1) == "$" .. COLOR_TOKEN)
+					or string.find(property, "Transparency$")
+				then
 					built[property] = timing
 				end
 			end
@@ -957,9 +977,22 @@ function themes.createStyleSheet(
 			end,
 		}),
 	})
+	local appliedTokens: { [string]: Color3 } = {}
 	Compose.watch(function(use: Compose.Use)
 		local package = read(packageOrReadable, use) or neutral
-		local current = compiledRules(package, read(settings.theme, use))
+		local current, tokens = compiledRules(package, read(settings.theme, use))
+		for name, value in tokens do
+			if appliedTokens[name] ~= value then
+				sheet:SetAttribute(name, value)
+				appliedTokens[name] = value
+			end
+		end
+		for name in appliedTokens do
+			if not tokens[name] then
+				sheet:SetAttribute(name, nil)
+				appliedTokens[name] = nil
+			end
+		end
 		local timing = timingFor(package, use)
 		currentTiming = timing
 		local preference = preferenceFor(use)
