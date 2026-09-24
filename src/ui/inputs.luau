@@ -175,7 +175,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 								end)
 							end
 						end, {
-							priority = 100,
+							priority = 250,
 							onReleased = function()
 								if heldAction == action then
 									stopRepeat()
@@ -1346,7 +1346,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				p,
 				UI.Button "Clear" {
 					label = "Clear",
-					Size = D2.fromOffset(44, 32),
+					Size = D2.fromOffset(44, 44),
 					AutomaticSize = E.AutomaticSize.None,
 					AnchorPoint = V2.new(1, 0.5),
 					Position = D2.fromScale(1, 0.5),
@@ -1488,7 +1488,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				icon = glyph,
 				name = name,
 				LayoutOrder = if direction < 0 then 1 else 3,
-				Size = D2.fromOffset(44, 36),
+				Size = D2.fromOffset(44, 44),
 				AutomaticSize = E.AutomaticSize.None,
 				enabled = allowed,
 				onActivate = function()
@@ -1501,7 +1501,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local controls = ctx.styled(
 			Host.Frame "Controls" {
 				LayoutOrder = 2,
-				Size = D2.fromOffset(0, 40),
+				Size = D2.fromOffset(0, 44),
 				AutomaticSize = E.AutomaticSize.X,
 				Host.UIListLayout({
 					FillDirection = E.FillDirection.Horizontal,
@@ -1515,7 +1515,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				ctx.text({
 					Name = "Value",
 					LayoutOrder = 2,
-					Size = D2.fromOffset(40, 36),
+					Size = D2.fromOffset(40, 44),
 					AutomaticSize = E.AutomaticSize.X,
 					TextXAlignment = E.TextXAlignment.Center,
 					TextYAlignment = E.TextYAlignment.Center,
@@ -2172,7 +2172,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 
 	UI.ShortcutHint = ctx.construct(function(spec: InputTypes.ShortcutHintImplementationProps): TextLabel | Frame
 		assert((spec.action == nil) ~= (spec.keys == nil), "Facet.ShortcutHint: supply action or keys")
-		local semantic = { "action", "keys", "separator", "controlSize", "over" }
+		assert(spec.action == nil or spec.separator == nil, "Facet.ShortcutHint: separator applies only to keys")
+		local semantic = { "action", "keys", "separator", "controlSize" }
 		if spec.keys then
 			return ctx.styled(
 				ctx.text(props(spec, semantic, {
@@ -2257,8 +2258,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							return content
 						end
 						if input and input.GetImageForKeyCode then
-							local asset = input:GetImageForKeyCode(use(key))
-							if asset ~= "" then
+							local ok, asset = pcall(input.GetImageForKeyCode, input, use(key))
+							if ok and type(asset) == "string" and asset ~= "" then
 								return asset
 							end
 						end
@@ -2309,10 +2310,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 										local keys = {}
 										for _, code in { use(primary), use(secondary), use(key) } do
 											if code and code ~= noKey then
-												local text = if input and input.GetStringForKeyCode
-													then input:GetStringForKeyCode(code)
-													else ""
-												if text == nil or text == "" then
+												local ok, found = true, ""
+												if input and input.GetStringForKeyCode then
+													ok, found = pcall(input.GetStringForKeyCode, input, code)
+												end
+												local text = if ok and type(found) == "string" then found else ""
+												if text == "" then
 													text = keyNames[code.Name] or code.Name
 												end
 												table.insert(keys, text)
