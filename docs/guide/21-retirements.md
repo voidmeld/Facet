@@ -12,10 +12,10 @@ The baseline is `main` at `a8c88956`. The branch is `codex/compose-ui-simplifica
 
 | Kind | Contracts | Main cases |
 |---|---:|---:|
-| Class b: the Roblox Engine or Compose owns the mechanism | 302 | 1440 |
-| Class b with no candidate test and no live record | 165 | 704 |
-| Class c: the feature or the code is deleted | 811 | 5973 |
-| Restored before the merge: moved from class c to class a | 8 | 59 |
+| Class b: the Roblox Engine or Compose owns the mechanism | 301 | 1425 |
+| Class b with no candidate test and no live record | 164 | 689 |
+| Class c: the feature or the code is deleted | 809 | 5955 |
+| Restored before the merge: moved from class b or c to class a | 11 | 92 |
 | Parts of covered contracts that the strengthening work retired | 117 | - |
 | Owner decisions (next section) | 21 | - |
 
@@ -36,7 +36,7 @@ Each item below removed a behavior that a player or a game author uses. The owne
 - Strengthening notes that retire part of a covered contract: `apps-159`, `mech2-104`.
 - PR status: The PR gives entry selection only to modal controls (Alert, Sheet, Menu) and to collections that you give a focus option. On an ordinary screen, a gamepad or keyboard player starts with no selection until the engine picks one. `docs/guide/07-input.md` promises entry only for modals.
 - Current main `bc9a56a6` still ships this.
-- Decision: Restored by another change. The focus rules work restores entry focus.
+- Decision: Restored. The first D-pad press selects the first control of the active screen. [Restored before the merge](#restored-before-the-merge) names the tests.
 
 ### 2. Nearest-survivor focus after a removal
 
@@ -45,7 +45,7 @@ Each item below removed a behavior that a player or a game author uses. The owne
 - Strengthening notes that retire part of a covered contract: `apps-147`, `apps-185`.
 - PR status: Compose `createFocusScope` clears the focus or moves it to the first row. A gamepad player loses the position in a long list after a delete.
 - Current main `bc9a56a6` still ships this.
-- Decision: Restored by another change. The focus rules work restores the nearest-survivor rule.
+- Decision: Restored. A removed control gives the selection to its nearest neighbour, and a collection keeps it on the next row by key. [Restored before the merge](#restored-before-the-merge) names the tests.
 
 ### 3. Tab and Shift+Tab traversal
 
@@ -54,7 +54,7 @@ Each item below removed a behavior that a player or a game author uses. The owne
 - Strengthening notes that retire part of a covered contract: `apps2-210`.
 - PR status: The PR binds no Tab key (`Button` refuses Tab as a shortcut). Roblox engine selection moves by direction only. The b-class record says `nativeEvidence: none`. The live run `artifacts/studio-live/needs_live_input-power-off-traversal-portrait-largest.json` records the check `Tab reaches After` as failed: Tab selected no control, while DPadDown did.
 - Current main `bc9a56a6` still ships this.
-- Decision: Restored by another change. The focus rules work restores Tab traversal.
+- Decision: Restored. Tab and Shift+Tab walk the controls in layout order inside the active modal or screen. [Restored before the merge](#restored-before-the-merge) names the tests.
 
 ### 4. Ten-foot (viewing distance) profile, including the ten-foot focus ring
 
@@ -222,6 +222,14 @@ These contracts moved from class c to class a. The cases are in `tests/native_pa
 | `collections-285` | 10 | A press on another row closes the open row. | The same observer | A press on the content of the open row keeps its tray open. There is no shared list overlay. |
 | `mech3-83` | 18 | Label `textSize = "fit"` paints the largest size that fits, between a cap and a floor. | `TextScaled` and `UITextSizeConstraint` | The engine picks the size. The headless engine does not scale text. |
 | `mech2-46` | 14 | Label `truncate = "middle"` keeps the start and the end of a long value. | The engine `TextBounds` of the label | The headless engine measures with a fixed glyph width. |
+
+The focus rules change moved three more contracts to class a. The cases are in `tests/native_selection_parity.spec.luau`. Each contract has `restoredBy` set to `parity/gamepad`. The live routes are in `artifacts/gamepad/gamepad-parity-live.json`.
+
+| Contract | Main cases | Restored behavior | Native implementation | Still weaker |
+|---|---:|---|---|---|
+| `apps-158` | 15 | Tab and Shift+Tab walk the controls in layout order, wrap, skip hidden and disabled controls and stay inside a modal. | A Facet `InputAction` on Tab that sets `GuiService.SelectedObject` | Studio cannot inject Tab. The live check fires the action. There are no main navigation groups. |
+| `collections-260` | 17 | A removed focused row gives the selection to the next row, or to the previous row at the end. | The Compose focus scope and `GuiService.SelectedObject` | The `focusPolicy` field and its index policy stay removed. |
+| `collections-306` | 1 | The same nearest-survivor rule for a virtualized list. | The same | - |
 
 Facet Neutral's `Light` palette (main `b1a08042`) is newer than the baseline. Its contract `post-lab-02` moves from class d to class a. Facet Neutral declares `Dark` and `Light` again. Both palettes pass the contrast gate, and the theme strength specs check both palettes where they checked one before.
 
@@ -468,14 +476,13 @@ Each line gives the contract id, the main case count and the main specs, the pro
 
 ### Focus and selection
 
-51 class b and 31 class c contracts, 423 main cases.
+50 class b and 29 class c contracts, 390 main cases.
 
 - `apps-144` (1 main case; `focus`). Main promised: Screen ring navigation and wrap at edges. Engine or Compose owns it: GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*). Replacement test: no test.
 - `apps-148` (1 main case; `focus`). Main promised: Focus changes are observable client-local state. Engine or Compose owns it: GuiService.SelectedObject property changes. Replacement test: yes: native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection.
 - `apps-151` (5 main cases; `focus_chrome`). Main promised: D-pad/Tab cross into and along adopted chrome strips. Engine or Compose owns it: GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*). Replacement test: no test.
 - `apps-154` (7 main cases; `focus_sections`). Main promised: Declared focus sections: bounds, grid exits, preferred entry, adjacent topology. Engine or Compose owns it: Native SelectionGroup + SelectionBehavior*/NextSelection* (set by src/ui/collections.luau, nav_pages.luau, nav_modal.luau). Replacement test: yes: native_virtual_monitors::native virtual monitors::NVM-2 retains native avatar controls across narrow layouts and expands live HUD (asserts SelectionGroup true); native_navigation::native navigation controls::traps all....
 - `apps-155` (1 main case; `focus_structural`). Main promised: Focusable inside a conditional branch joins/leaves selection with mount. Engine or Compose owns it: Engine selection of live Selectable GuiObjects. Replacement test: yes: native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it.
-- `apps-158` (15 main cases; `keyboard_navigation`). Main promised: Tab/Shift+Tab traversal order, entry, group crossing, wrap, skip, churn, ring movement. Engine or Compose owns it: GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*); Facet binds no Tab key (no KeyCode.Tab in CAND src/ui). Replacement test: no test.
 - `apps-175` (7 main cases; `traversal_order`). Main promised: Grip-bearing controls (Slider/Rating) traverse in document position. Engine or Compose owns it: GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*). Replacement test: no test.
 - `apps-180` (1 main case; `traversal_order`). Main promised: Structural churn re-ranks on next press. Engine or Compose owns it: GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*). Replacement test: no test.
 - `apps-183` (6 main cases; `navigation_groups`). Main promised: Group axis, wrap, exits, restore entry, containment, fallthrough. Engine or Compose owns it: Native SelectionGroup/SelectionBehavior*/NextSelection*. Replacement test: yes: native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back (SelectionBehavior Stop only).
@@ -538,9 +545,7 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `collections-195` (1 main case; `table_input`). Main promised: A table with no selection/reorder/actions has no row stops. Deleted: Behavior changed. Table rows always have a Selectable RowHit.. Replacement test: none; the feature is deleted.
 - `collections-236` (2 main cases; `virtual_grid_input`). Main promised: Right off the end of a line wraps into the next line; the focus dump. Deleted: Compose spatial moveDirection has no line wrap, and the dump is gone.. Replacement test: none; the feature is deleted.
 - `collections-246` (1 main case; `virtual_hgrid`). Main promised: Down off the end of a line crosses into the next. Deleted: There is no line wrap in Compose spatial moves.. Replacement test: none; the feature is deleted.
-- `collections-260` (17 main cases; `virtual_list_focus_policy`). Main promised: focusPolicy field, index policy, nearest-survivor rule, validation. Deleted: focusPolicy is not in collection_types.luau or api.md. Compose createFocusScope clears current (or autoFocuses the first) when the key disappears. There is no nearest survivor.. Replacement test: none; the feature is deleted.
 - `collections-269` (3 main cases; `virtual_list_input`). Main promised: Navigation group name and exit, unknown navigation field. Deleted: navigationGroups are gone. The native SelectionGroup=true root is used.. Replacement test: none; the feature is deleted.
-- `collections-306` (1 main case; `virtualization`). Main promised: Nearest surviving neighbour on focused-row removal. Deleted: Compose createFocusScope clears or autoFocuses the first. There is no nearest survivor. api.md makes no promise.. Replacement test: none; the feature is deleted.
 - `collections-33` (3 main cases; `native_scroll_autobind`). Main promised: navigationGroups/focusGroups presenter discriminator. Deleted: The presenter, focusGroups and navigationGroups are gone. There is no Facet focus graph (guide 02-architecture).. Replacement test: none; the feature is deleted.
 - `collections-45` (1 main case; `paradigm_table`). Main promised: A selection-none, non-reorderable table keeps rows out of the focus ring. Deleted: Behavior changed. The Table always passes onActivate to its body, so every row has a Selectable RowHit (collection_table.luau bodySpec.onActivate).. Replacement test: none; the feature is deleted.
 - `mech1-132` (4 main cases; `focus_skip`). Main promised: Active-interaction focus exemption. Deleted: FocusGraph exemption API deleted.. Replacement test: none; the feature is deleted.

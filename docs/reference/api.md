@@ -340,6 +340,37 @@ hard error.
 
 ## Actions and input
 
+### Selection
+
+The controls use `GuiService.SelectedObject` for keyboard and gamepad focus.
+The engine moves the selection with the D-pad and the arrow keys. Facet adds
+these rules:
+
+- Entry. When nothing is selected, the first D-pad press selects the first
+  control of the active screen in layout order. An open modal is the active
+  screen. The press does not move a selection that already exists.
+- Tab and Shift+Tab. Tab selects the next control in layout order.
+  Shift+Tab selects the previous control. The walk wraps at both ends. It
+  stays inside an open modal. It skips hidden, disabled and removed controls.
+  The `FacetTraversal` input context is a child of `inputParent`, or of the
+  local `PlayerGui` when you do not set `inputParent`.
+- Removal. When the selected control goes away, the selection moves to the
+  nearest control that remains. A following control comes before a
+  preceding control. A collection keeps the selection on its rows by key: it
+  selects the next row, or the previous row when the removed row was the last.
+- Scroll containers. A scroll container is not a stop. When the engine selects
+  one, the selection moves to the child nearest to the entry edge. A TabView
+  strip gives the selected tab. A container that has no controls passes the
+  selection to the next control in the direction of travel.
+- Value controls. While a Slider, Stepper, Rating, table column grip or a
+  reorder move has the selection, Left and Right change the value. A Menu row
+  with a submenu opens it on Right, and Left returns to the parent row. Up and
+  Down still move the selection.
+
+A control that restores its own selection sets the `FacetSelectionOwner`
+attribute on its root. The removal and scroll-container rules do not change
+the selection inside that root.
+
 ### Button
 
 `label`, `onActivate`, `enabled`, `disabled` and `busy` define the action. A
