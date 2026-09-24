@@ -650,7 +650,7 @@ function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, activ
 				{
 					{ "Brim", Vector3.new(2.1, 0.13, 1.9), -0.16, Color3.fromRGB(203, 178, 126) },
 					{ "Crown", Vector3.new(1.25, 0.55, 1.1), 0.12, "tint" },
-					{ "Band", Vector3.new(1.28, 0.14, 1.14), -0.08 },
+					{ "Band", Vector3.new(1.28, 0.14, 1.14), -0.08, Color3.fromRGB(105, 74, 55) },
 				}
 			do
 				local fixed = spec[4]
@@ -662,10 +662,7 @@ function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, activ
 							local tint = use(hatTint)
 							return Color3.fromRGB(tint[1], tint[2], tint[3])
 						end
-						elseif fixed then fixed
-						else function(use)
-							return colors[use(palette)]
-						end,
+						else fixed,
 					CFrame = head.CFrame * crownBase * CFrame.new(0, spec[3] * fit, 0),
 					CanCollide = false,
 					Massless = true,

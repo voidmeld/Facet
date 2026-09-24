@@ -14,7 +14,7 @@ styling. `Host` is the runtime's native constructor table.
   filters. The Saved shelf button shows the saved count with `UI.badged`. The
   saved table has sortable columns, selection, drag ordering, a session column
   and notes that commit on Return or focus loss and restore on Escape.
-- **Avatar:** an animated R15 explorer with a procedural fallback, palette and
+- **Avatar:** an animated R15 explorer with a procedural fallback, accent and
   hat choices, a `UI.ColorPicker` for the hat colour, rotation, shared turn
   increments, auto-spin, reset confirmation and a summary sheet with retained
   detents. `UI.NumberInput` accepts an exact angle or a sum, such as `90+45`,
@@ -48,6 +48,19 @@ metrics that the screens need with `themes.checkCoverage`, and checks the icon
 artwork with `themes.resolveIcon`. The package declares a raised
 `monitorPanel` chrome, which the Avatar preview draws with `themes.skin`.
 
+Each package has a light and a dark palette for each accent: Sage, Clay and
+Iris. The `Light` and `Dark` palettes use Sage, the default accent. The other
+palettes are `Clay Light`, `Clay Dark`, `Iris Light` and `Iris Dark`. An accent
+sets `accent` and `controlSelected`. The Avatar Accent picker and the Quick
+accent `UI.RadialMenu` set `model.palette`. Each StyleSheet reads
+`theme.paletteName(accent, dark)`, so an accent change or an appearance change
+uses the same native paint transition in the three apps. The accent also sets
+the outfit colour of the explorer. The hat colour comes only from the hat
+`UI.ColorPicker`. `themes.define` rejects a palette if `onAccent` on `accent`
+or `onSelected` on `controlSelected` is below 4.5:1.
+`tests/native_virtual_monitors.spec.luau` also requires 4.5:1 for `accent` on
+`surface` and on `surfaceStrong`.
+
 Collections use Facet's native `VirtualGrid`, `VirtualList` and `Table`
 controls, which use Compose `OrderedCollection` placements. Compose keeps the
 visible anchor during sorting. Avatar animation and scene clocks obey reduced
@@ -72,6 +85,7 @@ world; they provide no VR ray, gaze or hand-input implementation.
 
 `workspace.VirtualMonitorsAPI` drives a running place for Studio evidence:
 `Invoke("mode", "Screen" | "Spatial")`, `Invoke("dark", boolean)`,
+`Invoke("accent", "sage" | "clay" | "iris")`,
 `Invoke("focus", app)`, `Invoke("tab", app)`, `Invoke("open", gameId)` (opens
 the details and starts a launch), `Invoke("close")` and `Invoke("chat", text)`.
 

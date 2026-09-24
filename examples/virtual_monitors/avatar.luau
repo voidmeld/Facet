@@ -1,10 +1,16 @@
 --!strict
+local theme = require("./theme")
 return function(ctx)
 	local Compose, Host, UI, model = ctx.Compose, ctx.Host, ctx.UI, ctx.model
 	local types, D2, V2, C3, CF, E = ctx.types, ctx.D2, ctx.V2, ctx.C3, ctx.CF, ctx.E
 	local words, quiet, button = ctx.words, ctx.quiet, ctx.button
 	local arithmetic = ctx.Facet.recipes.arithmetic
-	local palettes = { sage = "Sage", clay = "Clay", iris = "Iris" }
+	local accents, accentOptions, accentItems = {}, {}, {}
+	for _, entry in theme.ACCENTS do
+		accents[entry.id] = entry.label
+		table.insert(accentOptions, { value = entry.id, label = entry.label })
+		table.insert(accentItems, { id = entry.id, label = entry.label, selected = model.palette, value = entry.id })
+	end
 	local spins = { "Off", "Slow", "Medium", "Fast" }
 	local turnSteps = { 15, 30, 45, 90 }
 	local dimensions = Compose.cell(V2.new(920, 560))
@@ -17,8 +23,8 @@ return function(ctx)
 	local function previewHeight(use)
 		return math.clamp(use(dimensions).Y * 0.34, 120, 280)
 	end
-	local function paletteName(use)
-		return palettes[use(model.palette)] or use(model.palette)
+	local function accentName(use)
+		return accents[use(model.palette)] or use(model.palette)
 	end
 	local function rotation(use)
 		return `{math.round(use(model.angle))}°`
@@ -73,7 +79,7 @@ return function(ctx)
 	end
 	local function facts()
 		local values = {
-			{ id = "Palette", label = "Palette", value = paletteName },
+			{ id = "Palette", label = "Accent", value = accentName },
 			{
 				id = "Hat",
 				label = "Hat",
@@ -157,8 +163,8 @@ return function(ctx)
 			end,
 			AutomaticSize = E.AutomaticSize.None,
 			hud("Look", "Look", function(use)
-				return paletteName(use) .. (if use(model.hat) then " · Hat on" else " · Hat off")
-			end, paletteName),
+				return accentName(use) .. (if use(model.hat) then " · Hat on" else " · Hat off")
+			end, accentName),
 			hud("Rotation", "Rotation", rotation, rotation),
 			hud("Spin", "Auto-spin", spin, spin),
 		},
@@ -187,7 +193,7 @@ return function(ctx)
 				content = function()
 					return page(
 						"SettingsPage",
-						quiet("Subtitle", "Choose a palette and accessories.", "label"),
+						quiet("Subtitle", "Choose an accent and accessories.", "label"),
 						UI.DisclosureGroup "SettingsDisclosure" {
 							label = "Appearance",
 							expanded = model.avatarSettingsExpanded,
@@ -197,15 +203,11 @@ return function(ctx)
 								return UI.VStack "AppearanceSettings" {
 									width = "fill",
 									gap = 10,
-									words("PaletteLabel", "Palette", "label"),
+									words("PaletteLabel", "Accent", "label"),
 									UI.Picker "Palette" {
 										selected = model.palette,
 										style = "segmented",
-										options = {
-											{ value = "sage", label = "Sage" },
-											{ value = "clay", label = "Clay" },
-											{ value = "iris", label = "Iris" },
-										},
+										options = accentOptions,
 										Size = D2.new(1, 0, 0, 44),
 										AutomaticSize = E.AutomaticSize.None,
 									},
@@ -238,14 +240,10 @@ return function(ctx)
 										enabled = model.hat,
 									},
 									UI.RadialMenu "QuickPalette" {
-										label = "Quick palette",
+										label = "Quick accent",
 										appearance = "buttons",
 										Size = D2.new(1, 0, 0, 44),
-										items = {
-											{ id = "sage", label = "Sage", selected = model.palette, value = "sage" },
-											{ id = "clay", label = "Clay", selected = model.palette, value = "clay" },
-											{ id = "iris", label = "Iris", selected = model.palette, value = "iris" },
-										},
+										items = accentItems,
 									},
 								}
 							end,
@@ -401,7 +399,7 @@ return function(ctx)
 			UI.Alert "ResetAvatar" {
 				isPresented = model.resetAvatarPresented,
 				title = "Reset your look?",
-				message = "The palette, hat, hat colour and rotation return to their defaults.",
+				message = "The accent, hat, hat colour and rotation return to their defaults.",
 				actions = {
 					{ id = "cancel", label = "Cancel", role = "cancel" },
 					{ id = "reset", label = "Reset", role = "destructive", onActivate = model.resetAvatar },
