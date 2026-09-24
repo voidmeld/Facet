@@ -43,6 +43,7 @@ local studioTree = require("../tools/lune/lib/studio_tree")
 local themePackages = require("../tools/lune/theme_packages")
 local ornateGauge = require("../examples/themes/ornate_gauge")
 local customControl = require("../examples/themes/custom_control")
+local fantasyOrnate = require("../examples/themes/fantasy_ornate")
 local Compose = Facet.Compose
 
 type World = {
@@ -4126,5 +4127,984 @@ t.describe("native parity reference applications", function()
 			stop()
 			runtime:dispose()
 		end)
+	end)
+
+	t.describe("Collections", function()
+		type Stage = {
+			engine: any,
+			UI: any,
+			Host: any,
+			gui: any,
+			input: any,
+			screen: any,
+			writes: () -> number,
+			stop: () -> (),
+		}
+
+		local function stage(build: (any, any) -> any, settings: { [string]: any }?): Stage
+			local options: { [string]: any } = settings or {}
+			local engine: any = engineLib.new()
+			if options.clock then
+				engine.clock = options.clock
+			end
+			local writes = 0
+			if options.count then
+				local make = engine.new
+				engine.new = function(className)
+					local node = make(className)
+					local meta = getmetatable(node)
+					local write = meta.__newindex
+					meta.__newindex = function(self, key, value)
+						writes += 1
+						write(self, key, value)
+					end
+					return node
+				end
+			end
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local gui = engine.new("GuiService")
+			local input = engine.new("UserInputService")
+			input.GetFocusedTextBox = function()
+				return nil
+			end
+			input.IsKeyDown = function()
+				return false
+			end
+			local config: { [string]: any } = {
+				types = engine.types,
+				guiService = gui,
+				services = { GuiService = gui, UserInputService = input },
+			}
+			for key, value in (options.config or {}) :: { [string]: any } do
+				config[key] = value
+			end
+			local UI = Facet.controls(runtime, config :: any)
+			local Host = runtime.constructors
+			local stop, screen = runtime.mount(function()
+				return Host.ScreenGui({ build(UI, Host) })
+			end, engine.new("Folder"))
+			return {
+				engine = engine,
+				UI = UI,
+				Host = Host,
+				gui = gui,
+				input = input,
+				screen = screen,
+				writes = function()
+					return writes
+				end,
+				stop = function()
+					stop()
+					runtime:dispose()
+				end,
+			}
+		end
+
+		local function records(count: number): { { id: number, label: string } }
+			local values = {}
+			for index = 1, count do
+				values[index] = { id = index, label = tostring(index) }
+			end
+			return values
+		end
+
+		local function id(item: any): number
+			return item.id
+		end
+
+		local function newStatus(): any
+			return Compose.cell({
+				mode = "windowed",
+				direction = "vertical",
+				total = 0,
+				retained = 0,
+				first = 0,
+				last = 0,
+				firstRow = 0,
+				lastRow = 0,
+				rowCount = 0,
+				extent = 0,
+				following = false,
+				measured = 0,
+			} :: any)
+		end
+
+		local function labelled(UI: any): (any) -> any
+			return function(current)
+				return UI.Button("Action")({
+					label = function(use)
+						return use(current).label
+					end,
+				})
+			end
+		end
+
+		local function plain(Host: any): () -> any
+			return function()
+				return Host.Frame({})
+			end
+		end
+
+		local function collectionOf(w: Stage): any
+			return w.screen:FindFirstChildWhichIsA("ScrollingFrame", true)
+		end
+
+		local function press(w: Stage, name: string)
+			w.screen:FindFirstChild("Facet" .. name):FindFirstChild(name).Pressed.fire()
+		end
+
+		local function rowHit(list: any, key: string): any
+			return list:FindFirstChild("Items"):FindFirstChild(key):FindFirstChild("RowHit", true)
+		end
+
+		local function mountFailure(build: (any, any) -> any): string?
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local gui = engine.new("GuiService")
+			local UI = Facet.controls(
+				runtime,
+				{ types = engine.types, guiService = gui, services = { GuiService = gui } } :: any
+			)
+			local ok, message = pcall(function()
+				local stop = runtime.mount(function()
+					return runtime.constructors.ScreenGui({ build(UI, runtime.constructors) })
+				end, engine.new("Folder"))
+				stop()
+			end)
+			runtime:dispose()
+			return if ok then nil else tostring(message)
+		end
+
+		t.it(
+			"resumes following within followThreshold and rejoins the tail after the reader returns to the end",
+			function()
+				local source, status = Compose.cell(records(10)), newStatus()
+				local w = stage(function(UI, Host)
+					return UI.VirtualList({
+						from = source,
+						key = id,
+						itemSize = 20,
+						overscan = 0,
+						follow = "end",
+						followThreshold = 30,
+						status = status,
+						render = plain(Host),
+					})
+				end)
+				local V2 = w.engine.types.Vector2
+				local list = collectionOf(w)
+				list.AbsoluteWindowSize = V2.new(200, 100)
+				t.expect(list.CanvasPosition.Y).toBe(100)
+				list.CanvasPosition = V2.new(0, 80)
+				t.expect(status:peek().following).toBe(true)
+				source:set(records(11))
+				t.expect(list.CanvasPosition.Y).toBe(120)
+				t.expect(status:peek().following).toBe(true)
+				list.CanvasPosition = V2.new(0, 0)
+				source:set(records(12))
+				t.expect(list.CanvasPosition.Y).toBe(0)
+				t.expect(status:peek().following).toBe(false)
+				list.CanvasPosition = V2.new(0, status:peek().extent - 100)
+				t.expect(status:peek().following).toBe(true)
+				source:set(records(13))
+				t.expect(list.CanvasPosition.Y).toBe(160)
+				w.stop()
+				local strict, strictStatus = Compose.cell(records(10)), newStatus()
+				local d = stage(function(UI, Host)
+					return UI.VirtualList({
+						from = strict,
+						key = id,
+						itemSize = 20,
+						overscan = 0,
+						follow = "end",
+						status = strictStatus,
+						render = plain(Host),
+					})
+				end)
+				local defaultList = collectionOf(d)
+				defaultList.AbsoluteWindowSize = V2.new(200, 100)
+				defaultList.CanvasPosition = V2.new(0, 80)
+				strict:set(records(11))
+				t.expect(defaultList.CanvasPosition.Y).toBe(80)
+				t.expect(strictStatus:peek().following).toBe(false)
+				defaultList.CanvasPosition = V2.new(0, 116)
+				strict:set(records(12))
+				t.expect(defaultList.CanvasPosition.Y).toBe(140)
+				t.expect(strictStatus:peek().following).toBe(true)
+				d.stop()
+			end
+		)
+
+		t.it("refuses a readable follow policy because follow is a static option", function()
+			local readable = mountFailure(function(UI, Host)
+				return UI.VirtualList({
+					from = records(3),
+					key = id,
+					follow = Compose.cell("end"),
+					render = plain(Host),
+				})
+			end)
+			t.expect(readable ~= nil and string.find(readable, "follow must be none or end", 1, true) ~= nil).toBe(true)
+			local tableReadable = mountFailure(function(UI)
+				return UI.Table({
+					from = records(3),
+					key = id,
+					follow = Compose.cell("end"),
+					columns = { { id = "label", width = 100 } },
+				})
+			end)
+			t.expect(tableReadable ~= nil and string.find(tableReadable, "follow must be none or end", 1, true) ~= nil)
+				.toBe(true)
+			local unknown = mountFailure(function(UI, Host)
+				return UI.VirtualList({ from = records(3), key = id, follow = "start", render = plain(Host) })
+			end)
+			t.expect(unknown ~= nil and string.find(unknown, "follow must be none or end", 1, true) ~= nil).toBe(true)
+			for _, policy in { "none", "end" } do
+				t.expect(mountFailure(function(UI, Host)
+					return UI.VirtualList({ from = records(3), key = id, follow = policy, render = plain(Host) })
+				end)).toBeNil()
+			end
+		end)
+
+		t.it("settles the last page to the end and leaves it only after a decisive drag back", function()
+			local now = 0
+			local w = stage(function(UI, Host)
+				return UI.VirtualList({
+					from = records(10),
+					key = id,
+					itemSize = 40,
+					snap = "item",
+					reducedMotion = true,
+					render = plain(Host),
+				})
+			end, {
+				clock = function()
+					return now
+				end,
+			})
+			local function advance(seconds: number)
+				for _ = 1, math.ceil(seconds * 60) do
+					now += 1 / 60
+					w.engine.heartbeat.fire(1 / 60)
+				end
+			end
+			local V2 = w.engine.types.Vector2
+			local pointer = { UserInputType = w.engine.types.Enum.UserInputType.MouseButton1 }
+			local list = collectionOf(w)
+			list.AbsoluteWindowSize = V2.new(200, 100)
+			now = 1
+			list.CanvasPosition = V2.new(0, 290)
+			advance(0.2)
+			t.expect(list.CanvasPosition.Y).toBe(300)
+			now += 1
+			list.InputBegan.fire(pointer)
+			now += 1
+			list.CanvasPosition = V2.new(0, 290)
+			w.input.InputEnded.fire(pointer)
+			advance(0.2)
+			t.expect(list.CanvasPosition.Y).toBe(300)
+			now += 1
+			list.InputBegan.fire(pointer)
+			now += 0.01
+			list.CanvasPosition = V2.new(0, 290)
+			w.input.InputEnded.fire(pointer)
+			advance(0.2)
+			t.expect(list.CanvasPosition.Y).toBe(280)
+			w.stop()
+		end)
+
+		t.it("releases the snap frame hook once settled and writes nothing while idle", function()
+			local now = 0
+			local w = stage(function(UI, Host)
+				return UI.VirtualList({
+					from = records(20),
+					key = id,
+					itemSize = 40,
+					snap = "item",
+					reducedMotion = false,
+					render = plain(Host),
+				})
+			end, {
+				count = true,
+				clock = function()
+					return now
+				end,
+			})
+			local function advance(seconds: number)
+				for _ = 1, math.ceil(seconds * 60) do
+					now += 1 / 60
+					w.engine.heartbeat.fire(1 / 60)
+				end
+			end
+			local list = collectionOf(w)
+			list.AbsoluteWindowSize = w.engine.types.Vector2.new(200, 100)
+			advance(0.5)
+			local resting = w.engine.heartbeat.count()
+			now += 1
+			list.CanvasPosition = w.engine.types.Vector2.new(0, 26)
+			t.expect(w.engine.heartbeat.count()).toBeGreaterThan(resting)
+			advance(0.6)
+			t.expect(list.CanvasPosition.Y).toBe(40)
+			t.expect(w.engine.heartbeat.count()).toBe(resting)
+			local before = w.writes()
+			advance(1)
+			t.expect(w.writes() - before).toBe(0)
+			t.expect(list.CanvasPosition.Y).toBe(40)
+			w.stop()
+		end)
+
+		t.it("offsets the header by the reorder gutter and the scroll and matches the row cell span", function()
+			local w = stage(function(UI)
+				return UI.Table({
+					from = records(3),
+					key = id,
+					itemSize = 40,
+					reorderable = true,
+					onReorder = function() end,
+					columns = {
+						{ id = "a", width = 100 },
+						{ id = "b", width = 120 },
+					},
+				})
+			end)
+			local V2 = w.engine.types.Vector2
+			local node = w.screen:FindFirstChildWhichIsA("Frame")
+			local header, body = node:FindFirstChild("Header"), node:FindFirstChild("Body")
+			body.AbsoluteWindowSize = V2.new(400, 200)
+			local rowNode = body:FindFirstChild("Items"):FindFirstChild("1")
+			local cells = rowNode:FindFirstChild("Cells", true)
+			local row = cells:FindFirstChild("DisclosingRow"):FindFirstChild("Row")
+			local function cellOrigin(): number
+				return rowNode.Position.X.Offset + cells.Position.X.Offset - body.CanvasPosition.X
+			end
+			local function cellWidth(): number
+				return rowNode.Size.X.Offset + cells.Size.X.Offset + row.Size.X.Offset
+			end
+			t.expect(header.Position.X.Offset).toBe(56)
+			t.expect(cellOrigin()).toBe(56)
+			t.expect(header.Size.X.Offset).toBe(344)
+			t.expect(cellWidth()).toBe(344)
+			for _, column in { "a", "b" } do
+				t.expect(header:FindFirstChild(column).Size).toBe(row:FindFirstChild(column).Size)
+			end
+			body.CanvasPosition = V2.new(30, 0)
+			t.expect(header.Position.X.Offset).toBe(26)
+			t.expect(cellOrigin()).toBe(26)
+			body.CanvasPosition = V2.new(0, 0)
+			body.AbsoluteWindowSize = V2.new(250, 200)
+			t.expect(header:FindFirstChild("b").Visible).toBe(false)
+			t.expect(row:FindFirstChild("b").Visible).toBe(false)
+			t.expect(header:FindFirstChild("a").Visible).toBe(true)
+			t.expect(row:FindFirstChild("a").Visible).toBe(true)
+			t.expect(rowNode:FindFirstChild("Details", true) ~= nil).toBe(true)
+			t.expect(header.Size.X.Offset).toBe(146)
+			t.expect(cellWidth()).toBe(146)
+			t.expect(cellOrigin()).toBe(header.Position.X.Offset)
+			w.stop()
+		end)
+
+		t.it("removes the header band and sizes a non-scrolling table to its rows when header is false", function()
+			for _, shown in { false, true } do
+				local status = newStatus()
+				local w = stage(function(UI)
+					return UI.Table({
+						from = records(3),
+						key = id,
+						itemSize = 40,
+						scrolls = false,
+						header = if shown then nil else false,
+						status = status,
+						columns = { { id = "label", width = 100 } },
+					})
+				end)
+				local node = w.screen:FindFirstChildWhichIsA("Frame")
+				local header, body = node:FindFirstChild("Header"), node:FindFirstChild("Body")
+				t.expect(status:peek().extent).toBe(120)
+				t.expect(header.Visible).toBe(shown)
+				t.expect(body.Position.Y.Offset).toBe(if shown then 40 else 0)
+				t.expect(node.Size.Y.Offset).toBe(if shown then 160 else status:peek().extent)
+				w.stop()
+			end
+		end)
+
+		t.it("keeps every column when their widths exactly fill the room and collapses one pixel narrower", function()
+			local w = stage(function(UI)
+				return UI.Table({
+					from = records(2),
+					key = id,
+					itemSize = 40,
+					columns = {
+						{ id = "a", width = 100 },
+						{ id = "b", width = 100 },
+						{ id = "c", width = 100 },
+					},
+				})
+			end)
+			local V2 = w.engine.types.Vector2
+			local node = w.screen:FindFirstChildWhichIsA("Frame")
+			local header, body = node:FindFirstChild("Header"), node:FindFirstChild("Body")
+			body.AbsoluteWindowSize = V2.new(300, 200)
+			local rowNode = body:FindFirstChild("Items"):FindFirstChild("1")
+			t.expect(rowNode:FindFirstChild("Details", true)).toBeNil()
+			for _, column in { "a", "b", "c" } do
+				t.expect(header:FindFirstChild(column).Visible).toBe(true)
+				t.expect(rowNode:FindFirstChild(column, true).Visible).toBe(true)
+			end
+			body.AbsoluteWindowSize = V2.new(299, 200)
+			t.expect(rowNode:FindFirstChild("Details", true) ~= nil).toBe(true)
+			t.expect(header:FindFirstChild("c").Visible).toBe(false)
+			t.expect(header:FindFirstChild("b").Visible).toBe(true)
+			w.stop()
+		end)
+
+		t.it("activates the keyboard or gamepad selected table row with that row key and input", function()
+			local activated: { any } = {}
+			local focus: any = {}
+			local selection = Compose.cell({})
+			local w = stage(function(UI)
+				return UI.Table({
+					from = records(5),
+					key = id,
+					itemSize = 40,
+					focus = focus,
+					selection = selection,
+					columns = { { id = "label", width = 100 } },
+					onActivate = function(item, key, input)
+						table.insert(activated, { item = item, key = key, input = input })
+					end,
+				})
+			end)
+			local E = w.engine.types.Enum
+			local body = w.screen:FindFirstChildWhichIsA("Frame"):FindFirstChild("Body")
+			body.AbsoluteWindowSize = w.engine.types.Vector2.new(300, 200)
+			focus.focus(2)
+			t.expect(w.gui.SelectedObject).toBe(rowHit(body, "2"))
+			t.expect(w.gui.SelectedObject.Selectable).toBe(true)
+			press(w, "CollectionDown")
+			t.expect(w.gui.SelectedObject).toBe(rowHit(body, "3"))
+			local enter = { UserInputType = E.UserInputType.Keyboard, KeyCode = E.KeyCode.Return }
+			w.gui.SelectedObject.Activated.fire(enter, 1)
+			t.expect(#activated).toBe(1)
+			t.expect(activated[1].key).toBe(3)
+			t.expect(activated[1].item.id).toBe(3)
+			t.expect(activated[1].input).toBe(enter)
+			t.expect(selection:peek()).toEqual({ [3] = true })
+			press(w, "CollectionUp")
+			local buttonA = { UserInputType = E.UserInputType.Gamepad1, KeyCode = E.KeyCode.ButtonA }
+			w.gui.SelectedObject.Activated.fire(buttonA, 1)
+			t.expect(#activated).toBe(2)
+			t.expect(activated[2].key).toBe(2)
+			t.expect(activated[2].input).toBe(buttonA)
+			t.expect(selection:peek()).toEqual({ [2] = true })
+			w.stop()
+			local listActivated: { any } = {}
+			local l = stage(function(UI, Host)
+				return UI.VirtualList({
+					from = records(5),
+					key = id,
+					itemSize = 20,
+					onActivate = function(_, key, input)
+						table.insert(listActivated, { key = key, input = input })
+					end,
+					render = plain(Host),
+				})
+			end)
+			local list = collectionOf(l)
+			list.AbsoluteWindowSize = l.engine.types.Vector2.new(200, 100)
+			local hit = rowHit(list, "4")
+			t.expect(hit.Selectable).toBe(true)
+			l.gui.SelectedObject = hit
+			l.gui.SelectedObject.Activated.fire(buttonA, 1)
+			t.expect(#listActivated).toBe(1)
+			t.expect(listActivated[1].key).toBe(4)
+			t.expect(listActivated[1].input).toBe(buttonA)
+			l.stop()
+		end)
+
+		t.it("gives header and body cells the same column span under the neutral and ornate packages", function()
+			local ornate = fantasyOrnate.build(Facet.themes)
+			t.expect(ornate.identity ~= nil).toBe(true)
+			for _, package in { false, ornate } do
+				local w = stage(function(UI)
+					return UI.Table({
+						from = records(2),
+						key = id,
+						itemSize = 40,
+						reorderable = true,
+						onReorder = function() end,
+						columns = {
+							{ id = "fixed", width = 120, minWidth = 80, maxWidth = 200 },
+							{ id = "fill" },
+						},
+					})
+				end, { config = if package then { theme = package } else {} })
+				local E = w.engine.types.Enum
+				local node = w.screen:FindFirstChildWhichIsA("Frame")
+				local header, body = node:FindFirstChild("Header"), node:FindFirstChild("Body")
+				body.AbsoluteWindowSize = w.engine.types.Vector2.new(400, 200)
+				local rowNode = body:FindFirstChild("Items"):FindFirstChild("2")
+				local cells = rowNode:FindFirstChild("Cells", true)
+				local row = cells:FindFirstChild("DisclosingRow"):FindFirstChild("Row")
+				t.expect(rowNode.Position.X.Offset + cells.Position.X.Offset - body.CanvasPosition.X)
+					.toBe(header.Position.X.Offset)
+				t.expect(rowNode.Size.X.Offset + cells.Size.X.Offset + row.Size.X.Offset).toBe(header.Size.X.Offset)
+				for _, column in { "fixed", "fill" } do
+					local top, cell = header:FindFirstChild(column), row:FindFirstChild(column)
+					t.expect(top.Size).toBe(cell.Size)
+					t.expect(top.LayoutOrder).toBe(cell.LayoutOrder)
+					t.expect(top.Visible).toBe(cell.Visible)
+					local topFlex, cellFlex =
+						top:FindFirstChildWhichIsA("UIFlexItem"), cell:FindFirstChildWhichIsA("UIFlexItem")
+					t.expect(topFlex.FlexMode).toBe(cellFlex.FlexMode)
+					t.expect(topFlex.FlexMode).toBe(if column == "fill" then E.UIFlexMode.Fill else E.UIFlexMode.None)
+					local topLimit, cellLimit =
+						top:FindFirstChildWhichIsA("UISizeConstraint"), cell:FindFirstChildWhichIsA("UISizeConstraint")
+					t.expect(topLimit.MinSize).toBe(cellLimit.MinSize)
+					t.expect(topLimit.MaxSize).toBe(cellLimit.MaxSize)
+				end
+				t.expect(header:FindFirstChild("fixed").Size.X.Offset).toBe(120)
+				w.stop()
+			end
+		end)
+
+		local function shrinkAtEnd(useTable: boolean)
+			local measured, status = Compose.cell({}), newStatus()
+			local w = stage(function(UI, Host)
+				if useTable then
+					return UI.Table({
+						from = records(20),
+						key = id,
+						itemSize = 40,
+						measured = measured,
+						status = status,
+						columns = { { id = "label", width = 100 } },
+					})
+				end
+				return UI.VirtualList({
+					from = records(20),
+					key = id,
+					itemSize = 40,
+					measured = measured,
+					status = status,
+					render = plain(Host),
+				})
+			end)
+			local list = collectionOf(w)
+			list.AbsoluteWindowSize = w.engine.types.Vector2.new(200, 100)
+			list.CanvasPosition = w.engine.types.Vector2.new(0, 700)
+			t.expect(status:peek().extent).toBe(800)
+			local function every(size: number): { [number]: number }
+				local sizes = {}
+				for index = 1, 20 do
+					sizes[index] = size
+				end
+				return sizes
+			end
+			measured:set(every(20))
+			t.expect(status:peek().extent).toBe(400)
+			t.expect(list.CanvasPosition.Y).toBe(status:peek().extent - 100)
+			t.expect(list.CanvasPosition.Y).toBe(300)
+			t.expect(status:peek().last).toBe(20)
+			measured:set(every(40))
+			t.expect(status:peek().extent).toBe(800)
+			t.expect(list.CanvasPosition.Y).toBe(600)
+			w.stop()
+		end
+
+		t.it("keeps a table flush with the end when its bottom rows shrink", function()
+			shrinkAtEnd(true)
+		end)
+
+		t.it("corrects the native offset when the rows at the end of a list shrink", function()
+			shrinkAtEnd(false)
+		end)
+
+		t.it("keeps the grid anchor item at the top when the column count and a line extent change", function()
+			local columns, measured, controls = Compose.cell(4), Compose.cell({}), {} :: { [string]: any }
+			local w = stage(function(UI, Host)
+				return UI.VirtualGrid({
+					from = records(100),
+					key = id,
+					itemSize = 20,
+					columns = columns,
+					measured = measured,
+					controls = controls,
+					render = plain(Host),
+				})
+			end)
+			local grid = collectionOf(w)
+			grid.AbsoluteWindowSize = w.engine.types.Vector2.new(200, 100)
+			grid.CanvasPosition = w.engine.types.Vector2.new(0, 200)
+			t.expect(controls.placementOf(controls.indexOfKey(41)).offset).toBe(200)
+			columns:set(2)
+			t.expect(controls.placementOf(controls.indexOfKey(41)).offset).toBe(400)
+			t.expect(grid.CanvasPosition.Y).toBe(400)
+			measured:set({ [1] = 60 })
+			t.expect(controls.placementOf(controls.indexOfKey(41)).offset).toBe(440)
+			t.expect(grid.CanvasPosition.Y).toBe(440)
+			w.stop()
+		end)
+
+		t.it("gives grid cells a focus readable that follows the focus ring", function()
+			local focus: any = {}
+			local w = stage(function(UI)
+				return UI.VirtualGrid({
+					from = records(12),
+					key = id,
+					itemSize = 20,
+					columns = 4,
+					focus = focus,
+					render = labelled(UI),
+				})
+			end)
+			collectionOf(w).AbsoluteWindowSize = w.engine.types.Vector2.new(200, 100)
+			local third, second = focus.isFocused(3), focus.isFocused(2)
+			t.expect(third:peek()).toBe(false)
+			focus.focus(3)
+			t.expect(focus.current:peek()).toBe(3)
+			t.expect(third:peek()).toBe(true)
+			t.expect(second:peek()).toBe(false)
+			t.expect(w.gui.SelectedObject.Text).toBe("3")
+			focus.focus(2)
+			t.expect(third:peek()).toBe(false)
+			t.expect(second:peek()).toBe(true)
+			t.expect(w.gui.SelectedObject.Text).toBe("2")
+			w.stop()
+		end)
+
+		t.it("activates a vertical or horizontal grid cell from pointer and touch with its key", function()
+			for _, direction in { "vertical", "horizontal" } do
+				local activated: { any } = {}
+				local w = stage(function(UI, Host)
+					return UI.VirtualGrid({
+						from = records(12),
+						key = id,
+						itemSize = 20,
+						columns = 3,
+						direction = direction,
+						onActivate = function(item, key, input, clickCount)
+							table.insert(activated, { item = item, key = key, input = input, clickCount = clickCount })
+						end,
+						render = plain(Host),
+					})
+				end)
+				local E = w.engine.types.Enum
+				local grid = collectionOf(w)
+				grid.AbsoluteWindowSize = w.engine.types.Vector2.new(300, 300)
+				local mouse = { UserInputType = E.UserInputType.MouseButton1 }
+				local touch = { UserInputType = E.UserInputType.Touch }
+				rowHit(grid, "3").Activated.fire(mouse, 1)
+				rowHit(grid, "5").Activated.fire(touch, 1)
+				t.expect(#activated).toBe(2)
+				t.expect(activated[1].key).toBe(3)
+				t.expect(activated[1].item.id).toBe(3)
+				t.expect(activated[1].input).toBe(mouse)
+				t.expect(activated[1].clickCount).toBe(1)
+				t.expect(activated[2].key).toBe(5)
+				t.expect(activated[2].input).toBe(touch)
+				w.stop()
+			end
+		end)
+
+		t.it("steps grid focus cell by cell with Left and Right and stops at the line edge", function()
+			local focus: any = {}
+			local w = stage(function(UI)
+				return UI.VirtualGrid({
+					from = records(12),
+					key = id,
+					itemSize = 20,
+					columns = 4,
+					focus = focus,
+					render = labelled(UI),
+				})
+			end)
+			collectionOf(w).AbsoluteWindowSize = w.engine.types.Vector2.new(200, 100)
+			focus.focus(2)
+			press(w, "CollectionRight")
+			t.expect(focus.current:peek()).toBe(3)
+			t.expect(w.gui.SelectedObject.Text).toBe("3")
+			press(w, "CollectionLeft")
+			t.expect(focus.current:peek()).toBe(2)
+			focus.focus(4)
+			press(w, "CollectionRight")
+			t.expect(focus.current:peek()).toBe(4)
+			press(w, "CollectionDown")
+			t.expect(focus.current:peek()).toBe(8)
+			w.stop()
+		end)
+
+		t.it("transposes horizontal grid navigation and scrolls a focused cell into view on X", function()
+			local focus: any = {}
+			local w = stage(function(UI)
+				return UI.VirtualGrid({
+					from = records(30),
+					key = id,
+					itemSize = 20,
+					columns = 3,
+					direction = "horizontal",
+					focus = focus,
+					render = labelled(UI),
+				})
+			end)
+			local grid = collectionOf(w)
+			grid.AbsoluteWindowSize = w.engine.types.Vector2.new(100, 300)
+			focus.focus(1)
+			press(w, "CollectionDown")
+			t.expect(focus.current:peek()).toBe(2)
+			press(w, "CollectionUp")
+			t.expect(focus.current:peek()).toBe(1)
+			press(w, "CollectionRight")
+			t.expect(focus.current:peek()).toBe(4)
+			t.expect(grid.CanvasPosition).toBe(w.engine.types.Vector2.new(0, 0))
+			focus.focus(28)
+			t.expect(grid.CanvasPosition).toBe(w.engine.types.Vector2.new(100, 0))
+			t.expect(w.gui.SelectedObject.Text).toBe("28")
+			w.stop()
+		end)
+
+		t.it("steps a horizontal list with Left and Right, ignores Up and Down and keeps focus visible on X", function()
+			local focus: any = {}
+			local w = stage(function(UI)
+				return UI.VirtualList({
+					from = records(20),
+					key = id,
+					itemSize = 20,
+					direction = "horizontal",
+					focus = focus,
+					render = labelled(UI),
+				})
+			end)
+			local V2 = w.engine.types.Vector2
+			local list = collectionOf(w)
+			list.AbsoluteWindowSize = V2.new(100, 50)
+			focus.focus(3)
+			press(w, "CollectionRight")
+			t.expect(focus.current:peek()).toBe(4)
+			press(w, "CollectionDown")
+			t.expect(focus.current:peek()).toBe(4)
+			press(w, "CollectionUp")
+			t.expect(focus.current:peek()).toBe(4)
+			press(w, "CollectionLeft")
+			t.expect(focus.current:peek()).toBe(3)
+			t.expect(list.CanvasPosition).toBe(V2.new(0, 0))
+			focus.focus(7)
+			t.expect(list.CanvasPosition).toBe(V2.new(40, 0))
+			t.expect(w.gui.SelectedObject.Text).toBe("7")
+			for name, keys in { CollectionRight = { "Right", "DPadRight" }, CollectionLeft = { "Left", "DPadLeft" } } do
+				local bound = {}
+				for _, binding in w.screen:FindFirstChild("Facet" .. name):FindFirstChild(name):GetChildren() do
+					bound[binding.KeyCode.Name] = true
+				end
+				for _, keyName in keys do
+					t.expect(bound[keyName]).toBe(true)
+				end
+			end
+			w.stop()
+		end)
+
+		t.it("activates a horizontal list item from pointer and touch with its key", function()
+			local activated: { any } = {}
+			local w = stage(function(UI, Host)
+				return UI.VirtualList({
+					from = records(10),
+					key = id,
+					itemSize = 20,
+					direction = "horizontal",
+					onActivate = function(item, key, input)
+						table.insert(activated, { item = item, key = key, input = input })
+					end,
+					render = plain(Host),
+				})
+			end)
+			local E = w.engine.types.Enum
+			local list = collectionOf(w)
+			list.AbsoluteWindowSize = w.engine.types.Vector2.new(100, 50)
+			local touch = { UserInputType = E.UserInputType.Touch }
+			rowHit(list, "2").Activated.fire(touch, 1)
+			t.expect(#activated).toBe(1)
+			t.expect(activated[1].key).toBe(2)
+			t.expect(activated[1].item.id).toBe(2)
+			t.expect(activated[1].input).toBe(touch)
+			w.stop()
+		end)
+
+		t.it("activates a list row from pointer and touch and keeps the selection on a second click", function()
+			local activated: { any } = {}
+			local selection = Compose.cell({})
+			local w = stage(function(UI, Host)
+				return UI.VirtualList({
+					from = records(10),
+					key = id,
+					itemSize = 20,
+					selection = selection,
+					onActivate = function(item, key, input, clickCount)
+						table.insert(activated, { item = item, key = key, input = input, clickCount = clickCount })
+					end,
+					render = plain(Host),
+				})
+			end)
+			local E = w.engine.types.Enum
+			local list = collectionOf(w)
+			list.AbsoluteWindowSize = w.engine.types.Vector2.new(200, 200)
+			local mouse = { UserInputType = E.UserInputType.MouseButton1 }
+			local touch = { UserInputType = E.UserInputType.Touch }
+			rowHit(list, "4").Activated.fire(mouse, 1)
+			t.expect(activated[1].key).toBe(4)
+			t.expect(activated[1].item.id).toBe(4)
+			t.expect(activated[1].input).toBe(mouse)
+			t.expect(selection:peek()).toEqual({ [4] = true })
+			rowHit(list, "6").Activated.fire(touch, 1)
+			t.expect(activated[2].key).toBe(6)
+			t.expect(activated[2].input).toBe(touch)
+			t.expect(selection:peek()).toEqual({ [6] = true })
+			rowHit(list, "4").Activated.fire(mouse, 2)
+			t.expect(#activated).toBe(3)
+			t.expect(activated[3].key).toBe(4)
+			t.expect(activated[3].clickCount).toBe(2)
+			t.expect(selection:peek()).toEqual({ [6] = true })
+			w.stop()
+		end)
+
+		t.it("wraps arrow and D-pad focus at both ends only when wrapFocus is set", function()
+			for _, wrap in { true, false } do
+				local focus: any = {}
+				local w = stage(function(UI)
+					return UI.VirtualList({
+						from = records(5),
+						key = id,
+						itemSize = 20,
+						wrapFocus = wrap,
+						focus = focus,
+						render = labelled(UI),
+					})
+				end)
+				collectionOf(w).AbsoluteWindowSize = w.engine.types.Vector2.new(200, 100)
+				focus.focus(5)
+				press(w, "CollectionDown")
+				t.expect(focus.current:peek()).toBe(if wrap then 1 else 5)
+				t.expect(w.gui.SelectedObject.Text).toBe(if wrap then "1" else "5")
+				focus.focus(1)
+				press(w, "CollectionUp")
+				t.expect(focus.current:peek()).toBe(if wrap then 5 else 1)
+				focus.focus(3)
+				press(w, "CollectionDown")
+				t.expect(focus.current:peek()).toBe(4)
+				press(w, "CollectionRight")
+				t.expect(focus.current:peek()).toBe(4)
+				w.stop()
+			end
+			local gridFocus: any = {}
+			local g = stage(function(UI)
+				return UI.VirtualGrid({
+					from = records(12),
+					key = id,
+					itemSize = 20,
+					columns = 4,
+					wrapFocus = true,
+					focus = gridFocus,
+					render = labelled(UI),
+				})
+			end)
+			collectionOf(g).AbsoluteWindowSize = g.engine.types.Vector2.new(200, 100)
+			gridFocus.focus(10)
+			press(g, "CollectionDown")
+			t.expect(gridFocus.current:peek()).toBe(2)
+			press(g, "CollectionUp")
+			t.expect(gridFocus.current:peek()).toBe(10)
+			gridFocus.focus(4)
+			press(g, "CollectionRight")
+			t.expect(gridFocus.current:peek()).toBe(1)
+			gridFocus.focus(5)
+			press(g, "CollectionLeft")
+			t.expect(gridFocus.current:peek()).toBe(8)
+			g.stop()
+			local rowFocus: any = {}
+			local h = stage(function(UI)
+				return UI.VirtualList({
+					from = records(5),
+					key = id,
+					itemSize = 20,
+					direction = "horizontal",
+					wrapFocus = true,
+					focus = rowFocus,
+					render = labelled(UI),
+				})
+			end)
+			collectionOf(h).AbsoluteWindowSize = h.engine.types.Vector2.new(100, 50)
+			rowFocus.focus(5)
+			press(h, "CollectionDown")
+			t.expect(rowFocus.current:peek()).toBe(5)
+			press(h, "CollectionRight")
+			t.expect(rowFocus.current:peek()).toBe(1)
+			press(h, "CollectionLeft")
+			t.expect(rowFocus.current:peek()).toBe(5)
+			h.stop()
+		end)
+
+		t.it(
+			"wraps next and previous focus past disabled rows and enters automatically once geometry exists",
+			function()
+				for _, wrap in { true, false } do
+					local focus: any = {}
+					local w = stage(function(UI)
+						return UI.VirtualList({
+							from = records(5),
+							key = id,
+							itemSize = 20,
+							wrapFocus = wrap,
+							focus = focus,
+							render = labelled(UI),
+						})
+					end)
+					collectionOf(w).AbsoluteWindowSize = w.engine.types.Vector2.new(200, 100)
+					focus.focus(5)
+					focus.next()
+					t.expect(focus.current:peek()).toBe(if wrap then 1 else 5)
+					t.expect(w.gui.SelectedObject.Text).toBe(if wrap then "1" else "5")
+					focus.previous()
+					t.expect(focus.current:peek()).toBe(if wrap then 5 else 4)
+					w.stop()
+				end
+				local skipFocus: any = {}
+				local s = stage(function(UI)
+					return UI.VirtualList({
+						from = records(5),
+						key = id,
+						itemSize = 20,
+						wrapFocus = true,
+						focus = skipFocus,
+						disabled = function(item)
+							return item.id == 1
+						end,
+						render = labelled(UI),
+					})
+				end)
+				collectionOf(s).AbsoluteWindowSize = s.engine.types.Vector2.new(200, 100)
+				skipFocus.focus(5)
+				skipFocus.next()
+				t.expect(skipFocus.current:peek()).toBe(2)
+				t.expect(s.gui.SelectedObject.Text).toBe("2")
+				s.stop()
+				for _, auto in { true, false } do
+					local a = stage(function(UI)
+						return UI.VirtualList({
+							from = records(5),
+							key = id,
+							itemSize = 20,
+							autoFocus = auto,
+							render = labelled(UI),
+						})
+					end)
+					t.expect(a.gui.SelectedObject).toBeNil()
+					collectionOf(a).AbsoluteWindowSize = a.engine.types.Vector2.new(200, 100)
+					if auto then
+						t.expect(a.gui.SelectedObject.Text).toBe("1")
+					else
+						t.expect(a.gui.SelectedObject).toBeNil()
+					end
+					a.stop()
+				end
+			end
+		)
 	end)
 end)

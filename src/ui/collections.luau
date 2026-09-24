@@ -100,6 +100,10 @@ return function(ctx: Types.Context, UI: Controls): ()
 			spec.snap == nil or spec.snap == "none" or spec.snap == "item",
 			"Facet collection snap must be none or item"
 		)
+		assert(
+			spec.follow == nil or spec.follow == "none" or spec.follow == "end",
+			"Facet collection follow must be none or end"
+		)
 		assert(type(spec.render) == "function", "Facet collection requires render(current, placement, key)")
 		local source = function(use: ComposeTypes.Use): { V }
 			return read(spec.from, use)
@@ -550,9 +554,29 @@ return function(ctx: Types.Context, UI: Controls): ()
 			{ name = "Up", direction = "up", keys = { E.KeyCode.Up, E.KeyCode.DPadUp } },
 			{ name = "Down", direction = "down", keys = { E.KeyCode.Down, E.KeyCode.DPadDown } },
 		}
+		local function wrapFrom(direction: ComposeTypes.FocusDirection, key: K): ()
+			local rows: { V } = read(spec.from)
+			local index = assert(controls.indexOfKey)(key)
+			if index == nil then
+				return
+			end
+			local columns = if kind == "grid" then math.max(1, math.floor(read(spec.columns or 1))) else 1
+			local line, column = (index - 1) // columns, (index - 1) % columns
+			local forward = direction == "down" or direction == "right"
+			local target = if (direction == "down" or direction == "up") ~= horizontal
+				then (if forward then 0 else math.ceil(#rows / columns) - 1) * columns + column + 1
+				else line * columns + (if forward then 1 else columns)
+			target = math.min(target, #rows)
+			if target ~= index and rows[target] ~= nil then
+				focusScope.focus(keyOf(rows[target], target))
+			end
+		end
 		for _, binding in directions do
 			ctx.action(root, "Collection" .. binding.name, binding.keys, eligible, function()
-				focusScope.move(binding.direction)
+				local before = focusScope.current:peek()
+				if focusScope.move(binding.direction) == before and spec.wrapFocus and before ~= nil then
+					wrapFrom(binding.direction, before)
+				end
 			end, { priority = 200 })
 		end
 		ctx.action(root, "CollectionFirst", { E.KeyCode.Home }, eligible, focusScope.first, { priority = 200 })
