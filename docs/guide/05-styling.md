@@ -31,6 +31,9 @@ This is intentional. Do not use them for default theme paint.
 Screen content can use the same rules. Add the tag, and do not set the painted
 property. `facet-panel` paints a rounded panel surface, `facet-divider` paints
 a hairline, and `facet-path` paints a `Path2D` line in the accent color.
+`facet-icon-neutral`, `facet-icon-info`, `facet-icon-success`,
+`facet-icon-warning`, `facet-icon-error` and `facet-icon-accent` paint an image
+in the status color.
 
 Theme inputs can be Compose readables. The native rules and the control metrics
 respond to the same selected definition. Image skins use real image assets and

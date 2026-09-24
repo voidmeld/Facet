@@ -377,12 +377,11 @@ local function build(ctx: any)
 		local fading = ctx.runtime.tween(function(use)
 			return use(targetTransparency)
 		end, { seconds = 0.16 })
-		return Host.CanvasGroup({
+		local plate = Host.CanvasGroup({
 			Name = `tile{tile.id}`,
 			GroupTransparency = function(use)
 				return if use(reducedMotion) then use(targetTransparency) else use(fading)
 			end,
-			BackgroundTransparency = 1,
 			Size = function(use)
 				return UDim2.new(0, 44, 0, 44)
 			end,
@@ -390,12 +389,26 @@ local function build(ctx: any)
 			Position = function(use)
 				return if use(reducedMotion) then use(targetPosition) else use(movingPosition)
 			end,
-			Host.ImageLabel "img" {
-				BackgroundTransparency = 1,
-				BorderSizePixel = 0,
-				Size = UDim2.new(1, 0, 1, 0),
-				Image = image,
-			},
+			(function()
+				local art = Host.ImageLabel "img" {
+					BackgroundTransparency = 1,
+					BorderSizePixel = 0,
+					AnchorPoint = Vector2.new(0.5, 0.5),
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromScale(0.7, 0.7),
+					Image = image,
+				}
+				local previous
+				Compose.watch(function(use)
+					local tag = "facet-icon-" .. assets.match3Tints[use(kind)]
+					if previous then
+						art:RemoveTag(previous)
+					end
+					art:AddTag(tag)
+					previous = tag
+				end)
+				return art
+			end)(),
 			UI.Button "hit" {
 				ref = function(node)
 					tile.hit = node
@@ -473,6 +486,8 @@ local function build(ctx: any)
 				},
 			},
 		})
+		plate:AddTag("facet-control")
+		return plate
 	end
 	local function boardView()
 		local node = Host.Frame "board" {

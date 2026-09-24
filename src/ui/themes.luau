@@ -621,6 +621,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 			else "onSuccess"
 		rule(".facet-status-" .. status, { BackgroundColor3 = c(role), TextColor3 = c(partner) })
 		rule(".facet-status-" .. status .. " > .facet-status-ring", { Color = c(role) })
+		rule(".facet-icon-" .. status, { ImageColor3 = c(role), BackgroundTransparency = 1 })
 		rule(".facet-status-" .. status .. " > .facet-text", { TextColor3 = c(partner) })
 		rule(".facet-status-" .. status .. " > .facet-icon", { ImageColor3 = c(partner) })
 	end

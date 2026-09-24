@@ -12,10 +12,10 @@ assets.match3Tiles = {
 
 assets.match3Tints = {
 	a = "accent",
-	b = "content",
-	c = "contentStrong",
-	d = "danger",
-	e = "contentSecondary",
+	b = "success",
+	c = "warning",
+	d = "error",
+	e = "neutral",
 }
 
 assets.pending = "rbxassetid://1000000000"

@@ -508,7 +508,7 @@ local CELL_SURFACE: { [string]: string } = {
 local CELL_MARK: { [string]: string } = {
 	idle = "",
 	legal = "+",
-	centre = "*",
+	centre = "★",
 	pending = "~",
 	committed = "",
 }
