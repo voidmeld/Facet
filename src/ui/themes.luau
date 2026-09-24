@@ -754,6 +754,10 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		PaddingLeft = types.UDim.new(0, math.max(12, buttonInsets.left or 0)),
 		PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0)),
 	})
+	rule(".facet-slider-settings::UIPadding", {
+		PaddingLeft = types.UDim.new(0, math.max(12, buttonInsets.left or 0)),
+		PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0)),
+	})
 	rule(".facet-toggle-indicator", { BackgroundColor3 = c("control"), BackgroundTransparency = 0 })
 	rule(".facet-toggle-on", { BackgroundColor3 = c("accent") })
 	rule(".facet-toggle-switch >> .facet-toggle-mark", { BackgroundColor3 = c("onAccent") })

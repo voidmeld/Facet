@@ -208,6 +208,7 @@ t.describe("native Pagination", function()
 			t.expect(text(wideRoot)).toBe("previous 1 … 4999 [5000] 5001 … 9999 next")
 			t.expect(wide.find("Slot-5000").Size.X.Offset >= 44).toBe(true)
 			t.expect(wide.find("Slot-5000").Size.X.Offset).toBe(56)
+			t.expect(wide.find("Page-5000"):FindFirstChild("SlotLimit").MaxSize.X).toBe(56)
 			wide.stop()
 			local expected = {
 				[360] = "previous 1 … 4999 [5000] 5001 next",

@@ -30,11 +30,12 @@ return {
 		local function heading(name: string, text: string)
 			return UI.Label({ Name = name, text = text, textRole = "label" })
 		end
-		local function tile(name: string, width: number?, height: number?)
+		local function tile(name: string, width: number?, height: number?, extra: any?)
 			local node = Host.Frame({
 				Name = name,
 				BorderSizePixel = 0,
 				Size = UDim2.fromOffset(width or 24, height or 24),
+				extra,
 			})
 			node:AddTag("facet-fill")
 			return node
@@ -75,6 +76,7 @@ return {
 			end
 			local scales = {}
 			for index, scale in { 0.75, 1, 1.5 } do
+				local scaled = tile("Tile", 32, 32, Host.UIScale({ Scale = scale }))
 				table.insert(
 					scales,
 					UI.ZStack({
@@ -83,8 +85,7 @@ return {
 						height = 48,
 						alignH = "center",
 						alignV = "center",
-						Host.UIScale({ Scale = scale }),
-						tile("Tile", 32, 32),
+						scaled,
 					})
 				)
 			end

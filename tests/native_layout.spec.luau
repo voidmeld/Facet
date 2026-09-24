@@ -396,7 +396,13 @@ t.describe("native layout primitives", function()
 		t.it("aligns every child by anchor point and scale position", function()
 			local horizontal = Compose.cell("center")
 			local root, engine, stop = build(nil, function(UI, Host)
-				return UI.ZStack { alignH = horizontal, alignV = "end", Host.Frame { Name = "Badge" } }
+				return UI.ZStack {
+					width = "fill",
+					height = "fill",
+					alignH = horizontal,
+					alignV = "end",
+					Host.Frame { Name = "Badge" },
+				}
 			end)
 			local badge = root:FindFirstChild("Badge")
 			t.expect(badge.AnchorPoint).toBe(engine.types.Vector2.new(0.5, 1))
@@ -404,6 +410,29 @@ t.describe("native layout primitives", function()
 			horizontal:set("end")
 			t.expect(badge.AnchorPoint).toBe(engine.types.Vector2.new(1, 1))
 			t.expect(badge.Position).toBe(engine.types.UDim2.fromScale(1, 1))
+			stop()
+		end)
+
+		t.it("aligns children by offset along a hugging axis", function()
+			local root, engine, stop = build(nil, function(UI, Host)
+				return UI.ZStack {
+					width = 60,
+					alignH = "end",
+					alignV = "end",
+					Host.Frame { Name = "Card" },
+					Host.Frame { Name = "Dot" },
+				}
+			end)
+			local V2, D2 = engine.types.Vector2, engine.types.UDim2
+			local card, dot = root:FindFirstChild("Card"), root:FindFirstChild("Dot")
+			card.AbsoluteSize = V2.new(60, 40)
+			dot.AbsoluteSize = V2.new(16, 16)
+			t.expect(dot.AnchorPoint).toBe(V2.new(1, 0))
+			t.expect(dot.Position).toBe(D2.new(1, 0, 0, 24))
+			t.expect(card.Position).toBe(D2.new(1, 0, 0, 0))
+			dot.AbsoluteSize = V2.new(16, 50)
+			t.expect(card.Position).toBe(D2.new(1, 0, 0, 10))
+			t.expect(dot.Position).toBe(D2.new(1, 0, 0, 0))
 			stop()
 		end)
 	end)

@@ -167,13 +167,15 @@ return function(
 				Position = D2.fromScale(0.5, 0.5),
 			})
 			local numberBounds = ctx.observe(numberLabel, "TextBounds")
+			local numberSize = ctx.observeStyled(numberLabel, "TextSize")
 			local cue = Host.Frame({
 				Name = "Cue",
 				LayoutOrder = 1,
 				BackgroundTransparency = 1,
 				Size = function(use: ComposeTypes.Use)
 					local bounds = use(numberBounds)
-					local side = math.max(cueSize(use), math.ceil(math.max(bounds.X, bounds.Y)) + 8)
+					local line = tonumber(use(numberSize)) or 0
+					local side = math.max(cueSize(use), math.ceil(math.max(bounds.X, bounds.Y, line)) + 8)
 					return D2.fromOffset(side, side)
 				end,
 				Host.UIAspectRatioConstraint({ AspectRatio = 1 }) :: Types.Child,

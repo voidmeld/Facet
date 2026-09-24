@@ -406,7 +406,8 @@ t.describe("native content navigation deltas", function()
 		local world = containers()
 		for index, scale in { 0.75, 1, 1.5 } do
 			local holder = world.find(`Scale{index}`)
-			t.expect(holder:FindFirstChildWhichIsA("UIScale").Scale).toBe(scale)
+			t.expect(holder:FindFirstChildWhichIsA("UIScale")).toBeNil()
+			t.expect(holder:FindFirstChild("Tile"):FindFirstChildWhichIsA("UIScale").Scale).toBe(scale)
 			t.expect(holder.Size).toBe(UDim2.fromOffset(48, 48))
 		end
 		world.stop()

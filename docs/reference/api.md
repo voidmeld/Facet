@@ -321,7 +321,9 @@ sets `UIListLayout.Wraps`. The shared props type is `StackProps`.
 `UI.ZStack(spec) -> Frame` puts its children on top of each other. It has no
 layout object. A later child gets a higher `ZIndex`. A child that sets its own
 `ZIndex` keeps it. `alignH` and `alignV` (`start`, `center` or `end`) set the
-`AnchorPoint` and the scale `Position` of each child. Options: `padding`,
+`AnchorPoint` and the scale `Position` of each child. On an axis that hugs
+its content, the stack aligns each child by offset against the largest child on
+that axis, so the stack keeps its size. Options: `padding`,
 `alignH`, `alignV`, `width` and `height`.
 
 ### ScrollView
@@ -434,7 +436,10 @@ options apply.
 A switch or checkbox Toggle paints no plate and takes no `control` art from a
 theme package. A settings row (a Toggle with `row`, `hint` or `icon`) has the
 `facet-toggle-settings` tag. Its horizontal padding is the padding of a
-Button, so its content lines up with Button rows in each theme.
+Button, so its content lines up with Button rows in each theme. The row shows
+`icon` or `row.icon` first. A Toggle with `row` puts its switch last unless
+`indicatorPosition` is `leading`, so its label starts where the label of a
+Button row starts.
 
 ### TextInput
 
@@ -868,7 +873,10 @@ The Slider default is continuous values.
 
 By default, Slider shows an inline track and a value readout, with an optional
 label. Its default native `AutomaticSize.Y` keeps the authored width and fits
-the control height. `row` gives a stacked title, description and track.
+the control height. `row` gives a stacked title, description and track. A
+Slider row has the `facet-slider-settings` tag and the horizontal padding of a
+Button. It shows `row.icon` before the stack, so the Slider row lines up with
+Button and Toggle rows.
 
 Slider also supports `onCommit(value)`, `tapToPosition` (default true),
 `thumbImage`, `trackImage` and `row`. Dragging uses native drag detection.

@@ -64,7 +64,6 @@ return {
 						marks.section(),
 						badges.section(),
 					},
-					notices.affixed(),
 				}
 				local top, bottom, measure = reserved(frame)
 				ctx.runtime.decorate(padding, {
@@ -94,7 +93,12 @@ return {
 						connection:Disconnect()
 					end
 				end)
-				return frame
+				return Host.Frame "StatusPage" {
+					BackgroundTransparency = 1,
+					Size = UDim2.new(1, 0, 1, 0),
+					frame,
+					notices.affixed(),
+				}
 			end,
 			notices = notices,
 			reset = reset,

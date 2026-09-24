@@ -308,6 +308,11 @@ return function(
 						onActivate = function()
 							propose("page", page)
 						end,
+						Host.UISizeConstraint "SlotLimit" {
+							MaxSize = function(use: ComposeTypes.Use)
+								return V2.new(slotWidth(page, use), math.huge)
+							end,
+						},
 					})
 					pageButtons[page] = button
 					watchFocus(button)

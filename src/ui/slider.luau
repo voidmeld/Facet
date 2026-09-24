@@ -763,8 +763,25 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 			Size = if vertical then D2.new(0, 0, 1, 0) else D2.new(1, 0, 0, 0),
 			AutomaticSize = if vertical then E.AutomaticSize.X else E.AutomaticSize.Y,
 		})
-		local node =
-			ctx.styled(if spec.row or vertical then ctx.column(parts, native) else ctx.row(parts, native), "slider")
+		local node: Frame
+		if spec.row and not vertical then
+			local body = ctx.column(parts, {
+				Name = "Body",
+				Size = D2.new(0, 0, 0, 0),
+				AutomaticSize = E.AutomaticSize.Y,
+				Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+			})
+			local columns: { ComposeTypes.Child } = { body, Host.UIPadding({}) }
+			if spec.row.icon then
+				table.insert(columns, 1, ctx.icon(spec.row.icon, { Name = "LeadingIcon" }))
+			end
+			node = ctx.styled(ctx.row(columns, native), "slider")
+			assert(node:FindFirstChildWhichIsA("UIListLayout")).VerticalAlignment = E.VerticalAlignment.Top
+			node:AddTag("facet-slider-settings")
+		else
+			node =
+				ctx.styled(if spec.row or vertical then ctx.column(parts, native) else ctx.row(parts, native), "slider")
+		end
 		if vertical then
 			local layout = assert(node:FindFirstChildWhichIsA("UIListLayout"))
 			layout.HorizontalAlignment = E.HorizontalAlignment.Center
