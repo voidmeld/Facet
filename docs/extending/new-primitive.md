@@ -1,6 +1,7 @@
 # Native primitives
 
-Facet does not maintain a parallel primitive catalog. Use the class directly through `Host = runtime.constructors` when Compose Roblox can construct it.
+Facet does not keep a parallel catalog of primitives. If Compose Roblox can
+make the class, use it directly through `Host = runtime.constructors`.
 
 ```luau
 return Host.Frame {
@@ -15,8 +16,15 @@ return Host.Frame {
 }
 ```
 
-A new Roblox class generally needs an example and appropriate tests, not a Facet constructor, adapter mapping, layout rule and renderer branch. Confirm its native property and event contracts from the engine documentation and exercise it in Studio.
+A new Roblox class usually needs an example and applicable tests. It does not
+need a Facet constructor, an adapter mapping, a layout rule or a renderer
+branch. Confirm its native property and event contracts in the engine
+documentation. Exercise it in Studio.
 
-If Compose cannot express a required host operation, demonstrate the missing capability in a focused upstream test. Change Compose upstream and synchronize its generated snapshot; do not patch the vendored files or construct a local parallel runtime.
+If Compose cannot express a necessary host operation, show the missing
+capability in a focused upstream test. Change Compose upstream and synchronize
+its generated snapshot. Do not patch the vendored files. Do not make a local
+parallel runtime.
 
-If the missing piece is reusable interaction policy rather than a primitive, follow [new control](new-control.md).
+If the missing item is reusable interaction policy, not a primitive, follow
+[new control](new-control.md).

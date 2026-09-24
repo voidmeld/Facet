@@ -1,9 +1,15 @@
 # Styling
 
-Facet uses native StyleSheets. A theme helper creates Compose-owned StyleSheet and
-StyleRule Instances. Construct the sheet inside the mounted component and parent
-it under the target root alongside the StyleLink. A StyleLink reference alone
-does not parent its sheet.
+Facet uses native StyleSheets. A theme helper makes StyleSheet and StyleRule
+Instances that Compose owns.
+
+## Install the StyleSheet
+
+1. Make the sheet inside the mounted component.
+2. Parent the sheet under the target root.
+3. Put a StyleLink that references the sheet next to it.
+
+A StyleLink reference alone does not parent its sheet.
 
 ```luau
 local sheet = Facet.themes.createStyleSheet(runtime, package)
@@ -14,18 +20,24 @@ return Host.ScreenGui {
 }
 ```
 
-Controls publish semantic tags and attributes. Default colors, fonts and decoration
-belong in native rules. Explicit native instance properties intentionally take
-precedence over stylesheet values; avoid them for default theme paint.
+## Where paint comes from
 
-Theme inputs may be Compose readables. Native rules and control metrics respond
-to the same selected definition. Image skins use real image assets and native
-children; icons are images rather than substitute text glyphs.
+Controls publish semantic tags and attributes. Default colors, fonts and
+decoration belong in native rules.
 
-Theme color and opacity changes animate through native StyleRule transitions using
-`metrics.motion.normal`. A palette change updates the existing rules, so Roblox
-retargets an interrupted switch from the displayed colors. Layout and typography
-changes apply directly.
+Explicit native Instance properties take precedence over stylesheet values.
+This is intentional. Do not use them for default theme paint.
+
+Theme inputs can be Compose readables. The native rules and the control metrics
+respond to the same selected definition. Image skins use real image assets and
+native children. Icons are images, not substitute text glyphs.
+
+## Theme transitions
+
+Changes to theme color and opacity animate through native StyleRule
+transitions. The duration is `metrics.motion.normal`. A palette change updates
+the existing rules. If a switch is interrupted, Roblox retargets it from the
+colors on screen. Layout and typography changes apply immediately.
 
 ```luau
 local selectedPalette = Compose.cell("dark")
@@ -42,7 +54,15 @@ return Host.ScreenGui {
 }
 ```
 
-The transition override and reduced-motion input may be Compose readables. Use
-`transition = false` for immediate paint; reduced motion also disables transitions.
-With no reduced-motion input, the helper observes GuiService. Keep custom screen
-paint in StyleRules so it follows the same theme transition as the controls.
+The transition override and the reduced-motion input can be Compose readables.
+
+- Set `transition = false` for immediate paint.
+- Reduced motion also disables transitions.
+- If you do not supply a reduced-motion input, the helper observes GuiService.
+
+Keep custom screen paint in StyleRules. Then it follows the same theme
+transition as the controls.
+
+The [API reference](../reference/api.md#themes) has the full `createStyleSheet`
+contract. [Custom themes](09-custom-themes.md) explains how to make a
+game-owned theme package.

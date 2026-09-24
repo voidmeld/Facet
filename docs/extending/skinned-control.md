@@ -1,9 +1,33 @@
 # Adding artwork to a control
 
-Keep the control's behavior independent of its artwork. Input, selection, value changes, cancellation and lifetime use the same code for native and illustrated appearances.
+Keep the behavior of the control independent of its artwork. Input, selection,
+value changes, cancellation and lifetime use the same code for native and
+illustrated appearances.
 
-Declare a semantic chrome slot in the theme package and consume it with `themes.skin(runtime, package, slot, options)`. The helper returns Compose-owned native artwork. Pass a state readable for hover/pressed/disabled/selected variants, and the target/label information needed by the recipe. Native ImageLabel slicing, tiling and resampling do the rendering.
+## Consume a chrome slot
 
-Choose a nine-slice for stretchable edges, a layered recipe for corners/frames/plaques, or native/none when no extra image is required. Define required assets and coverage in the package. Keep text and hit targets usable when artwork fails to load.
+Declare a semantic chrome slot in the theme package. Consume it with
+`themes.skin(runtime, package, slot, options)`. The helper returns native
+artwork that Compose owns.
 
-Do not add a separate skin renderer, game-local event handler or cleanup registry. Test state transitions, theme switching, missing art, clipping and owner removal. Verify the actual control in Studio at multiple sizes and with keyboard/gamepad selection. Record the supported skin contract in the API and [rich skinning guide](../guide/10-rich-skinning.md).
+- Give a state readable for the hover, pressed, disabled and selected variants.
+- Give the target and label information that the recipe needs.
+
+Native ImageLabel slicing, tiling and resampling do the rendering.
+
+## Choose a recipe
+
+- Use a nine-slice for stretchable edges.
+- Use a layered recipe for corners, frames and plaques.
+- Use native or none when no extra image is necessary.
+
+Define the necessary assets and coverage in the theme package. Keep text and hit
+targets usable when artwork does not load.
+
+## Checks
+
+Do not add a separate skin renderer, a game-local event handler or a cleanup
+registry. Test state transitions, theme switching, missing art, clipping and
+owner removal. In Studio, verify the actual control at different sizes and with
+keyboard and gamepad selection. Record the supported skin contract in the API
+reference and in the [rich skinning guide](../guide/10-rich-skinning.md).

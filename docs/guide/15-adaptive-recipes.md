@@ -1,6 +1,9 @@
 # Adaptive native composition
 
-Make decisions from available space and published engine facts. Native layouts own the resulting geometry; Facet controls own their internal adaptive choices. Observe native bounds when a screen must choose between two genuinely different arrangements.
+Make decisions from the available space and the published engine facts. Native
+layouts own the resulting geometry. Facet controls own their internal adaptive
+choices. Observe the native bounds when a screen must choose between two
+different arrangements.
 
 ## A wrapping action band
 
@@ -20,7 +23,8 @@ return Host.Frame {
 }
 ```
 
-Wrapping handles geometry; it does not change what an action means. Keep LayoutOrder explicit when order matters.
+Wrapping changes the geometry. It does not change what an action means. When
+the order is important, set `LayoutOrder` explicitly.
 
 ## Read native bounds
 
@@ -45,10 +49,20 @@ Compose.cleanup(stop)
 return frame
 ```
 
-The initial native bounds may be zero. Use safe minimums and let later engine observations update the policy. Do not run a second settle loop to force synchronous measurements.
+The initial native bounds can be zero. Use safe minimum values. Let later engine
+observations update the policy. Do not run a second settle loop to force
+synchronous measurements.
 
 ## Text and safe areas
 
-Use TextWrapped, AutomaticSize, native constraints and appropriate flex behavior. Let the engine calculate text bounds; do not estimate glyph widths in a screen. ScreenGui inset and safe-area properties configure the target. TabView's adaptable presentation should be preferred over recreating a sidebar switch in every screen.
+- Use `TextWrapped`, `AutomaticSize`, native constraints and the applicable
+  flex behavior.
+- Let the engine calculate the text bounds. Do not estimate glyph widths in a
+  screen.
+- Use the ScreenGui inset and safe-area properties to configure the target.
+- Use the adaptable presentation of TabView. Do not make a new sidebar switch
+  in each screen.
 
-Keep structural ownership stable when only a size changes. Use a property binding for dimensions; use Compose.show or keyed only when the composition itself changes.
+Keep the structural ownership stable when only a size changes. Use a property
+binding for dimensions. Use `Compose.show` or `Compose.keyed` only when the
+composition itself changes.
