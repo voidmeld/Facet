@@ -91,7 +91,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			else character(first) .. character(last :: string)
 	end
 
-	UI.Label = ctx.construct(function(spec: Media.LabelProps): GuiObject
+	UI.Label = ctx.construct("Label", function(spec: Media.LabelProps): GuiObject
 		local keys = { "text", "label", "icon", "iconPosition", "textRole", "role", "gap" }
 		local label = textRole(
 			ctx.text(
@@ -122,7 +122,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return root
 	end)
 
-	UI.Badge = ctx.construct(function(spec: Media.BadgeProps): GuiObject
+	UI.Badge = ctx.construct("Badge", function(spec: Media.BadgeProps): GuiObject
 		local caption = Compose.formula(function(use: Compose.Use)
 			local value = read(spec.label, use)
 			assert(value == nil or type(value) == "string", "Facet Badge label must be a string")
@@ -231,7 +231,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return pill
 	end)
 
-	UI.StatusIndicator = ctx.construct(function(spec: Media.StatusIndicatorProps): TextLabel
+	UI.StatusIndicator = ctx.construct("StatusIndicator", function(spec: Media.StatusIndicatorProps): TextLabel
 		local size = function(use: Compose.Use)
 			return read(spec.diameter, use)
 				or (
@@ -351,7 +351,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return node
 	end)
 
-	UI.ProgressView = ctx.construct(function(spec: Media.ProgressViewProps): Frame
+	UI.ProgressView = ctx.construct("ProgressView", function(spec: Media.ProgressViewProps): Frame
 		local motionReduced = reducedMotion(ctx)
 		local presentation = spec.presentation or "bar"
 		assert(
@@ -777,7 +777,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end)
 		return clock
 	end)
-	UI.Skeleton = ctx.construct(function(spec: Media.SkeletonProps): Frame
+	UI.Skeleton = ctx.construct("Skeleton", function(spec: Media.SkeletonProps): Frame
 		local form = spec.form or "box"
 		assert(form == "box" or form == "circle" or form == "line", "Facet Skeleton invalid form")
 		assert(spec.lines == nil or form == "line", "Facet Skeleton lines require line form")
@@ -845,7 +845,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		)
 	end)
 
-	UI.AsyncImage = ctx.construct(function(spec: Media.AsyncImageProps): Frame
+	UI.AsyncImage = ctx.construct("AsyncImage", function(spec: Media.AsyncImageProps): Frame
 		local state: Compose.Cell<Media.ImageState> = Compose.cell("loading" :: Media.ImageState)
 		local loaded = Compose.cell("")
 		local failure = Compose.cell(nil :: unknown)
@@ -988,7 +988,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return root
 	end)
 
-	UI.Avatar = ctx.construct(function(spec: Media.AvatarProps): TextButton
+	UI.Avatar = ctx.construct("Avatar", function(spec: Media.AvatarProps): TextButton
 		assert(spec.form == nil or spec.form == "standard" or spec.form == "icon", "Facet Avatar invalid form")
 		local diameter = function(use: Compose.Use)
 			return read(spec.diameter, use)
@@ -1118,7 +1118,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return root
 	end)
 
-	UI.AvatarGroup = ctx.construct(function(spec: Media.AvatarGroupProps): Frame
+	UI.AvatarGroup = ctx.construct("AvatarGroup", function(spec: Media.AvatarGroupProps): Frame
 		local items = Compose.formula(function(use: Compose.Use)
 			local members = read(spec.items, use)
 			assert(type(members) == "table", "Facet AvatarGroup items must be an array")
@@ -1260,7 +1260,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return group
 	end)
 
-	UI.Stage = ctx.construct(function(spec: Media.StageProps): ViewportFrame
+	UI.Stage = ctx.construct("Stage", function(spec: Media.StageProps): ViewportFrame
 		local world = Host.WorldModel "World" {}
 		local externalCamera = spec.camera
 			and (

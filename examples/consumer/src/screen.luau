@@ -40,7 +40,7 @@ function screen.build(Facet: any, runtime: any, options: any?)
 					label = "Bump",
 					appearance = "emphasis",
 					onActivate = function()
-						count:update(function(value)
+						count:update(function(value: number): number
 							return value + 1
 						end)
 					end,

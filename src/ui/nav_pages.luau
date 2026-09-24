@@ -97,7 +97,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		return byId
 	end
 
-	UI.TabView = ctx.construct(function(spec: Nav.TabViewSpec): Frame
+	UI.TabView = ctx.construct("TabView", function(spec: Nav.TabViewSpec): Frame
 		assert(
 			spec.retention == nil or spec.retention == "all" or spec.retention == "top",
 			"TabView.retention uses Compose all or top"
@@ -873,9 +873,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		return root
 	end
 
-	UI.NavigationStack = ctx.construct(navigationStack)
+	UI.NavigationStack = ctx.construct("NavigationStack", navigationStack)
 
-	UI.PageView = ctx.construct(function(spec: Nav.PageViewSpec): Frame
+	UI.PageView = ctx.construct("PageView", function(spec: Nav.PageViewSpec): Frame
 		local byId = checkedSelection(spec.selection, spec.pages, "PageView")
 		local indexById: { [string]: number } = {}
 		for index, page in spec.pages do

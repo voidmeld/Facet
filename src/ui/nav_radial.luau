@@ -1166,5 +1166,5 @@ return function(
 		end
 		return root
 	end
-	UI.RadialMenu = ctx.construct(build)
+	UI.RadialMenu = ctx.construct("RadialMenu", build)
 end

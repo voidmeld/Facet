@@ -49,7 +49,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 	end
 
-	UI.DisclosureGroup = ctx.construct(function(spec: Nav.DisclosureGroupSpec): Frame
+	UI.DisclosureGroup = ctx.construct("DisclosureGroup", function(spec: Nav.DisclosureGroupSpec): Frame
 		assert(spec.expanded and spec.expanded.set, "DisclosureGroup.expanded requires a writable Compose cell")
 		local gui = surfaces.service("GuiService")
 		local side = spec.chevronPosition or "leading"
@@ -128,7 +128,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		return root
 	end)
 
-	UI.CollapsibleView = ctx.construct(function(spec: Nav.CollapsibleViewSpec): TextButton
+	UI.CollapsibleView = ctx.construct("CollapsibleView", function(spec: Nav.CollapsibleViewSpec): TextButton
 		assert(spec.expanded and spec.expanded.set, "CollapsibleView.expanded requires a writable Compose cell")
 		local buttonSpec: Inputs.ButtonProps & {
 			content: Nav.Content?,
@@ -655,9 +655,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		})
 		return root
 	end
-	UI.Alert = ctx.construct(alert)
+	UI.Alert = ctx.construct("Alert", alert)
 
-	UI.Sheet = ctx.construct(function(spec: Nav.SheetSpec): Frame
+	UI.Sheet = ctx.construct("Sheet", function(spec: Nav.SheetSpec): Frame
 		assert(spec.detent and spec.detent.set, "Sheet.detent requires a writable Compose cell")
 		type Detent = { id: string, fraction: number?, height: number? }
 		local detents: { Detent } = {}
@@ -875,7 +875,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		return root
 	end)
 
-	UI.Callout = ctx.construct(function(spec: Nav.CalloutSpec): Frame
+	UI.Callout = ctx.construct("Callout", function(spec: Nav.CalloutSpec): Frame
 		assert(type(spec.onRetire) == "function", "Callout requires onRetire")
 		assert(spec.anchor, "Callout requires a native anchor")
 		local retired = Compose.cell(false)

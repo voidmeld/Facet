@@ -138,7 +138,7 @@ export type Context = {
 	observeStyled: Observe,
 	playWhileShown: (Playback, Instance) -> (),
 	props: <P>(P, { string } | { [string]: boolean }?, unknown?) -> P,
-	construct: <F>(F) -> F & ((string) -> F),
+	construct: <F>(string, F) -> F & ((string) -> F),
 	styled: <N>(N & Instance, string) -> N & Instance,
 	padding: (number, number) -> UIPadding,
 	corner: (number?) -> UICorner,

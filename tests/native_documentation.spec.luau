@@ -22,6 +22,18 @@ end
 t.describe("native documentation", function()
 	for _, entry in entries do
 		t.it(`executes {entry.file} snippet {entry.index}`, function()
+			if string.find(entry.code, 'require("./lib/native_engine")', 1, true) then
+				local modules = { ["../src"] = Facet, ["./lib/native_engine"] = engineLib }
+				luau.load(entry.code, {
+					debugName = entry.file,
+					environment = {
+						require = function(path: string)
+							return assert(modules[path], path)
+						end,
+					},
+				})()
+				return
+			end
 			local engine = engineLib.new()
 			local runtime = Facet.Roblox.createRuntime(engine)
 			local Compose, Host = Facet.Compose, runtime.constructors

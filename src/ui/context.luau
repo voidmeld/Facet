@@ -156,6 +156,36 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		return value
 	end
 	ctx.observeStyled = (observeStyled :: unknown) :: Shared.Observe
+	local building: string? = nil
+	local function distance(a: string, b: string): number
+		local previous: { number } = {}
+		for j = 0, #b do
+			previous[j] = j
+		end
+		for i = 1, #a do
+			local current: { number } = { [0] = i }
+			for j = 1, #b do
+				local cost = if string.byte(a, i) == string.byte(b, j) then 0 else 1
+				current[j] = math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
+			end
+			previous = current
+		end
+		return previous[#b]
+	end
+	local function unknownOption(key: string, known: { [string]: boolean }): string
+		local best: string? = nil
+		local bestDistance = 3
+		for name in known do
+			if name ~= "ref" then
+				local d = distance(key, name)
+				if d < bestDistance or (d == bestDistance and best ~= nil and name < best) then
+					best, bestDistance = name, d
+				end
+			end
+		end
+		local suggestion = if best then ` Did you mean '{best}'?` else ""
+		return `Facet UI.{building or "control"}: unknown option '{key}'.{suggestion}`
+	end
 	function ctx.props<P>(spec: P, behavioralKeys: { string } | { [string]: boolean }?, defaults: unknown?): P
 		local result: { [unknown]: unknown } = if type(defaults) == "table"
 			then table.clone(defaults :: { [unknown]: unknown })
@@ -173,23 +203,30 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 			if type(key) == "number" then
 				result[#result + 1] = value
 			elseif type(key) ~= "string" or not consumed[key] then
-				assert(type(key) ~= "string" or not string.match(key, "^[a-z]"), `Unknown Facet option {tostring(key)}`)
+				if type(key) == "string" and string.match(key, "^[a-z]") then
+					error(unknownOption(key, consumed), 0)
+				end
 				result[key] = value
 			end
 		end
 		return (result :: unknown) :: P
 	end
-	function ctx.construct<F>(build: F): F & ((string) -> F)
+	function ctx.construct<F>(control: string, build: F): F & ((string) -> F)
 		assert(type(build) == "function", "Facet constructor requires a builder")
 		local apply = (build :: unknown) :: ({ [unknown]: unknown }) -> unknown
 		local function construct(fields: { [unknown]: unknown }, name: string?): unknown
-			assert(type(fields) == "table", "Facet control expects a property table")
+			if type(fields) ~= "table" then
+				error(`Facet UI.{control}: expected a property table, got {typeof(fields)}`, 0)
+			end
 			if name then
 				fields = table.clone(fields)
 				assert(fields.Name == nil, "Facet: supply either a constructor name or Name")
 				fields.Name = name
 			end
+			local outer = building
+			building = control
 			local node = apply(fields)
+			building = outer
 			if fields.ref then
 				assert(type(fields.ref) == "function")
 				local ref = fields.ref :: (unknown) -> ()

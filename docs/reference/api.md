@@ -90,7 +90,10 @@ Roblox names: `Size`, `Position`, `AutomaticSize`, `LayoutOrder`, `Visible`,
 `TextSize` and the others. The control forwards native events, Compose property
 and event keys, `Attributes` and numeric children to the host. To add native
 tags, use `node:AddTag(name)`. An unsupported control option causes an error.
-It does not become inert metadata.
+It does not become inert metadata. The error names the control and, when an
+option is close, suggests it:
+`Facet UI.Button: unknown option 'lable'. Did you mean 'label'?`. A spec that is
+not a table gives `Facet UI.Button: expected a property table, got number`.
 
 ### State
 
@@ -419,7 +422,9 @@ not a second application presenter.
 ### VirtualList and VirtualGrid
 
 Required: `from` (an array, readable or body) and
-`render(current, placement, key)`. `key` is a function. If you omit it, Compose
+`render(current, placement, key)`. `key` is a function `(item, index) -> key`
+or the name of the field that holds the identity, for example `key = "id"`. A
+field name gives `tostring(item[field])` as the key. If you omit `key`, Compose
 uses item identity. Render receives readables for the current item and its
 placement, and returns native content. Keep durable row state outside that
 render owner.
@@ -477,7 +482,7 @@ Native properties and children stay available.
 local rows = Compose.cell({ { id = "a", title = "Amber" } })
 local list = UI.VirtualList {
     from = rows,
-    key = function(item) return item.id end,
+    key = "id",
     itemSize = 52,
     Size = UDim2.fromScale(1, 1),
     render = function(current)
@@ -492,7 +497,8 @@ local list = UI.VirtualList {
 
 ### Table
 
-`from`, `key` and `columns` define the rows. A column has:
+`from`, `key` and `columns` define the rows. `key` has the same forms as for
+VirtualList. A column has:
 
 - `id` and `label`,
 - an optional pixel `width` (otherwise flex),

@@ -56,7 +56,7 @@ return function(
 			local id = copy.id or tostring(index)
 			copy.id = id
 			local item: Nav.MenuItem<V> = copy
-			assert(not identifiers[id], "Menu items require unique ids per level")
+			assert(not identifiers[id], `Facet UI.Menu: two items at one level share the id '{id}'`)
 			identifiers[id] = true
 			if not item.divider then
 				assert(
@@ -475,7 +475,7 @@ return function(
 		return modal
 	end
 
-	UI.Menu = ctx.construct(function<V>(spec: Nav.MenuSpec<V>): Frame
+	UI.Menu = ctx.construct("Menu", function<V>(spec: Nav.MenuSpec<V>): Frame
 		assert(spec.items ~= nil, "Menu requires items")
 		menuItems(read(spec.items))
 		local opened = spec.isPresented or Compose.cell(false)
@@ -639,9 +639,12 @@ return function(
 		"textSize",
 		"isPresented",
 	}
-	UI.Picker = ctx.construct(function<V>(spec: Nav.PickerSpec<V>): GuiObject
+	UI.Picker = ctx.construct("Picker", function<V>(spec: Nav.PickerSpec<V>): GuiObject
 		writable(spec.selected, "Picker.selected")
-		assert(spec.options ~= nil, "Picker requires options")
+		assert(
+			type(spec.options) == "table" or type(spec.options) == "function",
+			"Facet UI.Picker: options must be an array of { value, label } entries, a Compose readable, or a function(use) that returns one"
+		)
 		local function isSelected(value: V, use: Core.Use?): boolean
 			if spec.multiple then
 				return read(spec.selected, use)[value] == true
@@ -1146,7 +1149,7 @@ return function(
 		return row
 	end)
 
-	UI.SplitButton = ctx.construct(function<V>(spec: Nav.SplitButtonSpec<V>): Frame
+	UI.SplitButton = ctx.construct("SplitButton", function<V>(spec: Nav.SplitButtonSpec<V>): Frame
 		local input = surfaces.service("UserInputService")
 		local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
 		local touch = Compose.formula(function(use: Core.Use)
@@ -1221,7 +1224,7 @@ return function(
 		)
 	end)
 
-	UI.ComboBox = ctx.construct(function(spec: Nav.ComboBoxSpec): Frame
+	UI.ComboBox = ctx.construct("ComboBox", function(spec: Nav.ComboBoxSpec): Frame
 		writable(spec.value, "ComboBox.value")
 		writable(spec.text, "ComboBox.text")
 		assert(type(spec.value:peek()) == "string", "ComboBox.value must be a string")

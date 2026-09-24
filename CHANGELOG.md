@@ -13,6 +13,10 @@
 - A `RadialMenu` with `follow = "fixed"` keeps its ring and its center hole until it opens again. The list presentation shows one navigation control: `close` and `back` at the root read "Close", and `back` in a submenu reads "Back".
 - Button refuses an `imageFraming` other than `fit` or `crop`. ComboBox refuses a value that is not a string and missing `options`.
 - `Facet` exports the `RadialItem` and `RadialMenuSpec` types.
+- An unknown control option error names the control and suggests the nearest option, for example `Facet UI.Button: unknown option 'lable'. Did you mean 'label'?`. A spec that is not a table names the control. The duplicate Menu item id error shows the id. The Picker `options` error tells what `options` must be.
+- VirtualList, VirtualGrid and Table accept a field name as `key`, for example `key = "id"`. The key is `tostring(item[field])`.
+- The type check includes the standalone consumer in `examples/consumer`. The consumer calls `runtime:dispose()` with a colon.
+- The getting-started guide shows how to test a screen headlessly with the fake native engine. Guides and tutorial examples use `text` for `UI.Label`.
 
 ## Pre-0.12.0 development history
 

@@ -693,7 +693,16 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return item
 			end)
 		end
-		return create(spec, spec.key)
+		local key: unknown = spec.key
+		if type(key) == "string" then
+			assert(key ~= "", "Facet UI.Table: key field must not be empty")
+			local fieldSpec = (spec :: unknown) :: CollectionTypes.KeyedTableSpec<V, string>
+			return create(fieldSpec, function(item: V, _index: number): string
+				return tostring(((item :: unknown) :: { [string]: unknown })[key])
+			end)
+		end
+		assert(type(key) == "function", "Facet UI.Table: key must be a function or a field name")
+		return create((spec :: unknown) :: CollectionTypes.KeyedTableSpec<V, K>, (key :: unknown) :: (V, number) -> K)
 	end
-	UI.Table = ctx.construct(constructor) :: CollectionTypes.TableConstructor
+	UI.Table = ctx.construct("Table", constructor) :: CollectionTypes.TableConstructor
 end

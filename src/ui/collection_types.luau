@@ -63,7 +63,7 @@ export type CollectionOptions<V, K> = Types.ScrollingFrameProps & ReorderOptions
 	onActivate: Activate<V, K>?,
 	onReachEnd: (() -> ())?,
 }
-export type KeyedCollectionSpec<V, K> = CollectionOptions<V, K> & { key: (item: V, index: number) -> K }
+export type KeyedCollectionSpec<V, K> = CollectionOptions<V, K> & { key: ((item: V, index: number) -> K) | string }
 export type IdentityCollectionSpec<V> = CollectionOptions<V, V> & { key: nil? }
 export type CollectionSpec<V, K> = KeyedCollectionSpec<V, K> | IdentityCollectionSpec<V>
 export type CollectionConstructor =
@@ -137,7 +137,7 @@ export type TableOptions<V, K> = Types.FrameProps & ReorderOptions<V, K> & {
 	mode: Compose.OrderedCollectionMode?,
 	snap: ("none" | "item")?,
 }
-export type KeyedTableSpec<V, K> = TableOptions<V, K> & { key: (item: V, index: number) -> K }
+export type KeyedTableSpec<V, K> = TableOptions<V, K> & { key: ((item: V, index: number) -> K) | string }
 export type IdentityTableSpec<V> = TableOptions<V, V> & { key: nil? }
 export type TableSpec<V, K> = KeyedTableSpec<V, K> | IdentityTableSpec<V>
 export type TableConstructor =
