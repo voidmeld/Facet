@@ -1658,7 +1658,12 @@ t.describe("native themes and media", function()
 		t.expect(row ~= nil and string.find(row, "Without an icon, it returns a TextLabel.", 1, true) ~= nil).toBe(true)
 		t.expect(
 			row ~= nil
-				and string.find(row, "With an icon, it returns a Frame row that holds the icon and a TextLabel.", 1, true)
+				and string.find(
+						row,
+						"With an icon, it returns a Frame row that holds the icon and a TextLabel.",
+						1,
+						true
+					)
 					~= nil
 		).toBe(true)
 		stop()
