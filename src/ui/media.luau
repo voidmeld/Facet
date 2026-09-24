@@ -632,7 +632,22 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end
 		end
 		local children: { Compose.Child } = {}
-		if spec.label then
+		if presentation == "bar" and spec.label and readout then
+			-- A bar reads its name and value on one line above the track, like a download row.
+			runtime.decorate(readout, { LayoutOrder = 2 })
+			table.insert(
+				children,
+				ctx.row({
+					UI.Label({
+						label = spec.label,
+						LayoutOrder = 1,
+						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+					}),
+					readout,
+				}, { Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
+			)
+			readout = nil
+		elseif spec.label then
 			table.insert(children, UI.Label({ label = spec.label }))
 		end
 		table.insert(children, content)

@@ -1599,6 +1599,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				return model.format(read(spec.value, use))
 			end,
 		})
+		if not spec.row then
+			-- A fixed trailing slot keeps the track still while the digits change.
+			runtime.decorate(readout, {
+				Size = D2.fromOffset(44, 0),
+				AutomaticSize = E.AutomaticSize.XY,
+				TextXAlignment = E.TextXAlignment.Right,
+			})
+		end
 		local parts: { ComposeTypes.Child } = {}
 		if spec.row then
 			local row = spec.row
@@ -1659,7 +1667,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"row",
 			"thumbImage",
 			"trackImage",
-		}, { Size = D2.fromOffset(240, 0), AutomaticSize = E.AutomaticSize.Y })
+		}, { Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 		local node = ctx.styled(if spec.row then ctx.column(parts, native) else ctx.row(parts, native), "slider")
 		if not spec.row then
 			assert(node:FindFirstChildWhichIsA("UIListLayout")).VerticalAlignment = E.VerticalAlignment.Center
