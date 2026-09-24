@@ -96,16 +96,126 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			else character(first) .. character(last :: string)
 	end
 
+	local ELLIPSIS = "\u{2026}"
+	local function middle(label: TextLabel, text: string, width: number): string
+		local function fits(candidate: string): boolean
+			label.Text = candidate
+			return label.TextBounds.X <= width
+		end
+		if text == "" or width <= 0 or fits(text) then
+			return text
+		end
+		local offsets: { number } = {}
+		for position in utf8.codes(text) do
+			table.insert(offsets, position)
+		end
+		local total = #offsets
+		local function form(keep: number): string
+			if keep <= 0 then
+				return ELLIPSIS
+			end
+			local head = math.ceil(keep / 2)
+			local tail = keep - head
+			local headEnd = if offsets[head + 1] ~= nil then offsets[head + 1] - 1 else #text
+			return string.sub(text, 1, headEnd)
+				.. ELLIPSIS
+				.. (if tail > 0 then string.sub(text, offsets[total - tail + 1]) else "")
+		end
+		local low, high, best = 0, total - 1, 0
+		while low <= high do
+			local keep = (low + high) // 2
+			if fits(form(keep)) then
+				best = keep
+				low = keep + 1
+			else
+				high = keep - 1
+			end
+		end
+		return form(best)
+	end
+	local function fitOf(value: Media.TextFit?): { cap: Media.TextFitBound?, floor: Media.TextFitBound? }?
+		if value == nil then
+			return nil
+		end
+		if value == "fit" then
+			return {}
+		end
+		local refusal = 'Facet Label textSize must be "fit" or { fit = { cap = size, floor = size } }'
+		assert(type(value) == "table" and type(value.fit) == "table", refusal)
+		local band = value.fit
+		for key in band :: { [unknown]: unknown } do
+			assert(key == "cap" or key == "floor", "Facet Label textSize fit takes only cap and floor")
+		end
+		for _, bound in { band.cap, band.floor } do
+			assert(
+				bound == nil
+					or (type(bound) == "number" and bound > 0)
+					or (type(bound) == "string" and table.find(themes.TYPE_ROLES, bound) ~= nil),
+				"Facet Label textSize fit cap and floor must be a positive size or a type role"
+			)
+		end
+		return band
+	end
+
 	UI.Label = ctx.construct("Label", function(spec: Media.LabelProps): GuiObject
-		local keys = { "text", "label", "icon", "iconPosition", "textRole", "role", "gap" }
-		local label = textRole(
-			ctx.text(
-				if spec.icon
-					then { Text = bind(spec.text or spec.label or spec.Text, "") }
-					else ctx.props(spec, keys, { Text = bind(spec.text or spec.label or spec.Text, "") })
-			),
-			spec.textRole
+		local keys = { "text", "label", "icon", "iconPosition", "textRole", "role", "gap", "truncate", "textSize" }
+		local truncate = spec.truncate
+		assert(
+			truncate == nil or truncate == "end" or truncate == "middle",
+			"Facet Label truncate must be end or middle"
 		)
+		local cut = truncate == "middle"
+		assert(not cut or spec.RichText ~= true, "Facet Label cannot cut rich text in the middle")
+		assert(not cut or spec.TextWrapped ~= true, "Facet Label middle truncation needs one line; remove TextWrapped")
+		local fit = fitOf(spec.textSize)
+		local source: Types.Value<string>? = spec.text or spec.label or spec.Text
+		local defaults: Engine.TextLabelNativeProps = {
+			Text = if cut then read(source) or "" else bind(source, ""),
+		}
+		if cut then
+			defaults.Size = D2.fromScale(1, 0)
+			defaults.AutomaticSize = E.AutomaticSize.Y
+			defaults.TextWrapped = false
+			defaults.TextTruncate = E.TextTruncate.None
+		elseif truncate == "end" then
+			defaults.TextTruncate = E.TextTruncate.AtEnd
+		end
+		if fit then
+			local function size(bound: Media.TextFitBound, use: ComposeTypes.Use): number
+				return math.round(
+					if type(bound) == "string" then metric("typography." .. bound .. ".size", use) else bound
+				)
+			end
+			defaults.TextScaled = true
+			defaults.Size = D2.fromScale(1, 1)
+			defaults.AutomaticSize = E.AutomaticSize.None
+			defaults[1] = Host.UITextSizeConstraint({
+				MaxTextSize = function(use: ComposeTypes.Use): number
+					return size(fit.cap or read(spec.textRole, use) or "body", use)
+				end,
+				MinTextSize = function(use: ComposeTypes.Use): number
+					return size(fit.floor or "caption", use)
+				end,
+			})
+		end
+		if spec.icon and (cut or fit) then
+			table.insert(defaults, Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }))
+		end
+		local label = textRole(ctx.text(if spec.icon then defaults else ctx.props(spec, keys, defaults)), spec.textRole)
+		if cut then
+			local measured = ctx.observe(label, "AbsoluteSize")
+			local width = Compose.formula(function(use: ComposeTypes.Use): number
+				return use(measured).X
+			end)
+			local textSize = ctx.observe(label, "TextSize")
+			local face = ctx.observe(label, "FontFace")
+			Compose.watch(function(use: ComposeTypes.Use)
+				local value = read(source, use) or ""
+				use(textSize)
+				use(face)
+				label.Text = middle(label, value, use(width))
+			end)
+		end
 		if spec.role == "secondary" then
 			ctx.styled(label, "secondary")
 		end
@@ -113,10 +223,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			return label
 		end
 		local icon = ctx.icon(spec.icon)
-		local root = ctx.row(
-			if spec.iconPosition == "trailing" then { label, icon } else { icon, label },
-			(ctx.props(spec, keys) :: unknown) :: Engine.FrameNativeProps
-		)
+		local rowProps = (ctx.props(spec, keys) :: unknown) :: Engine.FrameNativeProps
+		if cut or fit then
+			rowProps.Size = rowProps.Size or D2.fromScale(1, 0)
+		end
+		local root = ctx.row(if spec.iconPosition == "trailing" then { label, icon } else { icon, label }, rowProps)
 		if spec.gap then
 			runtime.decorate(root:FindFirstChildWhichIsA("UIListLayout"), {
 				Padding = function(use: ComposeTypes.Use)

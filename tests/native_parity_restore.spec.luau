@@ -2,6 +2,7 @@
 local t = require("./lib/testkit")
 local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
+local Roblox = require("@lune/roblox")
 local Compose = Facet.Compose
 
 type World = {
@@ -773,5 +774,165 @@ t.describe("native parity restore: RowActions outside tap", function()
 		state.open.a:set("trailing")
 		w.stop()
 		t.expect(w.input.InputBegan.count()).toBe(0)
+	end)
+end)
+
+t.describe("native parity restore: Label text fit and middle truncation", function()
+	local ELLIPSIS = "\u{2026}"
+	local VALUE = "Coastal circuit reverse night lap 14"
+	local measures = 0
+	local function glyphWidth(text: string, size: number): number
+		return (utf8.len(text) or #text) * size * 0.5
+	end
+	local function measure(node: any): any
+		measures += 1
+		return Roblox.Vector2.new(glyphWidth(node.Text, node.TextSize), node.TextSize)
+	end
+	local function labelWorld(spec: { [string]: any }, options: { [string]: any }?): (World, any)
+		local w = world(function(UI)
+			return UI.Label(spec)
+		end, options, { measureText = measure })
+		local label = w.screen:FindFirstChildWhichIsA("TextLabel", true)
+		return w, label
+	end
+	local function resize(w: World, label: any, width: number)
+		label.AbsoluteSize = w.engine.types.Vector2.new(width, 20)
+	end
+
+	t.it("keeps the head and the tail and fits the width at three widths", function()
+		for _, width in { 60, 120, 200 } do
+			local w, label = labelWorld({ text = VALUE, truncate = "middle", TextSize = 16 })
+			resize(w, label, width)
+			local painted = label.Text
+			t.expect(glyphWidth(painted, label.TextSize) <= width).toBe(true)
+			t.expect(glyphWidth(painted, label.TextSize) + label.TextSize * 0.5 > width).toBe(true)
+			t.expect(string.find(painted, ELLIPSIS, 1, true) ~= nil).toBe(true)
+			t.expect(string.sub(painted, 1, 1)).toBe("C")
+			t.expect(string.sub(painted, -2)).toBe("14")
+			w.stop()
+		end
+	end)
+
+	t.it("paints the whole value when it fits and the bare mark when nothing fits", function()
+		local w, label = labelWorld({ text = "Lap 3", truncate = "middle" })
+		resize(w, label, 400)
+		t.expect(label.Text).toBe("Lap 3")
+		resize(w, label, 1)
+		t.expect(label.Text).toBe(ELLIPSIS)
+		resize(w, label, 0)
+		t.expect(label.Text).toBe("Lap 3")
+		w.stop()
+	end)
+
+	t.it("never cuts inside a multi-byte character", function()
+		local w, label = labelWorld({ text = "Piloté circuit côtier — réservé", truncate = "middle" })
+		for width = 20, 200, 7 do
+			resize(w, label, width)
+			t.expect(utf8.len(label.Text) ~= nil).toBe(true)
+		end
+		w.stop()
+	end)
+
+	t.it("recomputes on a width or text change and on nothing else, and restores the whole value", function()
+		local value = Compose.cell(VALUE)
+		local order = Compose.cell(1)
+		local w, label = labelWorld({ text = value, truncate = "middle", LayoutOrder = order })
+		resize(w, label, 120)
+		local narrow = label.Text
+		local before = measures
+		order:set(2)
+		t.expect(measures).toBe(before)
+		t.expect(label.Text).toBe(narrow)
+		resize(w, label, 240)
+		t.expect(measures > before).toBe(true)
+		t.expect(label.Text ~= narrow).toBe(true)
+		value:set("Harbor loop 9")
+		t.expect(label.Text).toBe("Harbor loop 9")
+		value:set(VALUE)
+		resize(w, label, 600)
+		t.expect(label.Text).toBe(VALUE)
+		w.stop()
+	end)
+
+	t.it("re-derives the cut when the painted size changes and cuts an icon label beside its icon", function()
+		local size = Compose.cell(16)
+		local w, label = labelWorld({ text = VALUE, truncate = "middle", TextSize = size })
+		resize(w, label, 160)
+		local at16 = label.Text
+		size:set(8)
+		t.expect(label.Text ~= at16).toBe(true)
+		t.expect(glyphWidth(label.Text, 8) <= 160).toBe(true)
+		w.stop()
+		local iconWorld, iconLabel = labelWorld({ text = VALUE, truncate = "middle", icon = "checkmark" })
+		t.expect(iconLabel:FindFirstChildWhichIsA("UIFlexItem") ~= nil).toBe(true)
+		resize(iconWorld, iconLabel, 60)
+		t.expect(string.find(iconLabel.Text, ELLIPSIS, 1, true) ~= nil).toBe(true)
+		t.expect(glyphWidth(iconLabel.Text, iconLabel.TextSize) <= 60).toBe(true)
+		t.expect(string.sub(iconLabel.Text, -2)).toBe("14")
+		iconWorld.stop()
+	end)
+
+	t.it("stays on one line and refuses rich text, wrapping and an unknown truncation", function()
+		local w, label = labelWorld({ text = VALUE, truncate = "middle" })
+		t.expect(label.TextWrapped).toBe(false)
+		t.expect(label.AutomaticSize).toBe(w.engine.types.Enum.AutomaticSize.Y)
+		t.expect(label.Size.X.Scale).toBe(1)
+		w.stop()
+		local endWorld, ended = labelWorld({ text = VALUE, truncate = "end" })
+		t.expect(ended.TextTruncate).toBe(endWorld.engine.types.Enum.TextTruncate.AtEnd)
+		for _, spec in
+			{
+				{ text = "<b>x</b>", truncate = "middle", RichText = true },
+				{ text = VALUE, truncate = "middle", TextWrapped = true },
+				{ text = VALUE, truncate = "centre" },
+			} :: { any }
+		do
+			local ok = pcall(function()
+				labelWorld(spec)
+			end)
+			t.expect(ok).toBe(false)
+		end
+	end)
+
+	t.it("fits the text to its box between the role size and the caption floor", function()
+		local w, label = labelWorld({ text = "Go", textSize = "fit" })
+		t.expect(label.TextScaled).toBe(true)
+		t.expect(label.AutomaticSize).toBe(w.engine.types.Enum.AutomaticSize.None)
+		local constraint = label:FindFirstChildWhichIsA("UITextSizeConstraint")
+		t.expect(constraint.MaxTextSize).toBe(16)
+		t.expect(constraint.MinTextSize).toBe(12)
+		w.stop()
+		local _, titled = labelWorld({ text = "Go", textRole = "title", textSize = "fit" })
+		t.expect(titled:FindFirstChildWhichIsA("UITextSizeConstraint").MaxTextSize).toBe(24)
+	end)
+
+	t.it("honors an explicit cap and floor by role or pixels and follows the theme", function()
+		local theme = Compose.cell(Facet.themes.neutralPackage())
+		local w, label = labelWorld({ text = "Go", textSize = { fit = { cap = "title", floor = 10 } } }, {
+			theme = theme,
+		})
+		local constraint = label:FindFirstChildWhichIsA("UITextSizeConstraint")
+		t.expect(constraint.MaxTextSize).toBe(24)
+		t.expect(constraint.MinTextSize).toBe(10)
+		local larger = Facet.themes.neutralPackage()
+		larger.metrics.typography.title.size = 30
+		theme:set(larger)
+		t.expect(constraint.MaxTextSize).toBe(30)
+		w.stop()
+		local _, pixels = labelWorld({ text = "Go", textSize = { fit = { cap = 40 } } })
+		t.expect(pixels:FindFirstChildWhichIsA("UITextSizeConstraint").MaxTextSize).toBe(40)
+		t.expect(pixels:FindFirstChildWhichIsA("UITextSizeConstraint").MinTextSize).toBe(12)
+	end)
+
+	t.it("refuses a misspelled fit option, a cap that is not a size and a plain size", function()
+		for _, textSize in { { fit = { max = 24 } }, { fit = { cap = true } }, 18, "body" } :: { any } do
+			local ok, message = pcall(function()
+				labelWorld({ text = "x", textSize = textSize })
+			end)
+			t.expect(ok).toBe(false)
+			if type(textSize) == "table" and textSize.fit.max then
+				t.expect(string.find(tostring(message), "cap and floor", 1, true) ~= nil).toBe(true)
+			end
+		end
 	end)
 end)
