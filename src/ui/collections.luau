@@ -177,7 +177,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			local offset = requested
 			if edge > 0 then
 				local current, box = status:peek(), viewport:peek()
-				local last = if current then current.extent - box.size else math.huge
+				local last = if current and current.extent then current.extent - box.size else math.huge
 				offset = if requested <= 0
 					then 0
 					elseif requested >= last then math.max(0, last + 2 * edge)
@@ -378,7 +378,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			else orderedRows(followOf())
 		local contentExtent = Compose.formula(function(use: ComposeTypes.Use): number
 			local current = use(status)
-			local extent = if current then current.extent else 0
+			local extent = if current and current.extent then current.extent else 0
 			return if extent > 0 then extent + 2 * mainEdge(use) else 0
 		end)
 		local native = props(spec, behavior, {
