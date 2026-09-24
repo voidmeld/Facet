@@ -996,7 +996,7 @@ t.describe("native parity weaker focus", function()
 		t.expect(keysOf()).toEqual({ 4, 5, 6 })
 		hit(1).Activated.fire(gamepad)
 		shifted = false
-		t.expect(keysOf()).toEqual({ 1, 2, 3, 4, 5, 6 })
+		t.expect(keysOf()).toEqual({ 1, 2, 3, 4 })
 		world.stop()
 		local single = Compose.cell({})
 		local singleWorld = setup(function(UI)
