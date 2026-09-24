@@ -7,51 +7,45 @@
 ```luau
 local Facet = require(game.ReplicatedStorage:WaitForChild("Facet"))
 local Compose = Facet.Compose
-local runtime = Facet.Roblox.createRuntime()
-local Host = runtime.constructors
-local UI = Facet.controls(runtime)
-local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local app = Facet.app({ name = "Counter" })
+local UI = app.UI
 
-local stop = runtime.mount(function()
+local function Counter()
     local count = Compose.cell(0)
-    local sheet = Facet.themes.createStyleSheet(runtime)
-    return Host.ScreenGui {
-        Name = "Counter", ResetOnSpawn = false,
-        sheet,
-        Host.StyleLink { StyleSheet = Compose.static(sheet) },
-        UI.Screen {
-            gap = "s",
-            UI.Label {
-                text = function(use) return `Clicked {use(count)} times` end,
-            },
-            UI.Button {
-                label = "Add one",
-                onActivate = function() count:update(function(n) return n + 1 end) end,
-            },
+    return UI.Screen {
+        gap = "s",
+        UI.Label {
+            text = function(use) return `Clicked {use(count)} times` end,
+        },
+        UI.Button {
+            label = "Add one",
+            onActivate = function() count:update(function(n) return n + 1 end) end,
         },
     }
-end, playerGui)
+end
 
-script.Destroying:Connect(function()
-    stop()
-    runtime:dispose()
-end)
+app.mount(Counter)
+script.Destroying:Connect(app.dispose)
 ```
 
 ## What the script does
 
-- `Facet.Roblox.createRuntime()` makes a Compose Roblox runtime.
-- `runtime.constructors` is the table of native constructors. The script names
-  it `Host`.
-- `Facet.controls(runtime)` returns the control constructors for that runtime.
+- `Facet.app()` makes a Compose Roblox runtime and the controls for it.
+  `app.UI` is the table of control constructors.
+- `app.mount(Counter)` runs the component and mounts its result into a
+  ScreenGui in PlayerGui. The ScreenGui also holds a StyleSheet and a StyleLink
+  to it. It returns a stop function.
 - `UI.Screen` fills the ScreenGui and pads its content by the `m` spacing
   step. `gap = "s"` puts the `s` step between the children. See
   [Layout](../reference/api.md#layout).
-- `runtime.mount` runs the component and mounts its result into PlayerGui. It
-  returns a stop function.
-- `Facet.themes.createStyleSheet(runtime)` makes a StyleSheet. The sheet is a
-  child of the ScreenGui. The StyleLink references it. See
-  [Styling](05-styling.md).
+- `app.dispose` stops the mounts and disposes the runtime.
+- To use a theme package, give it one time: `Facet.app({ theme = package })`.
+  The controls and the StyleSheet both use it. See [Styling](05-styling.md).
+
+`Facet.app` uses only public pieces: `Facet.Roblox.createRuntime`,
+`Facet.controls`, `Facet.themes.createStyleSheet`, `runtime.mount` and a
+StyleLink. When you need a different root, use these pieces directly. See
+[Mounting](../reference/api.md#mounting).
 
 ## Test a screen without Studio
 
@@ -73,13 +67,17 @@ local engineLib = require("./lib/native_engine")
 local Compose = Facet.Compose
 
 local engine = engineLib.new()
-local runtime = Facet.Roblox.createRuntime(engine)
-local Host = runtime.constructors
-local UI = Facet.controls(runtime, { types = engine.types })
+local playerGui = engine.new("Folder")
+local app = Facet.app({
+    runtime = Facet.Roblox.createRuntime(engine),
+    types = engine.types,
+    parent = playerGui,
+})
+local UI = app.UI
 
 local function Counter()
     local count = Compose.cell(0)
-    return Host.Frame "Counter" {
+    return UI.Screen "Counter" {
         UI.Label "Count" {
             text = function(use) return `Count: {use(count)}` end,
         },
@@ -92,20 +90,27 @@ local function Counter()
     }
 end
 
-local screen = engine.new("ScreenGui")
-local stop, root = runtime.mount(Counter, screen)
-root:FindFirstChild("Add").Activated.fire()
-assert(root:FindFirstChild("Count").Text == "Count: 1")
+local stop, gui = app.mount(Counter)
+local screen = gui:FindFirstChild("Counter")
+screen:FindFirstChild("Add").Activated.fire()
+assert(screen:FindFirstChild("Count").Text == "Count: 1")
 stop()
-assert(screen:FindFirstChild("Counter") == nil)
-runtime:dispose()
+assert(#playerGui:GetChildren() == 0)
+app.dispose()
+app.runtime:dispose()
 ```
 
 - `engineLib.new()` makes the fake engine. Give it to
-  `Facet.Roblox.createRuntime`.
-- `Facet.controls` needs `types = engine.types`, because Lune does not have
-  the Roblox datatypes as globals.
-- `runtime.mount` returns the stop function and the mounted root.
+  `Facet.Roblox.createRuntime`, and give that runtime to `Facet.app`.
+- The app needs `types = engine.types`, because Lune does not have the Roblox
+  datatypes as globals.
+- Lune has no PlayerGui. Give a `parent`.
+- `app.mount` returns the stop function and the ScreenGui.
+- The app does not dispose a runtime that you give. Call `runtime:dispose()`
+  after `app.dispose()`.
+- The fake engine refuses a property that the Roblox class does not have, as
+  Roblox does. A misspelled native property, such as `Sise`, stops the test
+  with an error.
 - `Activated.fire()` sends the event that a click or a gamepad press sends.
 
 The [standalone consumer test](../../tests/native_gallery.spec.luau) mounts the
@@ -133,21 +138,20 @@ local Compose = require(game.ReplicatedStorage.Packages.Compose.core)
 local ComposeRoblox = require(game.ReplicatedStorage.Packages.Compose.roblox)
 local Facet = require(game.ReplicatedStorage.Packages.Facet).bind(Compose, ComposeRoblox)
 
-local runtime = ComposeRoblox.createRuntime()
-local UI = Facet.controls(runtime)
+local app = Facet.app()
+local UI = app.UI
 local enabled = Compose.cell(false)
-local stop = runtime.mount(function()
-    local sheet = Facet.themes.createStyleSheet(runtime)
-    return runtime.constructors.ScreenGui {
-        sheet,
-        runtime.constructors.StyleLink { StyleSheet = Compose.static(sheet) },
+app.mount(function()
+    return UI.Screen {
         UI.Toggle { value = enabled, label = "Music" },
     }
-end, game.Players.LocalPlayer.PlayerGui)
+end)
 ```
 
 - Give the core module and the Roblox module from the same Compose copy.
-- Make the runtime with that Roblox module.
+- `app` of the bound table makes its runtime with that Roblox module. If you
+  make the runtime yourself, use that Roblox module and give the runtime to
+  `Facet.app({ runtime = runtime })`.
 - The Facet tests use the commit in `Facet.COMPOSE_COMMIT`. Facet supports a
   later commit when it keeps the functions that Facet uses. `bind` stops with an
   error that names a missing function.
@@ -161,9 +165,13 @@ contract.
 ## Cleanup
 
 Use Compose cleanup for external subscriptions that a component makes. The stop
-function from `runtime.mount` releases its component. `runtime:dispose()`
-releases the work that the runtime owns. Call the stop function before you
-dispose the runtime.
+function from `app.mount` releases its component. `app.dispose()` releases every
+mount of the app and the runtime that the app made. A runtime that you give to
+the app stays yours. Call `runtime:dispose()` on it after `app.dispose()`.
+
+The runtime methods `dispose` and `batch` use a colon: `runtime:dispose()`. The
+fields of the app use a dot: `app.mount`, `app.dispose`. See
+[Call style](../reference/api.md#call-style).
 
 You can make persistent model cells outside the mounted component. See
 [Components](15-components.md) for state and ownership.

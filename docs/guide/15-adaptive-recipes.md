@@ -8,55 +8,51 @@ different arrangements.
 ## A wrapping action band
 
 ```luau
-return Host.Frame {
-    BackgroundTransparency = 1,
-    Size = UDim2.new(1, 0, 0, 0),
-    AutomaticSize = Enum.AutomaticSize.Y,
-    Host.UIListLayout {
-        FillDirection = Enum.FillDirection.Horizontal,
-        Wraps = true,
-        Padding = UDim.new(0, 8),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-    },
-    UI.Button { LayoutOrder = 1, label = "Save", onActivate = save },
-    UI.Button { LayoutOrder = 2, label = "Preview", onActivate = preview },
+return UI.HStack "Actions" {
+    wrap = true,
+    gap = "s",
+    width = "fill",
+    UI.Button { label = "Save", onActivate = save },
+    UI.Button { label = "Preview", onActivate = preview },
 }
 ```
 
-Wrapping changes the geometry. It does not change what an action means. When
-the order is important, set `LayoutOrder` explicitly.
+`wrap = true` sets `UIListLayout.Wraps`. The stack sets `LayoutOrder` from the
+order of the children. Wrapping changes the geometry. It does not change what
+an action means.
 
 ## Read native bounds
 
+A column count that follows the width needs the native bounds. Read them in
+the `ref` of the control. Register the disconnect with `Compose.cleanup`.
+
 ```luau
-local frame = Host.Frame { Size = UDim2.fromScale(1, 1) }
-local bounds = Compose.cell(frame.AbsoluteSize)
-local connection = frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-    bounds:set(frame.AbsoluteSize)
-end)
-Compose.cleanup(function() connection:Disconnect() end)
-local stop = runtime.mount(function()
-    return UI.VirtualGrid {
-        from = rows,
-        key = function(row) return row.id end,
-        columns = function(use) return math.max(1, math.floor(use(bounds).X / 240)) end,
-        itemSize = 180,
-        render = renderCard,
-        Size = UDim2.fromScale(1, 1),
-    }
-end, frame)
-Compose.cleanup(stop)
-return frame
+local width = Compose.cell(0)
+return UI.VirtualGrid "Cards" {
+    from = rows,
+    key = "id",
+    itemSize = 180,
+    render = renderCard,
+    columns = function(use)
+        return math.max(1, math.floor(use(width) / 240))
+    end,
+    ref = function(grid)
+        local function measure() width:set(grid.AbsoluteSize.X) end
+        measure()
+        local connection = grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(measure)
+        Compose.cleanup(function() connection:Disconnect() end)
+    end,
+}
 ```
 
-The initial native bounds can be zero. Use safe minimum values. Let later engine
-observations update the policy. Do not run a second settle loop to force
-synchronous measurements.
+The VirtualGrid fills its parent by default. The initial native bounds can be
+zero. Use safe minimum values. Let later engine observations update the policy.
+Do not run a second settle loop to force synchronous measurements.
 
 ## Text and safe areas
 
-- Use `TextWrapped`, `AutomaticSize`, native constraints and the applicable
-  flex behavior.
+- Use `TextWrapped`, the `width` and `height` options of the layout
+  constructors, `UI.fill()` and native constraints.
 - Let the engine calculate the text bounds. Do not estimate glyph widths in a
   screen.
 - Use the ScreenGui inset and safe-area properties to configure the target.

@@ -53,6 +53,14 @@ t.describe("native documentation", function()
 				Facet.bind(core, roblox)
 				return facade
 			end
+			local playerGui = engine.new("PlayerGui")
+			facade.app = function(opt)
+				opt = table.clone(opt or {})
+				opt.runtime = opt.runtime or runtime
+				opt.types = engine.types
+				opt.parent = opt.parent or playerGui
+				return Facet.app(opt)
+			end
 			local sheets = {}
 			facade.themes.createStyleSheet = function(rt, pkg, opt)
 				opt = table.clone(opt or {})
@@ -62,7 +70,6 @@ t.describe("native documentation", function()
 				return sheet
 			end
 			local env = table.clone(engine.types)
-			local playerGui = engine.new("PlayerGui")
 			for key, value in
 				{
 					Facet = facade,
@@ -100,7 +107,7 @@ t.describe("native documentation", function()
 			env.items = env.rows
 			for _, key in { "renderCard", "Catalog", "ItemDetails" } do
 				env[key] = function()
-					return UI.Label({ label = "Content" })
+					return UI.Label({ text = "Content" })
 				end
 			end
 			env.script = { Destroying = engine.heartbeat }
@@ -154,6 +161,15 @@ t.describe("native documentation", function()
 				end, engine.new("ScreenGui"))
 				for _, sheet in sheets do
 					assert(sheet.Parent ~= nil, "StyleSheet was referenced without parenting")
+				end
+				if string.find(entry.code, "app.mount(", 1, true) then
+					local gui = playerGui:FindFirstChildWhichIsA("ScreenGui")
+					assert(gui ~= nil, "app.mount made no ScreenGui")
+					local link = gui:FindFirstChildWhichIsA("StyleLink")
+					assert(
+						link ~= nil and link.StyleSheet == gui:FindFirstChildWhichIsA("StyleSheet"),
+						"no linked sheet"
+					)
 				end
 				stop()
 				runtime:dispose()

@@ -2078,7 +2078,8 @@ t.describe("native parity reference applications", function()
 		t.it("edits the consumer's caller-owned Sound value through its toggle", function()
 			local ctx, _, target = nativeContext()
 			local stop, node = ctx.runtime.mount(function()
-				return require("../examples/consumer/src/screen").build(Facet, ctx.runtime, { types = ctx.types })
+				local UI = Facet.controls(ctx.runtime, { types = ctx.types })
+				return require("../examples/consumer/src/screen").build(Facet, UI)
 			end, target)
 			local sound = assert(find(node, "Sound"))
 			local indicator = assert(find(sound, "Indicator"))
@@ -3062,7 +3063,7 @@ t.describe("native parity reference applications", function()
 				header = node:FindFirstChild("Header"),
 				stop = function()
 					stop()
-					runtime.dispose()
+					runtime:dispose()
 				end,
 			}
 		end
@@ -3098,7 +3099,7 @@ t.describe("native parity reference applications", function()
 				target = target,
 				stop = function()
 					stop()
-					runtime.dispose()
+					runtime:dispose()
 				end,
 			}
 		end
@@ -3486,7 +3487,7 @@ t.describe("native parity reference applications", function()
 				end,
 				stop = function()
 					stop()
-					runtime.dispose()
+					runtime:dispose()
 				end,
 			}
 		end

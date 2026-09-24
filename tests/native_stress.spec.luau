@@ -92,7 +92,7 @@ t.describe("native stress invariants", function()
 				sameCensus(engine, baseline, `modal replay {replay} cycle {cycle}`)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			sameCensus(engine, before, "modal teardown")
 		end
 	end)
@@ -128,7 +128,7 @@ t.describe("native stress invariants", function()
 				sameCensus(engine, baseline, `collection replay {replay} cycle {cycle}`)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			sameCensus(engine, before, "collection teardown")
 		end
 	end)
@@ -193,7 +193,7 @@ t.describe("native stress invariants", function()
 				end
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			sameCensus(engine, before, `seed={seed} teardown`)
 		end
 	end)
@@ -232,7 +232,7 @@ t.describe("native stress invariants", function()
 				assert(built.model.confirmed:peek()[id] == value)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			sameCensus(engine, before, `replication seed={seed} teardown`)
 		end
 	end)
@@ -285,7 +285,7 @@ t.describe("native stress invariants", function()
 				assert(request.cancelled == 1, `seed={seed}: cancellation count {request.cancelled}`)
 			end
 			assert(changes == notifications, `seed={seed}: late callback survived owner`)
-			runtime.dispose()
+			runtime:dispose()
 			sameCensus(engine, before, `async seed={seed} teardown`)
 		end
 	end)
@@ -333,7 +333,7 @@ t.describe("native stress invariants", function()
 				assert(activations == prior + expected, `seed={seed} step={step}: action eligibility stale`)
 			end
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			sameCensus(engine, before, `preference seed={seed} teardown`)
 		end
 	end)
@@ -384,7 +384,7 @@ t.describe("native stress invariants", function()
 			gui.SelectedObject = b
 			assert(gui.SelectedObject == b, `seed={seed}: selection is lost after the storm`)
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			sameCensus(engine, before, `input switch seed={seed} teardown`)
 		end
 	end)
@@ -418,7 +418,7 @@ t.describe("native stress invariants", function()
 		t.expect(disposed >= 1).toBe(true)
 		t.expect(panel.Parent).toBe(nil)
 		stopNotify()
-		runtime.dispose()
+		runtime:dispose()
 		sameCensus(engine, before, "dispose from a notification")
 	end)
 
@@ -458,7 +458,7 @@ t.describe("native stress invariants", function()
 			assert(find(root, "AlertPanel") == nil, `cycle {cycle}: the alert stayed`)
 		end
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 		sameCensus(engine, before, "modal stack teardown")
 	end)
 end)

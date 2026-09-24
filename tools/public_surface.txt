@@ -68,6 +68,7 @@ Roblox : table
   Roblox.preferredInputSpec : function
   Roblox.usableViewportSize : function
 VERSION : string
+app : function
 bind : function
 controls : function
 themes : table
@@ -124,6 +125,8 @@ controls(runtime).ZStack : function
 controls(runtime).fill : function
 type AlertAction
 type AlertSpec
+type App
+type AppOptions
 type AsyncImageProps
 type AvatarGroupProps
 type AvatarMember
@@ -136,6 +139,7 @@ type ChipProps
 type CollapsibleViewSpec
 type CollectionSpec
 type ComboBoxSpec
+type Component
 type ComposeModule
 type ComposeRobloxModule
 type ControlOptions

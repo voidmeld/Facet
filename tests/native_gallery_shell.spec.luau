@@ -57,7 +57,7 @@ local function fixture(build)
 	end, target)
 	return ctx, root, function()
 		stop()
-		runtime.dispose()
+		runtime:dispose()
 	end
 end
 

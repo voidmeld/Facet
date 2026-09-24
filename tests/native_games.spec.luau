@@ -59,7 +59,7 @@ local function mountGame(ctx, definition)
 	ctx.node = node
 	game.dispose = function()
 		stop()
-		ctx.runtime.dispose()
+		ctx.runtime:dispose()
 	end
 	return game
 end

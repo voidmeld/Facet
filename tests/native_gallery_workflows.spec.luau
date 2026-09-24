@@ -63,7 +63,7 @@ local function mount(name, kind)
 	end, target)
 	return built, node, function()
 		stop()
-		ctx.runtime.dispose()
+		ctx.runtime:dispose()
 	end, ctx, engine
 end
 

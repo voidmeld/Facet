@@ -11,6 +11,7 @@ local CollectionTypes = require("@self/ui/collection_types")
 local MediaTypes = require("@self/ui/media_types")
 local ThemeTypes = require("@self/ui/theme_types")
 local LayoutTypes = require("@self/ui/layout_types")
+local createApp = require("@self/ui/app")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
@@ -69,6 +70,9 @@ export type ZStackProps = LayoutTypes.ZStackProps
 export type ScrollViewProps = LayoutTypes.ScrollViewProps
 export type GridProps = LayoutTypes.GridProps
 export type Controls = ControlTypes.Controls
+export type App = createApp.App
+export type AppOptions = createApp.AppOptions
+export type Component = createApp.Component
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
 export type Cell<T> = Compose.Cell<T>
@@ -84,6 +88,7 @@ export type Facet = {
 	Compose: ComposeModule,
 	Roblox: ComposeRobloxModule,
 	controls: (Runtime, ControlOptions?) -> Controls,
+	app: (AppOptions?) -> App,
 	themes: ThemeTypes.Themes,
 	bind: (ComposeModule, ComposeRobloxModule) -> Facet,
 }
@@ -126,6 +131,7 @@ local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 	if type(roblox) ~= "table" or type(roblox.createRuntime) ~= "function" then
 		error("Facet.bind: pass the Compose Roblox module from the same Compose copy as the second argument", 2)
 	end
+	local themes = bindThemes(core)
 	local surface: Facet
 	surface = table.freeze({
 		VERSION = VERSION,
@@ -135,7 +141,10 @@ local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 		controls = function(runtime: Runtime, options: ControlOptions?): Controls
 			return createControls(core, runtime, options)
 		end,
-		themes = bindThemes(core),
+		app = function(options: AppOptions?): App
+			return createApp(core, roblox, createControls, themes, options)
+		end,
+		themes = themes,
 		bind = bind,
 	})
 	return surface

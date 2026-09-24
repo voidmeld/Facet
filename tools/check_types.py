@@ -124,6 +124,11 @@ def negative_probes():
         ("Fill weight", 'UI.fill("wide")'),
         ("Fill return", 'local wrong: Frame = UI.fill()'),
         ("Unknown control", 'UI.ThisControlDoesNotExist({})'),
+        ("App parent", 'Facet.app({ parent = 42 })'),
+        ("App theme", 'Facet.app({ theme = "dark" })'),
+        ("App component", 'Facet.app().mount(42)'),
+        ("App mount return", 'local wrong: number = Facet.app().mount(function() return UI.Label({ text = "Hi" }) end)'),
+        ("App dispose argument", 'local wrong: string = Facet.app().dispose()'),
     ])
     named = []
     for label, code in probes:

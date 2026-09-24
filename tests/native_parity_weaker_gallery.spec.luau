@@ -165,7 +165,7 @@ local function galleryWorld(options: any?): any
 		types = engine.types,
 		stop = function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 		end,
 	}
 end

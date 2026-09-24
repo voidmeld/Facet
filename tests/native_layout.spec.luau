@@ -480,7 +480,11 @@ t.describe("native layout primitives", function()
 			t.expect(grid.CellPadding).toBe(D2.fromOffset(8, 8))
 			local height = themes.neutralPackage().metrics.controlSizes.regular.height
 			t.expect(grid.CellSize.X.Scale).toBeCloseTo(1 / 3)
-			t.expect(grid.CellSize.X.Offset).toBe(-5)
+			t.expect(grid.CellSize.X.Offset).toBe(-6)
+			for _, width in { 300, 301, 302 } do
+				local row = 3 * (grid.CellSize.X.Scale * width + grid.CellSize.X.Offset) + 2 * grid.CellPadding.X.Offset
+				t.expect(row <= width).toBe(true)
+			end
 			t.expect(grid.CellSize.Y.Offset).toBe(height)
 			t.expect(root:FindFirstChild("D").LayoutOrder).toBe(4)
 			stop()
@@ -498,6 +502,7 @@ t.describe("native layout primitives", function()
 			columns:set(4)
 			t.expect(grid.FillDirectionMaxCells).toBe(4)
 			t.expect(grid.CellSize.X.Scale).toBeCloseTo(0.25)
+			t.expect(grid.CellSize.X.Offset).toBe(-3)
 			stop()
 		end)
 

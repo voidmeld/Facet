@@ -12,6 +12,7 @@ and styling. This reference describes the `0.12.0` surface.
 | `Compose` | The pinned Compose core module, by reference. Use its cells, formulas, owners and structural operations directly. |
 | `Roblox` | The pinned Compose Roblox module, by reference. `createRuntime(engine?)` makes the native runtime. `createHost(engine?)` makes its host. |
 | `controls(runtime, options?)` | Returns the control constructor table for that native runtime. |
+| `app(options?)` | Returns an app: a runtime, the controls for it, and a `mount` that adds the ScreenGui, the StyleSheet and the StyleLink. See [Mounting](#mounting). |
 | `themes` | Theme package definitions, native StyleSheet compilation, icons and skins. |
 | `COMPOSE_COMMIT` | The full Compose commit of the pinned copy. The Facet tests use this commit. |
 | `bind(Compose, Roblox)` | Returns a Facet table whose `controls` and `themes` use the Compose core module and the Compose Roblox module that you give. See [Your own Compose](#your-own-compose). |
@@ -19,7 +20,7 @@ and styling. This reference describes the `0.12.0` surface.
 ### Types
 
 The exported Luau types include `Facet`, `ComposeModule`, `ComposeRobloxModule`,
-`Controls`, `ControlOptions`, `ThemePackage`,
+`Controls`, `ControlOptions`, `App`, `AppOptions`, `Component`, `ThemePackage`,
 and the `Props` and `Spec` contracts of each control. The layout types include
 `Space`, `Padding` and `Extent`. `Cell<T>`, `Readable<T>`,
 `Runtime`, `Owner` and `Use` are the Compose types. Collection, menu and picker
@@ -49,9 +50,47 @@ definitions. It reports vendor diagnostics separately. It does not accept a
 
 ### Mounting
 
-There is no Facet application, mounting service, render target, solver,
-reactor or scene object. The caller owns the native targets. The caller calls
-these runtime functions directly:
+`Facet.app(options?)` is the short path to a screen. It uses only the public
+pieces below. It adds no service, solver, scene or render target.
+
+```luau
+local Facet = require(game.ReplicatedStorage.Facet)
+local app = Facet.app()
+local UI = app.UI
+
+app.mount(function()
+    return UI.Screen {
+        UI.Button { label = "Continue", onActivate = function() print("Continue") end },
+    }
+end)
+script.Destroying:Connect(app.dispose)
+```
+
+The app has these fields:
+
+| Field | Contract |
+|---|---|
+| `runtime` | `options.runtime`, or a new runtime from `Facet.Roblox.createRuntime()`. |
+| `UI` | `Facet.controls(runtime, options)`. |
+| `mount(component, parent?)` | Mounts a ScreenGui into `parent`, `options.parent` or the PlayerGui of the local player. The ScreenGui holds a StyleSheet from `Facet.themes.createStyleSheet(runtime, options.theme)`, a StyleLink to that sheet, and the result of `component()`. It returns the stop function and the ScreenGui. |
+| `dispose()` | Stops each mount of the app. Then it disposes the runtime if the app made it. A second call does nothing. |
+
+`AppOptions` accepts every `controls` option (see [Factory options](#factory-options))
+and these fields:
+
+- `runtime`: a runtime that you own. The app does not dispose it. Give a
+  runtime when you test without Roblox.
+- `parent`: the default parent of each ScreenGui.
+- `name`: the ScreenGui name. The default is `Facet`.
+
+The app gives `theme` to the controls and to the StyleSheet, so you set the
+theme one time. It also gives `types` and `reducedMotion` to the StyleSheet.
+`component` runs in the owner of the mount. Cells that it makes belong to that
+mount. `app.mount` after `app.dispose` stops with an error.
+
+When you need more than one StyleSheet, another ScreenGui property, or a
+different root, use the runtime directly. These functions are the pieces that
+`app` uses:
 
 - `runtime.mount`,
 - `runtime.mountFragment`,
@@ -78,6 +117,16 @@ local stop = runtime.mount(function()
     }
 end, game.Players.LocalPlayer.PlayerGui)
 ```
+
+### Call style
+
+Use a dot for fields that are plain functions: `Facet.app`, `app.mount`,
+`app.dispose`, `runtime.mount`, `runtime.mountFragment`, `runtime.decorate`
+`runtime.spring` and `runtime.tween`. Use a colon for the Compose runtime
+methods: `runtime:dispose()`, `runtime:batch(body)`, `runtime:watch(body)`,
+`runtime:settle()` and `runtime:pending()`. Compose declares these with `self`,
+and the type check rejects the dot form. Cells use a colon:
+`cell:set(value)`, `cell:update(fn)` and `cell:peek()`.
 
 ### Your own Compose
 
@@ -295,7 +344,8 @@ beside the scroll bar. `axis` is `"y"` (the default), `"x"` or `"xy"`. The
 
 `UI.Grid(spec) -> Frame` puts its children in a `UIGridLayout`. `columns` is
 required. It must be a whole number, 1 or more. The grid divides its width into
-that number of cells. `gap` spaces the cells on both axes, and `rowGap`
+that number of cells. Each cell gets its share of the gaps, rounded up to a
+whole pixel, so a full row always fits the width. `gap` spaces the cells on both axes, and `rowGap`
 replaces the vertical space. `cellHeight` is the cell height in pixels. The
 default is the regular control height of the theme package. `aspectRatio` adds
 a `UIAspectRatioConstraint` to the grid layout, which sets the cell height

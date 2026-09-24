@@ -155,7 +155,7 @@ local function mountHud(width: number?, height: number?, input: string?)
 		gui = gui,
 		stop = function()
 			stop()
-			runtime.dispose()
+			runtime:dispose()
 			t.expect(#target:GetChildren()).toBe(0)
 		end,
 	}
