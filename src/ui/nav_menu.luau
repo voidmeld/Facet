@@ -2,7 +2,11 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
+local Media = require("./media_types")
+local fieldChrome = require("./field_chrome")
 local ComposeTypes = require("../vendor/compose/core")
+
+type MenuEntry<V> = { key: string, heading: string?, item: Nav.MenuItem<V>? }
 
 return function(
 	ctx: Types.Context,
@@ -12,7 +16,9 @@ return function(
 		SplitButton: Nav.SplitButtonConstructor,
 		ComboBox: Types.Constructor<Nav.ComboBoxSpec, Frame>,
 		Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
-		TextInput: Types.Constructor<Inputs.TextInputProps, TextBox>,
+		TextInput: Types.Constructor<Inputs.TextInputProps, TextBox | Frame>,
+		Badge: Types.Constructor<Media.BadgeProps, GuiObject>,
+		Avatar: Types.Constructor<Media.AvatarProps, TextButton>,
 	},
 	surfaces: Nav.Surfaces
 ): ()
@@ -59,6 +65,13 @@ return function(
 			local item: Nav.MenuItem<V> = copy
 			assert(not identifiers[id], `Facet UI.Menu: two items at one level share the id '{id}'`)
 			identifiers[id] = true
+			if item.divider ~= true and item.avatar ~= nil then
+				for key in (item.avatar :: unknown) :: { [string]: unknown } do
+					if key ~= "name" and key ~= "image" and key ~= "userId" then
+						error(`Facet UI.Menu: an avatar takes name, image and userId, not '{key}'`, 0)
+					end
+				end
+			end
 			if not item.divider then
 				assert(
 					type(read(item.label, use)) == "string" and string.find(read(item.label, use), "%S") ~= nil,
@@ -138,7 +151,46 @@ return function(
 			end
 		end
 		local widths = Compose.cell({} :: { [string]: number })
-		local rows = ctx.column({
+		local function landing(items: { Nav.MenuItem<V> }): string?
+			for _, item in items do
+				if item.divider ~= true then
+					local action = actionItem(item)
+					if
+						action.selected ~= nil
+						and read(action.selected) == action.value
+						and read(action.enabled) ~= false
+					then
+						return tostring(item.id)
+					end
+				end
+			end
+			return nil
+		end
+		local entries = Compose.formula(function(use: ComposeTypes.Use): { MenuEntry<V> }
+			local out: { MenuEntry<V> } = {}
+			for index, item in use(current) do
+				local key = tostring(item.id or index)
+				if item.divider ~= true then
+					local heading = read(actionItem(item).sectionTitle, use)
+					if heading ~= nil and heading ~= "" then
+						table.insert(out, { key = "Section:" .. key, heading = heading })
+					end
+				end
+				table.insert(out, { key = key, item = item })
+			end
+			return out
+		end)
+		local rows = Host.Frame({
+			Name = "MenuRows",
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+			Host.UIListLayout({
+				FillDirection = E.FillDirection.Vertical,
+				SortOrder = E.SortOrder.LayoutOrder,
+				Padding = D.new(0, 8),
+			}) :: Types.Child,
 			Compose.show(function()
 				return spec.query ~= nil
 			end, function()
@@ -154,15 +206,42 @@ return function(
 				return UI.Button "Back" {
 					label = spec.backLabel or "Back",
 					onActivate = back,
+					LayoutOrder = -1,
 					Size = D2.new(1, 0, 0, 44),
 				}
 			end),
 			Compose.keyed({
-				from = current,
-				key = function(item: Nav.MenuItem<V>, index: number)
-					return item.id or index
+				from = entries,
+				key = function(entry: MenuEntry<V>)
+					return entry.key
 				end,
-				render = function(source: ComposeTypes.Readable<Nav.MenuItem<V>>, index: ComposeTypes.Readable<number>)
+				render = function(
+					entrySource: ComposeTypes.Readable<MenuEntry<V>>,
+					index: ComposeTypes.Readable<number>
+				)
+					local entry = entrySource:peek()
+					if entry.heading then
+						local title = ctx.text({
+							Name = "SectionTitle",
+							Text = function(use: ComposeTypes.Use): string
+								return use(entrySource).heading or ""
+							end,
+						})
+						title:AddTag("facet-type-caption")
+						title:AddTag("facet-secondary")
+						return Host.Frame({
+							Name = entry.key,
+							LayoutOrder = index,
+							BackgroundTransparency = 1,
+							Size = D2.new(1, 0, 0, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+							ctx.padding(12, 4) :: Types.Child,
+							title :: Types.Child,
+						})
+					end
+					local source = Compose.formula(function(use: ComposeTypes.Use): Nav.MenuItem<V>
+						return assert(use(entrySource).item)
+					end)
 					local item = source:peek()
 					if item.divider then
 						return ctx.styled(
@@ -219,6 +298,83 @@ return function(
 						end,
 					})
 					row:AddTag("facet-menu-item")
+					local accessories: { Types.Child } = {
+						Host.UIListLayout({
+							FillDirection = E.FillDirection.Horizontal,
+							SortOrder = E.SortOrder.LayoutOrder,
+							VerticalAlignment = E.VerticalAlignment.Center,
+							Padding = D.new(0, 8),
+						}) :: Types.Child,
+					}
+					if item.badge ~= nil then
+						table.insert(
+							accessories,
+							UI.Badge({
+								Name = "Count",
+								LayoutOrder = 1,
+								label = function(use: ComposeTypes.Use): string
+									local badge = read(actionItem(use(source)).badge, use)
+									return if badge == nil then "" else tostring(badge)
+								end,
+							}) :: Types.Child
+						)
+					end
+					if item.meta ~= nil then
+						local meta = ctx.text({
+							Name = "Meta",
+							LayoutOrder = 0,
+							Text = function(use: ComposeTypes.Use): string
+								return read(actionItem(use(source)).meta, use) or ""
+							end,
+						})
+						meta:AddTag("facet-secondary")
+						table.insert(accessories, meta :: Types.Child)
+					end
+					if item.shortcutLabel ~= nil then
+						local shortcut = ctx.text({
+							Name = "Shortcut",
+							LayoutOrder = 2,
+							Text = function(use: ComposeTypes.Use): string
+								return read(actionItem(use(source)).shortcutLabel, use) or ""
+							end,
+						})
+						shortcut:AddTag("facet-secondary")
+						table.insert(accessories, shortcut :: Types.Child)
+					end
+					if #accessories > 1 then
+						surfaces.attach(row, {
+							Host.Frame({
+								Name = "Accessories",
+								BackgroundTransparency = 1,
+								AnchorPoint = V2.new(1, 0.5),
+								Position = D2.new(
+									1,
+									if item.checked or item.selected or item.marked then -32 else 0,
+									0.5,
+									0
+								),
+								Size = D2.fromOffset(0, 0),
+								AutomaticSize = E.AutomaticSize.XY,
+								ZIndex = 2,
+								table.unpack(accessories),
+							}) :: Types.Child,
+						})
+					end
+					local avatar = item.avatar
+					local rowContent = row:FindFirstChild("Content")
+					if avatar and rowContent then
+						runtime.mount(function()
+							return UI.Avatar({
+								Name = "Avatar",
+								LayoutOrder = 0,
+								name = avatar.name,
+								image = avatar.image,
+								userId = avatar.userId,
+								controlSize = "compact" :: Types.ControlSize,
+								Selectable = false,
+							})
+						end, rowContent)
+					end
 					local check = if item.children then nil else row:FindFirstChild("TrailingIcon", true)
 					if check and check:IsA("GuiObject") then
 						Compose.watch(function(use: ComposeTypes.Use)
@@ -253,11 +409,15 @@ return function(
 					return row
 				end,
 			}),
-			ctx.padding(8, 8),
-			ctx.corner(),
-		}, { Name = "MenuRows", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
+			ctx.padding(8, 8) :: Types.Child,
+			ctx.corner() :: Types.Child,
+		})
 		local rowSize = ctx.observe(rows, "AbsoluteSize")
 		local function panelWidth(use: ComposeTypes.Use): number
+			local authored = read(spec.width, use)
+			if authored ~= nil then
+				return authored
+			end
 			local widest = 0
 			for _, width in use(widths) do
 				widest = math.max(widest, width)
@@ -313,6 +473,7 @@ return function(
 					backgroundTransparency = 1,
 					onOutside = close,
 					exiting = if phase then phase.exiting else nil,
+					initialFocus = landing(current:peek()),
 				}
 			)
 		if nonmodal then
@@ -340,9 +501,47 @@ return function(
 			end
 			local left, top = at.X - offset.X + #use(path) * 288, at.Y - offset.Y + bounds.Y + 4
 			local above = false
-			if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
-				top = at.Y - offset.Y - panelSize.Y - 4
-				above = true
+			local edge, align = spec.edge or "bottom", spec.align or "start"
+			if #use(path) > 0 or (edge == "bottom" and align == "start") then
+				if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
+					top = at.Y - offset.Y - panelSize.Y - 4
+					above = true
+				end
+			else
+				local x, y = at.X - offset.X, at.Y - offset.Y
+				local function along(start: number, length: number, extentAlong: number): number
+					return if align == "center"
+						then start + (length - extentAlong) / 2
+						elseif align == "end" then start + length - extentAlong
+						else start
+				end
+				if edge == "top" or edge == "bottom" then
+					left = along(x, bounds.X, panelSize.X)
+					local below, over = y + bounds.Y + 4, y - panelSize.Y - 4
+					above = edge == "top"
+					if edge == "bottom" and offer.Y > 0 and below + panelSize.Y > offer.Y - 8 and over >= 8 then
+						above = true
+					elseif edge == "top" and over < 8 and (offer.Y <= 0 or below + panelSize.Y <= offer.Y - 8) then
+						above = false
+					end
+					top = if above then over else below
+				else
+					top = along(y, bounds.Y, panelSize.Y)
+					local after, before = x + bounds.X + 4, x - panelSize.X - 4
+					left = if edge == "trailing" then after else before
+					if edge == "trailing" and offer.X > 0 and after + panelSize.X > offer.X - 8 and before >= 8 then
+						left = before
+					elseif
+						edge == "leading"
+						and before < 8
+						and (offer.X <= 0 or after + panelSize.X <= offer.X - 8)
+					then
+						left = after
+					end
+					if offer.Y > 0 then
+						top = math.clamp(top, 8, math.max(8, offer.Y - panelSize.Y - 8))
+					end
+				end
 			end
 			if offer.X > 0 then
 				left = math.clamp(left, 8, math.max(8, offer.X - panelSize.X - 8))
@@ -352,7 +551,11 @@ return function(
 		end
 		runtime.decorate(panel, {
 			Size = function(use: ComposeTypes.Use)
-				local height = math.min(use(rowSize).Y, math.max(44, use(extent).Y - 24))
+				local height = math.min(
+					use(rowSize).Y,
+					math.max(44, use(extent).Y - 24),
+					if spec.maxHeight then math.max(60, spec.maxHeight) else math.huge
+				)
 				return if use(asSheet) then D2.new(1, -24, 0, height) else D2.fromOffset(panelWidth(use), height)
 			end,
 		})
@@ -392,15 +595,37 @@ return function(
 				table.insert(nextPath, assert(item.id))
 				path:set(nextPath)
 			end
-		end, { priority = 2100 })
+		end, { priority = 2100, capture = true })
 		ctx.action(modal, "MenuLeft", { E.KeyCode.Left, E.KeyCode.DPadLeft }, function(use: ComposeTypes.Use)
 			return #use(path) > 0
-		end, back, { priority = 2100 })
+		end, back, { priority = 2100, capture = true })
 		local focusIn = surfaces.selecting()
+		local placed = ctx.observe(modal, "Parent")
 		Compose.watch(function(use: ComposeTypes.Use)
 			local rows = use(current)
+			use(placed)
 			if gui and not nonmodal and focusIn(use) then
 				local target = if pendingFocus then surfaces.firstSelectable(panel, pendingFocus) else nil
+				if not target then
+					local chosen = landing(rows)
+					target = if chosen then surfaces.firstSelectable(panel, chosen) else nil
+				end
+				if not target then
+					for _, item in rows do
+						if item.divider ~= true and read(item.enabled, use) ~= false then
+							local live = actionItem(item)
+							local chosen = if live.selected
+								then live.selected:peek() == live.value
+								else read(live.marked, use) == true
+							if chosen then
+								target = surfaces.firstSelectable(panel, tostring(live.id))
+								if target then
+									break
+								end
+							end
+						end
+					end
+				end
 				if not target then
 					for _, item in rows do
 						if not item.divider and read(item.enabled, use) ~= false then
@@ -415,6 +640,27 @@ return function(
 					gui.SelectedObject = target
 				end
 			end
+		end)
+		local centered: string? = nil
+		Compose.watch(function(use: ComposeTypes.Use)
+			local level = table.concat(use(path), "/")
+			if centered == level then
+				return
+			end
+			local chosen = landing(use(current))
+			if chosen == nil then
+				centered = level
+				return
+			end
+			local window, canvas = use(measured).Y, use(rowSize).Y
+			local row = rows:FindFirstChild(chosen)
+			if row == nil or not row:IsA("GuiObject") or window <= 0 or canvas <= 0 then
+				return
+			end
+			local offset = row.AbsolutePosition.Y - rows.AbsolutePosition.Y
+			local target = math.clamp(offset + row.AbsoluteSize.Y / 2 - window / 2, 0, math.max(0, canvas - window))
+			panel.CanvasPosition = V2.new(panel.CanvasPosition.X, target)
+			centered = level
 		end)
 		surfaces.attach(modal, {
 			Compose.keyed({
@@ -529,7 +775,26 @@ return function(
 	UI.Menu = ctx.construct("Menu", function<V>(spec: Nav.MenuSpec<V>): Frame
 		assert(spec.items ~= nil, "Menu requires items")
 		menuItems(read(spec.items))
-		local opened = spec.isPresented or Compose.cell(false)
+
+		assert(
+			spec.edge == nil or table.find({ "top", "bottom", "leading", "trailing" }, spec.edge),
+			"Facet UI.Menu: edge must be top, bottom, leading or trailing"
+		)
+		assert(
+			spec.align == nil or table.find({ "start", "center", "end" }, spec.align),
+			"Facet UI.Menu: align must be start, center or end"
+		)
+		assert(
+			spec.maxHeight == nil
+				or (type(spec.maxHeight) == "number" and spec.maxHeight > 0 and spec.maxHeight < math.huge),
+			"Facet UI.Menu: maxHeight must be a finite number of pixels above 0"
+		)
+		local width = read(spec.width)
+		assert(
+			width == nil or (type(width) == "number" and width > 0 and width < math.huge),
+			"Facet UI.Menu: width must be a finite number of pixels above 0, or a readable of one"
+		)
+		local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(false)
 		local function close()
 			if opened:peek() then
 				opened:set(false)
@@ -615,6 +880,10 @@ return function(
 			"onClose",
 			"enabled",
 			"isPresented",
+			"edge",
+			"align",
+			"width",
+			"maxHeight",
 		}, {
 			Name = "Menu",
 			BackgroundTransparency = 1,
@@ -689,6 +958,14 @@ return function(
 		"iconOnly",
 		"textSize",
 		"isPresented",
+		"requiredMark",
+		"hint",
+		"errorText",
+		"controlSize",
+		"appearance",
+		"corners",
+		"maxHeight",
+		"indicatorPosition",
 	}
 	local optionFields: { [string]: boolean } = {
 		id = true,
@@ -698,7 +975,53 @@ return function(
 		icon = true,
 		badge = true,
 		enabled = true,
+		meta = true,
+		avatar = true,
+		sectionTitle = true,
+		indicator = true,
 	}
+	local MENU_WORDS: { [string]: string } = { standard = "standard", contrast = "contrast", utility = "utility" }
+	local STRIP_WORDS: { [string]: string } = { filled = "filled", stroke = "stroke", utility = "utility" }
+	local function appearanceFor(style: Nav.PickerStyle, word: unknown): string?
+		if word == nil then
+			return nil
+		end
+		if style == "menu" or style == "navigationLink" then
+			if type(word) ~= "string" or MENU_WORDS[word] == nil then
+				error(
+					`Facet UI.Picker: a {style} appearance is standard | contrast | utility (got {tostring(word)})`,
+					0
+				)
+			end
+		elseif style == "segmented" then
+			if type(word) ~= "string" or STRIP_WORDS[word] == nil then
+				error(`Facet UI.Picker: a segmented appearance is filled | stroke | utility (got {tostring(word)})`, 0)
+			end
+		elseif style == "automatic" then
+			if type(word) ~= "string" or (MENU_WORDS[word] == nil and STRIP_WORDS[word] == nil) then
+				error(
+					"Facet UI.Picker: appearance is standard | contrast | utility | filled | stroke "
+						.. `(got {tostring(word)})`,
+					0
+				)
+			end
+		else
+			error(`Facet UI.Picker: a {style} picker takes no appearance`, 0)
+		end
+		return word :: string
+	end
+	local function translate(word: string?, style: Nav.PickerStyle): string?
+		if word == nil then
+			return nil
+		end
+		if style == "segmented" then
+			return if word == "standard" then "filled" elseif word == "contrast" then "stroke" else word
+		elseif style == "menu" or style == "navigationLink" then
+			return if word == "filled" then "standard" elseif word == "stroke" then "contrast" else word
+		end
+		return nil
+	end
+	local chrome = fieldChrome(ctx)
 	UI.Picker = ctx.construct("Picker", function<V>(spec: Nav.PickerSpec<V>): GuiObject
 		writable(spec.selected, "Picker.selected")
 		assert(spec.onChange == nil or type(spec.onChange) == "function", "Picker.onChange must be a function")
@@ -708,6 +1031,78 @@ return function(
 			spec.enabled == nil or type(read(spec.enabled)) == "boolean",
 			"Picker.enabled must be a boolean or a readable boolean"
 		)
+		local declaredStyle: Nav.PickerStyle = spec.style or "automatic"
+		chrome.check("Picker", {
+			label = spec.label,
+			requiredMark = spec.requiredMark,
+			hint = spec.hint,
+			errorText = spec.errorText,
+			controlSize = spec.controlSize,
+			corners = spec.corners,
+		})
+		appearanceFor(declaredStyle, read(spec.appearance))
+		assert(
+			spec.maxHeight == nil
+				or (type(spec.maxHeight) == "number" and spec.maxHeight > 0 and spec.maxHeight < math.huge),
+			"Facet UI.Picker: maxHeight must be a finite number of pixels above zero"
+		)
+		assert(
+			spec.maxHeight == nil or table.find({ "automatic", "menu", "navigationLink" }, declaredStyle),
+			"Facet UI.Picker: maxHeight belongs to the menu styles"
+		)
+		assert(
+			spec.indicatorPosition == nil or declaredStyle == "radioGroup",
+			"Facet UI.Picker: indicatorPosition belongs to the radioGroup style"
+		)
+		assert(
+			spec.indicatorPosition == nil or spec.indicatorPosition == "leading" or spec.indicatorPosition == "trailing",
+			"Facet UI.Picker: indicatorPosition must be leading or trailing"
+		)
+		if spec.requiredMark == "required" and spec.label ~= nil then
+			local marked = table.clone(spec)
+			local words = spec.label
+			marked.requiredMark = nil
+			marked.label = function(use: ComposeTypes.Use)
+				return (read(words, use) or "") .. " *"
+			end
+			return UI.Picker(marked)
+		end
+		if spec.hint ~= nil or spec.errorText ~= nil then
+			local inner = table.clone(spec)
+			local shell: Types.FrameNativeProps = {}
+			local source = (inner :: unknown) :: { [string]: unknown }
+			local target = (shell :: unknown) :: { [string]: unknown }
+			for _, key in { "Name", "Size", "Position", "AnchorPoint", "LayoutOrder", "Visible", "ZIndex" } do
+				target[key], source[key] = source[key], nil
+			end
+			inner.hint, inner.errorText = nil, nil
+			inner.Name = "Control"
+			local control = UI.Picker(inner)
+			local failure = chrome.errorOf({ errorText = spec.errorText }, nil)
+			Compose.watch(function(use: ComposeTypes.Use)
+				local failing = failure(use) ~= ""
+				for _, node in control:GetDescendants() do
+					if node.Name == "Trigger" and node:IsA("GuiObject") then
+						if failing then
+							node:AddTag("facet-invalid")
+						elseif node:HasTag("facet-invalid") then
+							node:RemoveTag("facet-invalid")
+						end
+					end
+				end
+			end)
+			shell.Name = shell.Name or "Picker"
+			return chrome.wrap({
+				control = "Picker",
+				spec = { hint = spec.hint, errorText = spec.errorText },
+				plate = control,
+				focus = function() end,
+				enabled = function(use: ComposeTypes.Use?)
+					return read(spec.enabled, use) ~= false
+				end,
+				native = shell,
+			})
+		end
 		assert(
 			type(spec.options) == "table" or type(spec.options) == "function",
 			"Facet UI.Picker: options must be an array of { value, label } entries, a Compose readable, or a function(use) that returns one"
@@ -828,7 +1223,7 @@ return function(
 		if style == "automatic" then
 			local input = surfaces.service("UserInputService")
 			local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
-			local opened = spec.isPresented or Compose.cell(false)
+			local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(false)
 			local width = Compose.cell(0)
 			local measure = ctx.text({
 				Name = "LabelMeasure",
@@ -909,6 +1304,25 @@ return function(
 								isPresented = opened,
 								AutomaticSize = automatic,
 								Size = size,
+								controlSize = spec.controlSize,
+								corners = if presentation == "menu"
+										or presentation == "segmented"
+										or presentation == "navigationLink"
+									then spec.corners
+									else nil,
+								maxHeight = if presentation == "menu" or presentation == "navigationLink"
+									then spec.maxHeight
+									else nil,
+								appearance = if spec.appearance ~= nil
+										and (
+											presentation == "menu"
+											or presentation == "segmented"
+											or presentation == "navigationLink"
+										)
+									then function(use: ComposeTypes.Use): string
+										return translate(read(spec.appearance, use), presentation) or "utility"
+									end
+									else nil,
 								multiple = true :: true,
 								selected = spec.selected,
 								onChanging = spec.onChanging,
@@ -933,6 +1347,25 @@ return function(
 								isPresented = opened,
 								AutomaticSize = automatic,
 								Size = size,
+								controlSize = spec.controlSize,
+								corners = if presentation == "menu"
+										or presentation == "segmented"
+										or presentation == "navigationLink"
+									then spec.corners
+									else nil,
+								maxHeight = if presentation == "menu" or presentation == "navigationLink"
+									then spec.maxHeight
+									else nil,
+								appearance = if spec.appearance ~= nil
+										and (
+											presentation == "menu"
+											or presentation == "segmented"
+											or presentation == "navigationLink"
+										)
+									then function(use: ComposeTypes.Use): string
+										return translate(read(spec.appearance, use), presentation) or "utility"
+									end
+									else nil,
 								multiple = false :: false,
 								selected = spec.selected,
 								onChanging = spec.onChanging,
@@ -960,7 +1393,8 @@ return function(
 			menuSpec.enabled = spec.enabled
 			menuSpec.isPresented = spec.isPresented
 			menuSpec.query = spec.query
-			menuSpec.label = function(use: ComposeTypes.Use)
+			menuSpec.maxHeight = spec.maxHeight
+			local valueText = function(use: ComposeTypes.Use): string
 				local labels = {}
 				for _, option in read(spec.options, use) do
 					if isSelected(option.value, use) then
@@ -969,9 +1403,55 @@ return function(
 				end
 				return if #labels > 0
 					then table.concat(labels, ", ")
-					else read(spec.placeholder, use) or read(spec.label, use) or "Choose"
+					else read(spec.placeholder, use) or (if spec.label == nil then "Choose" else "Choose")
 			end
-			menuSpec.disclosure = true
+			local triggerProps: Inputs.ButtonProps = {
+				Name = "Trigger",
+				label = valueText,
+				enabled = spec.enabled,
+				controlSize = spec.controlSize,
+				corners = spec.corners,
+				appearance = if spec.appearance ~= nil
+					then function(use: ComposeTypes.Use): string
+						local word = appearanceFor("menu", read(spec.appearance, use))
+						return if word == "contrast"
+							then "emphasis"
+							elseif word == "utility" then "utility"
+							else "default"
+					end
+					else nil,
+				Attributes = { FacetLabel = valueText } :: Types.Attributes,
+				ctx.icon("chevron.up.chevron.down", {
+					Name = "Disclosure",
+					Size = D2.fromOffset(12, 12),
+					AnchorPoint = V2.new(1, 0.5),
+					Position = D2.new(1, 20, 0.5, 0),
+					BackgroundTransparency = 1,
+				}) :: Types.Child,
+			}
+			if spec.Size ~= nil and spec.label == nil then
+				local automatic = spec.AutomaticSize or E.AutomaticSize.None
+				triggerProps.AutomaticSize = automatic
+				triggerProps.Size = function(use: ComposeTypes.Use)
+					local sizing = read(automatic, use)
+					local width = sizing == E.AutomaticSize.X or sizing == E.AutomaticSize.XY
+					local height = sizing == E.AutomaticSize.Y or sizing == E.AutomaticSize.XY
+					return D2.new(
+						if width then 0 else 1,
+						0,
+						if height then 0 else 1,
+						if height then ctx.controlSize(spec.controlSize, "height", use) else 0
+					)
+				end
+				triggerProps.TextTruncate = E.TextTruncate.AtEnd
+				triggerProps.TextWrapped = false
+				triggerProps.ClipsDescendants = true
+			end
+			local trigger = UI.Button(triggerProps)
+			trigger:AddTag("facet-disclosure")
+			menuSpec.trigger = function(): GuiObject
+				return trigger
+			end
 			menuSpec.items = function(use: ComposeTypes.Use)
 				local items = {}
 				for _, option in use(options) do
@@ -980,6 +1460,10 @@ return function(
 						label = option.label,
 						icon = option.icon,
 						description = option.description,
+						badge = option.badge,
+						meta = option.meta,
+						avatar = option.avatar,
+						sectionTitle = option.sectionTitle,
 						dismiss = not spec.multiple,
 						marked = function(use: ComposeTypes.Use)
 							return isSelected(option.value, use)
@@ -995,56 +1479,77 @@ return function(
 			if spec.label == nil then
 				return UI.Menu(menuSpec)
 			end
-
 			menuSpec.Name = "Value"
 			menuSpec.Size = nil
 			menuSpec.AutomaticSize = E.AutomaticSize.XY
-			menuSpec.AnchorPoint = V2.new(1, 0.5)
-			menuSpec.Position = D2.fromScale(1, 0.5)
-			local row = ctx.props(spec, pickerKeys, {
-				Name = spec.Name or "Picker",
-				BackgroundTransparency = 1,
+			menuSpec.AnchorPoint = nil
+			menuSpec.Position = nil
+			local label = ctx.text({
+				Name = "Label",
+				Text = function(use: ComposeTypes.Use)
+					return read(spec.label, use) or ""
+				end,
 				Size = D2.new(1, 0, 0, 0),
 				AutomaticSize = E.AutomaticSize.Y,
+				TextWrapped = true,
+				TextXAlignment = E.TextXAlignment.Left,
 			})
-			table.insert(
-				row,
-				ctx.text({
-					Name = "Label",
-					Text = function(use: ComposeTypes.Use)
-						return read(spec.label, use) or ""
-					end,
-					Size = D2.new(1, -8, 0, 0),
+			local column = ctx.column(
+				{ label, UI.Menu(menuSpec) },
+				ctx.props(spec, pickerKeys, {
+					Name = spec.Name or "Picker",
+					BackgroundTransparency = 1,
+					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
-					TextXAlignment = E.TextXAlignment.Left,
-					AnchorPoint = V2.new(0, 0.5),
-					Position = D2.fromScale(0, 0.5),
 				})
 			)
-			table.insert(row, Host.UISizeConstraint({ MinSize = V2.new(0, 44) }))
-			table.insert(row, UI.Menu(menuSpec))
-			return Host.Frame(row)
+			assert(column:FindFirstChildWhichIsA("UIListLayout")).Padding = D.new(0, 4)
+			return column
 		end
 		if style == "navigationLink" then
-			local opened = spec.isPresented or Compose.cell(false)
+			local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(false)
+			local chosenText = function(use: ComposeTypes.Use): string
+				for _, option in read(spec.options, use) do
+					if isSelected(option.value, use) then
+						local label: string = read(option.label, use)
+						return label
+					end
+				end
+				return read(spec.placeholder, use) or "Choose"
+			end
 			local native: Types.FrameNativeProps = ctx.props(spec, pickerKeys)
 			local triggerProps = (native :: unknown) :: Inputs.ButtonProps
 			triggerProps.Name = spec.Name or "Picker"
 			triggerProps.enabled = spec.enabled
-			triggerProps.label = spec.label
-				or function(use: ComposeTypes.Use)
-					for _, option in read(spec.options, use) do
-						if isSelected(option.value, use) then
-							local label: string = read(option.label, use)
-							return label
-						end
-					end
-					return read(spec.placeholder, use) or "Choose"
+			triggerProps.label = spec.label or chosenText
+			triggerProps.trailingIcon = if spec.label ~= nil then "chevron.trailing" else nil
+			triggerProps.controlSize = spec.controlSize
+			triggerProps.corners = spec.corners
+			triggerProps.appearance = if spec.appearance ~= nil
+				then function(use: ComposeTypes.Use): string
+					local word = appearanceFor("navigationLink", read(spec.appearance, use))
+					return if word == "contrast" then "emphasis" elseif word == "utility" then "utility" else "standard"
 				end
+				else nil
 			triggerProps.onActivate = function()
 				opened:set(true)
 			end
 			local trigger = UI.Button(triggerProps)
+			local row = trigger:FindFirstChild("Content")
+			if spec.label ~= nil and row then
+				runtime.mountFragment(function()
+					return {
+						ctx.styled(
+							ctx.text({
+								Name = "Trailing",
+								LayoutOrder = 90,
+								Text = chosenText,
+							}),
+							"secondary"
+						),
+					}
+				end, row)
+			end
 			surfaces.attach(trigger, {
 				surfaces.overlay(trigger, opened, function()
 					local choices: Nav.PickerSpec<V>
@@ -1053,6 +1558,8 @@ return function(
 						local child = table.clone(source)
 						child.Name, child.style, child.isPresented = "Choices", "inline", nil
 						child.Size = D2.new(1, 0, 0, 0)
+						child.appearance, child.corners, child.maxHeight, child.requiredMark = nil, nil, nil, nil
+						child.indicator = "none"
 						child.onChange = function(value: { [V]: boolean })
 							if source.onChange then
 								source.onChange(value)
@@ -1064,6 +1571,8 @@ return function(
 						local child = table.clone(source)
 						child.Name, child.style, child.isPresented = "Choices", "inline", nil
 						child.Size = D2.new(1, 0, 0, 0)
+						child.appearance, child.corners, child.maxHeight, child.requiredMark = nil, nil, nil, nil
+						child.indicator = "none"
 						child.onChange = function(value: V)
 							opened:set(false)
 							if source.onChange then
@@ -1072,10 +1581,29 @@ return function(
 						end
 						choices = child
 					end
+					local results: GuiObject = UI.Picker(choices)
+					if spec.maxHeight then
+						local cap = math.max(44, spec.maxHeight)
+						local list = results
+						local measured = ctx.observe(list, "AbsoluteSize")
+						results = Host.ScrollingFrame "Results" {
+							BackgroundTransparency = 1,
+							BorderSizePixel = 0,
+							Selectable = false,
+							ScrollingDirection = E.ScrollingDirection.Y,
+							AutomaticCanvasSize = E.AutomaticSize.Y,
+							CanvasSize = D2.fromOffset(0, 0),
+							Size = function(use: ComposeTypes.Use)
+								local height = use(measured).Y
+								return D2.new(1, 0, 0, if height > 0 then math.min(height, cap) else cap)
+							end,
+							list :: Types.Child,
+						}
+					end
 					return surfaces.modal(function()
 						return surfaces.centered(
 							ctx.column({
-								UI.Picker(choices),
+								results,
 								UI.Button "Close" {
 									label = "Close",
 									onActivate = function()
@@ -1093,6 +1621,144 @@ return function(
 				end),
 			})
 			return trigger
+		end
+		if style == "cards" then
+			local across = read(spec.axis) == "x"
+			local function clear()
+				if read(spec.enabled) == false or spec.multiple then
+					return
+				end
+				local single = (spec :: unknown) :: Nav.SinglePickerSpec<V>
+				local previous = single.selected:peek()
+				if single.onChanging and single.onChanging((nil :: unknown) :: V, previous) == false then
+					return
+				end
+				local optional = (single.selected :: unknown) :: ComposeTypes.Cell<V?>
+				runtime:batch(function()
+					optional:set(nil)
+					if single.onChange then
+						single.onChange((nil :: unknown) :: V)
+					end
+				end)
+			end
+			local cards = ctx.column({
+				Compose.keyed({
+					from = options,
+					key = function(option: Nav.PickerOption<V>)
+						return option.id or option.value
+					end,
+					render = function(
+						source: ComposeTypes.Readable<Nav.PickerOption<V>>,
+						index: ComposeTypes.Readable<number>
+					)
+						local key = tostring(source:peek().id or source:peek().value)
+						local chosen = function(use: ComposeTypes.Use)
+							return isSelected(use(source).value, use)
+						end
+						local card = UI.Button({
+							Name = "Card-" .. key,
+							LayoutOrder = index,
+							Size = if across then D2.fromOffset(200, 0) else D2.new(1, 0, 0, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+							label = function(use: ComposeTypes.Use)
+								return read(use(source).label, use)
+							end,
+							subtitle = function(use: ComposeTypes.Use)
+								return read(use(source).description, use) or ""
+							end,
+							icon = source:peek().icon,
+							controlSize = spec.controlSize,
+							appearance = function(use: ComposeTypes.Use): string
+								return if chosen(use) then "emphasis" else "standard"
+							end,
+							enabled = function(use: ComposeTypes.Use)
+								return read(spec.enabled, use) ~= false and read(use(source).enabled, use) ~= false
+							end,
+							onActivate = function()
+								local value = source:peek().value
+								if isSelected(value) and spec.required == false then
+									clear()
+								else
+									select(value)
+								end
+							end,
+						})
+						card:AddTag("facet-card-option")
+						local content = card:FindFirstChild("Content")
+						if content then
+							runtime.mountFragment(function()
+								local parts: { Types.Child } = {}
+								if source:peek().meta ~= nil then
+									table.insert(
+										parts,
+										ctx.styled(
+											ctx.text({
+												Name = "Meta",
+												LayoutOrder = 50,
+												Text = function(use: ComposeTypes.Use)
+													return read(use(source).meta, use) or ""
+												end,
+											}),
+											"secondary"
+										)
+									)
+								end
+								if source:peek().badge ~= nil then
+									table.insert(
+										parts,
+										ctx.styled(
+											Host.Frame "Badge" {
+												LayoutOrder = 60,
+												Size = D2.fromOffset(0, 0),
+												AutomaticSize = E.AutomaticSize.XY,
+												ctx.text({
+													Name = "Count",
+													Text = function(use: ComposeTypes.Use)
+														local badge = read(use(source).badge, use)
+														return if badge == nil then "" else tostring(badge)
+													end,
+												}) :: Types.Child,
+											},
+											"badge"
+										)
+									)
+								end
+								return parts
+							end, content)
+						end
+						Compose.watch(function(use: ComposeTypes.Use)
+							card:SetAttribute("FacetLabel", read(use(source).label, use))
+						end)
+						return card
+					end,
+				}),
+			}, { Name = "Cards", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
+			local layout = assert(cards:FindFirstChildWhichIsA("UIListLayout"))
+			if across then
+				layout.FillDirection = E.FillDirection.Horizontal
+				layout.Wraps = true
+			end
+			local outer = ctx.props(spec, pickerKeys, {
+				Name = "Picker",
+				BackgroundTransparency = 1,
+				Size = D2.new(1, 0, 0, 0),
+				AutomaticSize = E.AutomaticSize.Y,
+			})
+			if spec.label == nil then
+				return ctx.column({ cards }, outer)
+			end
+			return ctx.column({
+				ctx.text({
+					Name = "Label",
+					Text = function(use: ComposeTypes.Use)
+						return read(spec.label, use) or ""
+					end,
+					Size = D2.new(1, 0, 0, 0),
+					AutomaticSize = E.AutomaticSize.Y,
+					TextWrapped = true,
+				}),
+				cards,
+			}, outer)
 		end
 		assert(table.find({ "segmented", "inline", "radioGroup", "navigationLink" }, style), "Unknown Picker style")
 		local vertical = style ~= "segmented" or read(spec.axis) == "y"
@@ -1135,9 +1801,12 @@ return function(
 						Name = tostring(source:peek().id or source:peek().value),
 						LayoutOrder = index,
 						Size = function(use: ComposeTypes.Use)
+							local height = if spec.controlSize ~= nil
+								then ctx.controlSize(spec.controlSize, "height", use)
+								else 44
 							return if style ~= "segmented" or read(spec.axis, use) == "y"
-								then D2.new(1, 0, 0, 44)
-								else D2.fromOffset(0, 44)
+								then D2.new(1, 0, 0, height)
+								else D2.fromOffset(0, height)
 						end,
 						AutomaticSize = if style ~= "segmented" then E.AutomaticSize.Y else nil,
 						label = function(use: ComposeTypes.Use)
@@ -1159,8 +1828,14 @@ return function(
 							else nil,
 						icon = source:peek().icon,
 						TextSize = spec.textSize,
+						trailingIcon = if read(spec.indicator) == "none" and style ~= "segmented"
+							then "checkmark"
+							else nil,
 						selected = function(use: ComposeTypes.Use)
-							return selected(use) and read(spec.indicator, use) ~= "underline"
+							local indicator = read(spec.indicator, use)
+							return selected(use)
+								and indicator ~= "underline"
+								and (indicator ~= "none" or style == "segmented")
 						end,
 						enabled = function(use: ComposeTypes.Use)
 							return read(spec.enabled, use) ~= false and read(use(source).enabled, use) ~= false
@@ -1172,8 +1847,81 @@ return function(
 							select(source:peek().value)
 						end,
 					})
+					if read(spec.indicator) == "none" and style ~= "segmented" then
+						local check = button:FindFirstChild("TrailingIcon", true)
+						if check and check:IsA("GuiObject") then
+							Compose.watch(function(use: ComposeTypes.Use)
+								check.Visible = selected(use)
+							end)
+						end
+					end
+					if style == "radioGroup" then
+						local trailing = spec.indicatorPosition == "trailing"
+						local mark = ctx.styled(
+							Host.Frame "Indicator" {
+								Size = D2.fromOffset(18, 18),
+								AnchorPoint = V2.new(if trailing then 1 else 0, 0.5),
+								Position = if trailing then D2.new(1, -12, 0.5, 0) else D2.new(0, 12, 0.5, 0),
+								BackgroundTransparency = 1,
+								ZIndex = 2,
+								ctx.corner(9) :: Types.Child,
+								ctx.styled(
+									Host.Frame "Dot" {
+										AnchorPoint = V2.new(0.5, 0.5),
+										Position = D2.fromScale(0.5, 0.5),
+										Size = D2.fromOffset(8, 8),
+										Visible = selected,
+										ctx.corner(4) :: Types.Child,
+									},
+									"fill"
+								) :: Types.Child,
+							},
+							"radio-mark"
+						)
+						surfaces.attach(button, {
+							mark,
+							Host.UIPadding({
+								PaddingLeft = D.new(0, if trailing then 12 else 40),
+								PaddingRight = D.new(0, if trailing then 40 else 12),
+							}),
+						})
+					end
+					if
+						source:peek().indicator ~= nil
+						or Compose.isReadable(spec.options)
+						or type(spec.options) == "function"
+					then
+						local statusUI = (UI :: unknown) :: {
+							StatusIndicator: Types.Constructor<Media.StatusIndicatorProps, TextLabel>,
+						}
+						surfaces.attach(button, {
+							Compose.show(function(use: ComposeTypes.Use)
+								return use(source).indicator ~= nil
+							end, function()
+								return statusUI.StatusIndicator({
+									Name = "Status",
+									AnchorPoint = V2.new(1, 0.5),
+									Position = D2.new(1, -8, 0.5, 0),
+									status = function(use: ComposeTypes.Use): Media.Status
+										local mark = use(source).indicator
+										if mark == nil then
+											return "neutral"
+										end
+										local status = read(mark.status, use)
+										return if status == nil then "neutral" else status
+									end,
+									form = source:peek().indicator
+										and (source:peek().indicator :: Nav.OptionIndicator).form,
+									count = function(use: ComposeTypes.Use)
+										local mark = use(source).indicator
+										return if mark then read(mark.count, use) else nil
+									end,
+								})
+							end),
+						})
+					end
 					surfaces.attach(button, {
-						Host.UISizeConstraint({ MinSize = V2.new(44, 44) }),
+						Host.UISizeConstraint({ MinSize = V2.new(44, if spec.controlSize ~= nil then 0 else 44) }),
 						Compose.show(function(use: ComposeTypes.Use)
 							return read(spec.indicator, use) == "underline" and selected(use)
 						end, function()
@@ -1199,13 +1947,37 @@ return function(
 						layout.HorizontalAlignment = E.HorizontalAlignment.Left
 					end
 					Compose.watch(function(use: ComposeTypes.Use)
-						local current = selected(use) and read(spec.indicator, use) ~= "underline"
+						local indicator = read(spec.indicator, use)
+						local current = selected(use)
+							and indicator ~= "underline"
+							and (indicator ~= "none" or style == "segmented")
 						if current then
 							button:AddTag(family .. "-current")
 						elseif button:HasTag(family .. "-current") then
 							button:RemoveTag(family .. "-current")
 						end
 					end)
+					local section = source:peek().sectionTitle
+					if section ~= nil and style ~= "segmented" then
+						runtime.decorate(button, { LayoutOrder = 2 })
+						return ctx.column({
+							ctx.styled(
+								ctx.text({
+									Name = "SectionTitle",
+									Text = function(use: ComposeTypes.Use)
+										return read(section, use) or ""
+									end,
+								}),
+								"type-caption"
+							),
+							button,
+						}, {
+							Name = "Section-" .. button.Name,
+							LayoutOrder = index,
+							Size = D2.new(1, 0, 0, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+						})
+					end
 					return button
 				end,
 			})
@@ -1223,6 +1995,27 @@ return function(
 		local picker = Host.Frame(p)
 		if style == "segmented" then
 			picker:AddTag("facet-segmented")
+			if spec.corners then
+				surfaces.attach(picker, {
+					Host.UICorner "Corners" { CornerRadius = D.new(if spec.corners == "pill" then 1 else 0, 0) },
+				})
+			end
+			if spec.appearance ~= nil then
+				Compose.watch(function(use: ComposeTypes.Use)
+					local word = appearanceFor("segmented", read(spec.appearance, use))
+					local stroke, utility = word == "stroke", word == "utility"
+					if stroke then
+						picker:AddTag("facet-segmented-stroke")
+					elseif picker:HasTag("facet-segmented-stroke") then
+						picker:RemoveTag("facet-segmented-stroke")
+					end
+					if utility then
+						picker:AddTag("facet-segmented-utility")
+					elseif picker:HasTag("facet-segmented-utility") then
+						picker:RemoveTag("facet-segmented-utility")
+					end
+				end)
+			end
 		end
 		if spec.label == nil then
 			return picker
@@ -1405,7 +2198,7 @@ return function(
 			spec.text:set(label(spec.value:peek()))
 			errorText:set("")
 		end
-		local editor = UI.TextInput "Editor" {
+		local created = UI.TextInput "Editor" {
 			value = spec.text,
 			placeholder = spec.placeholder,
 			enabled = spec.enabled,
@@ -1429,6 +2222,9 @@ return function(
 				editing:set(false)
 			end,
 		}
+		assert(created:IsA("TextBox"), "Facet ComboBox: the editor is a TextBox")
+		local editor = created
+
 		local function open()
 			if read(spec.enabled) ~= false then
 				opened:set(true)

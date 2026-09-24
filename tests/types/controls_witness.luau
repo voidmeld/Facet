@@ -32,7 +32,7 @@ local toggle: TextButton = UI.Toggle({
 		enabled:set(nextValue)
 	end,
 })
-local input: TextBox = UI.TextInput({
+local input: TextBox | Frame = UI.TextInput({
 	value = text,
 	onChange = function(nextValue: string)
 		text:set(nextValue)
@@ -67,6 +67,114 @@ local avatarProps: Facet.AvatarProps = { name = "Alder", presence = "online" :: 
 local avatar: GuiObject = UI.Avatar(avatarProps)
 local avatars: GuiObject = UI.AvatarGroup({ items = { { id = "a", name = "Alder" } } })
 local stage: ViewportFrame = UI.Stage({ fieldOfView = 60 })
+local pageCell = Compose.cell(1)
+local paginationProps: Facet.PaginationSpec = {
+	page = pageCell,
+	pageCount = 12,
+	form = "numbers" :: "numbers",
+	onChange = function(nextPage: number)
+		pageCell:set(nextPage)
+	end,
+}
+local pagination: Frame = UI.Pagination(paginationProps)
+local stepCell = Compose.cell("a")
+local stepList: { Facet.Step } = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } }
+local stepProps: Facet.StepIndicatorSpec = {
+	steps = stepList,
+	current = function(use: Use): string?
+		return use(stepCell)
+	end,
+	onSelect = function(id: string)
+		stepCell:set(id)
+	end,
+}
+local stepIndicator: Frame = UI.StepIndicator(stepProps)
+type VoteValue = "up" | "down" | "none"
+local initialVote: VoteValue = "none"
+local voteCell: Facet.Cell<VoteValue> = Compose.cell(initialVote)
+local voteProps: Facet.VoteSpec = {
+	value = voteCell,
+	summary = "92% liked",
+	onChange = function(nextValue: VoteValue)
+		voteCell:set(nextValue)
+	end,
+}
+local vote: Frame = UI.Vote(voteProps)
+local cardControls: Facet.CardControls = {}
+local cardProps: Facet.CardSpec = {
+	image = "rbxassetid://1",
+	title = text,
+	caption = "Friends playing",
+	onActivate = nothing,
+	primaryAction = { label = "Play", onActivate = nothing },
+	menu = { items = { { id = "hide", label = "Not interested", onSelect = nothing } } },
+	controls = cardControls,
+}
+local card: Frame = UI.Card(cardProps)
+local sealed: Frame = UI.badged(UI.Button({ label = "Inbox" }), 3)
+local raceDay = Compose.cell({ year = 2026, month = 10, day = 4 } :: Facet.CivilDate?)
+local datePicker: GuiObject = UI.DateTimePicker({
+	label = "Race day",
+	value = raceDay,
+	onChange = function(next: Facet.CivilDate?)
+		raceDay:set(next)
+	end,
+	min = { year = 2026, month = 1, day = 1 },
+})
+local startPaint: Color3? = Color3.fromRGB(230, 57, 70)
+local paint: Facet.Cell<Color3?> = Compose.cell(startPaint)
+local colorProps: Facet.ColorPickerProps = {
+	label = "Kart paint",
+	value = paint,
+	onChange = function(next: Color3)
+		paint:set(next)
+	end,
+}
+local colorPicker: Frame = UI.ColorPicker(colorProps)
+local civilDay: Facet.CivilDate? = Facet.civilDate.parse("09/03/2026")
+local dialogOpen = Compose.cell(false)
+local dialogProps: Facet.DialogSpec = {
+	isPresented = dialogOpen,
+	onPresentedChange = function(nextValue: boolean)
+		dialogOpen:set(nextValue)
+	end,
+	title = text,
+	content = content,
+	actions = { { id = "Leave", label = "Leave", role = "destructive" :: "destructive", onActivate = nothing } },
+	width = "narrow" :: "narrow",
+}
+local dialog: Frame = UI.Dialog(dialogProps)
+local popoverOpen = Compose.cell(false)
+local popoverProps: Facet.PopoverSpec = {
+	isPresented = popoverOpen,
+	onPresentedChange = function(nextValue: boolean)
+		popoverOpen:set(nextValue)
+	end,
+	source = { rect = { x = 0, y = 0, w = 40, h = 40 } },
+	edge = "trailing" :: "trailing",
+	content = content,
+}
+local popover: GuiObject = UI.Popover(popoverProps)
+local noticeProps: Facet.NoticeSpec = {
+	message = text,
+	severity = "warning" :: "warning",
+	placement = "affixed" :: "affixed",
+	onDismiss = nothing,
+}
+local notice: Frame = UI.Notice(noticeProps)
+local navBarProps: Facet.NavBarSpec = { title = text, onBack = nothing, backLabel = "Back" }
+local navBar: Frame = UI.NavBar(navBarProps)
+local snackOpen = Compose.cell(false)
+local snackbarProps: Facet.SnackbarSpec = {
+	isPresented = snackOpen,
+	message = text,
+	duration = 4,
+	action = { label = "Undo", onActivate = nothing },
+	onPresentedChange = function(nextValue: boolean)
+		snackOpen:set(nextValue)
+	end,
+}
+local snackbar: Frame = UI.Snackbar(snackbarProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -161,6 +269,18 @@ local mounted: { GuiObject } = {
 	avatar,
 	avatars,
 	stage,
+	pagination,
+	stepIndicator,
+	vote,
+	card,
+	sealed,
+	datePicker,
+	colorPicker,
+	dialog,
+	popover,
+	notice,
+	navBar,
+	snackbar,
 	menu,
 	split,
 	picker,
@@ -182,4 +302,5 @@ local mounted: { GuiObject } = {
 	tableView,
 	actions,
 }
+local _civil = civilDay
 return mounted

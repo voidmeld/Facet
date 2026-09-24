@@ -287,7 +287,15 @@ local function new(options: any?)
 				return changed[key]
 			end,
 			SetAttribute = function(_, key, value)
+				local previous = properties["@" .. key]
 				properties["@" .. key] = value
+				if previous ~= value and changed["@" .. key] then
+					changed["@" .. key].fire()
+				end
+			end,
+			GetAttributeChangedSignal = function(_, key)
+				changed["@" .. key] = changed["@" .. key] or signal()
+				return changed["@" .. key]
 			end,
 			GetAttribute = function(_, key)
 				return properties["@" .. key]
@@ -345,6 +353,9 @@ local function new(options: any?)
 				if events[key] then
 					signals[key] = signals[key] or signal()
 					return signals[key]
+				end
+				if key == "TextBounds" and options and options.measureText then
+					return options.measureText(node)
 				end
 				if properties[key] ~= nil then
 					return properties[key]
@@ -465,6 +476,11 @@ local function new(options: any?)
 	end
 	local heartbeat = signal()
 	local types = table.clone(Roblox)
+	types.BrickColor = setmetatable({
+		palette = function(index: number): any
+			return Roblox.BrickColor.palette(index + 1)
+		end,
+	}, { __index = Roblox.BrickColor })
 	local enumTypes = {}
 	types.Enum = setmetatable({}, {
 		__index = function(_, name)

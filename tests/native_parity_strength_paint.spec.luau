@@ -1473,14 +1473,21 @@ t.describe("native paint strength: theme sheets", function()
 		authored.style.themes[1].extra.onSelected = { r = 1, g = 1, b = 1 }
 		local package, report = themes.define(authored)
 		t.expect(report.ok).toBe(true)
-		local pair
+		local pairs = {}
 		for _, entry in report.contrast do
 			if entry.pair == "onSelected/controlSelected" then
-				pair = entry
+				table.insert(pairs, entry)
 			end
 		end
-		t.expect(pair.ok).toBe(true)
-		t.expect(pair.ratio).toBeCloseTo(contrast({ r = 1, g = 1, b = 1 }, { r = 0.1, g = 0.3, b = 0.8 }))
+		t.expect(#pairs).toBe(#authored.style.themes)
+		t.expect(pairs[1].ok).toBe(true)
+		t.expect(pairs[1].ratio).toBeCloseTo(contrast({ r = 1, g = 1, b = 1 }, { r = 0.1, g = 0.3, b = 0.8 }))
+		for index = 2, #pairs do
+			local palette = authored.style.themes[index]
+			t.expect(pairs[index].ok).toBe(true)
+			t.expect(pairs[index].ratio)
+				.toBeCloseTo(contrast(palette.extra.onSelected or palette.colors.content, palette.extra.controlSelected))
+		end
 		local authoredSheet, stopAuthored = sheetFor(h, package)
 		local white = h.engine.types.Color3.new(1, 1, 1)
 		local root, stopMount = mount(h, function()

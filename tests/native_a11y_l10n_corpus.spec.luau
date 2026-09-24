@@ -284,6 +284,29 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 	Chip = function()
 		return { label = "Chip", onRemove = function() end }
 	end,
+	NumberInput = function()
+		return { value = Compose.cell("1"), numericValue = Compose.cell(1), label = "Laps", stepButtons = true }
+	end,
+	DateTimePicker = function()
+		return {
+			value = Compose.cell({ year = 2026, month = 9, day = 23 }),
+			onChange = function() end,
+			label = "Race day",
+			style = "inline",
+			clock = function()
+				return { year = 2026, month = 9, day = 23 }
+			end,
+		}
+	end,
+	ColorPicker = function()
+		return {
+			value = Compose.cell(require("@lune/roblox").Color3.new(1, 0, 0)),
+			onChange = function() end,
+			label = "Paint",
+			style = "inline",
+			modes = { "swatches", "spectrum", "sliders" },
+		}
+	end,
 	ShortcutHint = function()
 		return { keys = { { "Ctrl", "K" } } }
 	end,
@@ -345,8 +368,39 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			onOverflow = function() end,
 		}
 	end,
+	ErrorBoundary = function(Host)
+		return {
+			view = function()
+				return Host.TextLabel({ Text = "Healthy" })
+			end,
+			fallback = function()
+				return Host.TextLabel({ Text = "Failed" })
+			end,
+		}
+	end,
 	Stage = function()
 		return {}
+	end,
+	Pagination = function()
+		return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
+	end,
+	Card = function()
+		return {
+			image = "rbxassetid://1",
+			title = "Card",
+			onActivate = function() end,
+			primaryAction = { label = "Play", onActivate = function() end },
+		}
+	end,
+	Vote = function()
+		return { value = Compose.cell("none"), onChange = function() end }
+	end,
+	StepIndicator = function()
+		return {
+			steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+			current = "a",
+			onSelect = function() end,
+		}
 	end,
 	Menu = function()
 		return {
@@ -402,6 +456,51 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			message = "Continue?",
 			isPresented = Compose.cell(true),
 			actions = { { id = "ok", label = "OK" }, { id = "cancel", label = "Cancel", role = "cancel" } },
+		}
+	end,
+	Dialog = function(Host)
+		local open = Compose.cell(true)
+		return {
+			title = "Confirm",
+			isPresented = open,
+			onPresentedChange = function(nextValue: boolean)
+				open:set(nextValue)
+			end,
+			content = function()
+				return Host.TextLabel({ Text = "Body" })
+			end,
+			actions = { { id = "ok", label = "OK", onActivate = function() end } },
+		}
+	end,
+	Snackbar = function()
+		local shown = Compose.cell(true)
+		return {
+			isPresented = shown,
+			message = "Saved",
+			action = { label = "Undo", onActivate = function() end },
+			onPresentedChange = function(nextValue: boolean)
+				shown:set(nextValue)
+			end,
+		}
+	end,
+	Notice = function()
+		return {
+			message = "Connection interrupted",
+			link = { label = "Details", onActivate = function() end },
+			actions = { { id = "Retry", label = "Retry", onActivate = function() end } },
+			onDismiss = function() end,
+		}
+	end,
+	NavBar = function()
+		return { title = "Tracks", onBack = function() end, backLabel = "Back" }
+	end,
+	Popover = function(Host)
+		return {
+			isPresented = Compose.cell(true),
+			source = { rect = { x = 10, y = 10, w = 40, h = 40 } },
+			content = function()
+				return Host.TextLabel({ Text = "Body" })
+			end,
 		}
 	end,
 	Sheet = function(Host)
@@ -549,6 +648,9 @@ local function textHosts(Host: any, value: string): { [string]: () -> any }
 		Chip = function()
 			return { label = value, selected = Compose.cell(false) }
 		end,
+		NumberInput = function()
+			return { value = Compose.cell("1"), numericValue = Compose.cell(1), label = value }
+		end,
 		Badge = function()
 			return { label = value }
 		end,
@@ -642,7 +744,7 @@ t.describe("native accessibility and localization corpus", function()
 		local _, probe = world()
 		local UI = Facet.controls(probe, { types = engineLib.new().types })
 		for name in UI do
-			assert(fixtures[name] or name == "fill", `Missing corpus fixture: {name}`)
+			assert(fixtures[name] or name == "fill" or name == "badged", `Missing corpus fixture: {name}`)
 		end
 		for name in fixtures do
 			assert(UI[name], `Stale corpus fixture: {name}`)

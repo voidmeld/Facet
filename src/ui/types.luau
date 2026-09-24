@@ -148,7 +148,7 @@ export type Read =
 	& (<T>(Value<T>, Use?) -> T)
 export type ModalPortal = { node: Instance, anchor: Instance }
 export type ActionBinding = string | Enum.KeyCode | InputBindingNativeProps
-export type ActionSettings = { priority: number?, sink: boolean?, onReleased: (() -> ())? }
+export type ActionSettings = { priority: number?, sink: boolean?, onReleased: (() -> ())?, capture: boolean? }
 export type SkinStateOptions = { disabled: Value<boolean>?, selected: Value<boolean>? }
 export type Context = {
 	runtime: Runtime,

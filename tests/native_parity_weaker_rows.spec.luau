@@ -1418,7 +1418,7 @@ t.describe("native parity weaker rows", function()
 		end
 	)
 
-	t.it("inputs-58 keeps a removable chip body inert and removes once through every input", function()
+	t.it("inputs-58 removes a remove-only token once through every input, and never while disabled", function()
 		local calls, enabled = 0, Compose.cell(true)
 		local world = setup(function(UI)
 			return UI.Chip("Token")({
@@ -1431,29 +1431,31 @@ t.describe("native parity weaker rows", function()
 			})
 		end)
 		local E = world.engine.types.Enum
-		local body, remove = find(world.node, "Body"), find(world.node, "Remove")
-		t.expect(body.Selectable).toBe(false)
-		body.Activated.fire({ UserInputType = E.UserInputType.MouseButton1 }, 1)
-		body.Activated.fire({ UserInputType = E.UserInputType.Touch }, 1)
-		t.expect(calls).toBe(0)
-		t.expect(textOf(remove)).toBe("Remove Rain")
+		local token = find(world.node, "Token")
+		t.expect(token.Selectable).toBe(true)
+		t.expect(token:GetAttribute("AccessibleLabel")).toBe("Remove Rain")
+		t.expect(find(token, "Remove").Visible).toBe(true)
 		local expected = 0
 		for _, inputType in { E.UserInputType.MouseButton1, E.UserInputType.Touch, E.UserInputType.Gamepad1 } do
-			remove.Activated.fire({ UserInputType = inputType, UserInputState = E.UserInputState.End }, 1)
+			token.Activated.fire({ UserInputType = inputType, UserInputState = E.UserInputState.End }, 1)
 			expected += 1
 			t.expect(calls).toBe(expected)
 		end
-		world.gui.SelectedObject = body
-		t.expect(action(world.root, "Activate")).toBeNil()
-		world.gui.SelectedObject = remove
+		world.gui.SelectedObject = token
 		local activate = action(world.root, "Activate")
 		t.expect(activate ~= nil).toBe(true)
 		activate.Pressed.fire()
 		t.expect(calls).toBe(expected + 1)
+		local delete = action(world.root, "RemoveChip")
+		t.expect(delete ~= nil).toBe(true)
+		delete.Pressed.fire()
+		delete.Released.fire()
+		t.expect(calls).toBe(expected + 2)
 		enabled:set(false)
-		remove.Activated.fire({ UserInputType = E.UserInputType.Touch }, 1)
+		token.Activated.fire({ UserInputType = E.UserInputType.Touch }, 1)
 		t.expect(action(world.root, "Activate")).toBeNil()
-		t.expect(calls).toBe(expected + 1)
+		t.expect(action(world.root, "RemoveChip")).toBeNil()
+		t.expect(calls).toBe(expected + 2)
 		world.stop()
 	end)
 

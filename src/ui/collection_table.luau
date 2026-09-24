@@ -414,10 +414,10 @@ return function(ctx: Types.Context, UI: Controls): ()
 					end
 					ctx.action(grip, "NarrowColumn", { E.KeyCode.Left, E.KeyCode.DPadLeft }, selected, function()
 						adjust(-8)
-					end, { priority = 300 })
+					end, { priority = 300, capture = true })
 					ctx.action(grip, "WidenColumn", { E.KeyCode.Right, E.KeyCode.DPadRight }, selected, function()
 						adjust(8)
-					end, { priority = 300 })
+					end, { priority = 300, capture = true })
 				end
 				return frame
 			end,

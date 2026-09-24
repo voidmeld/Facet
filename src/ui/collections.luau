@@ -127,7 +127,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local selection: ComposeTypes.Cell<CollectionTypes.Selection<K>> = spec.selection or Compose.cell({})
 		local selectionMode: "none" | "single" | "multi" = spec.selectionMode
 			or (if spec.selection or spec.onSelectionChange then "single" else "none")
-		local selectRow = createSelection(ctx, spec, source, keyOf, controls, selection, selectionMode)
+		local selectRow, extendSelection = createSelection(ctx, spec, source, keyOf, controls, selection, selectionMode)
 		local measured: ComposeTypes.Cell<{ [K]: number }> = Compose.cell({})
 		local horizontal = spec.direction == "horizontal"
 		local root: ScrollingFrame
@@ -163,7 +163,26 @@ return function(ctx: Types.Context, UI: Controls): ()
 				record.owner.dispose()
 			end,
 		})
-		local function setOffset(offset: number): ()
+		local function edgeOf(gutter: Types.Value<number>?, use: ComposeTypes.Use?): number
+			return if kind == "grid" then math.ceil(math.max(0, read(gutter or 0, use)) / 2) else 0
+		end
+		local function mainEdge(use: ComposeTypes.Use?): number
+			return edgeOf(spec.gap, use)
+		end
+		local function crossEdge(use: ComposeTypes.Use?): number
+			return edgeOf(spec.crossGap or spec.gap, use)
+		end
+		local function setOffset(requested: number): ()
+			local edge = mainEdge()
+			local offset = requested
+			if edge > 0 then
+				local current, box = status:peek(), viewport:peek()
+				local last = if current and current.extent then current.extent - box.size else math.huge
+				offset = if requested <= 0
+					then 0
+					elseif requested >= last then math.max(0, last + 2 * edge)
+					else requested + edge
+			end
 			local position = root.CanvasPosition
 			local nextPosition = if horizontal then V2.new(offset, position.Y) else V2.new(position.X, offset)
 			if position ~= nextPosition then
@@ -179,7 +198,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			local pointer = input ~= nil and input.UserInputType == E.UserInputType.MouseButton1
 			local double = pointer and (clicks or 1) >= 2
 			if not double then
-				selectRow(key, current:peek())
+				selectRow(key, current:peek(), input)
 			end
 			if spec.onActivate and (selectionMode == "none" or not pointer or double) then
 				spec.onActivate(current:peek(), key, input, clicks)
@@ -249,7 +268,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 						itemSize = read(spec.itemSize or 40, use),
 						gap = gap,
 						crossGap = crossGap,
-						crossSize = math.max(0, (use(cross) - crossGap * (columns - 1)) / columns),
+						crossSize = math.max(0, (use(cross) - 2 * crossEdge(use) - crossGap * (columns - 1)) / columns),
 					}
 				end,
 				render = function(current, placement, key)
@@ -359,7 +378,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 			else orderedRows(followOf())
 		local contentExtent = Compose.formula(function(use: ComposeTypes.Use): number
 			local current = use(status)
-			return if current then current.extent else 0
+			local extent = if current and current.extent then current.extent else 0
+			return if extent > 0 then extent + 2 * mainEdge(use) else 0
 		end)
 		local native = props(spec, behavior, {
 			BackgroundTransparency = 1,
@@ -381,10 +401,30 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end, function()
 				local nativeProps: Types.FrameProps =
 					{ Name = "Items", BackgroundTransparency = 1, Size = D2.fromScale(1, 1), directive }
+				if kind == "grid" then
+					table.insert(
+						nativeProps,
+						Host.UIPadding({
+							PaddingLeft = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then mainEdge(use) else crossEdge(use))
+							end,
+							PaddingRight = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then 0 else crossEdge(use))
+							end,
+							PaddingTop = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then crossEdge(use) else mainEdge(use))
+							end,
+							PaddingBottom = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(0, if horizontal then crossEdge(use) else 0)
+							end,
+						}) :: Types.Child
+					)
+				end
 				return Host.Frame(nativeProps)
 			end)
 		)
 		root = ctx.styled(Host.ScrollingFrame(native), "Collection")
+		root:SetAttribute("FacetSelectionOwner", true)
 		if overlayReorder then
 			runtime.mount(function()
 				return overlayReorder(true)
@@ -394,7 +434,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local position: ComposeTypes.Cell<Vector2> = observe(root, "CanvasPosition")
 		Compose.watch(function(use: ComposeTypes.Use)
 			local dimensions, at = use(size), use(position)
-			local offset = if horizontal then at.X else at.Y
+			local offset = math.max(0, (if horizontal then at.X else at.Y) - mainEdge(use))
 			local extent = if horizontal then dimensions.X else dimensions.Y
 			cross:set(if horizontal then dimensions.Y else dimensions.X)
 			local previous = viewport:peek()
@@ -465,6 +505,64 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end,
 		})
 		scope = focusScope
+		local knownKeys: { K } = {}
+		local priorKeys: { K } = {}
+		local function liveKeys(rows: { V }?): ({ K }, { [K]: boolean })
+			local keys, present = {}, {}
+			local list: { V } = rows or {}
+			for index, item in list do
+				local key = keyOf(item, index)
+				table.insert(keys, key)
+				if not policy.disabled(spec.disabled, item) then
+					present[key] = true
+				end
+			end
+			return keys, present
+		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			local keys = liveKeys(source(use))
+			priorKeys, knownKeys = knownKeys, keys
+		end)
+		local function peekRows(): { V }
+			return source(function<T>(value: ComposeTypes.Readable<T>): T
+				return value:peek()
+			end)
+		end
+		local function neighbourOf(lost: K): K?
+			local keys, present = liveKeys(peekRows())
+			if table.find(keys, lost) then
+				return nil
+			end
+			local before = if table.find(knownKeys, lost) then knownKeys else priorKeys
+			local at = table.find(before, lost)
+			if at == nil then
+				return nil
+			end
+			for index = at + 1, #before do
+				if present[before[index]] then
+					return before[index]
+				end
+			end
+			for index = at - 1, 1, -1 do
+				if present[before[index]] then
+					return before[index]
+				end
+			end
+			return nil
+		end
+		local lastFocused: K? = nil
+		Compose.watch(function(use: ComposeTypes.Use)
+			local key = use(focusScope.current)
+			local lost = lastFocused
+			lastFocused = key
+			if lost == nil or key == lost or not focusOwned then
+				return
+			end
+			local neighbour = neighbourOf(lost)
+			if neighbour ~= nil and neighbour ~= key then
+				focusScope.focus(neighbour)
+			end
+		end)
 		if spec.focus then
 			spec.focus.current = focusScope.current
 			spec.focus.focus = focusScope.focus
@@ -531,9 +629,53 @@ return function(ctx: Types.Context, UI: Controls): ()
 			if node and not restoring then
 				if belongsTo(node, root) then
 					focusActive:set(true)
+					for key, row in mounted do
+						if row and belongsTo(node, row) then
+							local neighbour = neighbourOf(key)
+							if neighbour ~= nil then
+								focusOwned = true
+								focusScope.focus(neighbour)
+								restoreFocus(neighbour)
+							end
+							break
+						end
+					end
 				else
-					focusOwned = false
+					local lost = lastFocused or focusScope.current:peek()
+					local neighbour = if focusOwned and lost ~= nil then neighbourOf(lost) else nil
+					if neighbour ~= nil and mounted[neighbour] then
+						focusScope.focus(neighbour)
+						restoreFocus(neighbour)
+					else
+						focusOwned = false
+					end
 				end
+			end
+		end)
+		Compose.watch(function(use: ComposeTypes.Use)
+			use(mountedVersion)
+			if gui == nil or use(selected) ~= root then
+				return
+			end
+			local target: GuiObject? = nil
+			local key = focusScope.current:peek()
+			if key ~= nil and mounted[key] then
+				target = findSelectable(assert(mounted[key]), nil, 1)
+			end
+			if target == nil then
+				local rows: { V } = read(spec.from) or {}
+				for index, item in rows do
+					local candidate = keyOf(item, index)
+					if mounted[candidate] and not policy.disabled(spec.disabled, item) then
+						target = findSelectable(assert(mounted[candidate]), nil, 1)
+						if target then
+							break
+						end
+					end
+				end
+			end
+			if target then
+				gui.SelectedObject = target
 			end
 		end)
 		local function eligible(use: ComposeTypes.Use): boolean
@@ -647,10 +789,24 @@ return function(ctx: Types.Context, UI: Controls): ()
 				elseif step < 0 then
 					focusScope.previous()
 				end
+				local landed = focusScope.current:peek()
+				if landed ~= nil then
+					extendSelection(before, landed)
+				end
 			end, { priority = 200 })
 		end
-		ctx.action(root, "CollectionFirst", { E.KeyCode.Home }, eligible, focusScope.first, { priority = 200 })
-		ctx.action(root, "CollectionLast", { E.KeyCode.End }, eligible, focusScope.last, { priority = 200 })
+		local function jump(move: () -> ()): () -> ()
+			return function()
+				local before = focusScope.current:peek()
+				move()
+				local landed = focusScope.current:peek()
+				if landed ~= nil then
+					extendSelection(before, landed)
+				end
+			end
+		end
+		ctx.action(root, "CollectionFirst", { E.KeyCode.Home }, eligible, jump(focusScope.first), { priority = 200 })
+		ctx.action(root, "CollectionLast", { E.KeyCode.End }, eligible, jump(focusScope.last), { priority = 200 })
 
 		if spec.onReachEnd then
 			local previousTotal = -1

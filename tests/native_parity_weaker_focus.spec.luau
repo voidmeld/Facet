@@ -314,7 +314,7 @@ t.describe("native parity weaker focus", function()
 		world.stop()
 	end)
 
-	t.it("makes the alert message and the tab strip a selection stop only when they scroll", function()
+	t.it("keeps the alert message out of selection and makes the tab strip a stop only when it scrolls", function()
 		local world = setup(function(UI, Host)
 			return Host.Frame({
 				UI.Alert({
@@ -345,7 +345,8 @@ t.describe("native parity weaker focus", function()
 			})
 		end)
 		local V2 = world.engine.types.Vector2
-		for _, name in { "AlertMessage", "Tabs" } do
+		t.expect(find(world.screen, "AlertMessage").Selectable).toBe(false)
+		for _, name in { "Tabs" } do
 			local region = find(world.screen, name)
 			t.expect(region ~= nil).toBe(true)
 			region.AbsoluteWindowSize = V2.new(300, 200)
@@ -1071,7 +1072,7 @@ t.describe("native parity weaker focus", function()
 		t.expect(keysOf()).toEqual({ 4, 5, 6 })
 		hit(1).Activated.fire(gamepad)
 		shifted = false
-		t.expect(keysOf()).toEqual({ 1, 2, 3, 4, 5, 6 })
+		t.expect(keysOf()).toEqual({ 1, 2, 3, 4 })
 		world.stop()
 		local single = Compose.cell({})
 		local singleWorld = setup(function(UI)
@@ -1837,7 +1838,7 @@ t.describe("native parity weaker focus", function()
 		t.expect(grabber:IsA("GuiButton")).toBe(true)
 		t.expect(grabber.Selectable).toBe(true)
 		t.expect(grabber.Interactable).toBe(true)
-		t.expect(grabber:GetAttribute("AccessibleLabel")).toBe("Resize")
+		t.expect(grabber:GetAttribute("AccessibleLabel")).toBe("Size: Medium")
 		world.gui.SelectedObject = grabber
 		t.expect(world.gui.SelectedObject).toBe(grabber)
 		grabber.Activated.fire({ UserInputType = Enum.UserInputType.Touch })

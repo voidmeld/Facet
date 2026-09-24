@@ -3,6 +3,8 @@ local Types = require("./types")
 local Nav = require("./navigation_types")
 local ComposeTypes = require("../vendor/compose/core")
 local help = require("./help")
+local Inputs = require("./input_types")
+local placement = require("./overlay_placement")
 local reducedMotion = require("./motion")
 
 return function(ctx: Types.Context): Nav.Surfaces
@@ -143,7 +145,6 @@ return function(ctx: Types.Context): Nav.Surfaces
 		local owner = assert(Compose.currentOwner())
 		type Pending = {
 			completed: ComposeTypes.Readable<boolean>,
-			done: ComposeTypes.Cell<boolean>,
 			scope: ComposeTypes.Owner?,
 		}
 		local pending: ComposeTypes.Cell<Pending?> = Compose.cell(nil :: Pending?)
@@ -157,7 +158,6 @@ return function(ctx: Types.Context): Nav.Surfaces
 			if entry and use(entry.completed) then
 				pending:set(nil)
 				release(entry)
-				entry.done:set(true)
 			end
 		end)
 		Compose.cleanup(function()
@@ -168,9 +168,8 @@ return function(ctx: Types.Context): Nav.Surfaces
 			scope: ComposeTypes.Owner?
 		): ComposeTypes.Exiting
 			release(pending:peek())
-			local done = Compose.cell(false)
-			pending:set({ completed = completed, done = done, scope = scope })
-			return { completed = done }
+			pending:set({ completed = completed, scope = scope })
+			return { completed = completed }
 		end
 		return {
 			exit = function()
@@ -507,7 +506,11 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end,
 		})
 	end
-	help.register(ctx, function(anchor: GuiObject, text: Types.Value<string>)
+	help.register(ctx, function(anchor: GuiObject, value: Inputs.Help)
+		local structured: Inputs.HelpSpec? = if type(value) == "table" and not Compose.isReadable(value)
+			then value :: Inputs.HelpSpec
+			else nil
+		local text: Types.Value<string> = if structured then structured.body else value :: Types.Value<string>
 		local state = ctx.observe(anchor, "GuiState")
 		local selection = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "SelectedObject") else nil
 		local preferred = if input and input.GetPropertyChangedSignal then ctx.observe(input, "PreferredInput") else nil
@@ -561,28 +564,80 @@ return function(ctx: Types.Context): Nav.Surfaces
 					AutomaticSize = E.AutomaticSize.Y,
 				})
 				label:AddTag("facet-type-caption")
-				local panel = Host.CanvasGroup "Help" {
+				local panelProps: Types.CanvasGroupNativeProps = {
+					Name = "Help",
 					AutomaticSize = E.AutomaticSize.XY,
 					Size = D2.fromOffset(0, 0),
 					ZIndex = 120,
-					ctx.padding(8, 6) :: Types.Child,
-					label,
-					measure,
 				}
+				table.insert(panelProps, ctx.padding(8, 6))
+				table.insert(
+					panelProps,
+					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = ctx.types.UDim.new(0, 4) })
+				)
+				if structured and structured.title ~= nil then
+					local title = structured.title
+					local heading = ctx.text({
+						Name = "HelpTitle",
+						LayoutOrder = 1,
+						Text = function(use: ComposeTypes.Use)
+							return ctx.read(title, use) or ""
+						end,
+					})
+					heading:AddTag("facet-type-heading")
+					table.insert(panelProps, heading)
+				end
+				runtime.decorate(label, {
+					LayoutOrder = 2,
+					Visible = function(use: ComposeTypes.Use)
+						return (ctx.read(text, use) or "") ~= ""
+					end,
+				})
+				table.insert(panelProps, label)
+				if structured and structured.shortcut then
+					local chords: { string } = {}
+					for _, chord in structured.shortcut do
+						table.insert(chords, table.concat(chord, "+"))
+					end
+					local hint = ctx.text({
+						Name = "HelpShortcut",
+						LayoutOrder = 3,
+						Text = table.concat(chords, " or "),
+					})
+					hint:AddTag("facet-type-caption")
+					hint:AddTag("facet-secondary")
+					table.insert(panelProps, hint)
+				end
+				runtime.decorate(measure, { LayoutOrder = 4 })
+				table.insert(panelProps, measure)
+				local panel = Host.CanvasGroup(panelProps)
 				local measured = ctx.observe(panel, "AbsoluteSize")
+				local edge = if structured and structured.edge then structured.edge else "top"
+				local align = if structured and structured.align then structured.align else "center"
 				popover(panel, amount, function(use: ComposeTypes.Use): (Vector2, Vector2)
 					local anchorAt, anchorSize, offer, offset, box =
 						use(at), use(bounds), use(extent), use(origin), use(measured)
-					local x = anchorAt.X - offset.X + (anchorSize.X - box.X) / 2
-					local y = anchorAt.Y - offset.Y - box.Y - 6
-					local below = y < 8
-					if below then
-						y = anchorAt.Y - offset.Y + anchorSize.Y + 6
-					end
-					local left = math.clamp(x, 8, math.max(8, offer.X - box.X - 8))
-					local top = math.clamp(y, 8, math.max(8, offer.Y - box.Y - 8))
-					local center = anchorAt.X - offset.X + anchorSize.X / 2 - left
-					return V2.new(left, top), V2.new(math.clamp(center, 0, box.X), if below then 0 else box.Y)
+					local solved = placement.solve({
+						source = {
+							x = anchorAt.X - offset.X,
+							y = anchorAt.Y - offset.Y,
+							w = anchorSize.X,
+							h = anchorSize.Y,
+						},
+						size = { w = box.X, h = box.Y },
+						safe = { x = 8, y = 8, w = math.max(0, offer.X - 16), h = math.max(0, offer.Y - 16) },
+						edge = edge,
+						align = align,
+						gap = 6,
+					})
+					local centerX = anchorAt.X - offset.X + anchorSize.X / 2 - solved.x
+					local centerY = anchorAt.Y - offset.Y + anchorSize.Y / 2 - solved.y
+					local origin = if solved.edge == "bottom"
+						then V2.new(math.clamp(centerX, 0, box.X), 0)
+						elseif solved.edge == "top" then V2.new(math.clamp(centerX, 0, box.X), box.Y)
+						elseif solved.edge == "right" then V2.new(0, math.clamp(centerY, 0, box.Y))
+						else V2.new(box.X, math.clamp(centerY, 0, box.Y))
+					return V2.new(solved.x, solved.y), origin
 				end)
 				return ctx.styled(panel, "tooltip")
 			end, { motion = POPOVER }),
@@ -602,5 +657,6 @@ return function(ctx: Types.Context): Nav.Surfaces
 		available = available,
 		appearance = appearance,
 		popover = popover,
+		sheetModal = nil,
 	}
 end

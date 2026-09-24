@@ -56,7 +56,6 @@
     "elided_handlers",
     "elision_recovery",
     "engine_writes",
-    "error_boundary",
     "example_drift",
     "experiment_markers",
     "fake_target_ops_opt",
@@ -211,7 +210,6 @@
     "text_round_reentry",
     "text_settle_closure",
     "text_settle_probe",
-    "text_size_fit",
     "theme_asset_judgement",
     "tier",
     "toast_layer_seam",
@@ -272,6 +270,39 @@
       ],
       "behaviors": [
         "The old core/on_change observation wrapper is removed. Newly reached dependency recovery and native mounted propagation remain verified; wrapper-specific callback registration order is not a public native control contract."
+      ],
+      "remaining": []
+    },
+    "error_boundary": {
+      "specs": [
+        "native_parity_restore"
+      ],
+      "cases": [
+        "native_parity_restore::native parity restore: ErrorBoundary::renders its view when healthy and does not mount the fallback",
+        "native_parity_restore::native parity restore: ErrorBoundary::swaps a view that throws at mount to its fallback, reports once and keeps siblings",
+        "native_parity_restore::native parity restore: ErrorBoundary::trips at runtime when a structural rebuild inside it throws, and the writer survives",
+        "native_parity_restore::native parity restore: ErrorBoundary::retries the view from the fallback and clears the reported error",
+        "native_parity_restore::native parity restore: ErrorBoundary::sends a failure to the factory onError when the boundary has no onError",
+        "native_parity_restore::native parity restore: ErrorBoundary::contains a throwing keyed row factory and releases every owner on disposal",
+        "native_parity_restore::native parity restore: ErrorBoundary::leaves a failure outside any boundary a hard mount error",
+        "native_parity_restore::native parity restore: ErrorBoundary::accepts both construction forms and refuses a boundary without a view or a fallback"
+      ],
+      "behaviors": [
+        "UI.ErrorBoundary contains a failure at mount and in a later Compose update through Compose.boundary, shows the fallback, reports once, retries and releases every owner. A failure outside a boundary stays a hard mount error. The presenter critical screen is not restored."
+      ],
+      "remaining": []
+    },
+    "text_size_fit": {
+      "specs": [
+        "native_parity_restore"
+      ],
+      "cases": [
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::fits the text to its box between the role size and the caption floor",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::honors an explicit cap and floor by role or pixels and follows the theme",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::refuses a misspelled fit option, a cap that is not a size and a plain size"
+      ],
+      "behaviors": [
+        "Label textSize = \"fit\" sets native TextScaled with a UITextSizeConstraint band whose cap and floor come from theme type roles or pixels and follow a theme change. The engine chooses the painted size."
       ],
       "remaining": []
     }
@@ -378,7 +409,6 @@
         "compose_lifetime",
         "compose_scene",
         "controls_namespace",
-        "error_boundary",
         "fuzz_replication",
         "replication",
         "settle_containment",
@@ -391,8 +421,7 @@
       "specs": [
         "text_distance",
         "text_index_seam",
-        "text_premeasure",
-        "text_size_fit"
+        "text_premeasure"
       ]
     },
     {

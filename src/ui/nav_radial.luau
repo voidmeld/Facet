@@ -67,7 +67,7 @@ return function(
 		Compose.watch(function(use: ComposeTypes.Use)
 			validate(read(spec.items, use), use, {})
 		end)
-		local opened = spec.isPresented or Compose.cell(spec.launcher == false)
+		local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(spec.launcher == false)
 		local path: ComposeTypes.Cell<{ string }> = Compose.cell({})
 		local candidate: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
 		local interacting = Compose.cell(false)

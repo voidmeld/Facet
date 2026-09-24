@@ -20,6 +20,7 @@ task.spawn(function()
 	end
 end)
 local Facet = require(storage:WaitForChild("Facet"))
+Facet = Facet.bind(Facet.Compose, Facet.Roblox)
 local Compose = Facet.Compose
 local screens = require(storage.VirtualMonitors.screens)
 local scenes = require(storage.VirtualMonitors.scenes)
@@ -251,7 +252,16 @@ local lifetime = Compose.createRootOwner(function()
 			end
 		end
 		actions.avatarContent = function(sceneRuntime, target)
-			return scenes.avatar(sceneRuntime, target, model.angle, model.palette, model.hat, motionPolicy, active)
+			return scenes.avatar(
+				sceneRuntime,
+				target,
+				model.angle,
+				model.palette,
+				model.hat,
+				motionPolicy,
+				active,
+				model.hatTint
+			)
 		end
 		return actions
 	end
@@ -384,6 +394,20 @@ local lifetime = Compose.createRootOwner(function()
 				dark:set(argument == true)
 			elseif command == "focus" then
 				model.focus(argument)
+			elseif command == "tab" then
+				model.selectedTab:set(argument)
+			elseif command == "open" then
+				for _, item in model.catalog.items:peek() do
+					if item.id == argument then
+						model.selectGame(item)
+						model.launchGame(item.id, "Joining a public server")
+					end
+				end
+			elseif command == "close" then
+				model.selectedGame:set(nil)
+			elseif command == "chat" then
+				model.prompt(argument)
+				model.chat.send()
 			end
 			return { mode = mode:peek(), dark = dark:peek(), focused = model.focused:peek() }
 		end),

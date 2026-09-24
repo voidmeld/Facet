@@ -6,6 +6,7 @@ local Diagnostics = require "../diagnostics"
 local Easing = require "./easing"
 local Host = require "../host"
 local Owner = require "../ownership/owner"
+local Reactor = require "../reactive/reactor"
 local Spring = require "./spring"
 local Types = require "../reactive/types"
 local cellModule = require "../reactive/cell"
@@ -20,7 +21,7 @@ export type SpringOptions = {
 	reducedMotion: ReducedMotion?,
 }
 
-export type Duration = Types.Given<number>
+export type Duration = Types.Value<number>
 
 export type TweenOptions = {
 	seconds: Duration?,
@@ -71,14 +72,23 @@ local function policyOf(value: ReducedMotion?, primitive: string): Types.Body<bo
 	return nil
 end
 
-local function createMotion(host: Host.Host, ownerOf: (primitive: string) -> Owner.Owner, reactor: any): Motion
-	local hubMembers: { any } = {}
+type HubMember = {
+	active: boolean,
+	callback: (delta: number) -> (),
+}
+
+local function createMotion(
+	host: Host.Host,
+	ownerOf: (primitive: string) -> Owner.Owner,
+	reactor: Reactor.Reactor
+): Motion
+	local hubMembers: { HubMember } = {}
 	local hubLive = 0
 	local hubUnsubscribe: Host.Unsubscribe? = nil
 	local hubDispatching = false
 	local hubDelta = 0
 
-	local function runMembers()
+	local function runMembers(): ...unknown
 		local count = #hubMembers
 		for index = 1, count do
 			local member = hubMembers[index]
@@ -119,7 +129,7 @@ local function createMotion(host: Host.Host, ownerOf: (primitive: string) -> Own
 	local function hubStep(delta: number)
 		hubDelta = delta
 		hubDispatching = true
-		local ok, err: any = pcall(reactor.batch, reactor, runMembers)
+		local ok, err: unknown = pcall(reactor.batch, reactor, runMembers)
 		hubDispatching = false
 		hubCompact()
 		hubStop()
@@ -128,8 +138,8 @@ local function createMotion(host: Host.Host, ownerOf: (primitive: string) -> Own
 		end
 	end
 
-	local function hubAdd(frames: Host.Frames, callback: (delta: number) -> ()): any
-		local member = { active = true, callback = callback }
+	local function hubAdd(frames: Host.Frames, callback: (delta: number) -> ()): HubMember
+		local member: HubMember = { active = true, callback = callback }
 		table.insert(hubMembers, member)
 		hubLive += 1
 		if hubUnsubscribe == nil then
@@ -138,7 +148,7 @@ local function createMotion(host: Host.Host, ownerOf: (primitive: string) -> Own
 		return member
 	end
 
-	local function hubRemove(member: any)
+	local function hubRemove(member: HubMember)
 		if not member.active then
 			return
 		end
@@ -174,7 +184,7 @@ local function createMotion(host: Host.Host, ownerOf: (primitive: string) -> Own
 		local output: Types.Cell<T>
 		local typeName = ""
 
-		local hubMember: any = nil
+		local hubMember: HubMember? = nil
 		local disposed = false
 
 		local function publish()

@@ -46,6 +46,15 @@ local fixtures = {
 	Chip = function()
 		return { label = "Chip", selected = Compose.cell(false) }
 	end,
+	NumberInput = function()
+		return { value = Compose.cell("1"), numericValue = Compose.cell(1) }
+	end,
+	DateTimePicker = function()
+		return { value = Compose.cell(nil), onChange = function() end }
+	end,
+	ColorPicker = function()
+		return { value = Compose.cell(require("@lune/roblox").Color3.new(1, 0, 0)), onChange = function() end }
+	end,
 	ShortcutHint = function()
 		return { keys = { { "Ctrl", "K" } } }
 	end,
@@ -78,8 +87,39 @@ local fixtures = {
 	AvatarGroup = function()
 		return { items = { { id = "a", name = "Ada" } } }
 	end,
+	ErrorBoundary = function(Host)
+		return {
+			view = function()
+				return Host.Frame({})
+			end,
+			fallback = function()
+				return Host.Frame({})
+			end,
+		}
+	end,
 	Stage = function()
 		return {}
+	end,
+	Pagination = function()
+		return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
+	end,
+	Card = function()
+		return {
+			image = "rbxassetid://1",
+			title = "Card",
+			onActivate = function() end,
+			primaryAction = { label = "Play", onActivate = function() end },
+		}
+	end,
+	Vote = function()
+		return { value = Compose.cell("none"), onChange = function() end }
+	end,
+	StepIndicator = function()
+		return {
+			steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+			current = "a",
+			onSelect = function() end,
+		}
 	end,
 	Menu = function()
 		return { items = { { id = "a", label = "A", onSelect = function() end } } }
@@ -123,6 +163,27 @@ local fixtures = {
 	end,
 	Alert = function()
 		return { title = "Confirm", isPresented = Compose.cell(false), actions = { { id = "ok", label = "OK" } } }
+	end,
+	Dialog = function()
+		return { title = "Confirm", isPresented = Compose.cell(false), closeButton = false }
+	end,
+	Snackbar = function()
+		return { isPresented = Compose.cell(false), message = "Saved", closeButton = false }
+	end,
+	Notice = function()
+		return { message = "Saved" }
+	end,
+	NavBar = function()
+		return { title = "Tracks" }
+	end,
+	Popover = function(Host)
+		return {
+			isPresented = Compose.cell(false),
+			source = { rect = { x = 0, y = 0, w = 10, h = 10 } },
+			content = function()
+				return Host.Frame({})
+			end,
+		}
 	end,
 	Sheet = function(Host)
 		return {
@@ -221,7 +282,7 @@ t.describe("native constructor conformance", function()
 		local runtime = Facet.Roblox.createRuntime(engine)
 		local UI = Facet.controls(runtime, { types = engine.types })
 		for name in UI do
-			assert(fixtures[name] or name == "fill", `Missing conformance fixture: {name}`)
+			assert(fixtures[name] or name == "fill" or name == "badged", `Missing conformance fixture: {name}`)
 		end
 		for name in fixtures do
 			assert(UI[name], `Stale conformance fixture: {name}`)

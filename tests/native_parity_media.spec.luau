@@ -1612,7 +1612,7 @@ t.describe("native parity media", function()
 				button.Activated.fire()
 				local field = w.find("Field")
 				field:CaptureFocus()
-				field.Text = "11"
+				field.Text = "1.2.3"
 				field:ReleaseFocus(true)
 				local dot = w.find("Busy"):FindFirstChild("Dot1", true)
 				local before = dot.BackgroundTransparency

@@ -192,6 +192,37 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		)
 	end)
 
+	UI.ErrorBoundary = ctx.construct("ErrorBoundary", function(spec: Layout.ErrorBoundaryProps): Frame
+		assert(type(spec.view) == "function", "Facet ErrorBoundary requires a view function")
+		assert(type(spec.fallback) == "function", "Facet ErrorBoundary requires a fallback function")
+		local properties = ctx.props(spec, { "view", "fallback", "onError", "width", "height" })
+		local box: Types.Box = { width = spec.width, height = spec.height }
+		local size, automatic = kit.extent(box, "hug", "hug")
+		local failed: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
+		local native: Engine.FrameNativeProps = {
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			Size = size,
+			AutomaticSize = automatic,
+		}
+		local region = Compose.boundary(function()
+			failed:set(nil)
+			return (spec.view() :: unknown) :: ComposeTypes.Node
+		end, function(failure: unknown, retry: () -> ())
+			failed:set(tostring(failure))
+			local report: ((unknown) -> ())? = spec.onError or ctx.config.onError
+			if report then
+				report(failure)
+			end
+			return (spec.fallback(failure, retry) :: unknown) :: ComposeTypes.Node
+		end)
+		local root = Host.Frame(kit.assemble(native, properties, {}, { region }))
+		Compose.watch(function(use: ComposeTypes.Use)
+			root:SetAttribute("FacetError", use(failed))
+		end)
+		return root
+	end)
+
 	UI.fill = function(weight: number?): UIFlexItem
 		if weight == nil then
 			return Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill })

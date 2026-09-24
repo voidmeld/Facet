@@ -87,7 +87,7 @@ t.describe("native themes and media", function()
 		light.colors.content = { r = 0.1, g = 0.1, b = 0.1 }
 		light.extra = table.clone(light.extra or {})
 		light.extra.onSelected = { r = 1, g = 1, b = 1 }
-		table.insert(package.style.themes, light)
+		package.style.themes = { package.style.themes[1], light }
 		package = themes.define(package)
 		local selection, reduced, explicit = Compose.cell("Dark"), Compose.cell(false), Compose.cell(nil)
 		local stop, sheet = runtime.mount(function()
@@ -1479,7 +1479,7 @@ t.describe("native themes and media", function()
 	t.it("shares selected contrast across rich disclosure titles and chevrons", function()
 		local engine, runtime = setup()
 		local factory = require("../examples/virtual_monitors/theme")
-		local package = factory.create({}, "Avatar")
+		local package = factory.create(require("../src"), "Avatar")
 		local palette, expanded = Compose.cell("Dark"), Compose.cell(false)
 		local UI = controls(Compose, runtime, { types = engine.types, theme = package })
 		local sheet, disclosure
@@ -1608,8 +1608,11 @@ t.describe("native themes and media", function()
 		local engine, runtime = setup()
 		local factory = require("../examples/virtual_monitors/theme")
 		for _, name in { "Discover", "Avatar" } do
-			local package = factory.create({}, name)
-			t.expect(package.chrome).toBe(nil)
+			local package = factory.create(require("../src"), name)
+			t.expect(next(package.assets or {})).toBe(nil)
+			t.expect(package.chrome.monitorPanel.kind).toBe("native")
+			t.expect(package.chrome.monitorPanel.shadow).toBe("raised")
+			t.expect(table.isfrozen(package)).toBe(true)
 			local sheet
 			local stop = runtime.mount(function()
 				sheet = themes.createStyleSheet(runtime, package, { types = engine.types, theme = "Light" })
