@@ -1762,7 +1762,7 @@ t.describe("native parity weaker focus", function()
 		t.expect(grabber:IsA("GuiButton")).toBe(true)
 		t.expect(grabber.Selectable).toBe(true)
 		t.expect(grabber.Interactable).toBe(true)
-		t.expect(grabber:GetAttribute("AccessibleLabel")).toBe("Resize")
+		t.expect(grabber:GetAttribute("AccessibleLabel")).toBe("Size: Medium")
 		world.gui.SelectedObject = grabber
 		t.expect(world.gui.SelectedObject).toBe(grabber)
 		grabber.Activated.fire({ UserInputType = Enum.UserInputType.Touch })

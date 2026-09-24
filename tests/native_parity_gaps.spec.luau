@@ -131,6 +131,27 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 				actions = { { id = "ok", label = "OK", role = "default" } },
 			}
 		end,
+		Dialog = function()
+			return { isPresented = Compose.cell(false), closeButton = false, title = "Title" }
+		end,
+		Snackbar = function()
+			return { isPresented = Compose.cell(false), message = "Saved", closeButton = false }
+		end,
+		Notice = function()
+			return { message = "Saved" }
+		end,
+		NavBar = function()
+			return { title = "Tracks" }
+		end,
+		Popover = function()
+			return {
+				isPresented = Compose.cell(false),
+				source = { rect = { x = 0, y = 0, w = 10, h = 10 } },
+				content = function()
+					return Host.Frame({})
+				end,
+			}
+		end,
 		AsyncImage = function()
 			return { image = "rbxassetid://1" }
 		end,
@@ -304,7 +325,7 @@ t.describe("native parity gaps", function()
 			end
 		end
 		table.sort(names)
-		t.expect(#names).toBe(45)
+		t.expect(#names).toBe(50)
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()

@@ -3,6 +3,7 @@ local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local decoration = require("./native_decoration")
 local help = require("./help")
+local activation = require("./activation")
 local valueModel = require("./input_value")
 local InputTypes = require("./input_types")
 local Shared = require("./types")
@@ -323,6 +324,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 				spec.onActivate(...)
 			end
+			if enabled(spec) and node and ctx.available(node) then
+				activation.notify(node, ...)
+			end
 		end
 		local function shortcutActive(use)
 			local input = ctx.config.services.UserInputService
@@ -593,6 +597,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			p.PressHapticEffect = Compose.static(pressHaptic)
 		end
 		node = ctx.styled(Host.TextButton(p), "button")
+		activation.mark(node)
 		if hapticSwitch then
 			Compose.watch(function(use: ComposeTypes.Use)
 				node.PressHapticEffect = (if read(spec.haptic, use) == true then pressHaptic else nil) :: HapticEffect

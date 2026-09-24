@@ -11,6 +11,14 @@ export type ValueBinding<T> =
 export type EnabledOptions = { enabled: Value<boolean>?, disabled: Value<boolean>?, busy: Value<boolean>? }
 export type Row = { title: Value<string>?, description: Value<string>?, value: string?, icon: string? }
 export type Shortcut = { keyCode: string, modifiers: { shift: boolean? }? }
+export type HelpSpec = {
+	title: Value<string>?,
+	body: Value<string>,
+	shortcut: { { string } }?,
+	edge: ("top" | "bottom" | "leading" | "trailing")?,
+	align: ("start" | "center" | "end")?,
+}
+export type Help = Value<string> | HelpSpec
 export type ButtonCorners = "pill" | "square"
 export type ButtonRole = "default" | "cancel" | "destructive" | "onIndicator"
 export type ButtonVisualOptions = EnabledOptions & {
@@ -30,7 +38,7 @@ export type ButtonVisualOptions = EnabledOptions & {
 	imageFraming: ("fit" | "crop")?,
 	subtitle: Value<string>?,
 	hint: Value<string>?,
-	help: Value<string>?,
+	help: Help?,
 	row: Row?,
 }
 export type ButtonInputOptions = {

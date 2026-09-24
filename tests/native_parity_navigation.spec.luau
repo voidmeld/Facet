@@ -977,9 +977,9 @@ t.describe("native parity navigation", function()
 		find(strip, "help").Activated.fire()
 		t.expect(built.report().active).toBe("help")
 		t.expect(writes).toBe(1)
-		t.expect(strip.CanvasPosition.X).toBe(400)
+		t.expect(strip.CanvasPosition.X).toBe(500)
 		for index, tab in catalog.groups[2].tabs do
-			find(strip, tab.id).AbsolutePosition = engine.types.Vector2.new((index - 1) * 100 - 400, 0)
+			find(strip, tab.id).AbsolutePosition = engine.types.Vector2.new((index - 1) * 100 - 500, 0)
 		end
 		find(strip, "help").Activated.fire()
 		strip.AbsoluteSize = engine.types.Vector2.new(301, 44)

@@ -34,6 +34,14 @@
 - The gallery adds Motion and layout > Layout > Containers, which shows each container job with native objects and the layout constructors. The Practical recipes guide lists them. The heavy recipe divider is three theme hairlines.
 - `UI.badged(host, value, direction?)` puts a count or a dot on the top corner of a host without changing its layout box, hit area or selection. A TabView icon tab shows its badge on the icon corner.
 - `UI.VirtualGrid` keeps half of each gap at its outer edges, so a lifted card in a corner cell is not cut by the scroll clip. The lanes are narrower by one cross gap and the canvas is longer by one gap.
+- `UI.Dialog` is a modal whose `isPresented` the caller owns. The close button, Cancel and the backdrop propose through `onPresentedChange`, and `onDismiss` reports `close`, `outside`, `cancel` or `action` once. It pins a hero, a title, an action label and actions around one scrolling body, and every region moves into one scroller when the room is too small.
+- `UI.Popover` presents content against a trigger, a source node or a rectangle. The placement flips to the opposite edge, then hangs beside the source before any clamp, and takes `crossOffset`. A compact touch screen gets the Sheet route. Removing the source node reports `anchorLost`.
+- `UI.Snackbar` shows one short message at a time at the bottom of the layer. Close, Cancel, a timeout and a supersession propose through `onPresentedChange`. Readable time pauses under hover, selection and modals. Nine rows can be shown, waiting or leaving.
+- `UI.Notice` keeps a page status in view with a severity, a link, up to two actions and a close button. An affixed notice sets `FacetInsetTop` on its layer, and a visible snackbar sets `FacetInsetBottom`.
+- `UI.NavBar` is the slot bar: Back, leading, a filling center and one trailing node that moves to a second row when the center has too little room.
+- `UI.Sheet` takes `placement`, `edge`, `width`, `header`, `hero`, `actions`, `actionLayout`, `contentInset`, `scrollPolicy`, the `hug` detent and a `closeButton` that can carry a localized label. A release projects by its velocity, and a drag resists past the limits. The grabber reads `Size: Medium`.
+- `UI.Callout` takes `title`, `media`, `steps`, up to two `actions` and a top `closeButton`. A failing `onShow` goes to `onError`.
+- Button `help` also takes `{ title, body, shortcut, edge, align }`.
 
 ## Pre-0.12.0 development history
 

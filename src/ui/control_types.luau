@@ -6,6 +6,7 @@ local Collections = require("./collection_types")
 local Media = require("./media_types")
 local Content = require("./content_types")
 local Layout = require("./layout_types")
+local Overlay = require("./overlay_types")
 
 export type Controls = {
 	Screen: typeof(((nil :: unknown) :: Layout.LayoutControls).Screen),
@@ -55,6 +56,11 @@ export type Controls = {
 	Vote: typeof(((nil :: unknown) :: Content.ContentControls).Vote),
 	Card: typeof(((nil :: unknown) :: Content.ContentControls).Card),
 	badged: typeof(((nil :: unknown) :: Content.ContentControls).badged),
+	Dialog: typeof(((nil :: unknown) :: Overlay.OverlayControls).Dialog),
+	Popover: typeof(((nil :: unknown) :: Overlay.OverlayControls).Popover),
+	Notice: typeof(((nil :: unknown) :: Overlay.OverlayControls).Notice),
+	NavBar: typeof(((nil :: unknown) :: Overlay.OverlayControls).NavBar),
+	Snackbar: typeof(((nil :: unknown) :: Overlay.OverlayControls).Snackbar),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime
