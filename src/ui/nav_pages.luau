@@ -562,7 +562,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		surfaces.attach(root, {
 			Compose.show(collapsed, function()
 				return UI.Menu "TabsMenu" {
-					Size = D2.new(1, 0, 0, 44),
+					Size = D2.fromOffset(0, 44),
+					AutomaticSize = E.AutomaticSize.X,
+					disclosure = true,
 					label = function(use: Core.Use)
 						local tab = use(tabMap)[use(spec.selection)]
 						return read(tab.label, use) or tab.id

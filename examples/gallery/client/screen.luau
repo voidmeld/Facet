@@ -144,6 +144,13 @@ function screen.build(ctx: any)
 	table.sort(themes, function(a, b)
 		return if a.value == "Neutral" then true elseif b.value == "Neutral" then false else a.label < b.label
 	end)
+	local compact = Compose.formula(function(use)
+		local viewport = ctx.viewport and use(ctx.viewport)
+		return viewport ~= nil and viewport.height > 0 and viewport.height < 480
+	end)
+	local toolbarHeight = function(use)
+		return if use(compact) then 0 else 56
+	end
 	local root = Host.Frame "Gallery" {
 		Size = function(use)
 			local inverse = 1 / use(ctx.previewScale)
@@ -155,7 +162,12 @@ function screen.build(ctx: any)
 		end,
 
 		Host.Frame "Toolbar" {
-			Size = UDim2.new(1, 0, 0, 56),
+			Visible = function(use)
+				return not use(compact)
+			end,
+			Size = function(use)
+				return UDim2.new(1, 0, 0, toolbarHeight(use))
+			end,
 			BackgroundTransparency = 1,
 			Host.UIPadding({
 				PaddingLeft = UDim.new(0, 16),
@@ -191,9 +203,26 @@ function screen.build(ctx: any)
 			tabs = tabs,
 			style = "sidebarAdaptable",
 			retention = "top",
+			accessories = {
+				foot = function()
+					return UI.Button "CompactSettings" {
+						label = "Settings",
+						icon = "settings",
+						appearance = "utility",
+						Visible = compact,
+						onActivate = function()
+							settingsOpen:set(not settingsOpen:peek())
+						end,
+					}
+				end,
+			},
 			transition = false,
-			Position = UDim2.fromOffset(0, 56),
-			Size = UDim2.new(1, 0, 1, -56),
+			Position = function(use)
+				return UDim2.fromOffset(0, toolbarHeight(use))
+			end,
+			Size = function(use)
+				return UDim2.new(1, 0, 1, -toolbarHeight(use))
+			end,
 		},
 		UI.Sheet({
 			detent = Compose.cell("medium"),
