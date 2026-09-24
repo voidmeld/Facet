@@ -527,12 +527,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				sync(want)
 			end
 		end)
-		local phaseOf = function(use: ComposeTypes.Use): Phase?
+		local phaseOf = function(use: ComposeTypes.Use): string?
 			local current = use(slot)
 			if current == nil then
 				return nil
 			end
-			local phase = (use(current.phase) :: unknown) :: Phase
+			local phase: string = use(current.phase)
 			return phase
 		end
 		local function current(): Record?
