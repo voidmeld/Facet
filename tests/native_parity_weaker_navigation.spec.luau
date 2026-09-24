@@ -1410,7 +1410,7 @@ t.describe("native parity weaker navigation", function()
 			runtime.mount(views.Discover, target)
 			local function rows()
 				local found = {}
-				for _, node in find(target, "SimilarGames"):GetChildren() do
+				for _, node in find(target, "SimilarPage"):GetChildren() do
 					local id = string.match(node.Name, "^SimilarRow_(.+)$")
 					if id then
 						table.insert(found, id)

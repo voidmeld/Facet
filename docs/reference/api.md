@@ -1454,9 +1454,10 @@ icon?, onActivate, enabled?, busy? }`, `menu = { items, label? }`, `reveal`
 Use a Card for a game, a track or a kart, where the picture helps the player
 choose. For rows of text, use VirtualList or Table.
 
+- The artwork frame is as wide as the card. Its height is the measured card
+  width divided by `imageAspectRatio`.
 - `artwork` is a factory that returns a GuiObject, such as a `Stage` preview.
-  The card mounts it once in the artwork frame, sizes it to fill the frame and
-  keeps the `imageAspectRatio`. With `image`, the image shows under the
+  The card mounts it once in the artwork frame and sizes it to fill the frame. With `image`, the image shows under the
   artwork. The card owns the artwork and releases it with the card.
 - With `onActivate`, the body is a Button. `onActivate(input)` receives the
   native input of the activation, or `nil`. Without it, the body is plain

@@ -203,17 +203,16 @@ return function(
 			spec.controls.scale = scale
 			spec.controls.diagnostics = checks.list
 		end
+		local cardWidth = Compose.cell(0)
 		local artwork = Host.ImageLabel({
 			Name = "Artwork",
 			LayoutOrder = 1,
 			BackgroundTransparency = 1,
 			Image = image,
-			Size = D2.fromScale(1, 0),
+			Size = function(use: ComposeTypes.Use): UDim2
+				return D2.new(1, 0, 0, math.round(use(cardWidth) / ratio))
+			end,
 			ScaleType = if spec.imageFraming == "fit" then E.ScaleType.Fit else E.ScaleType.Crop,
-			Host.UIAspectRatioConstraint({
-				AspectRatio = ratio,
-				DominantAxis = E.DominantAxis.Width,
-			}) :: Types.Child,
 		})
 		if spec.artwork then
 			local build = spec.artwork
@@ -233,6 +232,19 @@ return function(
 			TextWrapped = true,
 		})
 		titleLabel:AddTag("facet-type-label")
+		local function inset(bottom: boolean): UIPadding
+			local function side(use: ComposeTypes.Use): UDim
+				return D.new(0, ctx.metric("space.s", use))
+			end
+			return Host.UIPadding({
+				PaddingLeft = side,
+				PaddingRight = side,
+				PaddingBottom = if bottom then side else nil,
+			})
+		end
+		runtime.mount(function()
+			return inset(false)
+		end, titleLabel)
 		local captionLabel = ctx.text({
 			Name = "Caption",
 			LayoutOrder = 3,
@@ -246,6 +258,9 @@ return function(
 		})
 		captionLabel:AddTag("facet-type-caption")
 		captionLabel:AddTag("facet-secondary")
+		runtime.mount(function()
+			return inset(true)
+		end, captionLabel)
 		local bodyChildren: { Types.Child } = {
 			Host.UIListLayout({
 				FillDirection = E.FillDirection.Vertical,
@@ -447,6 +462,9 @@ return function(
 		}))
 		root = card
 		local extent = ctx.observe(card, "AbsoluteSize")
+		Compose.watch(function(use: ComposeTypes.Use)
+			cardWidth:set(use(extent).X)
+		end)
 		local revealExtent = Compose.formula(function(use: ComposeTypes.Use): { body: number }
 			return { body = use(extent).Y }
 		end)
