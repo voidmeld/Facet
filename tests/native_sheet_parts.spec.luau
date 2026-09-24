@@ -36,7 +36,15 @@ local function mount(extra: { [string]: any }?, options: any?): any
 	if modal then
 		modal.AbsoluteSize = o.room or Vector2.new(800, 600)
 	end
+	if not o.unsettled then
+		w.advance(0, 2)
+	end
 	return w
+end
+
+local function content(w: any, height: number)
+	local body = w.find("SheetContent")
+	body:FindFirstChildWhichIsA("UIListLayout").AbsoluteContentSize = Vector2.new(500, height - 16)
 end
 
 local function built(fn: (any, any) -> any): any
@@ -256,7 +264,7 @@ t.describe("native Sheet: parts", function()
 		local room, body = w.find("Room"), w.find("SheetContent")
 		w.size(w.find("Header"), 500, 44)
 		w.size(w.find("Actions"), 500, 3 * 44 + 16)
-		body.AbsoluteCanvasSize = Vector2.new(500, 900)
+		content(w, 900)
 		t.expect(room.ScrollingEnabled).toBe(true)
 		t.expect(body.ScrollingEnabled).toBe(false)
 		t.expect(body.Size.Y.Offset).toBe(900)
@@ -366,27 +374,72 @@ t.describe("native Sheet: parts", function()
 		local panel, body = w.find("SheetPanel"), w.find("SheetContent")
 		w.size(w.find("Header"), 500, 44)
 		w.size(w.find("Actions"), 500, 44)
-		body.AbsoluteCanvasSize = Vector2.new(500, 120)
+		content(w, 120)
 		local chrome = 20 + 24 + 8 + 8
 		local pinned = 44 + 44 + 2 * 8
 		local short = panel.Size.Y.Offset
 		t.expect(short).toBe(math.max(208, 120 + pinned + chrome))
 		t.expect(body.Size.Y.Offset >= 120).toBe(true)
-		body.AbsoluteCanvasSize = Vector2.new(500, 300)
+		content(w, 300)
 		local tall = panel.Size.Y.Offset
 		t.expect(tall).toBe(300 + pinned + chrome)
 		t.expect(body.Size.Y.Offset >= 300).toBe(true)
-		body.AbsoluteCanvasSize = Vector2.new(500, 120)
+		content(w, 120)
 		t.expect(panel.Size.Y.Offset).toBe(short)
 		t.expect(w.builds()).toBe(1)
 		w.stop()
 	end)
 
+	t.it("hug measures the content, not the scroll canvas that fills the window", function()
+		local w = mount({ detents = { "hug" } }, { detent = "hug" })
+		local panel, body = w.find("SheetPanel"), w.find("SheetContent")
+		content(w, 120)
+		w.advance(1, 30)
+		local settled = panel.Size.Y.Offset
+		for _ = 1, 20 do
+			body.AbsoluteCanvasSize = Vector2.new(500, math.max(body.Size.Y.Offset, 120) + 40)
+			w.advance(1 / 60)
+			t.expect(panel.Size.Y.Offset).toBe(settled)
+		end
+		w.stop()
+	end)
+
+	t.it("text and height settle off screen before the sheet moves, and hold during the slide", function()
+		local w = mount({ detents = { "hug" } }, { detent = "hug", unsettled = true })
+		local panel = w.find("SheetPanel")
+		content(w, 40)
+		w.advance(1 / 60)
+		t.expect(panel.Position.Y.Offset).toBe(panel.Size.Y.Offset)
+		content(w, 160)
+		w.advance(1 / 60)
+		t.expect(panel.Position.Y.Offset).toBe(panel.Size.Y.Offset)
+		w.advance(1 / 60)
+		local height = panel.Size.Y.Offset
+		local previous = panel.Position.Y.Offset
+		for _ = 1, 20 do
+			w.advance(1 / 60)
+			t.expect(panel.Size.Y.Offset).toBe(height)
+			t.expect(panel.Position.Y.Offset <= previous).toBe(true)
+			previous = panel.Position.Y.Offset
+		end
+		t.expect(previous).toBe(0)
+		w.stop()
+	end)
+
+	t.it("reduced motion also waits for the settled layout, then appears at rest", function()
+		local w = mount(nil, { unsettled = true, reducedMotion = true })
+		local panel = w.find("SheetPanel")
+		t.expect(panel.Position.Y.Offset).toBe(panel.Size.Y.Offset)
+		w.advance(0, 2)
+		t.expect(panel.Position.Y.Offset).toBe(0)
+		w.stop()
+	end)
+
 	t.it("hug clamps to the safe room and keeps the minimum floor", function()
 		local w = mount({ detents = { "hug" } }, { detent = "hug", reducedMotion = true })
-		w.find("SheetContent").AbsoluteCanvasSize = Vector2.new(500, 5000)
+		content(w, 5000)
 		t.expect(w.find("SheetPanel").Size.Y.Offset).toBe(600)
-		w.find("SheetContent").AbsoluteCanvasSize = Vector2.new(500, 1)
+		content(w, 1)
 		t.expect(w.find("SheetPanel").Size.Y.Offset).toBe(4 * 44 + 2 * 16)
 		w.stop()
 	end)

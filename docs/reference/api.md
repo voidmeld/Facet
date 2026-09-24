@@ -1372,8 +1372,9 @@ presentation.
 Sheet requires a writable `isPresented` and a writable `detent`. The default
 detents are `medium` and `large`. A custom entry is `{ id, fraction }` or
 `{ id, height }`, never both. The `hug` entry fits the body and the pinned
-regions. It measures again when the content changes, and it stays inside the
-safe room and above a minimum of four target heights.
+regions. It measures the content of the body, not the scroll canvas, so it does
+not grow to fill the room. It measures again when the content changes, and it
+stays inside the safe room and above a minimum of four target heights.
 
 Supply a `title` and a `content` factory that returns native children. The
 sheet calls the factory without arguments. Its subtree fills the body region.
@@ -1422,7 +1423,11 @@ during a drag ends the drag. Only one drag runs at a time.
 
 The grabber is also a selectable button that moves to the next detent. Its
 accessible label reads `Size: Medium`, and `Size: Fit` for `hug`. A bottom
-sheet slides up from the bottom and slides down when it closes. See
+sheet slides up from the bottom and slides down when it closes. The sheet
+stays off screen until its room, width, text and height are the same for two
+frames, and then it starts to move. Thus the text has its final size and wrap
+before the sheet shows, and the height does not change during the slide. With
+reduced motion the sheet appears at rest after the same wait. See
 [Motion](#motion).
 
 ### DisclosureGroup and CollapsibleView
@@ -1773,16 +1778,21 @@ choose. For rows of text, use VirtualList or Table.
   immediately.
 - While engaged, the card's `UIScale` named `Lift` rises to 1.04 on a spring,
   and a body Button shows its `UIShadow` named `LiftShadow`. A card with no
-  body action has no shadow. The scale is paint only. Keep gutters of at least
-  the scaled growth around each card. Reduced motion keeps only the shadow.
+  body action has no shadow. When `PreferredInput` is `Touch`, the card does
+  not lift and shows no shadow: a tap on the body, the primary action or More
+  gives only the press paint of that control. The lift is for pointer hover,
+  selection and a held mouse press. The scale is paint only: the artwork height
+  uses the width without the lift, so the card size does not change. Keep
+  gutters of at least the scaled growth around each card. Reduced motion keeps
+  only the shadow.
   When a `browseTarget` exists, the card puts a `UIScale` named `CardLift` with
   the same scale on it, so the selection ring grows with the card.
 
 `browseTarget` is a function that returns the browse stop of the card, such
 as the `RowHit` of a VirtualGrid cell. `controls` is an optional table. The
 card sets `enterActions()`, `leaveActions()`, `diagnostics()` and the readables
-`engaged`, `revealed`, `scale` and `revealExtent` (`{ body }`, the measured
-root height). `enterActions()` holds the reveal and selects the first eligible
+`engaged`, `revealed`, `scale`, `lifting` (true while the lift applies) and
+`revealExtent` (`{ body }`, the measured root height). `enterActions()` holds the reveal and selects the first eligible
 action. It returns false for a disabled or unmounted card, or when no action
 is eligible. It never runs the primary action. While the actions are entered,
 the action row is a `SelectionGroup` whose selection behavior is `Stop` on all
@@ -1929,7 +1939,7 @@ press.
 | `AsyncImage` | An image or source, an optional resource or loader, a placeholder, a failure label and a status callback. `imageProperties` forwards native properties and children to the inner ImageLabel. |
 | `Avatar` | `name`; image, userId or resource; loader and onStatus; presence online, away, busy or offline; presence label and mark; diameter or controlSize; standard or icon form; optional activation. |
 | `AvatarGroup` | `items` with id, name, image, userId and presence, and an optional `resource` shared-resource acquire function. max (4); stacked or spread layout; count or ellipsis overflow; onOverflow; diameter or controlSize. A stacked group has the `facet-avatar-stack` tag, and the theme draws a surface ring around each face. |
-| `Stage` | A native ViewportFrame. A `camera` CFrame or a borrowed Camera, `fieldOfView`, and `content(runtime, world)` for 3D content that Compose owns. |
+| `Stage` | A native ViewportFrame. A `camera` CFrame or a borrowed Camera, `fieldOfView`, `content(runtime, world, live)` for 3D content that Compose owns, and `lazy`. |
 
 ### Label text fit
 
@@ -1963,7 +1973,15 @@ failure stay observable. The control does not invent successful assets.
 Resource lifetime uses Compose ownership and shared resources.
 
 The Stage content callback mounts into its WorldModel. It can return a teardown
-function. Use the `Host.Part`, `Host.Model` and other native constructors of the
+function. The third argument, `live`, is a readable boolean. It is false while
+the nearest ScrollingFrame ancestor scrolls and for 0.15 seconds after, and
+while less than half of the stage shows in that scroll window. Without a
+ScrollingFrame ancestor it is true. Pause scene animation while `live` is
+false, so a scrolling feed does not write scene properties on each frame. With
+`lazy = true`, the stage builds its content only when it is first live, and the
+stages of one control set build one per frame. A stage that scrolls past does
+not build its scene. The stage sets the attributes `FacetLive` and
+`FacetBuilt`. Use the `Host.Part`, `Host.Model` and other native constructors of the
 same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
 
 ### badged

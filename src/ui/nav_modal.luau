@@ -79,12 +79,16 @@ return function(ctx: Types.Context): Nav.Surfaces
 		return panel
 	end
 
-	local function appearance(phase: Nav.PresencePhase?, timing: Nav.MotionTiming): Nav.Appearance
+	local function appearance(
+		phase: Nav.PresencePhase?,
+		timing: Nav.MotionTiming,
+		ready: ComposeTypes.Readable<boolean>?
+	): Nav.Appearance
 		local reduce = reducedMotion(ctx)
 		local exiting: ComposeTypes.Readable<boolean> = if phase then phase.exiting else Compose.cell(false)
 		local shown = Compose.cell(false)
 		local progress = runtime.tween(function(use: ComposeTypes.Use): number
-			return if use(exiting) or not use(shown) then 0 else 1
+			return if use(exiting) or not use(shown) or (ready ~= nil and not use(ready)) then 0 else 1
 		end, {
 			seconds = function(_: ComposeTypes.Use): number
 				return if exiting:peek() then timing.exit else timing.enter
@@ -93,6 +97,9 @@ return function(ctx: Types.Context): Nav.Surfaces
 		})
 		shown:set(true)
 		return function(use: ComposeTypes.Use?): number
+			if ready ~= nil and not ctx.read(ready, use) then
+				return 0
+			end
 			if reduce(use) then
 				return 1
 			end
@@ -376,6 +383,15 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end
 			if ancestryOwner then
 				ancestryOwner.dispose()
+				ancestryOwner = nil
+			end
+			local root: Instance? = anchor
+			while root and not root:IsA("LayerCollector") do
+				root = root.Parent
+			end
+			if root == nil then
+				value:set(false)
+				return
 			end
 			local nextOwner = owner.createChild()
 			ancestryOwner = nextOwner

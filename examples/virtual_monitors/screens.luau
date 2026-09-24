@@ -78,7 +78,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		if source:peek() ~= nil then
 			spec.CanvasPosition = function(use)
 				use(model.mode)
-				return V2.new(0, use(source))
+				return V2.new(0, source:peek())
 			end
 		end
 		local node = UI[kind](spec)
@@ -471,6 +471,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				return game.rating .. "  ·  " .. game.players
 			end,
 			artwork = function()
+				local decorated = runtime.timeline({ duration = (1 + item.index % 3) / 60 }).completed
 				preview = UI.ZStack "Preview" {
 					width = "fill",
 					height = "fill",
@@ -478,15 +479,18 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					rounded(),
 					stage("Scene", if actions.gameContent then actions.gameContent(current) else nil, {
 						Active = false,
+						lazy = true,
 					}),
-					UI.StatusIndicator "LiveDot" {
-						status = "success",
-						name = "Live now",
-						AnchorPoint = V2.new(0, 0),
-						Position = D2.fromOffset(10, 10),
-					},
+					Compose.show(decorated, function()
+						return UI.StatusIndicator "LiveDot" {
+							status = "success",
+							name = "Live now",
+							AnchorPoint = V2.new(0, 0),
+							Position = D2.fromOffset(10, 10),
+						}
+					end),
 					Compose.show(function(use)
-						return #use(current).friends > 0
+						return use(decorated) and #use(current).friends > 0
 					end, function()
 						return UI.AvatarGroup "Friends" {
 							items = function(use)

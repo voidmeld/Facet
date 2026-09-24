@@ -247,8 +247,10 @@ local lifetime = Compose.createRootOwner(function()
 			return scenes.discovery(sceneRuntime, target)
 		end
 		actions.gameContent = function(current)
-			return function(sceneRuntime, target)
-				return scenes.card(sceneRuntime, target, current:peek(), motionPolicy, active)
+			return function(sceneRuntime, target, live)
+				return scenes.card(sceneRuntime, target, current:peek(), motionPolicy, function(use)
+					return active(use) and use(live)
+				end)
 			end
 		end
 		actions.avatarContent = function(sceneRuntime, target)
@@ -412,6 +414,8 @@ local lifetime = Compose.createRootOwner(function()
 				end
 			elseif command == "close" then
 				model.selectedGame:set(nil)
+			elseif command == "summary" then
+				model.avatarSummary:set(argument == true)
 			elseif command == "chat" then
 				model.prompt(argument)
 				model.chat.send()

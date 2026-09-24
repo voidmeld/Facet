@@ -10,6 +10,9 @@ local bindThemes = require("./themes")
 local pathShapes = require("./nav_path_shapes")
 export type MediaControls = Media.MediaControls
 
+local SETTLE_SECONDS = 0.15
+local VISIBLE_FRACTION = 0.5
+
 return function(ctx: Types.Context, controls: Media.MediaControls?): Media.MediaControls
 	local Host, runtime, Compose = ctx.Host, ctx.runtime, ctx.Compose
 	local themes = bindThemes(Compose)
@@ -1393,6 +1396,121 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return group
 	end)
 
+	local frames = runtime.host.frames
+	local pending: { () -> () } = {}
+	local stopQueue: (() -> ())? = nil
+	local function enqueue(job: () -> ())
+		table.insert(pending, job)
+		if stopQueue == nil and frames then
+			stopQueue = frames.onFrame(function()
+				local next = table.remove(pending, 1)
+				if next then
+					next()
+				end
+				if #pending == 0 and stopQueue then
+					stopQueue()
+					stopQueue = nil
+				end
+			end)
+		end
+	end
+	local function stageLive(stage: ViewportFrame): ComposeTypes.Readable<boolean>
+		local owner = assert(Compose.currentOwner())
+		local moving = Compose.cell(false)
+		local visible = Compose.cell(true)
+		local position = ctx.observe(stage, "AbsolutePosition")
+		local size = ctx.observe(stage, "AbsoluteSize")
+		local current: ScrollingFrame? = nil
+		local tracking: ComposeTypes.Owner? = nil
+		local function track(frame: ScrollingFrame)
+			local canvas = ctx.observe(frame, "CanvasPosition")
+			local origin = ctx.observe(frame, "AbsolutePosition")
+			local window = ctx.observe(frame, "AbsoluteWindowSize")
+			local last = canvas:peek()
+			local lastMove = -math.huge
+			local stopWatch: (() -> ())? = nil
+			local function halt()
+				if stopWatch then
+					stopWatch()
+					stopWatch = nil
+				end
+			end
+			Compose.watch(function(use: ComposeTypes.Use)
+				local value = use(canvas)
+				if value == last or frames == nil then
+					return
+				end
+				last = value
+				lastMove = frames.now()
+				moving:set(true)
+				if stopWatch == nil then
+					stopWatch = frames.onFrame(function()
+						if frames.now() - lastMove >= SETTLE_SECONDS then
+							halt()
+							moving:set(false)
+						end
+					end)
+				end
+			end)
+			Compose.cleanup(halt)
+			Compose.watch(function(use: ComposeTypes.Use)
+				local at, extent = use(position), use(size)
+				local top, box = use(origin), use(window)
+				if extent.X <= 0 or extent.Y <= 0 or box.X <= 0 or box.Y <= 0 then
+					visible:set(false)
+					return
+				end
+				local width = math.min(at.X + extent.X, top.X + box.X) - math.max(at.X, top.X)
+				local height = math.min(at.Y + extent.Y, top.Y + box.Y) - math.max(at.Y, top.Y)
+				if width <= 0 or height <= 0 then
+					visible:set(false)
+					return
+				end
+				local shown = width * height / (extent.X * extent.Y)
+				visible:set(shown >= VISIBLE_FRACTION or height >= box.Y * VISIBLE_FRACTION)
+			end)
+		end
+		local function locate()
+			if owner.isDisposed() then
+				return
+			end
+			local found: ScrollingFrame? = nil
+			local at = stage.Parent
+			while at do
+				if at:IsA("ScrollingFrame") then
+					found = at
+					break
+				end
+				if at:IsA("LayerCollector") then
+					break
+				end
+				at = at.Parent
+			end
+			if found == current and tracking ~= nil then
+				return
+			end
+			current = found
+			if tracking then
+				tracking.dispose()
+				tracking = nil
+			end
+			moving:set(false)
+			visible:set(true)
+			if found then
+				local child = owner.createChild()
+				tracking = child
+				Compose.withOwner(child, function()
+					track(found)
+				end)
+			end
+		end
+		runtime.connect(stage, "AncestryChanged", locate)
+		locate()
+		return Compose.formula(function(use: ComposeTypes.Use): boolean
+			return use(visible) and not use(moving)
+		end)
+	end
+
 	UI.Stage = ctx.construct("Stage", function(spec: Media.StageProps): ViewportFrame
 		local world = Host.WorldModel "World" {}
 		local externalCamera = spec.camera
@@ -1413,7 +1531,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			}
 		local native = ctx.props(
 			spec,
-			{ "content", "camera", "fieldOfView" },
+			{ "content", "camera", "fieldOfView", "lazy" },
 			{
 				Size = D2.fromOffset(240, 180),
 				CurrentCamera = Compose.static(camera),
@@ -1422,10 +1540,45 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			} :: Engine.ViewportFrameNativeProps
 		)
 		local stage = ctx.styled(Host.ViewportFrame(native), "panel")
+		local live = stageLive(stage)
+		stage:SetAttribute("FacetLive", live:peek())
+		Compose.watch(function(use: ComposeTypes.Use)
+			stage:SetAttribute("FacetLive", use(live))
+		end)
 		if spec.content then
-			local cleanup = spec.content(runtime, world)
-			if type(cleanup) == "function" then
-				Compose.cleanup(cleanup)
+			local content = spec.content
+			local owner = assert(Compose.currentOwner())
+			local built = false
+			local function build()
+				if built or owner.isDisposed() then
+					return
+				end
+				built = true
+				Compose.withOwner(owner, function()
+					local cleanup = content(runtime, world, live)
+					if type(cleanup) == "function" then
+						Compose.cleanup(cleanup)
+					end
+				end)
+				stage:SetAttribute("FacetBuilt", true)
+			end
+			stage:SetAttribute("FacetBuilt", false)
+			if spec.lazy ~= true or frames == nil then
+				build()
+			else
+				local queued = false
+				local function attempt()
+					queued = false
+					if live:peek() then
+						build()
+					end
+				end
+				Compose.watch(function(use: ComposeTypes.Use)
+					if use(live) and not built and not queued then
+						queued = true
+						enqueue(attempt)
+					end
+				end)
 			end
 		end
 		return stage

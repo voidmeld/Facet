@@ -88,6 +88,9 @@ local function tour(world: any)
 	find(discover, "Games").AbsoluteWindowSize = types.Vector2.new(820, 260)
 	model.catalog.seen(35)
 	model.step(0.1, true)
+	for _ = 1, 4 do
+		world.engine.heartbeat.fire(1 / 60)
+	end
 	local card = find(discover, "Game_1")
 	card:_fireSignal("MouseEnter")
 	press(card, "Primary")

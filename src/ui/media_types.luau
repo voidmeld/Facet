@@ -124,7 +124,12 @@ export type AvatarGroupProps = Engine.FrameProps & {
 	onOverflow: (() -> ())?,
 }
 export type StageProps = Types.ViewportFrameProps & {
-	content: ((runtime: ComposeTypes.Runtime, world: WorldModel) -> (() -> ())?)?,
+	content: ((
+		runtime: ComposeTypes.Runtime,
+		world: WorldModel,
+		live: ComposeTypes.Readable<boolean>
+	) -> (() -> ())?)?,
+	lazy: boolean?,
 	camera: Camera | Types.Value<CFrame>?,
 	fieldOfView: Types.Value<number>?,
 }

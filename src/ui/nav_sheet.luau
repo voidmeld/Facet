@@ -45,6 +45,7 @@ local KEYS = {
 local PLACEMENTS = table.freeze({ automatic = true, bottom = true, side = true, center = true })
 local HANDLE = 20
 local SHEET = table.freeze({ enter = 0.3, exit = 0.2 })
+local SETTLE_LIMIT = 12
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
@@ -228,9 +229,15 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return byId[lastValid]
 		end
 		local dragHeight: ComposeTypes.Cell<number?> = Compose.cell(nil :: number?)
+		local ready = Compose.cell(frames == nil)
 		local motion = runtime.tween(function(use: ComposeTypes.Use)
 			return use(dragHeight) or heightOf(selected(use), use)
-		end, { seconds = 0.2 })
+		end, {
+			seconds = 0.2,
+			reducedMotion = function(use: ComposeTypes.Use): boolean
+				return not use(ready)
+			end,
+		})
 		local function painted(use: ComposeTypes.Use?): number
 			local drag = read(dragHeight, use)
 			if drag then
@@ -573,9 +580,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 		end
 		local inset = if spec.contentInset == "none" then 0 else 8
-		local bodyChildren: { Types.Child } = {
-			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
-		}
+		local bodyLayout = Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder })
+		local bodyPadding = ctx.padding(inset, inset)
+		local bodyChildren: { Types.Child } = { bodyLayout }
 		local content: Instance = if type(spec.content) == "function"
 			then (spec.content :: () -> Instance)()
 			else spec.content :: Instance
@@ -593,7 +600,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			table.insert(inner, content)
 			table.insert(bodyChildren, Host.Frame(inner))
 		else
-			table.insert(bodyChildren, ctx.padding(inset, inset))
+			table.insert(bodyChildren, bodyPadding)
 			table.insert(bodyChildren, content)
 		end
 		local flex = Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill })
@@ -633,13 +640,15 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end, press).frame
 			)
 		end
-		local canvas = ctx.observe(body, "AbsoluteCanvasSize")
+		local contentSize = ctx.observe(bodyLayout, "AbsoluteContentSize")
+		local extra = if hero == nil or sticky then inset * 2 else 0
+		local function natural(use: ComposeTypes.Use): number
+			return use(contentSize).Y + extra
+		end
 		local chrome = function(use: ComposeTypes.Use): number
 			return (if indicator == "hidden" then 0 else HANDLE) + 24 + 8
 		end
-		local room = parts.room(ctx, regions, body, function(use: ComposeTypes.Use): number
-			return use(canvas).Y
-		end, function(use: ComposeTypes.Use): number
+		local room = parts.room(ctx, regions, body, natural, function(use: ComposeTypes.Use): number
 			return math.max(0, painted(use) - chrome(use))
 		end, true)
 		runtime.decorate(flex, {
@@ -648,7 +657,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end,
 		})
 		Compose.watch(function(use: ComposeTypes.Use)
-			local want = use(canvas).Y + use(room.pinned) + chrome(use) + 8
+			local want = natural(use) + use(room.pinned) + chrome(use) + 8
 			local previous = hugHeight:peek()
 			if want > 0 and (previous == nil or math.abs(previous - want) > 0.5) then
 				hugHeight:set(want)
@@ -664,7 +673,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 		local anchorX = if placement == "side" then (if edge == "left" then 0 else 1) else 0.5
 		local anchorY = if placement == "center" then 0.5 else 1
-		local shown = surfaces.appearance(phase, SHEET)
+		local shown = surfaces.appearance(phase, SHEET, ready)
 		local function travel(use: ComposeTypes.Use): (number, number)
 			local rest = 1 - shown(use)
 			if rest <= 0 then
@@ -727,12 +736,54 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			appearance = shown,
 		})
 		local size = ctx.observe(overlay, "AbsoluteSize")
+		local measured = Compose.cell(false)
 		Compose.watch(function(use: ComposeTypes.Use)
 			local value = use(size)
 			if value.Y > 0 then
 				extent:set(value)
+				measured:set(true)
 			end
 		end)
+		if frames and not ready:peek() then
+			local panelSize = ctx.observe(panel, "AbsoluteSize")
+			local previous: string? = nil
+			local count = 0
+			local stop: (() -> ())? = nil
+			local function finish()
+				if stop then
+					stop()
+					stop = nil
+				end
+				ready:set(true)
+			end
+			stop = frames.onFrame(function()
+				count += 1
+				if not measured:peek() then
+					if count >= SETTLE_LIMIT then
+						finish()
+					end
+					return
+				end
+				local signature = string.format(
+					"%d %d %d %d %d",
+					extent:peek().X,
+					extent:peek().Y,
+					panelSize:peek().X,
+					contentSize:peek().Y,
+					room.pinned:peek()
+				)
+				if signature == previous or count >= SETTLE_LIMIT then
+					finish()
+				end
+				previous = signature
+			end)
+			Compose.cleanup(function()
+				if stop then
+					stop()
+					stop = nil
+				end
+			end)
+		end
 		return overlay
 	end
 

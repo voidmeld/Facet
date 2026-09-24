@@ -523,6 +523,9 @@ t.describe("native virtual monitors", function()
 		withScreens(function(world)
 			local discover, model, types = world.Discover, world.model, world.types
 			find(discover, "Games").AbsoluteWindowSize = types.Vector2.new(820, 260)
+			for _ = 1, 4 do
+				world.engine.heartbeat.fire(1 / 60)
+			end
 			local item = model.catalog.items:peek()[1]
 			local card = find(discover, "Game_1")
 			local body, preview = find(card, "Body"), find(card, "Preview")

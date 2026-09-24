@@ -136,8 +136,14 @@ return function(
 		local revealed = Compose.formula(function(use: ComposeTypes.Use): boolean
 			return reveal == "always" or not hasStop or touch(use) or use(engaged)
 		end)
+		local lifting = Compose.formula(function(use: ComposeTypes.Use): boolean
+			if use(preferred) == E.PreferredInput.Touch then
+				return false
+			end
+			return use(engaged)
+		end)
 		local liftTarget = Compose.formula(function(use: ComposeTypes.Use): number
-			return if use(engaged) then LIFT else 1
+			return if use(lifting) then LIFT else 1
 		end)
 		local spring = runtime.spring(function(use: ComposeTypes.Use)
 			return use(liftTarget)
@@ -201,6 +207,7 @@ return function(
 			spec.controls.engaged = engaged
 			spec.controls.revealed = revealed
 			spec.controls.scale = scale
+			spec.controls.lifting = lifting
 			spec.controls.diagnostics = checks.list
 		end
 		local cardWidth = Compose.cell(0)
@@ -306,7 +313,7 @@ return function(
 			runtime.mount(function()
 				return Host.UIShadow({
 					Name = "LiftShadow",
-					Enabled = engaged,
+					Enabled = lifting,
 				})
 			end, button)
 		else
@@ -412,6 +419,7 @@ return function(
 			end,
 			row :: Types.Child,
 		})
+		local liftScale = Host.UIScale({ Name = "Lift", Scale = scale })
 		local card = Host.Frame(ctx.props(spec, {
 			"image",
 			"artwork",
@@ -441,6 +449,7 @@ return function(
 				FacetReveal = checks.attribute(reveal),
 				FacetRevealed = checks.attribute(revealed),
 				FacetEngaged = checks.attribute(engaged),
+				FacetLifting = checks.attribute(lifting),
 				FacetHovered = checks.attribute(hovered),
 				FacetFocusWithin = checks.attribute(focusWithin),
 				FacetPressing = checks.attribute(pressing),
@@ -456,14 +465,15 @@ return function(
 					return D.new(0, ctx.metric("space.xs", use))
 				end,
 			}) :: Types.Child,
-			Host.UIScale({ Name = "Lift", Scale = scale }) :: Types.Child,
+			liftScale :: Types.Child,
 			body :: Types.Child,
 			plate :: Types.Child,
 		}))
 		root = card
 		local extent = ctx.observe(card, "AbsoluteSize")
 		Compose.watch(function(use: ComposeTypes.Use)
-			cardWidth:set(use(extent).X)
+			local painted = liftScale.Scale
+			cardWidth:set(math.round(use(extent).X / (if painted > 0 then painted else 1)))
 		end)
 		local revealExtent = Compose.formula(function(use: ComposeTypes.Use): { body: number }
 			return { body = use(extent).Y }

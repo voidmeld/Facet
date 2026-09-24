@@ -65,6 +65,7 @@ export type CardControls = Diagnostics & {
 	engaged: ComposeTypes.Readable<boolean>?,
 	revealed: ComposeTypes.Readable<boolean>?,
 	scale: ComposeTypes.Readable<number>?,
+	lifting: ComposeTypes.Readable<boolean>?,
 	revealExtent: ComposeTypes.Readable<{ body: number }>?,
 }
 export type CardSpec = Types.FrameProps & {

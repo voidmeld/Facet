@@ -339,7 +339,7 @@ export type Surfaces = {
 	skin: (GuiObject, string?) -> GuiObject,
 	modal: (() -> GuiObject, (string?) -> (), ModalOptions?) -> Frame,
 	overlay: (GuiObject, Value<boolean>, (PresencePhase?) -> Instance, OverlayOptions?) -> Types.Child,
-	appearance: (PresencePhase?, MotionTiming) -> Appearance,
+	appearance: (PresencePhase?, MotionTiming, ComposeTypes.Readable<boolean>?) -> Appearance,
 	popover: (GuiObject, Appearance, (ComposeTypes.Use) -> (Vector2, Vector2)) -> (),
 	sheetModal: ((SheetSpec, SheetRequest) -> Frame)?,
 }

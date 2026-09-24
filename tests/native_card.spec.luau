@@ -518,6 +518,49 @@ t.describe("native Card", function()
 		world.stop()
 	end)
 
+	t.it("does not lift for touch presses or its menu, and lifts again for gamepad selection", function()
+		local world, root, controls = mount(cardSpec({}), { reducedMotion = false }, true)
+		local Enum = world.engine.types.Enum
+		world.input.PreferredInput = Enum.PreferredInput.Touch
+		local body = world.find("Body")
+		body.InputBegan.fire({ UserInputType = Enum.UserInputType.Touch })
+		settle(world, 1)
+		t.expect(lift(root)).toBe("scale 1 shadow false")
+		body.InputEnded.fire({ UserInputType = Enum.UserInputType.Touch })
+		hover(root, true)
+		settle(world, 1)
+		t.expect(lift(root)).toBe("scale 1 shadow false")
+		primary(world).GuiState = Enum.GuiState.Press
+		settle(world, 1)
+		t.expect(lift(root)).toBe("scale 1 shadow false")
+		primary(world).GuiState = Enum.GuiState.Idle
+		more(world).GuiState = Enum.GuiState.Press
+		settle(world, 1)
+		t.expect(lift(root)).toBe("scale 1 shadow false")
+		t.expect(controls.engaged:peek()).toBe(true)
+		t.expect(controls.revealed:peek()).toBe(true)
+		more(world).GuiState = Enum.GuiState.Idle
+		hover(root, false)
+		world.input.PreferredInput = Enum.PreferredInput.Gamepad
+		world.gui.SelectedObject = body
+		settle(world, 1)
+		t.expect(lift(root)).toBe("scale 1.04 shadow true")
+		world.stop()
+	end)
+
+	t.it("sizes its artwork from the unlifted width, so the lift never changes the layout", function()
+		local world, root = mount(cardSpec({}), { reducedMotion = false })
+		world.resize(root, 300, 262)
+		local artwork = world.find("Artwork")
+		local resting = artwork.Size
+		hover(root, true)
+		settle(world, 1)
+		t.expect(root:FindFirstChild("Lift").Scale).toBe(1.04)
+		world.resize(root, 312, 272)
+		t.expect(artwork.Size).toBe(resting)
+		world.stop()
+	end)
+
 	t.it("lifts a card with no body action without a shadow", function()
 		local spec = cardSpec({})
 		spec.onActivate = nil

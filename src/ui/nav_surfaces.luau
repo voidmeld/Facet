@@ -435,7 +435,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					runtime.decorate(actionBar, { AnchorPoint = V2.new(0, 1), Position = D2.fromScale(0, 1) })
 					layout = Host.CanvasGroup "AlertLayout" {
 						BackgroundTransparency = 1,
-						Size = D2.fromScale(1, 1),
+						Size = function(use: ComposeTypes.Use)
+							local destination = use(offer)
+							return if destination.X > 0 and destination.Y > 0
+								then D2.fromOffset(destination.X, destination.Y)
+								else D2.fromScale(1, 1)
+						end,
 						scroll :: Instance,
 						actionBar,
 						ctx.padding(padding, padding),
@@ -653,8 +658,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						})
 					end
 					local parent = ctx.observe(modal, "Parent")
+					local measured = ctx.observe(modal, "AbsoluteSize")
 					Compose.watch(function(use: ComposeTypes.Use)
-						if use(parent) then
+						local size = use(measured)
+						if use(parent) and (not fullScreen or (size.X > 0 and size.Y > 0)) then
 							ready:set(true)
 						end
 					end)

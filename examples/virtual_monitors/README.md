@@ -67,13 +67,15 @@ open -a RobloxStudio artifacts/virtual-monitors/virtual-monitors.rbxl
 ```
 
 Press Play in Studio. The showcase needs no character and stays local and
-unpublished. The monitors are flat two-dimensional interfaces placed in the
+unpublished. The project file sets `VoiceChatService.EnableDefaultVoice` to
+false, so the place shows no microphone control. The monitors are flat two-dimensional interfaces placed in the
 world; they provide no VR ray, gaze or hand-input implementation.
 
 `workspace.VirtualMonitorsAPI` drives a running place for Studio evidence:
 `Invoke("mode", "Screen" | "Spatial")`, `Invoke("dark", boolean)`,
 `Invoke("focus", app)`, `Invoke("tab", app)`, `Invoke("open", gameId)` (opens
-the details and starts a launch), `Invoke("close")` and `Invoke("chat", text)`.
+the details and starts a launch), `Invoke("close")`, `Invoke("summary", boolean)` (presents or dismisses the
+Avatar look summary sheet) and `Invoke("chat", text)`.
 
 Automated behavior coverage lives in `tests/native_virtual_monitors.spec.luau`.
 `tests/native_virtual_monitors_coverage.spec.luau` mounts the three apps and the

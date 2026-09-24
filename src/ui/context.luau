@@ -440,6 +440,19 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			end
 			if ancestryOwner then
 				ancestryOwner.dispose()
+				ancestryOwner = nil
+			end
+			local inputParent: Instance? = config.inputParent
+			if inputParent == nil then
+				local root: Instance? = node
+				while root and not root:IsA("LayerCollector") do
+					root = root.Parent
+				end
+				if root == nil then
+					parent:set(nil :: Instance?)
+					available:set(false)
+					return
+				end
 			end
 			local childOwner = owner.createChild()
 			ancestryOwner = childOwner
@@ -458,7 +471,8 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 					end
 					at = at.Parent
 				end
-				parent:set(config.inputParent or collector)
+				local target: Instance? = if inputParent then inputParent else collector
+				parent:set(target)
 				Compose.watch(function(use: ComposeTypes.Use)
 					local enabled = true
 					for _, source in sources do
