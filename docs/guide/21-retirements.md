@@ -14,19 +14,20 @@ The baseline is `main` at `a8c88956`. The branch is `codex/compose-ui-simplifica
 |---|---:|---:|
 | Class b: the Roblox Engine or Compose owns the mechanism | 302 | 1440 |
 | Class b with no candidate test and no live record | 165 | 704 |
-| Class c: the feature or the code is deleted | 819 | 6032 |
+| Class c: the feature or the code is deleted | 811 | 5973 |
+| Restored before the merge: moved from class c to class a | 8 | 59 |
 | Parts of covered contracts that the strengthening work retired | 117 | - |
-| Decisions for the owner (next section) | 21 | - |
+| Owner decisions (next section) | 21 | - |
 
 Most class c contracts tested the deleted solver, renderer, focus graph, input system, presenter and paint layer. Their retirement is correct when the public API no longer makes the promise. The next section lists the retirements that a player or a game author can see.
 
-## Needs an owner decision
+## Owner decisions
 
-Each item below removes a behavior that a player or a game author uses. For each item, decide one of these:
+Each item below removed a behavior that a player or a game author uses. The owner decided each item. The "Decision" line gives the result:
 
-- Accept the retirement. Then record it in `CHANGELOG.md` as a breaking change.
-- Restore the behavior in Facet before the merge.
-- Restore the behavior after the merge. Then record it as a known gap.
+- Restored: Facet has the behavior again. [Restored before the merge](#restored-before-the-merge) names the change and its tests.
+- Restored by another change: a separate branch restores the behavior.
+- Accepted: the retirement stays. The line names the native replacement that a game uses.
 
 ### 1. Screen-level entry focus
 
@@ -35,6 +36,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `apps-159`, `mech2-104`.
 - PR status: The PR gives entry selection only to modal controls (Alert, Sheet, Menu) and to collections that you give a focus option. On an ordinary screen, a gamepad or keyboard player starts with no selection until the engine picks one. `docs/guide/07-input.md` promises entry only for modals.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored by another change. The focus rules work restores entry focus.
 
 ### 2. Nearest-survivor focus after a removal
 
@@ -43,6 +45,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `apps-147`, `apps-185`.
 - PR status: Compose `createFocusScope` clears the focus or moves it to the first row. A gamepad player loses the position in a long list after a delete.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored by another change. The focus rules work restores the nearest-survivor rule.
 
 ### 3. Tab and Shift+Tab traversal
 
@@ -51,6 +54,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `apps2-210`.
 - PR status: The PR binds no Tab key (`Button` refuses Tab as a shortcut). Roblox engine selection moves by direction only. The b-class record says `nativeEvidence: none`. The live run `artifacts/studio-live/needs_live_input-power-off-traversal-portrait-largest.json` records the check `Tab reaches After` as failed: Tab selected no control, while DPadDown did.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored by another change. The focus rules work restores Tab traversal.
 
 ### 4. Ten-foot (viewing distance) profile, including the ten-foot focus ring
 
@@ -59,6 +63,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `navigation-1-13`, `navigation-1-01`, `navigation-4-41`, `apps-190`, `paint-85`, `apps2-134`, `inputs-53`.
 - PR status: The PR has no environment distance fact. The gallery keeps only a `UIScale` 1.5 preview. Console players get desktop density unless each game scales its own UI.
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. The engine selection highlight and `GuiObject.SelectionImageObject` replace the ten-foot focus ring. A game that needs a distance profile scales its own UI, for example with `UIScale`.
 
 ### 5. Theme-owned focus indicator
 
@@ -67,6 +72,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `mech1-91`.
 - PR status: The PR uses the engine default selection image (`SelectionImageObject` is not set). `theme_types.SkinLayer.kind` still lists `glow`, and two shipped packages still declare focus art that nothing reads (`themes-P2-31` removal text).
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. The engine selection highlight is the focus indicator. A game that needs its own indicator sets `SelectionImageObject` on the control.
 
 ### 6. The application handle
 
@@ -75,6 +81,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `apps-125`.
 - PR status: The caller now makes the runtime, the ScreenGui, the StyleSheet and the StyleLink, and calls `runtime.mount`, `stop` and `runtime:dispose`. Every main screen must change (ergonomics audit, section 5).
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. The game uses the Compose runtime, `runtime.mount` (the mount helper), `RunService` for frame work and Compose animation for motion.
 
 ### 7. Adaptive environment facts
 
@@ -83,6 +90,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `mech1-121`.
 - PR status: Controls read `UserInputService.PreferredInput` and native `AbsoluteSize` directly. A screen that must choose between two arrangements observes `AbsoluteSize` itself (`docs/guide/15-adaptive-recipes.md`). AGENTS.md on main still tells authors to read `app.environment`.
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. Native layout replaces the environment facts, the `ViewThatFits` choice and the environment preview and reset: `AbsoluteSize`, `AutomaticSize`, `UIListLayout.Wraps` and `UserInputService.PreferredInput`.
 
 ### 8. Presenter toasts
 
@@ -91,6 +99,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `mech3-87`, `mech3-89`, `apps2-226`, `mech2-12`.
 - PR status: The toast is now a gallery scenario (`examples/gallery/scenarios/sponsor_toast.luau`). Each game writes its own queue and timers.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored by another change. The overlays port restores toasts.
 
 ### 9. Custom and anchored presentation
 
@@ -98,6 +107,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Main evidence: 4 contracts, 41 main cases: `navigation-1-46` (7, class c, `anchored_surface`); `mech2-105` (21, class c, `presenter`); `mech1-84` (11, class c, `compose_scene`); `navigation-2-62` (2, class c, `modal_dismissal`).
 - PR status: `UI.Alert` and `UI.Sheet` own presentation. A game that needs a custom modal body must fit it in a Sheet or build it on native objects.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored by another change. The overlays port restores custom and anchored presentation.
 
 ### 10. Server replication helpers
 
@@ -105,6 +115,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Main evidence: 3 contracts, 24 main cases: `apps2-81` (17, class c, `replication`, `fuzz_replication`); `apps2-162` (6, class c, `platform_adapters_recovery`); `apps2-223` (1, class c, `replication`).
 - PR status: `docs/guide/06-client-server.md` teaches a hand-written request model. The settings-sync example writes its own loopback.
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. Server state is game domain. [Client and server](06-client-server.md) shows the request model.
 
 ### 11. Generic drag and drop
 
@@ -112,6 +123,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Main evidence: 3 contracts, 81 main cases: `inputs-84` (53, class c, `drag_public`); `inputs-85` (11, class c, `drag_session`); `apps2-246` (17, class c, `sponsor_scenarios`).
 - PR status: Only table and list reorder keep a drag. A game uses `UIDragDetector` directly (the match-3 example does).
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. A game uses the native `UIDragDetector`.
 
 ### 12. On-screen keyboard avoidance
 
@@ -120,6 +132,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `inputs-10`.
 - PR status: The PR leaves this to the engine TextBox. No test or live record shows that the engine keeps a field visible on a phone.
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. The engine TextBox owns the on-screen keyboard.
 
 ### 13. Haptic and sensory feedback system
 
@@ -128,6 +141,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `inputs-76`.
 - PR status: The PR keeps one `pressHaptic` option that plays only on a value change. The motor output on a phone and a gamepad has no physical evidence (`tools/lune/parity_blockers.json` `pendingLiveRisks`).
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. A game plays a native `HapticEffect`. The controls play the factory `pressHaptic` option for a change of state or value.
 
 ### 14. Table selection and editing model
 
@@ -136,6 +150,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `apps2-179`.
 - PR status: In multi mode every activation toggles. Arrows do not select. The caller owns `editing`. Desktop players lose the usual list selection keys.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored in part. The multi-select keys are restored: a plain click replaces, Ctrl-click or Cmd-click toggles, Shift-click and Shift with an arrow extend. A plain arrow still does not select. The decision does not cover `onPrimaryAction` and the table-owned Edit and Done toggle. They stay retired.
 
 ### 15. Row tray dismissal
 
@@ -143,6 +158,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Main evidence: 3 contracts, 13 main cases: `collections-78` (1, class c, `row_actions_input`); `collections-90` (2, class c, `row_actions_input`); `collections-285` (10, class c, `virtual_list_row_actions`).
 - PR status: The PR RowActions has no outside catcher. A tray stays open until the row closes it.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored.
 
 ### 16. Error boundary control
 
@@ -150,6 +166,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Main evidence: 1 contracts, 8 main cases: `mech1-115` (8, class c, `error_boundary`).
 - PR status: The PR contains failures only for Alert content and NavigationStack destinations. Main `bc9a56a6` extended this control (commit `e09f648c`, G1), so the port to main must decide.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored. The presenter critical screen stays retired.
 
 ### 17. Declarative motion API
 
@@ -158,6 +175,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `apps2-155`, `mech3-98`.
 - PR status: Authors compose `runtime.spring` and `runtime.tween`. Controls animate by default since `4b9ab031`. AGENTS.md on main still teaches `transition` on `UI.When` and `UI.ForEach`.
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. Controls animate by default, and a game uses Compose animation (`runtime.spring`, `runtime.tween`) for its own motion.
 
 ### 18. Text fit and middle truncation
 
@@ -165,6 +183,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Main evidence: 2 contracts, 32 main cases: `mech3-83` (18, class c, `text_size_fit`); `mech2-46` (14, class c, `leaf_capabilities`).
 - PR status: Only native end truncation and `TextScaled` remain.
 - Current main `bc9a56a6` still ships this.
+- Decision: Restored.
 
 ### 19. Programmatic scrolling and reorder autoscroll
 
@@ -173,6 +192,7 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Strengthening notes that retire part of a covered contract: `mech1-42`.
 - PR status: VirtualList keeps `indexOfKey`, `placementOf` and `offsetOf`. Reorder autoscroll starts at once and scrolls only its own body.
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. A game sets the native `ScrollingFrame.CanvasPosition`.
 
 ### 20. World anchor projection
 
@@ -180,12 +200,30 @@ Each item below removes a behavior that a player or a game author uses. For each
 - Main evidence: 1 contracts, 6 main cases: `apps-223` (6, class c, `world_anchor`).
 - PR status: `docs/guide/14-choosing-controls.md` tells the game to project with the camera. AGENTS.md on main still names `client.world_anchor`.
 - Current main `bc9a56a6` still ships this.
+- Decision: Accepted. A game puts the interface in a `BillboardGui` or a `SurfaceGui` target.
 
 ### 21. Engine-owned mechanisms with no proof
 
 - Main promised: 165 class b contracts (704 main cases) that now depend on an engine or Compose mechanism.
 - Evidence: their `nativeEvidence` is `none`. No candidate test and no live record shows that Facet uses the mechanism correctly. Examples: `inputs-79` (D-pad and thumbstick repeat cadence), `inputs-134` (thumbstick latch and dead zone), `apps-161` (focus keeps its scroll host visible), `mech2-35` (no focus ring after touch).
 - Decision: accept these on the engine's word, or ask for live checks (`docs/guide/11-device-verification.md` harness).
+
+## Restored before the merge
+
+These contracts moved from class c to class a. The cases are in `tests/native_parity_restore.spec.luau`. Each contract in `tools/lune/verification_parity.json` has `restoredBy` set to `parity/restore`.
+
+| Contract | Main cases | Restored behavior | Native implementation | Still weaker |
+|---|---:|---|---|---|
+| `mech1-115` | 8 | `UI.ErrorBoundary` contains a failure, shows its fallback, reports the failure once and can retry. | `Compose.boundary` | The presenter critical screen is not restored. |
+| `collections-150` | 2 | A plain mouse click replaces a multi selection. Ctrl-click or Cmd-click toggles a row. | `UserInputService:IsKeyDown` and the `Activated` input object | - |
+| `collections-198` | 4 | Shift with an arrow key, Home or End extends the selection from the anchor. Ctrl with an arrow moves the focus only. | The collection arrow actions and the Compose focus scope | A plain arrow does not replace the selection. |
+| `collections-78` | 1 | A tap outside an open tray closes it and is not swallowed. | `UserInputService.InputBegan`, observed only while the tray is open | - |
+| `collections-90` | 2 | An outside tap during a destructive commit does not stop the commit. | The same observer | There is no passive HUD catcher. |
+| `collections-285` | 10 | A press on another row closes the open row. | The same observer | A press on the content of the open row keeps its tray open. There is no shared list overlay. |
+| `mech3-83` | 18 | Label `textSize = "fit"` paints the largest size that fits, between a cap and a floor. | `TextScaled` and `UITextSizeConstraint` | The engine picks the size. The headless engine does not scale text. |
+| `mech2-46` | 14 | Label `truncate = "middle"` keeps the start and the end of a long value. | The engine `TextBounds` of the label | The headless engine measures with a fixed glyph width. |
+
+Facet Neutral's `Light` palette (main `b1a08042`) is newer than the baseline, so no baseline contract records it. Facet Neutral declares `Dark` and `Light` again. Both palettes pass the contrast gate, and the theme strength specs check both palettes where they checked one before.
 
 ## Retired contracts by area
 
@@ -375,7 +413,7 @@ Each line gives the contract id, the main case count and the main specs, the pro
 
 ### Text measurement and fit
 
-30 class b and 22 class c contracts, 434 main cases.
+30 class b and 20 class c contracts, 402 main cases.
 
 - `apps-130` (1 main case; `semantic_rows`). Main promised: Described toggle fits beside natural-width value in a narrow theme. Engine or Compose owns it: Native TextButton text layout with UIPadding reserved for the indicator. Replacement test: yes: native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets (asserts padding offsets, not narrow fit).
 - `apps-248` (4 main cases; `large_text_hot_swap`). Main promised: Geometry returns byte-identical and files no overlap/clip finding. Engine or Compose owns it: Engine text layout (TextSize/AutomaticSize/TextWrapped); solver findings deleted. Replacement test: no test.
@@ -414,7 +452,6 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `inputs-49` (2 main cases; `button_shape`). Main promised: Adapter and solver agree on wrap verdict. Deleted: Solver/adapter dual seams deleted.. Replacement test: none; the feature is deleted.
 - `inputs-62` (1 main case; `compact_label`). Main promised: Square button draws icon glyph compact form. Deleted: Icon/image compact forms removed; compactLabel is a string or readable (api.md).. Replacement test: none; the feature is deleted.
 - `inputs-65` (4 main cases; `compact_label`). Main promised: Solver reserved box, verdict channel, remount cache, zero writes. Deleted: Solver compact verdict and path caches removed.. Replacement test: none; the feature is deleted.
-- `mech2-46` (14 main cases; `leaf_capabilities`). Main promised: Middle truncation. Deleted: middle truncation deleted (no "middle" in src/ui text code); api.md Table only promises "natively truncated values". Replacement test: none; the feature is deleted.
 - `mech2-55` (6 main cases; `measure_entry_point`). Main promised: Standalone measurement engine entry. Deleted: Facet layout solver/measure/renderer (src/layout, src/render, src/client adapter) deleted; CAND/src has only src/ui + vendor/compose; api.md "There is no Facet application, mounting service, render target, solver, rea.... Replacement test: none; the feature is deleted.
 - `mech3-63` (35 main cases; `text_audit`). Main promised: Text audit: truncation facts, overlaps, clippedEssential, hitFloor, movingText, focusVisibility, outOfBounds. Deleted: text_audit and facet-dump/2 deleted. Replacement test: none; the feature is deleted.
 - `mech3-65` (15 main cases; `text_collect_inflight`). Main promised: Premeasure collector in-flight budget. Deleted: premeasure collector deleted. Replacement test: none; the feature is deleted.
@@ -423,7 +460,6 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `mech3-74` (6 main cases; `text_index_seam`). Main promised: Text index seam. Deleted: per-surface word index deleted. Replacement test: none; the feature is deleted.
 - `mech3-75` (20 main cases; `text_line_box`). Main promised: text.facts / text.lineBox / composition.floorPx. Deleted: text.facts, text.lineBox and composition.floorPx deleted. Replacement test: none; the feature is deleted.
 - `mech3-80` (15 main cases; `text_round_reentry`). Main promised: Premeasure answer re-entry depth and deferral. Deleted: premeasure/solve re-entry deleted. Replacement test: none; the feature is deleted.
-- `mech3-83` (18 main cases; `text_size_fit`). Main promised: textSize = 'fit'. Deleted: textSize='fit' deleted (Picker textSize is a plain size option); no fit grammar in api.md. Replacement test: none; the feature is deleted.
 - `navigation-2-41` (1 main case; `menu`). Main promised: Over-long Back label degrades to icon. Deleted: Back row is a plain UI.Button with label only (nav_menu.luau); no expansion-ratio degradation exists or is documented.. Replacement test: none; the feature is deleted.
 - `navigation-3-53` (2 main cases; `picker_segments`). Main promised: Icon rides compactLabel degrade ladder. Deleted: Picker no longer passes compactLabel to segments (nav_menu.luau); degrade ladder removed.. Replacement test: none; the feature is deleted.
 - `paint-150` (2 main cases; `typography_weight_roles`). Main promised: Exact legacy weights of the eight roles. Deleted: Neutral now: heading/title/strong Bold, numeral Regular; no doc promises weights.. Replacement test: none; the feature is deleted.
@@ -432,7 +468,7 @@ Each line gives the contract id, the main case count and the main specs, the pro
 
 ### Focus and selection
 
-51 class b and 33 class c contracts, 429 main cases.
+51 class b and 31 class c contracts, 423 main cases.
 
 - `apps-144` (1 main case; `focus`). Main promised: Screen ring navigation and wrap at edges. Engine or Compose owns it: GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*). Replacement test: no test.
 - `apps-148` (1 main case; `focus`). Main promised: Focus changes are observable client-local state. Engine or Compose owns it: GuiService.SelectedObject property changes. Replacement test: yes: native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection.
@@ -496,12 +532,10 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `apps-186` (4 main cases; `navigation_groups`). Main promised: Presenter navigationGroups opt, replaceGroups, groups function, flat legacy ring. Deleted: Facet focus graph (newFocusGraph, NavigationGroup, replaceGroups, traverse/rank, presenter present() focus opts) deleted; api.md has no newFocusGraph/navigationGroups/traversalPriority/focusOrder; docs/guide/07-input..... Replacement test: none; the feature is deleted.
 - `apps2-87` (7 main cases; `gallery_chrome`). Main promised: Chrome closed leaves the demo's input alone; exactly one engaged surface; no stolen keys. Deleted: examples/gallery/client/showcase_chrome.luau (engagement model, global chrome keys) was deleted. The new chrome (client/screen.luau) is a TabView plus a Settings button with no global bindings; TabView shoulder action.... Replacement test: none; the feature is deleted.
 - `collections-148` (2 main cases; `table`). Main promised: Click moves keyboard focus; arrows move the selection. Deleted: Behavior changed. Focus and selection are separate. Arrows move native selection only.. Replacement test: none; the feature is deleted.
-- `collections-150` (2 main cases; `table`). Main promised: Plain click replaces a multi selection; Ctrl-click toggles. Deleted: Behavior changed. In multi mode every plain activation toggles (collection_selection.luau). There is no Ctrl distinction.. Replacement test: none; the feature is deleted.
 - `collections-159` (2 main cases; `table`). Main promised: buildFocusGroups; focus inside a row re-selects. Deleted: There is no focus graph.. Replacement test: none; the feature is deleted.
 - `collections-18` (2 main cases; `collection_list`). Main promised: Live predicate flip and mid-gesture focusability protection. Deleted: The permissive focus-skip predicate and the rule that keeps a session target focusable are gone. disabled(item) is one non-reactive predicate that Compose createFocusScope evaluates on source change.. Replacement test: none; the feature is deleted.
 - `collections-180` (1 main case; `table_input`). Main promised: Selection follows D-pad focus. Deleted: Behavior changed. Focus does not select.. Replacement test: none; the feature is deleted.
 - `collections-195` (1 main case; `table_input`). Main promised: A table with no selection/reorder/actions has no row stops. Deleted: Behavior changed. Table rows always have a Selectable RowHit.. Replacement test: none; the feature is deleted.
-- `collections-198` (4 main cases; `table_input`). Main promised: Ctrl/Shift+arrow focus-cursor selection and plain arrow replace. Deleted: Arrows do not select.. Replacement test: none; the feature is deleted.
 - `collections-236` (2 main cases; `virtual_grid_input`). Main promised: Right off the end of a line wraps into the next line; the focus dump. Deleted: Compose spatial moveDirection has no line wrap, and the dump is gone.. Replacement test: none; the feature is deleted.
 - `collections-246` (1 main case; `virtual_hgrid`). Main promised: Down off the end of a line crosses into the next. Deleted: There is no line wrap in Compose spatial moves.. Replacement test: none; the feature is deleted.
 - `collections-260` (17 main cases; `virtual_list_focus_policy`). Main promised: focusPolicy field, index policy, nearest-survivor rule, validation. Deleted: focusPolicy is not in collection_types.luau or api.md. Compose createFocusScope clears current (or autoFocuses the first) when the key disappears. There is no nearest survivor.. Replacement test: none; the feature is deleted.
@@ -1074,7 +1108,7 @@ Each line gives the contract id, the main case count and the main specs, the pro
 
 ### Row actions
 
-0 class b and 17 class c contracts, 112 main cases.
+0 class b and 14 class c contracts, 99 main cases.
 
 - `collections-13` (1 main case; `collection_list`). Main promised: toggleGrab imperative verb. Deleted: The imperative list handle (toggleGrab) is gone. Handle activation arms and commits (collection_reorder.luau activate()).. Replacement test: none; the feature is deleted.
 - `collections-14` (4 main cases; `collection_list`). Main promised: Rows as drop targets for foreign payloads. Deleted: The drop-target registry (accepts/onDrop, reject verdicts) is gone. CAND src has no onDrop or accepts, and api.md documents none.. Replacement test: none; the feature is deleted.
@@ -1083,16 +1117,13 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `collections-169` (8 main cases; `table`). Main promised: Table rowActions internals (unknown keys, Grip, body drag, tray closes before reorder/grab, tap-to-close, rect identity). Deleted: These paths are gone. Reorder does not touch the coordinator. There is no tap-to-close.. Replacement test: none; the feature is deleted.
 - `collections-172` (3 main cases; `table`). Main promised: Page scroll closes trays in a block table; path binding errors. Deleted: There are no published scroll paths. A block table does not observe page scrolling (it only closes on its own Body CanvasPosition).. Replacement test: none; the feature is deleted.
 - `collections-283` (13 main cases; `virtual_list_row_actions`). Main promised: Lazy hosted engines, mount identity, scroll close, pen, dropSurface, re-present. Deleted: RowActions mounts eagerly per mounted row. There is no hosted engine, overlay, dropSurface or list scroll-close.. Replacement test: none; the feature is deleted.
-- `collections-285` (10 main cases; `virtual_list_row_actions`). Main promised: Shared overlay, outside taps, press-other-row close, tap-own-row close, reopen slid. Deleted: The overlay and outside-tap machinery are gone.. Replacement test: none; the feature is deleted.
 - `collections-289` (8 main cases; `virtual_list_row_actions`). Main promised: Tab rank, activate seam, author exits, skipped rows, scroll during commit, outside tap, d-pad walk laziness. Deleted: The presenter rank, the activation seam and the hosted laziness are gone.. Replacement test: none; the feature is deleted.
 - `collections-290` (10 main cases; `virtual_list_row_actions`). Main promised: Swipe release Activate arming. Deleted: The activation-artifact arming is gone.. Replacement test: none; the feature is deleted.
 - `collections-62` (2 main cases; `row_actions`). Main promised: Minus opens the leading tray for leading-only destructive; the editing type is refused. Deleted: Behavior changed. The minus runs the destructive action directly on either edge (delete() -> execute). There is no Readable type check on editing.. Replacement test: none; the feature is deleted.
 - `collections-63` (17 main cases; `row_actions`). Main promised: Tray and minus geometry details (theme gutters, trayGap, 44px hit floor, rigid flight, z-order, prefer grammar, device-round insets, glyph fallback). Deleted: The theme metrics editAffordance/rowGutter/trayGap, the compact prefer grammar, the framework fallback glyphs and the device-round inset arithmetic are gone. CAND uses a measured 72 px minimum edit gutter and bandWidt.... Replacement test: none; the feature is deleted.
 - `collections-66` (11 main cases; `row_actions_hosted`). Main promised: Hosted engine plumbing (paths, onSlide, outsideDismiss, labels, keys context). Deleted: buildHosted, paths, onSlide/onCommitHeight and outsideDismiss are not in CAND src.. Replacement test: none; the feature is deleted.
 - `collections-68` (5 main cases; `row_actions_hosted`). Main promised: Hosted minus path routing, refusals and theme gutter. Deleted: Path routing is gone.. Replacement test: none; the feature is deleted.
-- `collections-78` (1 main case; `row_actions_input`). Main promised: An outside tap closes the tray without swallowing. Deleted: There is no outside-tap dismissal for the tray in CAND RowActions.. Replacement test: none; the feature is deleted.
 - `collections-87` (9 main cases; `row_actions_input`). Main promised: composeWithReorder gesture routing. Deleted: Handler composition is gone. Reorder uses a separate Move handle with its own UIDragDetector.. Replacement test: none; the feature is deleted.
-- `collections-90` (2 main cases; `row_actions_input`). Main promised: An outside tap during a commit; passive HUD catcher. Deleted: There is no outside catcher in CAND.. Replacement test: none; the feature is deleted.
 
 ### HUD and world targets
 
@@ -1426,7 +1457,7 @@ Each line gives the contract id, the main case count and the main specs, the pro
 
 ### Error handling
 
-1 class b and 24 class c contracts, 148 main cases.
+1 class b and 23 class c contracts, 140 main cases.
 
 - `mech1-68` (2 main cases; `compose_contract`). Main promised: Formula/watch failure containment and reporting. Engine or Compose owns it: Compose runtime error handling (vendored). Replacement test: yes: Partial: native_compose_contract asserts a failed formula is not hidden and recovers; watch-failure containment (never reaches the writer) is not asserted..
 - `apps2-113` (1 main case; `gallery_demo_picker`). Main promised: canvas_group refusal is the framework's own sentence at mount. Deleted: The framework refusal for nested group opacity came from the deleted solver/presenter.. Replacement test: none; the feature is deleted.
@@ -1442,7 +1473,6 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `collections-52` (4 main cases; `row_actions`). Main promised: Empty action list, unknown ActionSpec keys, coordinator id rules. Deleted: The closed ActionSpec validation and the coordinator id requirement are gone. A probe showed that unknown keys inside an action table are accepted. The coordinator is a plain cell (api.md).. Replacement test: none; the feature is deleted.
 - `collections-58` (1 main case; `row_actions`). Main promised: A throwing tray action is contained and still closes. Deleted: execute() in collection_row_actions.luau calls onActivate directly, with no pcall. The tray closes before the call. No containment is promised.. Replacement test: none; the feature is deleted.
 - `collections-71` (5 main cases; `row_actions_input`). Main promised: Throwing commits, _commitFirst, pen press, flick momentum frames. Deleted: There is no error containment around onActivate. The private _commitFirst is gone. UIDragDetector owns input-type filtering. The hand-stepped momentum is gone.. Replacement test: none; the feature is deleted.
-- `mech1-115` (8 main cases; `error_boundary`). Main promised: ErrorBoundary control, critical fallback screen, row-factory failure retry. Deleted: UI.ErrorBoundary, critical screens and ForEach row retry deleted; api.md promises containment only for Alert content (above) and NavigationStack destinations.. Replacement test: none; the feature is deleted.
 - `mech2-20` (3 main cases; `inert_placement_warning`). Main promised: Inert placement prop warning. Deleted: placement audit deleted with blueprint props. Replacement test: none; the feature is deleted.
 - `mech2-95` (28 main cases; `placement_audit`). Main promised: Placement audit of inert props. Deleted: placement props/audit deleted. Replacement test: none; the feature is deleted.
 - `mech3-25` (5 main cases; `runtime_quarantine`). Main promised: Motion clock quarantines throwing callbacks and deferred dispose. Deleted: motion.newClock deleted; Compose animation runtime (vendor) owns scheduling and its error handling. Replacement test: none; the feature is deleted.
