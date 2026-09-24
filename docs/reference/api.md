@@ -177,7 +177,9 @@ model update does not send it. `onCommit(text, reason)` receives `submit` or
 value of the edit.
 
 `presentation` is `plain`, `search` or `number`. The number presentation also
-uses a writable `numericValue`, `min`, `max`, `parse` and `format`.
+uses a writable `numericValue`, `min`, `max`, `parse` and `format`. If a
+callback disables the input during a commit, the commit stops. `numericValue`
+does not change and `onCommit` does not run.
 `validate(proposed)` returns the accepted text, or `nil` to reject it.
 `maxLength` counts UTF-8 characters.
 

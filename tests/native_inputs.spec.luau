@@ -520,6 +520,31 @@ t.describe("native input controls", function()
 		stop()
 	end)
 
+	t.it("does not commit a number TextInput that its parse callback disables", function()
+		local value, number, enabled, commits = Compose.cell("2"), Compose.cell(2), Compose.cell(true), 0
+		local node, stop = world(function(UI)
+			return UI.TextInput "Amount" {
+				value = value,
+				numericValue = number,
+				presentation = "number",
+				enabled = enabled,
+				parse = function(text)
+					enabled:set(false)
+					return tonumber(text)
+				end,
+				onCommit = function()
+					commits += 1
+				end,
+			}
+		end)
+		node:CaptureFocus()
+		node.Text = "5"
+		node:ReleaseFocus(true)
+		t.expect(commits).toBe(0)
+		t.expect(number:peek()).toBe(2)
+		stop()
+	end)
+
 	t.it("edits a controlled map field without duplicating durable state", function()
 		local notes = Compose.cell({ item = "saved" })
 		local requests = 0

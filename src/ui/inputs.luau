@@ -1189,6 +1189,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					markInvalid(true)
 					return
 				end
+				if not enabled(spec) then
+					setText(read(spec.value))
+					return
+				end
 				local accepted = false
 				runtime:batch(function()
 					updateValue(formatted)
