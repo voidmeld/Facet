@@ -321,28 +321,42 @@ return function(ctx: Types.Context): Nav.Surfaces
 				local layer = assert(anchor:FindFirstAncestorWhichIsA("LayerCollector"))
 				local at, bounds = ctx.observe(anchor, "AbsolutePosition"), ctx.observe(anchor, "AbsoluteSize")
 				local extent, origin = ctx.observe(layer, "AbsoluteSize"), ctx.observe(layer, "AbsolutePosition")
+				local measure = ctx.text({
+					Name = "HelpMeasure",
+					Text = function(use: Core.Use)
+						return ctx.read(text, use) or ""
+					end,
+					TextWrapped = false,
+					TextTransparency = 1,
+					Size = D2.fromOffset(0, 0),
+					AutomaticSize = E.AutomaticSize.None,
+				})
+				measure:AddTag("facet-type-caption")
+				local natural = ctx.observe(measure, "TextBounds")
 				local label = ctx.text({
 					Name = "HelpText",
 					Text = function(use: Core.Use)
 						return ctx.read(text, use) or ""
 					end,
 					TextWrapped = true,
-					Size = D2.fromOffset(0, 0),
-					AutomaticSize = E.AutomaticSize.XY,
+					Size = function(use: Core.Use)
+						return D2.fromOffset(math.min(math.ceil(use(natural).X) + 1, 264), 0)
+					end,
+					AutomaticSize = E.AutomaticSize.Y,
 				})
 				label:AddTag("facet-type-caption")
 				local panel = Host.Frame "Help" {
 					AutomaticSize = E.AutomaticSize.XY,
 					Size = D2.fromOffset(0, 0),
 					ZIndex = 120,
-					Host.UISizeConstraint({ MaxSize = V2.new(280, math.huge) }) :: Types.Child,
 					Host.UIPadding({
 						PaddingLeft = ctx.types.UDim.new(0, 8),
 						PaddingRight = ctx.types.UDim.new(0, 8),
 						PaddingTop = ctx.types.UDim.new(0, 6),
 						PaddingBottom = ctx.types.UDim.new(0, 6),
-					}),
+					}) :: Types.Child,
 					label,
+					measure,
 				}
 				local measured = ctx.observe(panel, "AbsoluteSize")
 				runtime.decorate(panel, {
