@@ -457,8 +457,8 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 				end
 				return use(parent) ~= nil
 					and use(available)
-					and ctx.available(node, use)
 					and ctx.read(enabledSource, use) ~= false
+					and ctx.available(node, use)
 			end,
 			action,
 		})
