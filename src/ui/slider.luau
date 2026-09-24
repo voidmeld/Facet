@@ -672,7 +672,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 						local side = if thumb == "lower" then "lower" else "upper"
 						return if named and named ~= "" then `{named} {side}` else `Range {side}`
 					end,
-					value = proxy.value :: Shared.Value<Shared.AttributeValue?>,
+					value = function(use: ComposeTypes.Use): number
+						return read(proxy.value, use)
+					end,
 					minimum = model.min,
 					maximum = model.max,
 				})

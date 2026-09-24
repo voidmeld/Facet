@@ -505,6 +505,161 @@ UI.NumberInput "Laps" {
 }
 ```
 
+### DateTimePicker
+
+`UI.DateTimePicker(spec)` returns a Frame. The player uses it to choose a
+calendar date, a date range, or a date with a time. For a count of days, use
+`UI.NumberInput`. For a few fixed dates, use `UI.Picker`.
+
+```luau
+local raceDay = Compose.cell({ year = 2026, month = 10, day = 3 })
+UI.DateTimePicker "RaceDay" {
+    label = "Race day",
+    value = raceDay,
+    onChange = function(date)
+        raceDay:set(date)
+    end,
+    min = { year = 2026, month = 1, day = 1 },
+}
+```
+
+The values are civil dates. See [Civil dates](#civil-dates). A date has no
+time zone, so it does not move a day where the player sees it.
+
+- `selection`: `single` (the default) or `range`. Set it at construction.
+- A single picker uses `value`, `onChange(date)` and `onCommit(date)`. A range
+  picker uses `range = { start?, finish? }`, `onRangeChange(range)` and
+  `onRangeCommit(range)`. The keys of the other mode cause an error.
+- `time`: a single picker only. The value also has `hour` and `minute`.
+  `minuteStep` is the minute grid. It must divide 60. The default is 5.
+  `hourCycle` is 12 or 24. The default comes from `locale`.
+- `min` and `max`: inclusive bounds, or readables of them. `isDateDisabled(date)`
+  returns true for a day that the player cannot choose.
+- `weekStart`: 1 (Sunday) to 7 (Saturday). The default is 1.
+- `locale`: `months`, `weekdays` (short names, Sunday first), `order` (`mdy`,
+  `dmy` or `ymd`), `separator` and `hourCycle`.
+- `clock()`: returns today. The default is the local clock of the player.
+  `referenceDate` sets the month that an empty picker opens on.
+- `presets`: a range picker only. Each preset is
+  `{ id, label, range = function(today) }`.
+- `draft`: adds Reset all, Cancel and Apply.
+- `style`: `automatic` (the default) or `inline`. Set it at construction.
+  `automatic` is a field that opens a calendar panel. `inline` shows the
+  calendar in place.
+- `format(date)`: the words of the field. A custom `format` turns off typed
+  entry. `placeholder` is the text of an empty field.
+- `isPresented`, `onPresentedChange(next)` and `onDismiss(reason)`: the open
+  state of the panel. The reason is `activate`, `outside`, `cancel`,
+  `anchorLost` or `apply`. Without `isPresented`, the control keeps its own
+  open state.
+- `enabled` and `readOnly`: booleans or readables. A read-only picker can omit
+  the change callback.
+- The field chrome keys: `label`, `requiredMark`, `hint`, `errorText`,
+  `controlSize`, `appearance` and `corners`. See
+  [Field chrome](#field-chrome).
+
+#### Proposals and commits
+
+The value belongs to you. A pick sends a proposal to `onChange` or
+`onRangeChange`. The calendar shows only the value that you then hold. If you
+refuse a pick, the calendar does not change.
+
+Without `draft`, each change commits at once. A pick, a time step and a typed
+date each call `onCommit`. A single pick without `time` also closes the panel.
+In a range, the first pick sets `start`. The second pick sets `finish`. If the
+second day is earlier, the two ends change places. `onRangeCommit` runs only
+when both ends are set. B, Escape and a tap outside close the panel and keep
+the value.
+
+With `draft = true`, only Apply commits. Typed text also only proposes. Each
+other way out proposes the value that the panel opened with. Cancel does this
+too. Reset all proposes an empty value. If you write the value while the panel
+is open, your value becomes the value that Cancel restores.
+
+A pointer or a finger can drag the start or the end of a complete range. Each
+move proposes a new range. If the end crosses the other end, the two ends
+change places. The release commits once, as the draft rules permit. A cancelled
+drag proposes the range that the drag started from. A press on another day
+does not start a drag, so a tap there still picks.
+
+#### The field
+
+The field is the `Field` plate in the field chrome. When the preferred input
+is keyboard and mouse, the field holds a native TextBox named `Entry`.
+Otherwise, it holds a button named `Show`. The calendar button `Open` is at
+the trailing edge of the plate.
+
+`Entry` takes the numeric form of the locale when focus leaves it. A year has
+four digits. A typed range is two dates with " – " or " - " between them. If
+the text is not a date, or the day is not available, the text stays. The field
+shows the error in the message line and adds the `facet-invalid` tag to the
+plate. Nothing commits. An empty text proposes an empty value.
+
+The panel opens below the field, aligned to its leading edge. If there is not
+sufficient room below, the panel opens above the field. The panel stays 8
+pixels from the screen edges. The `CalendarSurface` ScrollingFrame holds the
+calendar. It is never taller than the screen, so a tall calendar scrolls. On a touch screen narrower than 600 pixels, the
+panel is a sheet at the bottom of the screen with a Done button. On a ten-foot
+screen, the panel is a sheet at the center of the screen. The panel is a native
+modal. A tap outside the panel, B or Escape closes it. When it closes, the
+selection returns to the control that had it before.
+
+#### The calendar
+
+The `Calendar` frame holds these parts in order:
+
+1. `Header`: `Previous`, the `Month` and `Year` menus, and `Next`.
+2. `Panes`: `Pane1`, and `Pane2` for a wide range picker. Each pane holds
+   `Weekdays` and `Days`, with 42 day buttons `D1` to `D42`.
+3. `PageHint`: the page keys, only while the preferred input is a gamepad.
+4. `Time`: the `Hour` and `Minute` number fields, and `Half` (AM and PM) on a
+   12-hour clock. On touch, it also holds the `Times` list.
+5. `Presets`: one chip for each preset, named `Preset-<id>`.
+6. `Actions`: `ResetAll` at the leading edge, then `Cancel` and `Apply` in the
+   `Commit` row. A sheet without `draft` shows `Done`.
+
+A single date shows one month. A range shows two consecutive months when the
+width holds them. The title of each month shows only with two months.
+
+A day outside `min` and `max`, or refused by `isDateDisabled`, stays in the
+grid. It is selectable, its label ends with "unavailable", its `Strike` line
+shows, and a press does nothing. A day of the next or the previous month is
+dim. A press chooses it, but it is not selectable.
+
+The month menu disables a month outside the bounds. The year menu lists only
+the years inside `min` and `max`. A side with no bound lists 100 years from
+the shown year. Each menu opens with the selection on the shown month or year.
+A choice moves the calendar to the nearest month inside the bounds. `Previous`
+and `Next` stop at a month that is fully outside the bounds.
+
+The day buttons use native GuiService selection. The arrow keys and the
+D-pad move one day or one week. Right on the last day of a week moves to the
+next day. Left and Right page the month past the first or the last day. Up and
+Down move across the shown months. From the first row, Up goes to the `Month`
+menu. From the last row, Down goes to the `Hour` field, else to the first
+action, else to the next control below. L1, R1, Comma and Period page the
+month from each day. When selection enters the grid from another control, it
+goes to the chosen day, else to today.
+
+`time` adds the `Hour` and `Minute` fields. Their step buttons follow the
+minute grid. The top minute is the last step before 60. `Half` changes between
+AM and PM. On touch, the `Times` list shows each time on the minute grid. It
+opens at the held time, else at the time of `clock()`.
+
+#### Native state
+
+`ref` receives the root Frame. The root has the `facet-date-time-picker` tag
+and these attributes: `month` (for example `2026-09`), `dual`, `route`
+(`inline`, `popover` or `sheet`), `presented`, `text`, `typedError` and
+`diagnostics`. A readable value that is not a legal date does not change the
+picker. The picker keeps the last legal value, adds one to `diagnostics`, and
+sends the message to the `onError` factory option.
+
+The theme paints the calendar through these tags: `facet-calendar-day`,
+`facet-calendar-band`, `facet-calendar-disc`, `facet-calendar-end`,
+`facet-calendar-today`, `facet-calendar-strike`, `facet-calendar-number`,
+`facet-calendar-dim`, `facet-calendar-chosen` and `facet-calendar-chosen-end`.
+
 ### Stepper and Slider
 
 Both take a numeric `value`, `min` (default `0`), `max` (default `1`), `step`,
@@ -1537,161 +1692,6 @@ native styling intentionally. Give the same theme package readable to
 `createStyleSheet(runtime, package)`. Mount the resulting sheet and a native
 StyleLink in the target tree. See [custom themes](../guide/09-custom-themes.md)
 and [skins](../guide/10-rich-skinning.md).
-
-### DateTimePicker
-
-`UI.DateTimePicker(spec)` returns a Frame. The player uses it to choose a
-calendar date, a date range, or a date with a time. For a count of days, use
-`UI.NumberInput`. For a few fixed dates, use `UI.Picker`.
-
-```luau
-local raceDay = Compose.cell({ year = 2026, month = 10, day = 3 })
-UI.DateTimePicker "RaceDay" {
-    label = "Race day",
-    value = raceDay,
-    onChange = function(date)
-        raceDay:set(date)
-    end,
-    min = { year = 2026, month = 1, day = 1 },
-}
-```
-
-The values are civil dates. See [Civil dates](#civil-dates). A date has no
-time zone, so it does not move a day where the player sees it.
-
-- `selection`: `single` (the default) or `range`. Set it at construction.
-- A single picker uses `value`, `onChange(date)` and `onCommit(date)`. A range
-  picker uses `range = { start?, finish? }`, `onRangeChange(range)` and
-  `onRangeCommit(range)`. The keys of the other mode cause an error.
-- `time`: a single picker only. The value also has `hour` and `minute`.
-  `minuteStep` is the minute grid. It must divide 60. The default is 5.
-  `hourCycle` is 12 or 24. The default comes from `locale`.
-- `min` and `max`: inclusive bounds, or readables of them. `isDateDisabled(date)`
-  returns true for a day that the player cannot choose.
-- `weekStart`: 1 (Sunday) to 7 (Saturday). The default is 1.
-- `locale`: `months`, `weekdays` (short names, Sunday first), `order` (`mdy`,
-  `dmy` or `ymd`), `separator` and `hourCycle`.
-- `clock()`: returns today. The default is the local clock of the player.
-  `referenceDate` sets the month that an empty picker opens on.
-- `presets`: a range picker only. Each preset is
-  `{ id, label, range = function(today) }`.
-- `draft`: adds Reset all, Cancel and Apply.
-- `style`: `automatic` (the default) or `inline`. Set it at construction.
-  `automatic` is a field that opens a calendar panel. `inline` shows the
-  calendar in place.
-- `format(date)`: the words of the field. A custom `format` turns off typed
-  entry. `placeholder` is the text of an empty field.
-- `isPresented`, `onPresentedChange(next)` and `onDismiss(reason)`: the open
-  state of the panel. The reason is `activate`, `outside`, `cancel`,
-  `anchorLost` or `apply`. Without `isPresented`, the control keeps its own
-  open state.
-- `enabled` and `readOnly`: booleans or readables. A read-only picker can omit
-  the change callback.
-- The field chrome keys: `label`, `requiredMark`, `hint`, `errorText`,
-  `controlSize`, `appearance` and `corners`. See
-  [Field chrome](#field-chrome).
-
-#### Proposals and commits
-
-The value belongs to you. A pick sends a proposal to `onChange` or
-`onRangeChange`. The calendar shows only the value that you then hold. If you
-refuse a pick, the calendar does not change.
-
-Without `draft`, each change commits at once. A pick, a time step and a typed
-date each call `onCommit`. A single pick without `time` also closes the panel.
-In a range, the first pick sets `start`. The second pick sets `finish`. If the
-second day is earlier, the two ends change places. `onRangeCommit` runs only
-when both ends are set. B, Escape and a tap outside close the panel and keep
-the value.
-
-With `draft = true`, only Apply commits. Typed text also only proposes. Each
-other way out proposes the value that the panel opened with. Cancel does this
-too. Reset all proposes an empty value. If you write the value while the panel
-is open, your value becomes the value that Cancel restores.
-
-A pointer or a finger can drag the start or the end of a complete range. Each
-move proposes a new range. If the end crosses the other end, the two ends
-change places. The release commits once, as the draft rules permit. A cancelled
-drag proposes the range that the drag started from. A press on another day
-does not start a drag, so a tap there still picks.
-
-#### The field
-
-The field is the `Field` plate in the field chrome. When the preferred input
-is keyboard and mouse, the field holds a native TextBox named `Entry`.
-Otherwise, it holds a button named `Show`. The calendar button `Open` is at
-the trailing edge of the plate.
-
-`Entry` takes the numeric form of the locale when focus leaves it. A year has
-four digits. A typed range is two dates with " – " or " - " between them. If
-the text is not a date, or the day is not available, the text stays. The field
-shows the error in the message line and adds the `facet-invalid` tag to the
-plate. Nothing commits. An empty text proposes an empty value.
-
-The panel opens below the field, aligned to its leading edge. If there is not
-sufficient room below, the panel opens above the field. The panel stays 8
-pixels from the screen edges. The `CalendarSurface` ScrollingFrame holds the
-calendar. It is never taller than the screen, so a tall calendar scrolls. On a touch screen narrower than 600 pixels, the
-panel is a sheet at the bottom of the screen with a Done button. On a ten-foot
-screen, the panel is a sheet at the center of the screen. The panel is a native
-modal. A tap outside the panel, B or Escape closes it. When it closes, the
-selection returns to the control that had it before.
-
-#### The calendar
-
-The `Calendar` frame holds these parts in order:
-
-1. `Header`: `Previous`, the `Month` and `Year` menus, and `Next`.
-2. `Panes`: `Pane1`, and `Pane2` for a wide range picker. Each pane holds
-   `Weekdays` and `Days`, with 42 day buttons `D1` to `D42`.
-3. `PageHint`: the page keys, only while the preferred input is a gamepad.
-4. `Time`: the `Hour` and `Minute` number fields, and `Half` (AM and PM) on a
-   12-hour clock. On touch, it also holds the `Times` list.
-5. `Presets`: one chip for each preset, named `Preset-<id>`.
-6. `Actions`: `ResetAll` at the leading edge, then `Cancel` and `Apply` in the
-   `Commit` row. A sheet without `draft` shows `Done`.
-
-A single date shows one month. A range shows two consecutive months when the
-width holds them. The title of each month shows only with two months.
-
-A day outside `min` and `max`, or refused by `isDateDisabled`, stays in the
-grid. It is selectable, its label ends with "unavailable", its `Strike` line
-shows, and a press does nothing. A day of the next or the previous month is
-dim. A press chooses it, but it is not selectable.
-
-The month menu disables a month outside the bounds. The year menu lists only
-the years inside `min` and `max`. A side with no bound lists 100 years from
-the shown year. Each menu opens with the selection on the shown month or year.
-A choice moves the calendar to the nearest month inside the bounds. `Previous`
-and `Next` stop at a month that is fully outside the bounds.
-
-The day buttons use native GuiService selection. The arrow keys and the
-D-pad move one day or one week. Right on the last day of a week moves to the
-next day. Left and Right page the month past the first or the last day. Up and
-Down move across the shown months. From the first row, Up goes to the `Month`
-menu. From the last row, Down goes to the `Hour` field, else to the first
-action, else to the next control below. L1, R1, Comma and Period page the
-month from each day. When selection enters the grid from another control, it
-goes to the chosen day, else to today.
-
-`time` adds the `Hour` and `Minute` fields. Their step buttons follow the
-minute grid. The top minute is the last step before 60. `Half` changes between
-AM and PM. On touch, the `Times` list shows each time on the minute grid. It
-opens at the held time, else at the time of `clock()`.
-
-#### Native state
-
-`ref` receives the root Frame. The root has the `facet-date-time-picker` tag
-and these attributes: `month` (for example `2026-09`), `dual`, `route`
-(`inline`, `popover` or `sheet`), `presented`, `text`, `typedError` and
-`diagnostics`. A readable value that is not a legal date does not change the
-picker. The picker keeps the last legal value, adds one to `diagnostics`, and
-sends the message to the `onError` factory option.
-
-The theme paints the calendar through these tags: `facet-calendar-day`,
-`facet-calendar-band`, `facet-calendar-disc`, `facet-calendar-end`,
-`facet-calendar-today`, `facet-calendar-strike`, `facet-calendar-number`,
-`facet-calendar-dim`, `facet-calendar-chosen` and `facet-calendar-chosen-end`.
 
 ## Civil dates
 

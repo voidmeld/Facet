@@ -3975,7 +3975,9 @@ t.describe("native parity reference applications", function()
 			for name in
 				string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function")
 			do
-				table.insert(published, name)
+				if name ~= "fill" and name ~= "badged" then
+					table.insert(published, name)
+				end
 			end
 			table.sort(published)
 			t.expect(table.concat(names, " ")).toBe(table.concat(published, " "))

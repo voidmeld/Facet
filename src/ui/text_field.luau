@@ -776,29 +776,32 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				releaseFocus()
 			end
 		end)
-		attributes(
-			node,
-			{
-				AccessibleLabel = if spec.label ~= nil
-					then function(use: ComposeTypes.Use): string
-						return chrome.labelText(spec, use)
-					end
-					else nil,
-				invalid = function(use: ComposeTypes.Use)
-					return use(invalid) or read(spec.invalid, use) == true
+		attributes(node, {
+			invalid = function(use: ComposeTypes.Use)
+				return use(invalid) or read(spec.invalid, use) == true
+			end,
+			validationMessage = function(use: ComposeTypes.Use): string
+				return use(validationMessage)
+			end,
+			readOnly = function(use: ComposeTypes.Use)
+				return readOnly(use)
+			end,
+		})
+		if spec.label ~= nil then
+			attributes(node, {
+				AccessibleLabel = function(use: ComposeTypes.Use): string
+					return chrome.labelText(spec, use)
 				end,
-				validationMessage = validationMessage,
-				readOnly = function(use: ComposeTypes.Use)
-					return readOnly(use)
+			})
+		end
+		if spec.selectOnFocus ~= nil then
+			attributes(node, {
+				selectOnFocus = function(use: ComposeTypes.Use): string
+					local ok, policy = pcall(policyOf, read(spec.selectOnFocus, use))
+					return if ok then policy :: string else lastPolicy
 				end,
-				selectOnFocus = if spec.selectOnFocus ~= nil
-					then function(use: ComposeTypes.Use): string
-						local ok, policy = pcall(policyOf, read(spec.selectOnFocus, use))
-						return if ok then policy :: string else lastPolicy
-					end
-					else nil,
-			} :: Shared.Attributes
-		)
+			})
+		end
 		if spec.selectOnFocus ~= nil and dynamic(spec.selectOnFocus) then
 			Compose.watch(function(use: ComposeTypes.Use)
 				lastPolicy = policyOf(read(spec.selectOnFocus, use))

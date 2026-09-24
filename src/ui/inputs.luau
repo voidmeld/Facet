@@ -1647,9 +1647,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 				return input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace)
 			end
-			local focused: ComposeTypes.Readable<Instance?> = if gui
-				then ctx.observe(gui, "SelectedObject") :: ComposeTypes.Readable<Instance?>
-				else Compose.cell(nil :: Instance?)
+			local focused: ComposeTypes.Readable<GuiObject?> = if gui
+				then ctx.observe(gui, "SelectedObject")
+				else Compose.cell(nil :: GuiObject?)
 			local wasFocused = false
 			Compose.watch(function(use: ComposeTypes.Use)
 				local now = use(focused) == (node :: Instance)
