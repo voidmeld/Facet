@@ -68,7 +68,10 @@ for _, name in workloads.ORDER do
 					(glossyTouch.build(world.Facet.themes)),
 				}
 			elseif name == "theme-swap-assets" then
-				world.themePackages = { world.Facet.themes.neutralPackage(), (ornate.build(world.Facet.themes)) }
+				world.themePackages = {
+					assert(world.Facet.themes.define(world.Facet.themes.neutralPackage())),
+					(ornate.build(world.Facet.themes)),
+				}
 			end
 			local workload
 			world.runtime.mount(function()

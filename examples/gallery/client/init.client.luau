@@ -39,9 +39,10 @@ local owner = Compose.createRootOwner(function()
 		})
 	end
 	local selected = Compose.cell(initial)
-	local theme = Compose.cell(Facet.themes.neutralPackage())
-	local selectedTheme = Compose.cell(Facet.themes.neutralPackage().style.defaultTheme)
-	local packages = { Neutral = Facet.themes.neutralPackage() }
+	local neutral = assert(Facet.themes.define(Facet.themes.neutralPackage()))
+	local theme = Compose.cell(neutral)
+	local selectedTheme = Compose.cell(neutral.style.defaultTheme)
+	local packages = { Neutral = neutral }
 	local themeFolder = storage:FindFirstChild("FacetThemes")
 	if themeFolder then
 		for _, module in themeFolder:GetChildren() do
