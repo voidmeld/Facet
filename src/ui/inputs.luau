@@ -539,7 +539,20 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local layout = assert(contentFrame:FindFirstChildWhichIsA("UIListLayout"))
 				layout.VerticalAlignment = E.VerticalAlignment.Center
 				if not spec.row and not description then
-					layout.HorizontalAlignment = E.HorizontalAlignment.Center
+					local alignment = spec.TextXAlignment
+					if alignment == nil then
+						layout.HorizontalAlignment = E.HorizontalAlignment.Center
+					else
+						runtime.decorate(layout, {
+							HorizontalAlignment = function(use: ComposeTypes.Use): Enum.HorizontalAlignment
+								local value = read(alignment, use)
+								return if value == E.TextXAlignment.Left
+									then E.HorizontalAlignment.Left
+									elseif value == E.TextXAlignment.Right then E.HorizontalAlignment.Right
+									else E.HorizontalAlignment.Center
+							end,
+						})
+					end
 				end
 			end
 			table.insert(p, contentFrame)

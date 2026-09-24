@@ -73,9 +73,6 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 	end
 	local function read<T>(value: T | ComposeTypes.Source<T>, use: ComposeTypes.Use?): T
 		if Compose.isReadable(value) then
-			if not native[metatableOf(value)] then
-				reject(nil)
-			end
 			local source = value :: ComposeTypes.Readable<T>
 			return if use then use(source) else source:peek()
 		elseif type(value) == "function" then
@@ -256,8 +253,24 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 				)
 			end
 			for key, value in fields do
-				if type(key) == "string" and Compose.isReadable(value) and not native[metatableOf(value)] then
-					reject(key)
+				if type(key) == "string" then
+					if Compose.isReadable(value) then
+						if not native[metatableOf(value)] then
+							reject(key)
+						end
+					elseif type(value) == "table" and metatableOf(value) == nil then
+						for _, entry in value :: { [unknown]: unknown } do
+							if type(entry) == "table" and not Compose.isReadable(entry) then
+								for field, inner in entry :: { [unknown]: unknown } do
+									if Compose.isReadable(inner) and not native[metatableOf(inner)] then
+										reject(`{key}.{tostring(field)}`)
+									end
+								end
+							elseif Compose.isReadable(entry) and not native[metatableOf(entry)] then
+								reject(key)
+							end
+						end
+					end
 				end
 			end
 			local node = apply(fields)
