@@ -129,6 +129,7 @@ return function(
 				path:set(previous)
 			end
 		end
+		local widths = Compose.cell({} :: { [string]: number })
 		local rows = ctx.column({
 			Compose.show(function()
 				return spec.query ~= nil
@@ -161,8 +162,9 @@ return function(
 							"divider"
 						)
 					end
-					return UI.Button({
-						Name = tostring(item.id or index:peek()),
+					local rowKey = tostring(item.id or index:peek())
+					local row = UI.Button({
+						Name = rowKey,
 						LayoutOrder = index,
 						Size = D2.new(1, 0, 0, 44),
 						label = function(use: Core.Use)
@@ -205,12 +207,38 @@ return function(
 							end
 						end,
 					})
+					row:AddTag("facet-menu-item")
+					if item.role == "destructive" then
+						row:AddTag("facet-menu-destructive")
+					end
+					local content = row:FindFirstChild("Content")
+					if content and content:IsA("GuiObject") then
+						local natural = ctx.observe(content, "AbsoluteSize")
+						Compose.watch(function(use: Core.Use)
+							local next = table.clone(widths:peek())
+							next[rowKey] = use(natural).X
+							widths:set(next)
+						end)
+						Compose.cleanup(function()
+							local next = table.clone(widths:peek())
+							next[rowKey] = nil
+							widths:set(next)
+						end)
+					end
+					return row
 				end,
 			}),
 			ctx.padding(8, 8),
 			ctx.corner(),
 		}, { Name = "MenuRows", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 		local rowSize = ctx.observe(rows, "AbsoluteSize")
+		local function panelWidth(use: Core.Use): number
+			local widest = 0
+			for _, width in use(widths) do
+				widest = math.max(widest, width)
+			end
+			return math.clamp(widest + 48, 220, 400)
+		end
 		local panel = Host.ScrollingFrame "MenuPanel" {
 			Size = D2.fromOffset(280, 0),
 			BorderSizePixel = 0,
@@ -254,7 +282,7 @@ return function(
 		runtime.decorate(panel, {
 			Size = function(use: Core.Use)
 				local height = math.min(use(rowSize).Y, math.max(44, use(extent).Y - 24))
-				return if use(asSheet) then D2.new(1, -24, 0, height) else D2.fromOffset(280, height)
+				return if use(asSheet) then D2.new(1, -24, 0, height) else D2.fromOffset(panelWidth(use), height)
 			end,
 			Position = function(use: Core.Use)
 				local at, bounds, offer, panelSize, offset =
@@ -262,7 +290,7 @@ return function(
 				if use(asSheet) then
 					return D2.fromOffset(12, math.max(12, offer.Y - panelSize.Y - 12))
 				end
-				local left, top = at.X - offset.X + #use(path) * 288, at.Y - offset.Y + bounds.Y + 4
+				local left, top = at.X - offset.X + #use(path) * (panelWidth(use) + 8), at.Y - offset.Y + bounds.Y + 4
 				if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
 					top = at.Y - offset.Y - panelSize.Y - 4
 				end
