@@ -407,7 +407,15 @@ function scenes.discovery(runtime: any, target: Instance)
 	end, target)
 end
 
-function scenes.staticAvatar(runtime: any, target: Instance, angle: any, palette: any, hat: any, motionPolicy: any)
+function scenes.staticAvatar(
+	runtime: any,
+	target: Instance,
+	angle: any,
+	palette: any,
+	hat: any,
+	motionPolicy: any,
+	hatTint: any
+)
 	local Host = runtime.constructors
 	local animatedAngle: any
 	local colors = {
@@ -439,6 +447,10 @@ function scenes.staticAvatar(runtime: any, target: Instance, angle: any, palette
 	end
 	local function visibility(use)
 		return if use(hat) then 0 else 1
+	end
+	local function crown(use)
+		local tint = use(hatTint)
+		return Color3.fromRGB(tint[1], tint[2], tint[3])
 	end
 	return runtime.mount(function()
 		animatedAngle = runtime.spring(function(use)
@@ -527,7 +539,7 @@ function scenes.staticAvatar(runtime: any, target: Instance, angle: any, palette
 				"HatCrown",
 				Vector3.new(1.25, 0.55, 1.1),
 				Vector3.new(0, 4.94, 0),
-				Color3.fromRGB(218, 195, 145),
+				crown,
 				{ Transparency = visibility }
 			),
 		}
@@ -580,9 +592,9 @@ function scenes.disposeAvatar()
 		avatarTemplate = nil
 	end
 end
-function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, active)
+function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, active, hatTint)
 	if not avatarTemplate then
-		return scenes.staticAvatar(runtime, target, angle, palette, hat, motionPolicy)
+		return scenes.staticAvatar(runtime, target, angle, palette, hat, motionPolicy, hatTint)
 	end
 	local Host = runtime.constructors
 	local colors = {
@@ -637,7 +649,7 @@ function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, activ
 			for _, spec in
 				{
 					{ "Brim", Vector3.new(2.1, 0.13, 1.9), -0.16, Color3.fromRGB(203, 178, 126) },
-					{ "Crown", Vector3.new(1.25, 0.55, 1.1), 0.12, Color3.fromRGB(218, 195, 145) },
+					{ "Crown", Vector3.new(1.25, 0.55, 1.1), 0.12, "tint" },
 					{ "Band", Vector3.new(1.28, 0.14, 1.14), -0.08 },
 				}
 			do
@@ -645,8 +657,12 @@ function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, activ
 				local part = Host.Part({
 					Name = "Hat" .. spec[1],
 					Size = spec[2] * fit,
-					Color = if fixed
-						then fixed
+					Color = if fixed == "tint"
+						then function(use)
+							local tint = use(hatTint)
+							return Color3.fromRGB(tint[1], tint[2], tint[3])
+						end
+						elseif fixed then fixed
 						else function(use)
 							return colors[use(palette)]
 						end,

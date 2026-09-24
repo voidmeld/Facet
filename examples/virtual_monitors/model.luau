@@ -33,6 +33,7 @@ function model.new(Compose: any)
 		ratings = Compose.cell({}),
 		palette = Compose.cell("sage"),
 		hat = Compose.cell(true),
+		hatTint = Compose.cell({ 218, 195, 145 }),
 		angle = Compose.cell(-15),
 		turnStep = Compose.cell(30),
 		autoSpin = Compose.cell(0),
@@ -214,6 +215,7 @@ function model.new(Compose: any)
 	self.resetAvatar = function()
 		self.palette:set("sage")
 		self.hat:set(true)
+		self.hatTint:set({ 218, 195, 145 })
 		self.angle:set(-15)
 	end
 	self.prompt = function(value)

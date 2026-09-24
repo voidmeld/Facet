@@ -216,6 +216,28 @@ return function(ctx)
 										Size = D2.new(1, 0, 0, 44),
 										AutomaticSize = E.AutomaticSize.None,
 									},
+									UI.ColorPicker "HatColour" {
+										label = "Hat colour",
+										modes = { "swatches", "spectrum" },
+										swatches = {
+											{ color = C3.fromRGB(218, 195, 145), label = "Straw" },
+											{ color = C3.fromRGB(105, 74, 55), label = "Leather" },
+											{ color = C3.fromRGB(46, 52, 64), label = "Slate" },
+											{ color = C3.fromRGB(176, 58, 46), label = "Brick" },
+										},
+										value = function(use)
+											local tint = use(model.hatTint)
+											return C3.fromRGB(tint[1], tint[2], tint[3])
+										end,
+										onChange = function(color)
+											model.hatTint:set({
+												math.round(color.R * 255),
+												math.round(color.G * 255),
+												math.round(color.B * 255),
+											})
+										end,
+										enabled = model.hat,
+									},
 									UI.RadialMenu "QuickPalette" {
 										label = "Quick palette",
 										appearance = "buttons",
@@ -380,7 +402,7 @@ return function(ctx)
 			UI.Alert "ResetAvatar" {
 				isPresented = model.resetAvatarPresented,
 				title = "Reset your look?",
-				message = "The palette, hat and rotation return to their defaults.",
+				message = "The palette, hat, hat colour and rotation return to their defaults.",
 				actions = {
 					{ id = "cancel", label = "Cancel", role = "cancel" },
 					{ id = "reset", label = "Reset", role = "destructive", onActivate = model.resetAvatar },
