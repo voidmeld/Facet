@@ -15478,7 +15478,7 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value",
-        "native_parity_weaker_actions::native parity weaker actions::hands one application press haptic to buttons, segments and toggles and leaves hover and fields alone"
+        "native_parity_weaker_actions::native parity weaker actions::hands one application press haptic to opted-in buttons, segments and toggles and leaves plain buttons, hover and fields alone"
       ]
     },
     {
@@ -15621,7 +15621,7 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value",
-        "native_parity_weaker_actions::native parity weaker actions::hands one application press haptic to buttons, segments and toggles and leaves hover and fields alone"
+        "native_parity_weaker_actions::native parity weaker actions::hands one application press haptic to opted-in buttons, segments and toggles and leaves plain buttons, hover and fields alone"
       ]
     },
     {

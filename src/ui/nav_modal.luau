@@ -139,12 +139,49 @@ return function(ctx: Types.Context): Nav.Surfaces
 		anchor: GuiObject,
 		shown: () -> boolean
 	): ComposeTypes.PresenceOptions
+		local reduce = reducedMotion(ctx)
+		local owner = assert(Compose.currentOwner())
+		type Pending = {
+			completed: ComposeTypes.Readable<boolean>,
+			done: ComposeTypes.Cell<boolean>,
+			scope: ComposeTypes.Owner?,
+		}
+		local pending: ComposeTypes.Cell<Pending?> = Compose.cell(nil :: Pending?)
+		local function release(entry: Pending?)
+			if entry and entry.scope then
+				entry.scope.dispose()
+			end
+		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			local entry = use(pending)
+			if entry and use(entry.completed) then
+				pending:set(nil)
+				release(entry)
+				entry.done:set(true)
+			end
+		end)
+		Compose.cleanup(function()
+			release(pending:peek())
+		end)
+		local function begin(
+			completed: ComposeTypes.Readable<boolean>,
+			scope: ComposeTypes.Owner?
+		): ComposeTypes.Exiting
+			release(pending:peek())
+			local done = Compose.cell(false)
+			pending:set({ completed = completed, done = done, scope = scope })
+			return { completed = done }
+		end
 		return {
 			exit = function()
-				if not shown() or not attached(anchor) or reducedMotion(ctx)() then
-					return { completed = Compose.cell(true) }
+				if not shown() or not attached(anchor) or reduce() then
+					return begin(Compose.cell(true), nil)
 				end
-				return { completed = runtime.timeline({ duration = timing.exit }).completed }
+				local scope = owner.createChild()
+				local timeline = Compose.withOwner(scope, function()
+					return runtime.timeline({ duration = timing.exit })
+				end)
+				return begin(timeline.completed, scope)
 			end,
 		}
 	end

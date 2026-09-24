@@ -736,7 +736,12 @@ t.describe("presented surface motion", function()
 		local w = world({ reducedMotion = false })
 		local shown = Compose.cell(false)
 		local stop, screen = w.mount(function(UI)
-			return UI.Alert({ isPresented = shown, title = "Now", actions = { { id = "ok", label = "OK" } } })
+			return UI.Alert({
+				isPresented = shown,
+				title = "Now",
+				transition = false,
+				actions = { { id = "ok", label = "OK" } },
+			})
 		end)
 		shown:set(true)
 		local panel = find(screen, "AlertPanel")

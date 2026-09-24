@@ -233,7 +233,7 @@ return UI.Screen "Settings" {
 }
 ```
 
-### Spacing and size options
+### Layout options
 
 | Option | Values | Native result |
 |---|---|---|

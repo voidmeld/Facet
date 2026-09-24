@@ -847,7 +847,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						return if use(role) == "exiting" or use(entering) and not reduce(use) then 1 else 0
 					end
 					local travel: ComposeTypes.Readable<number> = if animated
-						then runtime.spring(target, PUSH_SPRING)
+						then runtime.spring(target, {
+							period = PUSH_SPRING.period,
+							damping = PUSH_SPRING.damping,
+							tolerance = PUSH_SPRING.tolerance,
+							reducedMotion = function(use: ComposeTypes.Use): boolean
+								return reduce(use)
+							end,
+						})
 						else Compose.cell(0)
 					entering:set(false)
 					local function offset(use: ComposeTypes.Use?): number

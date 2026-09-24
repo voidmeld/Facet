@@ -50,6 +50,12 @@ local function setup(build: (any, any, any) -> any, options: { [string]: any }?)
 	}
 end
 
+local function settle(engine: any)
+	for _ = 1, 60 do
+		engine.heartbeat.fire(1 / 60)
+	end
+end
+
 local function find(root: any, name: string, class: string?): any
 	if root.Name == name and (class == nil or root:IsA(class)) then
 		return root
@@ -431,10 +437,14 @@ t.describe("native parity weaker navigation", function()
 			t.expect(#path:peek()).toBe(1)
 			t.expect(live).toBe(2)
 			t.expect(built.detail).toBe(cycle)
+			settle(world.engine)
+			t.expect(world.engine.heartbeat.count()).toBe(0)
 			t.expect(find(world.screen, "@root").Visible).toBe(false)
 			t.expect(find(world.screen, "detail").Visible).toBe(true)
 			find(find(world.screen, "detail"), "Back").Activated.fire()
 			t.expect(#path:peek()).toBe(0)
+			settle(world.engine)
+			t.expect(world.engine.heartbeat.count()).toBe(0)
 			t.expect(live).toBe(1)
 			t.expect(find(world.screen, "detail")).toBeNil()
 			t.expect(find(world.screen, "@root").Visible).toBe(true)
@@ -663,12 +673,13 @@ t.describe("native parity weaker navigation", function()
 	t.it("keeps the nested showcase selections in independent cells and shows the inner page", function()
 		local scenario = require("../examples/gallery/scenarios/all_controls") :: any
 		local built
-		local _, root, stop = galleryFixture(function(context)
+		local ctx, root, stop = galleryFixture(function(context)
 			context.pageVisible = Compose.cell(true)
 			built = scenario.build(context)
 			return built.screen()
 		end)
 		tabButton(root, "inputs", "writing").Activated.fire()
+		settle(ctx.engine)
 		t.expect(built.report().selected.inputs).toBe("writing")
 		t.expect(built.report().selected.Categories).toBe("inputs")
 		local inner = tabView(root, "inputs")
@@ -683,6 +694,7 @@ t.describe("native parity weaker navigation", function()
 		t.expect(built.report().selected.inputs).toBe("writing")
 		t.expect(built.report().selected.Categories).toBe("actions")
 		tabButton(root, "Categories", "inputs").Activated.fire()
+		settle(ctx.engine)
 		t.expect(built.report().active).toBe("writing")
 		t.expect(built.report().selected.actions).toBe("menus")
 		t.expect(tabView(root, "inputs")).toBe(inner)

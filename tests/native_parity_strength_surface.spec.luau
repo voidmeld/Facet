@@ -55,6 +55,7 @@ local function registrations(path: string, found: { [string]: string })
 end
 
 local CONTROL_SECTIONS = {
+	"## Layout",
 	"## Actions and input",
 	"## Menus and navigation",
 	"## Presented controls",
@@ -71,7 +72,7 @@ local function documentedControls(reference: string): { [string]: boolean }
 		elseif section and string.sub(line, 1, 4) == "### " then
 			local heading = string.sub(line, 5)
 			for _, part in string.split((string.gsub(heading, " and ", ",")), ",") do
-				local name = string.match(part, "^%s*([%u][%w]*)%s*$")
+				local name = string.match(part, "^%s*([%a][%w]*)%s*$")
 				if name then
 					documented[name] = true
 				end
@@ -233,18 +234,26 @@ t.describe("public surface registration", function()
 		registrations("src/ui", registered)
 		local controlTypes = fs.readFile("src/ui/control_types.luau")
 		local entry = fs.readFile("src/init.luau")
+		local layoutTypes = fs.readFile("src/ui/layout_types.luau")
 		local witnesses = ""
 		for _, name in fs.readDir("tests/types") do
 			if string.match(name, "_witness%.luau$") then
 				witnesses ..= fs.readFile("tests/types/" .. name)
 			end
 		end
-		local shared = { VirtualList = "CollectionSpec", VirtualGrid = "CollectionSpec" }
+		local shared = {
+			VirtualList = "CollectionSpec",
+			VirtualGrid = "CollectionSpec",
+			VStack = "StackProps",
+			HStack = "StackProps",
+		}
+		local signatures = { fill = "fill: (weight: number?) -> UIFlexItem" }
 		local count = 0
 		for name in registered do
 			count += 1
 			t.expect(string.find(controlTypes, `\n\t{name}: typeof(`, 1, true) ~= nil).toBe(true)
-			local exported = string.find(entry, `export type {name}Props`, 1, true) ~= nil
+			local exported = (signatures[name] ~= nil and string.find(layoutTypes, signatures[name], 1, true) ~= nil)
+				or string.find(entry, `export type {name}Props`, 1, true) ~= nil
 				or string.find(entry, `export type {name}Spec`, 1, true) ~= nil
 				or (shared[name] ~= nil and string.find(entry, `export type {shared[name]}`, 1, true) ~= nil)
 			if not exported then

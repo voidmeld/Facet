@@ -948,14 +948,14 @@ t.describe("native parity weaker actions", function()
 	)
 
 	t.it(
-		"hands one application press haptic to buttons, segments and toggles and leaves hover and fields alone",
+		"hands one application press haptic to opted-in buttons, segments and toggles and leaves plain buttons, hover and fields alone",
 		function()
 			local effect
 			local selected = Compose.cell("one")
 			local world = setup(function(UI, Host)
 				return Host.Frame({
 					UI.Button "Plain" { label = "Play" },
-					UI.Button "Other" { label = "Stop" },
+					UI.Button "Other" { label = "Stop", haptic = true },
 					UI.Toggle "Switch" { label = "Sound", value = Compose.cell(true) },
 					UI.Picker "Segments" {
 						selected = selected,
@@ -973,10 +973,12 @@ t.describe("native parity weaker actions", function()
 			local plain, other, switch =
 				find(world.node, "Plain"), find(world.node, "Other"), find(world.node, "Switch")
 			local segment = find(find(world.node, "Segments"), "two")
-			for _, node in { plain, other, switch, segment } do
+			for _, node in { other, switch, segment } do
 				t.expect(node.PressHapticEffect).toBe(effect)
 				t.expect(node.HoverHapticEffect).toBe(nil)
 			end
+			t.expect(plain.PressHapticEffect).toBe(nil)
+			t.expect(plain.HoverHapticEffect).toBe(nil)
 			t.expect(find(world.node, "Field").PressHapticEffect).toBe(nil)
 			t.expect(world.node.PressHapticEffect).toBe(nil)
 			local effects = 0
@@ -988,6 +990,7 @@ t.describe("native parity weaker actions", function()
 			t.expect(effects).toBe(1)
 			t.expect(effect.PlayCount).toBe(nil)
 			plain.Activated.fire()
+			other.Activated.fire()
 			t.expect(effect.PlayCount).toBe(nil)
 			world.stop()
 			t.expect(effect.isDestroyed()).toBe(false)

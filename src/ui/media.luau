@@ -244,14 +244,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 						else if spec.count ~= nil then 24 else 12
 				)
 		end
-		local form = Compose.formula(function(use: ComposeTypes.Use)
+		local function form(use: ComposeTypes.Use): "dot" | "ring" | "square" | "dash"
 			local value = read(spec.form, use) or "dot"
 			assert(
 				value == "dot" or value == "ring" or value == "square" or value == "dash",
 				"Facet StatusIndicator invalid form"
 			)
 			return value
-		end)
+		end
 		local native = ctx.props(
 			spec,
 			{ "status", "form", "count", "max", "name", "diameter", "controlSize", "cutout" },
@@ -260,7 +260,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				Size = function(use: ComposeTypes.Use)
 					return D2.fromOffset(
 						if spec.count ~= nil then 0 else size(use),
-						if use(form) == "dash" then math.max(3, size(use) / 3) else size(use)
+						if form(use) == "dash" then math.max(3, size(use) / 3) else size(use)
 					)
 				end,
 				AutomaticSize = if spec.count ~= nil then E.AutomaticSize.X else nil,
@@ -274,7 +274,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 						"Facet StatusIndicator count must be a nonnegative integer"
 					)
 					assert(
-						use(form) == "dot" or use(form) == "square",
+						form(use) == "dot" or form(use) == "square",
 						"Facet StatusIndicator count requires dot or square"
 					)
 					assert(
@@ -292,11 +292,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				TextXAlignment = E.TextXAlignment.Center,
 				Host.UICorner({
 					CornerRadius = function(use: ComposeTypes.Use)
-						return D.new(if use(form) == "square" then 0 else 1, 0)
+						return D.new(if form(use) == "square" then 0 else 1, 0)
 					end,
 				}) :: ComposeTypes.Child,
 				Compose.show(function(use: ComposeTypes.Use)
-					return use(form) == "ring"
+					return form(use) == "ring"
 				end, function()
 					return ctx.styled(
 						Host.UIStroke "Ring" {
@@ -325,7 +325,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				native,
 				Host.UIAspectRatioConstraint({
 					AspectRatio = function(use: ComposeTypes.Use)
-						return if use(form) == "dash" then 3 else 1
+						return if form(use) == "dash" then 3 else 1
 					end,
 					AspectType = E.AspectType.FitWithinMaxSize,
 				})
@@ -347,7 +347,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		local node = ctx.styled(ctx.styled(Host.TextLabel(native), "text"), "badge")
 		statusTag(node, spec.status)
 		Compose.watch(function(use: ComposeTypes.Use)
-			if use(form) == "ring" then
+			if form(use) == "ring" then
 				node:AddTag("facet-status-hollow")
 			elseif node:HasTag("facet-status-hollow") then
 				node:RemoveTag("facet-status-hollow")
@@ -1031,7 +1031,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if spec.backplate then
 			ctx.styled(root, "accent")
 		end
-		local facts = Compose.formula(function(use: ComposeTypes.Use)
+		local function facts(use: ComposeTypes.Use)
 			local name, presence = read(spec.name, use), read(spec.presence, use)
 			assert(type(name) == "string" and name ~= "", "Facet Avatar name must be nonempty")
 			assert(
@@ -1043,11 +1043,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				presence = presence,
 				label = if presence then name .. ", " .. (read(spec.presenceLabel, use) or presence) else name,
 			}
-		end)
+		end
 		runtime.decorate(root, {
 			Attributes = {
 				AccessibleLabel = function(use: ComposeTypes.Use): string
-					return use(facts).label
+					return facts(use).label
 				end,
 			},
 		})
@@ -1060,7 +1060,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 				Size = D2.fromScale(1, 1),
 				Text = function(use: ComposeTypes.Use)
-					return initials(use(facts).name)
+					return initials(facts(use).name)
 				end,
 				TextSize = function(use: ComposeTypes.Use)
 					return math.max(8, math.floor(diameter(use) * 0.4 + 0.5))
@@ -1103,10 +1103,10 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					diameter = 12,
 					cutout = true,
 					Visible = function(use: ComposeTypes.Use)
-						return use(facts).presence ~= nil
+						return facts(use).presence ~= nil
 					end,
 					form = function(use: ComposeTypes.Use)
-						return ({ online = "dot", away = "dash", busy = "square", offline = "ring" })[use(facts).presence]
+						return ({ online = "dot", away = "dash", busy = "square", offline = "ring" })[facts(use).presence]
 							or "dot"
 					end,
 					AnchorPoint = V2.new(1, 1),

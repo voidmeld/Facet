@@ -507,6 +507,8 @@ t.describe("presented surface strength", function()
 		anchor.AbsolutePosition = V.new(338, 12)
 		anchor.AbsoluteSize = V.new(44, 44)
 		panel.AbsoluteSize = V.new(280, 96)
+		advance(world.engine, 1)
+		t.expect(find(panel, "PresentationScale").Scale).toBe(1)
 		local left, top = panel.Position.X.Offset, panel.Position.Y.Offset
 		t.expect(top).toBe(12 + 44 + 8)
 		t.expect(left + 280 <= 390 - 8).toBe(true)
@@ -553,6 +555,8 @@ t.describe("presented surface strength", function()
 		local anchor = find(world.screen, "Anchor")
 		anchor.AbsolutePosition = V.new(150, 300)
 		anchor.AbsoluteSize = V.new(60, 44)
+		advance(world.engine, 1)
+		t.expect(find(panel, "PresentationScale").Scale).toBe(1)
 		for _, extent in { 390, 240, 120 } do
 			world.screen.AbsoluteSize = V.new(extent, 844)
 			local width = panel.Size.X.Offset
