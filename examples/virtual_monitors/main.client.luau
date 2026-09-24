@@ -295,6 +295,27 @@ local lifetime = Compose.createRootOwner(function()
 			end,
 		})
 		local views = screens.create(Facet, runtime, sceneActions(false, package))
+		local backdrop = Host.Frame "Backdrop" {
+			Size = UDim2.fromScale(1, 1),
+			BorderSizePixel = 0,
+			BackgroundTransparency = function(use)
+				local t = math.clamp((use(modeProgress) - 0.55) / 0.45, 0, 1)
+				return 1 - t * t * (3 - 2 * t)
+			end,
+		}
+		backdrop:AddTag("facet-surface")
+		Host.ScreenGui "VirtualMonitorsBackdrop" {
+			Parent = players.LocalPlayer:WaitForChild("PlayerGui"),
+			DisplayOrder = 9,
+			ResetOnSpawn = false,
+			ScreenInsets = Enum.ScreenInsets.None,
+			Enabled = function(use)
+				return use(modeProgress) > 0
+			end,
+			sheet,
+			Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
+			backdrop,
+		}
 		return Host.ScreenGui "VirtualMonitorsDesktop" {
 			DisplayOrder = 10,
 			ResetOnSpawn = false,

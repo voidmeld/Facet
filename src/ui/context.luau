@@ -258,7 +258,7 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 						if not native[metatableOf(value)] then
 							reject(key)
 						end
-					elseif type(value) == "table" and getmetatable(value) == nil then
+					elseif type(value) == "table" and metatableOf(value) == nil then
 						for _, entry in value :: { [unknown]: unknown } do
 							if type(entry) == "table" and not Compose.isReadable(entry) then
 								for field, inner in entry :: { [unknown]: unknown } do
