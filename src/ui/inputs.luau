@@ -386,7 +386,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			table.insert(p, Host.UIAspectRatioConstraint({ AspectRatio = 1 }))
 			table.insert(p, Host.UICorner({ CornerRadius = D.new(1, 0) }))
 		elseif spec.corners then
-			table.insert(p, Host.UICorner({ CornerRadius = if dynamic(spec.corners) then cornerRadius else cornerRadius() }))
+			table.insert(
+				p,
+				Host.UICorner({ CornerRadius = if dynamic(spec.corners) then cornerRadius else cornerRadius() })
+			)
 		end
 		if popTimeline then
 			table.insert(p, Host.UIScale "Pop" { Scale = popScale })
@@ -737,7 +740,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		else
 			updateState()
 		end
-		if spec.repeatDelay or spec.repeatInterval or spec.onPointerDown or spec.onPointerUp or spec.onPointerCancel then
+		if
+			spec.repeatDelay
+			or spec.repeatInterval
+			or spec.onPointerDown
+			or spec.onPointerUp
+			or spec.onPointerCancel
+		then
 			runtime.connect(node, "InputBegan", function(input)
 				local kind = input.UserInputType.Name
 				if
