@@ -56,15 +56,16 @@ function ornate_gauge.check(themes: any, package: any): any
 	return themes.checkCoverage(package, ornate_gauge.needs)
 end
 
-function ornate_gauge.resolve(snapshot: any, package: any?, themeName: string?): any
+function ornate_gauge.resolve(package: any?, themeName: string?): any
 	local sizeNeed = needByName("gauge:dial")
 	local colorNeed = needByName("gauge:needle")
 	local ringNeed = needByName("gauge:ring")
+	local metrics = if package ~= nil then package.metrics or {} else {}
 
-	local size = (snapshot.controlSizes or {})["gauge:dial"]
+	local size = (metrics.controlSizes or {})["gauge:dial"]
 	local usedSize = type(size) ~= "table" or type(size.height) ~= "number"
 
-	local ring = (snapshot.radii or {})["gauge:ring"]
+	local ring = (metrics.radii or {})["gauge:ring"]
 	local usedRing = type(ring) ~= "number"
 
 	local needle: any = nil
@@ -89,99 +90,74 @@ function ornate_gauge.resolve(snapshot: any, package: any?, themeName: string?):
 end
 
 function ornate_gauge.blueprint(UI: any, core: any, resolved: any, opts: any?): any
-	local Compose = core.Compose
+	local Host = core.Host
+	local types = core.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Color3 = Color3, Enum = Enum }
+	local UDim, UDim2, Vector2, Color3, Enum = types.UDim, types.UDim2, types.Vector2, types.Color3, types.Enum
 	local o: any = opts or {}
 	local name: string = o.id or "Gauge"
 	local capPx = ornate_gauge.CAP_PX
-	local fraction = o.fraction
+	local needleColor = Color3.new(resolved.needle.r, resolved.needle.g, resolved.needle.b)
 
-	local function clamp01(v: any): number
-		local n = if type(v) == "number" then v else 0
-		return math.clamp(n, 0, 1)
+	local function fraction(use: any): number
+		local value = o.fraction
+		local n = if type(value) == "number" then value elseif value ~= nil then use(value) else 0
+		return math.clamp(if type(n) == "number" then n else 0, 0, 1)
+	end
+	local function height(use: any): number
+		return if o.heightPx ~= nil then use(o.heightPx) else resolved.height
+	end
+	local function cap(side: string): any
+		return Host.ImageLabel(name .. side)({
+			Image = ornate_gauge.ART.endcap,
+			BackgroundTransparency = 1,
+			AnchorPoint = Vector2.new(if side == "CapEnd" then 1 else 0, 0),
+			Position = UDim2.fromScale(if side == "CapEnd" then 1 else 0, 0),
+			Size = UDim2.new(0, capPx, 1, 0),
+			ZIndex = 3,
+		})
 	end
 
-	local FLOOR = 1e-4
-	local lead = Compose.formula(function(use: any)
-		local f = clamp01(if fraction ~= nil then use(fraction) else 0)
-		return UI.fill(math.max(f, FLOOR))
-	end)
-	local trail = Compose.formula(function(use: any)
-		local f = clamp01(if fraction ~= nil then use(fraction) else 0)
-		return UI.fill(math.max(1 - f, FLOOR))
-	end)
-
-	local dialHeight: any = if o.heightPx ~= nil
-		then Compose.formula(function(use: any)
-			return { type = "fixed", px = use(o.heightPx) }
-		end)
-		else { type = "fixed", px = resolved.height }
-
-	local FILL = UI.fill()
-
-	local needle = UI.shadow(
-		UI.Image(name .. "Needle")({
-			image = ornate_gauge.ART.needle,
-			width = { type = "fixed", px = ornate_gauge.NEEDLE_PX },
-			height = FILL,
+	local dial = Host.Frame(name .. "Dial")({
+		LayoutOrder = 2,
+		BackgroundTransparency = 1,
+		Size = function(use: any)
+			return UDim2.new(1, 0, 0, height(use))
+		end,
+		Host.UICorner({ CornerRadius = UDim.new(0, resolved.ring) }),
+		Host.ImageLabel(name .. "Face")({
+			Image = ornate_gauge.ART.face,
+			BackgroundTransparency = 1,
+			Size = UDim2.fromScale(1, 1),
 		}),
-		{
-			blurRadius = { scale = 0, offset = 18 },
-			color = resolved.needle,
-			transparency = 0.35,
-			zIndex = -1,
-		}
-	)
-
-	local dial = UI.corners(
-		UI.ZStack(name .. "Dial")({
-			width = FILL,
-			height = dialHeight,
-
-			UI.Image(name .. "Face")({
-				image = ornate_gauge.ART.face,
-				width = FILL,
-				height = FILL,
-			}),
-
-			UI.HStack(name .. "Track")({
-				width = FILL,
-				height = FILL,
-				gap = 0,
-				padding = { top = 0, right = capPx, bottom = 0, left = capPx },
-
-				UI.Spacer(name .. "Lead")({ width = lead, height = FILL }),
-				needle,
-				UI.Spacer(name .. "Trail")({ width = trail, height = FILL }),
-			}),
-
-			UI.Anchor(name .. "Caps")({
-				width = FILL,
-				height = FILL,
-
-				UI.Image(name .. "CapStart")({
-					image = ornate_gauge.ART.endcap,
-					anchor = "left",
-					width = { type = "fixed", px = capPx },
-					height = FILL,
-				}),
-				UI.Image(name .. "CapEnd")({
-					image = ornate_gauge.ART.endcap,
-					anchor = "right",
-					width = { type = "fixed", px = capPx },
-					height = FILL,
-				}),
+		Host.Frame(name .. "Track")({
+			BackgroundTransparency = 1,
+			Position = UDim2.fromOffset(capPx, 0),
+			Size = UDim2.new(1, -2 * capPx, 1, 0),
+			ZIndex = 2,
+			Host.ImageLabel(name .. "Needle")({
+				Image = ornate_gauge.ART.needle,
+				ImageColor3 = needleColor,
+				BackgroundTransparency = 1,
+				AnchorPoint = Vector2.new(0.5, 0),
+				Position = function(use: any)
+					return UDim2.fromScale(fraction(use), 0)
+				end,
+				Size = UDim2.new(0, ornate_gauge.NEEDLE_PX, 1, 0),
 			}),
 		}),
-		resolved.ring
-	)
+		cap("CapStart"),
+		cap("CapEnd"),
+	})
 
-	return UI.VStack(name)({
-		gap = "xs",
-		width = FILL,
-
-		UI.Text(name .. "Label")({
+	return Host.Frame(name)({
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) }),
+		UI.Label(name .. "Label")({
 			text = o.label or "Boiler pressure (gauge:dial)",
-			textSize = "caption",
+			textRole = "caption",
+			LayoutOrder = 1,
 		}),
 		dial,
 	})

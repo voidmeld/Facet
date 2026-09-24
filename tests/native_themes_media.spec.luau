@@ -7,6 +7,7 @@ local controls = require("../src/ui")
 local media = require("../src/ui/media")
 local themes = require("../src/ui/themes")
 local engineLib = require("./lib/native_engine")
+local fs = require("@lune/fs")
 
 local function setup()
 	local engine = engineLib.new()
@@ -1621,6 +1622,89 @@ t.describe("native themes and media", function()
 			t.expect(style(sheet, ".facet-selected").TextColor3).toBe(engine.types.Color3.new(1, 1, 1))
 			stop()
 		end
+		runtime:dispose()
+	end)
+
+	t.it("shows the showValue readout beside a ProgressView endLabel", function()
+		local engine, runtime, UI = setup()
+		local stop, root = runtime.mount(function()
+			return UI.ProgressView "Upload" { value = 0.5, showValue = true, endLabel = "End" }
+		end, engine.new("Folder"))
+		local texts = {}
+		for _, node in root:GetDescendants() do
+			if node:IsA("TextLabel") then
+				texts[node.Text] = node
+			end
+		end
+		t.expect(texts["50%"] ~= nil).toBe(true)
+		t.expect(texts["End"] ~= nil).toBe(true)
+		stop()
+		runtime:dispose()
+	end)
+
+	t.it("returns the Label root that api.md states, with and without an icon", function()
+		local engine, runtime, UI = setup()
+		local stop, root = runtime.mount(function()
+			return runtime.constructors.Frame({
+				UI.Label "Plain" { text = "Plain" },
+				UI.Label "Iconic" { text = "Iconic", icon = "rbxassetid://1" },
+			})
+		end, engine.new("Folder"))
+		local plain, iconic = root:FindFirstChild("Plain"), root:FindFirstChild("Iconic")
+		t.expect(plain.ClassName).toBe("TextLabel")
+		t.expect(iconic.ClassName).toBe("Frame")
+		t.expect(iconic:FindFirstChildWhichIsA("TextLabel").Text).toBe("Iconic")
+		local row = string.match(fs.readFile("docs/reference/api.md"), "\n| `Label` |([^\n]*)")
+		t.expect(row ~= nil and string.find(row, "Without an icon, it returns a TextLabel.", 1, true) ~= nil).toBe(true)
+		t.expect(
+			row ~= nil
+				and string.find(
+						row,
+						"With an icon, it returns a Frame row that holds the icon and a TextLabel.",
+						1,
+						true
+					)
+					~= nil
+		).toBe(true)
+		stop()
+		runtime:dispose()
+	end)
+
+	t.it("mounts the namespaced control fixtures with the current controls", function()
+		local engine, runtime = setup()
+		local Facet = require("../src")
+		local gauge = require("../examples/themes/ornate_gauge")
+		local custom = require("../examples/themes/custom_control")
+		local ornate = assert(require("../examples/themes/fantasy_ornate").build(Facet.themes))
+		local glossy = assert(require("../examples/themes/glossy_mobile").build(Facet.themes))
+		t.expect(gauge.check(Facet.themes, ornate).ok).toBe(true)
+		t.expect(custom.check(glossy).ok).toBe(true)
+		local dial = gauge.resolve(ornate)
+		t.expect(dial.height).toBe(56)
+		t.expect(dial.ring).toBe(8)
+		t.expect(dial.usedFallback.size or dial.usedFallback.ring or dial.usedFallback.needle).toBe(false)
+		local track = custom.resolve(glossy)
+		t.expect(track.height).toBe(28)
+		t.expect(custom.resolve(nil).usedFallback.size).toBe(true)
+		local UI = Facet.controls(runtime, { types = engine.types })
+		local core = { Host = runtime.constructors, types = engine.types }
+		local fraction = Compose.cell(0.25)
+		local stop, root = runtime.mount(function()
+			return runtime.constructors.Frame({
+				gauge.blueprint(UI, core, dial, { id = "Boiler", fraction = fraction }),
+				custom.blueprint(UI, core, track, "Meter"),
+			})
+		end, engine.new("Folder"))
+		local needle = root:FindFirstChild("BoilerNeedle", true)
+		t.expect(needle.Image).toBe(gauge.ART.needle)
+		t.expect(needle.Position.X.Scale).toBe(0.25)
+		fraction:set(0.75)
+		t.expect(needle.Position.X.Scale).toBe(0.75)
+		t.expect(root:FindFirstChild("BoilerDial", true).Size.Y.Offset).toBe(56)
+		local meter = root:FindFirstChild("MeterTrack", true)
+		t.expect(meter.Size.Y.Offset).toBe(28)
+		t.expect(meter:HasTag("facet-control")).toBe(true)
+		stop()
 		runtime:dispose()
 	end)
 end)

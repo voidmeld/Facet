@@ -329,6 +329,41 @@ do
 			game.dispose()
 		end)
 
+		it("paints key and tile state through theme status tags and outlines the active row", function()
+			local ctx = makeWorld()
+			local game = newGame(ctx)
+			guess(game, "RULES")
+			local function key(letter)
+				return findPath(ctx.node, game.keyPath(letter))
+			end
+			expect(key("R"):HasTag("facet-status-success")).toBe(true)
+			expect(key("E"):HasTag("facet-status-warning")).toBe(true)
+			expect(key("U"):HasTag("facet-status-neutral")).toBe(true)
+			expect(key("U"):HasTag("facet-status-success")).toBe(false)
+			for _, status in { "success", "warning", "neutral" } do
+				expect(key("Z"):HasTag("facet-status-" .. status)).toBe(false)
+			end
+			local function fill(r, c)
+				return findPath(ctx.node, game.tilePath(r, c) .. "/fill")
+			end
+			expect(fill(1, 1):HasTag("facet-status-success")).toBe(true)
+			expect(fill(1, 4):HasTag("facet-status-warning")).toBe(true)
+			expect(fill(1, 2):HasTag("facet-status-neutral")).toBe(true)
+			expect(fill(2, 1):HasTag("facet-control")).toBe(true)
+			expect(fill(2, 1):HasTag("facet-status-neutral")).toBe(false)
+			local function outline(r, c)
+				return findPath(ctx.node, game.tilePath(r, c) .. "/ActiveRow")
+			end
+			expect(outline(2, 1):HasTag("facet-status-ring")).toBe(true)
+			expect(outline(2, 1).Parent:HasTag("facet-status-accent")).toBe(true)
+			expect(outline(2, 1).Enabled).toBe(true)
+			expect(outline(1, 1).Enabled).toBe(false)
+			guess(game, "ERROR")
+			expect(outline(2, 1).Enabled).toBe(false)
+			expect(outline(3, 1).Enabled).toBe(true)
+			game.dispose()
+		end)
+
 		it("letters land in the ACTIVE row only", function()
 			local ctx = makeWorld()
 			local game = newGame(ctx)

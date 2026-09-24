@@ -125,15 +125,9 @@ return function(ctx: Types.Context, UI: Controls): ()
 			} :: ComposeTypes.OrderedCollectionStatus)
 		local controls: ComposeTypes.OrderedCollectionControls<K> = spec.controls or {}
 		local selection: ComposeTypes.Cell<CollectionTypes.Selection<K>> = spec.selection or Compose.cell({})
-		local selectRow = createSelection(
-			ctx,
-			spec,
-			source,
-			keyOf,
-			controls,
-			selection,
-			if spec.selection or spec.onSelectionChange then "single" else "none"
-		)
+		local selectionMode: "none" | "single" | "multi" = spec.selectionMode
+			or (if spec.selection or spec.onSelectionChange then "single" else "none")
+		local selectRow = createSelection(ctx, spec, source, keyOf, controls, selection, selectionMode)
 		local measured: ComposeTypes.Cell<{ [K]: number }> = Compose.cell({})
 		local horizontal = spec.direction == "horizontal"
 		local root: ScrollingFrame
@@ -142,7 +136,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local focusActive = Compose.cell(spec.focus ~= nil or spec.initialFocus ~= nil or spec.autoFocus == true)
 		local noFocusCandidates: { V } = {}
 		local writingOffset = false
-		local initialFollow = spec.follow == "end" and spec.CanvasPosition == nil
+		local initialFollow = read(spec.follow) == "end" and spec.CanvasPosition == nil
 		local focusedPath: { string } = {}
 		local focusOwned = false
 		local mounted: { [K]: Frame? } = {}
@@ -177,12 +171,16 @@ return function(ctx: Types.Context, UI: Controls): ()
 				writingOffset = false
 			end
 		end
-		local function select(key: K, current: ComposeTypes.Readable<V>): ()
+		local function select(key: K, current: ComposeTypes.Readable<V>, input: InputObject?, clicks: number?): ()
 			if policy.disabled(spec.disabled, current:peek()) then
 				return
 			end
-			selectRow(key, current:peek())
-			if spec.onActivate then
+			local pointer = input ~= nil and input.UserInputType == E.UserInputType.MouseButton1
+			local double = pointer and (clicks or 1) >= 2
+			if not double then
+				selectRow(key, current:peek())
+			end
+			if spec.onActivate and (selectionMode == "none" or not pointer or double) then
 				spec.onActivate(current:peek(), key)
 			end
 		end
@@ -218,127 +216,144 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return root
 			end, selection, Compose.cell(nil :: CollectionTypes.Sort?))
 		end
-		local directive = Compose.OrderedCollection({
-			from = source,
-			key = keyOf,
-			mode = spec.mode or "windowed",
-			direction = spec.direction or "vertical",
-			viewport = viewport,
-			status = status,
-			controls = controls,
-			overscan = spec.overscan or 2,
-			measured = function(use: ComposeTypes.Use)
-				if spec.measured ~= nil then
-					local combined = table.clone(use(measured))
-					for key, size in read(spec.measured, use) do
-						combined[key] = size
-					end
-					return combined
-				end
-				return use(measured)
-			end,
-			follow = spec.follow,
-			followThreshold = spec.followThreshold,
-			layout = function(use: ComposeTypes.Use)
-				local columns = if kind == "grid" then math.max(1, math.floor(read(spec.columns or 1, use))) else 1
-				local gap: number = read(spec.gap or 0, use)
-				local crossGap: number = read(spec.crossGap or gap, use)
-				return {
-					kind = kind,
-					columns = columns,
-					itemSize = read(spec.itemSize or 40, use),
-					gap = gap,
-					crossGap = crossGap,
-					crossSize = math.max(0, (use(cross) - crossGap * (columns - 1)) / columns),
-				}
-			end,
-			render = function(current, placement, key)
-				local lease = pool.acquire()
-				local node = runtime.borrow(lease.value.node) :: Frame
-				runtime.decorate(node, {
-					Name = tostring(key),
-					Position = function(use: ComposeTypes.Use)
-						local at = use(placement)
-						return if horizontal
-							then D2.fromOffset(at.offset, at.crossOffset)
-							else D2.fromOffset(at.crossOffset, at.offset)
-					end,
-					Size = function(use: ComposeTypes.Use)
-						local at = use(placement)
-						return if horizontal
-							then D2.fromOffset(at.size, at.crossSize)
-							else D2.fromOffset(at.crossSize, at.size)
-					end,
-				})
-				mounted[key] = node
-				local stop, mountedContent = runtime.mount(function(): Frame
-					local rendered = spec.render(current, placement, key)
-					if wrapReorder then
-						rendered = wrapReorder(rendered, current, key)
-					end
-					local children: Types.FrameProps = {
-						Name = "Content",
-						Size = D2.fromScale(1, 1),
-						BackgroundTransparency = 1,
-						Attributes = { FacetCollectionRow = true } :: EngineTypes.Attributes,
-						rendered,
-					}
-					if spec.onSelectionChange or spec.onActivate or spec.selection or spec.selectionMode then
-						table.insert(
-							children,
-							1,
-							Host.TextButton "RowHit" {
-								Size = D2.fromScale(1, 1),
-								Text = "",
-								BackgroundTransparency = 1,
-								Selectable = true,
-								Interactable = function(use: ComposeTypes.Use)
-									return not policy.disabled(spec.disabled, use(current))
-								end,
-								Activated = function()
-									select(key, current)
-								end,
-								Attributes = {
-									FacetSelected = function(use: ComposeTypes.Use)
-										return read(selection, use)[key] == true
-									end,
-								} :: EngineTypes.Attributes,
-							}
-						)
-					end
-					return Host.Frame(children)
-				end, node)
-				local content = mountedContent :: Frame
-				wireSelection(content, key)
-				if spec.measure then
-					local measuredNode = content:GetChildren()[#content:GetChildren()] :: GuiObject
-					local size: ComposeTypes.Cell<Vector2> = observe(measuredNode, "AbsoluteSize")
-					Compose.watch(function(use: ComposeTypes.Use)
-						local extent = if horizontal then use(size).X else use(size).Y
-						if extent > 0 and measured:peek()[key] ~= extent then
-							local nextSizes = table.clone(measured:peek())
-							nextSizes[key] = extent
-							measured:set(nextSizes)
+		local function orderedRows(follow: CollectionTypes.Follow?): ComposeTypes.Child
+			return Compose.OrderedCollection({
+				from = source,
+				key = keyOf,
+				mode = spec.mode or "windowed",
+				direction = spec.direction or "vertical",
+				viewport = viewport,
+				status = status,
+				controls = controls,
+				overscan = spec.overscan or 2,
+				measured = function(use: ComposeTypes.Use)
+					if spec.measured ~= nil then
+						local combined = table.clone(use(measured))
+						for key, size in read(spec.measured, use) do
+							combined[key] = size
 						end
-					end)
-				end
-				Compose.cleanup(function()
-					if gui and belongsTo(gui.SelectedObject, node) then
-						focusOwned = true
-						gui.SelectedObject = nil
+						return combined
 					end
-					mounted[key] = nil
-					stop()
-					lease.release()
-				end)
-				runtime.connect(node, "AncestryChanged", function()
-					mountedVersion:update(function(value)
-						return value + 1
+					return use(measured)
+				end,
+				follow = follow,
+				followThreshold = spec.followThreshold,
+				layout = function(use: ComposeTypes.Use)
+					local columns = if kind == "grid" then math.max(1, math.floor(read(spec.columns or 1, use))) else 1
+					local gap: number = read(spec.gap or 0, use)
+					local crossGap: number = read(spec.crossGap or gap, use)
+					return {
+						kind = kind,
+						columns = columns,
+						itemSize = read(spec.itemSize or 40, use),
+						gap = gap,
+						crossGap = crossGap,
+						crossSize = math.max(0, (use(cross) - crossGap * (columns - 1)) / columns),
+					}
+				end,
+				render = function(current, placement, key)
+					local lease = pool.acquire()
+					local node = runtime.borrow(lease.value.node) :: Frame
+					runtime.decorate(node, {
+						Name = tostring(key),
+						Position = function(use: ComposeTypes.Use)
+							local at = use(placement)
+							return if horizontal
+								then D2.fromOffset(at.offset, at.crossOffset)
+								else D2.fromOffset(at.crossOffset, at.offset)
+						end,
+						Size = function(use: ComposeTypes.Use)
+							local at = use(placement)
+							return if horizontal
+								then D2.fromOffset(at.size, at.crossSize)
+								else D2.fromOffset(at.crossSize, at.size)
+						end,
+					})
+					mounted[key] = node
+					local stop, mountedContent = runtime.mount(function(): Frame
+						local rendered = spec.render(current, placement, key)
+						if wrapReorder then
+							rendered = wrapReorder(rendered, current, key)
+						end
+						local children: Types.FrameProps = {
+							Name = "Content",
+							Size = D2.fromScale(1, 1),
+							BackgroundTransparency = 1,
+							Attributes = { FacetCollectionRow = true } :: EngineTypes.Attributes,
+							rendered,
+						}
+						if spec.onSelectionChange or spec.onActivate or spec.selection or spec.selectionMode then
+							table.insert(
+								children,
+								1,
+								Host.TextButton "RowHit" {
+									Size = D2.fromScale(1, 1),
+									Text = "",
+									BackgroundTransparency = 1,
+									Selectable = true,
+									Interactable = function(use: ComposeTypes.Use)
+										return not policy.disabled(spec.disabled, use(current))
+									end,
+									Activated = function(input: InputObject?, clicks: number?)
+										select(key, current, input, clicks)
+									end,
+									Attributes = {
+										FacetSelected = function(use: ComposeTypes.Use)
+											return read(selection, use)[key] == true
+										end,
+									} :: EngineTypes.Attributes,
+								}
+							)
+						end
+						return Host.Frame(children)
+					end, node)
+					local content = mountedContent :: Frame
+					wireSelection(content, key)
+					if spec.measure then
+						local measuredNode = content:GetChildren()[#content:GetChildren()] :: GuiObject
+						local size: ComposeTypes.Cell<Vector2> = observe(measuredNode, "AbsoluteSize")
+						Compose.watch(function(use: ComposeTypes.Use)
+							local extent = if horizontal then use(size).X else use(size).Y
+							if extent > 0 and measured:peek()[key] ~= extent then
+								local nextSizes = table.clone(measured:peek())
+								nextSizes[key] = extent
+								measured:set(nextSizes)
+							end
+						end)
+					end
+					Compose.cleanup(function()
+						if gui and belongsTo(gui.SelectedObject, node) then
+							focusOwned = true
+							gui.SelectedObject = nil
+						end
+						mounted[key] = nil
+						stop()
+						lease.release()
 					end)
-				end)
-				return node
-			end,
-		})
+					runtime.connect(node, "AncestryChanged", function()
+						mountedVersion:update(function(value)
+							return value + 1
+						end)
+					end)
+					return node
+				end,
+			})
+		end
+		local function followOf(use: ComposeTypes.Use?): CollectionTypes.Follow
+			local value = read(spec.follow, use)
+			assert(value == nil or value == "end" or value == "none", "Facet collection follow must be none or end")
+			return if value == "end" then "end" else "none"
+		end
+		local directive = if Compose.isReadable(spec.follow) or type(spec.follow) == "function"
+			then Compose.switch(followOf, {
+				none = function()
+					return orderedRows("none")
+				end,
+				["end"] = function()
+					return orderedRows("end")
+				end,
+			})
+			else orderedRows(followOf())
 		local native = props(spec, behavior, {
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
@@ -549,9 +564,54 @@ return function(ctx: Types.Context, UI: Controls): ()
 			{ name = "Up", direction = "up", keys = { E.KeyCode.Up, E.KeyCode.DPadUp } },
 			{ name = "Down", direction = "down", keys = { E.KeyCode.Down, E.KeyCode.DPadDown } },
 		}
+		local function atEdge(key: K, step: number): boolean
+			local rows = read(spec.from)
+			local at: number? = nil
+			for index, item in rows do
+				if keyOf(item, index) == key then
+					at = index
+					break
+				end
+			end
+			if at == nil then
+				return false
+			end
+			local index = at + step
+			while index >= 1 and index <= #rows do
+				if not policy.disabled(spec.disabled, rows[index]) then
+					return false
+				end
+				index += step
+			end
+			return true
+		end
+		local function wrapStep(direction: ComposeTypes.FocusDirection): number
+			local along = if kind == "grid"
+				then true
+				elseif horizontal then direction == "left" or direction == "right"
+				else direction == "up" or direction == "down"
+			if not along then
+				return 0
+			end
+			return if direction == "right" or direction == "down" then 1 else -1
+		end
 		for _, binding in directions do
 			ctx.action(root, "Collection" .. binding.name, binding.keys, eligible, function()
-				focusScope.move(binding.direction)
+				local before = focusScope.current:peek()
+				local after = focusScope.move(binding.direction)
+				local step = if spec.wrapFocus
+						and before ~= nil
+						and after == before
+					then wrapStep(binding.direction)
+					else 0
+				if step ~= 0 and not atEdge(assert(before), step) then
+					step = 0
+				end
+				if step > 0 then
+					focusScope.next()
+				elseif step < 0 then
+					focusScope.previous()
+				end
 			end, { priority = 200 })
 		end
 		ctx.action(root, "CollectionFirst", { E.KeyCode.Home }, eligible, focusScope.first, { priority = 200 })

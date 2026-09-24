@@ -106,7 +106,9 @@ document their own write-then-notify behavior below.
 
 - `theme`: a theme package or a readable of one. The controls use it for
   metrics, artwork and icon resolution.
-- `reducedMotion` and `icons`: these can also be reactive.
+- `reducedMotion` and `icons`: these can also be reactive. Control motion also
+  follows `GuiService.ReducedMotionEnabled`. Motion is reduced when either one
+  is true.
 - `pressHaptic`: a native `HapticEffect`. Each button that has no
   `PressHapticEffect` uses it as its native `PressHapticEffect`. Thus buttons,
   segments and toggles play the effect when they are pressed.
@@ -135,7 +137,7 @@ Presentation options:
 
 - `appearance`, `role`, `selected`, `name`, `hint` and `pop`.
 - `controlSize`: `compact`, `regular` or `large`.
-- `corners`: `pill` or `square`.
+- `corners`: `pill` or `square`, or a readable of one.
 - `shape`: `rect` or `circle`.
 - `icon` and `trailingIcon`.
 - `image`, `imageAspectRatio` (default `16/9`) and `imageFraming` (`fit` or
@@ -155,6 +157,8 @@ Presentation options:
   or subtitle buttons.
 
 The pointer callbacks are `onPointerDown`, `onPointerUp` and `onPointerCancel`.
+Each callback works alone. `onPointerCancel` runs when a held pointer leaves
+the button.
 
 ### Toggle
 
@@ -174,7 +178,9 @@ model update does not send it. `onCommit(text, reason)` receives `submit` or
 value of the edit.
 
 `presentation` is `plain`, `search` or `number`. The number presentation also
-uses a writable `numericValue`, `min`, `max`, `parse` and `format`.
+uses a writable `numericValue`, `min`, `max`, `parse` and `format`. If a
+callback disables the input during a commit, the commit stops. `numericValue`
+does not change and `onCommit` does not run.
 `validate(proposed)` returns the accepted text, or `nil` to reject it.
 `maxLength` counts UTF-8 characters.
 
@@ -428,7 +434,7 @@ render owner.
 | `overscan` | `2`. |
 | `measure` | `false`; set to observe the rendered native `AbsoluteSize`. |
 | `measured` | An optional readable map from key to extent; overrides observed measurements. |
-| `follow` | The Compose `none` or `end` policy, with an optional `followThreshold`. |
+| `follow` | `none` or `end`, or a readable of one, with an optional `followThreshold`. |
 | `status` | An optional writable Compose collection status cell. |
 | `controls` | An optional table that the control fills with the Compose `indexOfKey`, `placementOf` and `offsetOf`. |
 | `maxRetained` | The pool keeps at most `32` row hosts by default. |
@@ -439,17 +445,25 @@ applies its desired offset to `CanvasPosition`. Sorting keeps the native anchor.
 It does not force the first item to the top.
 
 `snap = "item"` settles scrolling to the Compose placement boundaries. The
-default is `none`. `follow` is a static Compose option. To change its policy,
-replace the collection owner through `Compose.keyed`.
+default is `none`. With `follow = "end"`, the list follows appended rows while
+the viewport stays at the end. When a readable `follow` changes, the control
+replaces its Compose `OrderedCollection` and mounts the rows again. Keep durable
+row state in the model. Other values cause an error.
 
 Optional collection focus uses `focus`, `initialFocus`, `autoFocus`,
-`wrapFocus` and `disabled(item)`.
+`wrapFocus` and `disabled(item)`. With `wrapFocus = true`, `focus.next()`,
+`focus.previous()` and the arrow and D-pad actions wrap at the two ends of the
+collection. A list wraps only along its scrolling axis.
 
 - `selection` is a writable key-set map.
 - `selectionMode` defaults to single when you supply `selection` or its
   callback. Otherwise it defaults to none.
 - `onSelectionChange(nextMap)`, `onActivate(item, key)` and `onReachEnd`
   connect control events to domain behavior.
+- When the selection mode is not `none`, one mouse click selects a row. A
+  double click, Return, a gamepad press or a touch tap runs `onActivate`. A
+  double click keeps the selection. When the mode is `none`, each activation
+  runs `onActivate`. Table rows follow the same rule.
 - `selectable(item)`, `reorderable`, `movable(item)`, `dragLabel` and
   `onReorder(keys, insertionSlot)` use the same zero-based insertion contract
   among the remaining rows as Table.
@@ -531,15 +545,17 @@ Native swipe, context, and keyboard and gamepad actions reach the same
 commands. In a collection row, these actions also apply when the row itself
 has the selection. A destructive action runs exactly once, after its Compose
 departure animation. If the owner is removed, an unfinished departure is
-cancelled. If the owner keeps the row, the row returns to its full height on
-the next frame, and the action can run again.
+cancelled. If the owner keeps the row, for example when the server refuses the
+delete, the row returns to its full height on the next frame, and the action
+can run again. A full swipe commits or opens a tray only after the row has a
+measured width.
 `reducedMotion`, `enabled` and `editing` stay explicit control options.
 
 ## Media and status
 
 | Control | Main contract |
 |---|---|
-| `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Returns a TextLabel. |
+| `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Without an icon, it returns a TextLabel. With an icon, it returns a Frame row that holds the icon and a TextLabel. Native properties then apply to that Frame, so give it Frame properties only. |
 | `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
 | `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max` and `diameter`. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
 | `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. The endLabel shows after the value. With a label, a bar shows the value and the endLabel on the label row. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |

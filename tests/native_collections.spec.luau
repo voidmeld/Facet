@@ -190,6 +190,37 @@ t.describe("Compose native collections", function()
 		runtime.dispose()
 	end)
 
+	t.it("wraps arrow and D-pad focus at both ends when wrapFocus is set", function()
+		for _, wrap in { true, false } do
+			local engine, runtime, UI, target, gui = setup()
+			local focus = {}
+			local stop, node = runtime.mount(function()
+				return UI.VirtualList({
+					from = records(5),
+					key = key,
+					itemSize = 20,
+					focus = focus,
+					wrapFocus = wrap,
+					render = function(current)
+						return button(UI, current)
+					end,
+				})
+			end, target)
+			node.AbsoluteWindowSize = engine.types.Vector2.new(200, 100)
+			focus.focus(5)
+			t.expect(gui.SelectedObject.Text).toBe("5")
+			target:FindFirstChild("FacetCollectionDown"):FindFirstChild("CollectionDown").Pressed.fire()
+			t.expect(focus.current:peek()).toBe(if wrap then 1 else 5)
+			focus.focus(1)
+			target:FindFirstChild("FacetCollectionUp"):FindFirstChild("CollectionUp").Pressed.fire()
+			t.expect(focus.current:peek()).toBe(if wrap then 5 else 1)
+			target:FindFirstChild("FacetCollectionRight"):FindFirstChild("CollectionRight").Pressed.fire()
+			t.expect(focus.current:peek()).toBe(if wrap then 5 else 1)
+			stop()
+			runtime.dispose()
+		end
+	end)
+
 	t.it("uses measured extents and column placements for both scroll directions", function()
 		for _, direction in { "vertical", "horizontal" } do
 			local engine, runtime, UI, target = setup()
@@ -282,6 +313,50 @@ t.describe("Compose native collections", function()
 		t.expect(content.AutomaticSize).toBe(engine.types.Enum.AutomaticSize.Y)
 		t.expect(content.Size.Y.Offset).toBe(0)
 		stop()
+		runtime.dispose()
+	end)
+
+	t.it("follows a readable follow policy while the viewport stays at the end", function()
+		local engine, runtime, UI, target = setup()
+		local source, follow = Compose.cell(records(10)), Compose.cell("none")
+		local stop, node = runtime.mount(function()
+			return UI.VirtualList({
+				from = source,
+				key = key,
+				itemSize = 20,
+				overscan = 0,
+				follow = follow,
+				render = function(current)
+					return button(UI, current)
+				end,
+			})
+		end, target)
+		node.AbsoluteWindowSize = engine.types.Vector2.new(200, 100)
+		t.expect(node.CanvasPosition.Y).toBe(0)
+		node.CanvasPosition = engine.types.Vector2.new(0, 100)
+		source:set(records(11))
+		t.expect(node.CanvasPosition.Y).toBe(100)
+		node.CanvasPosition = engine.types.Vector2.new(0, 120)
+		follow:set("end")
+		t.expect(node.CanvasPosition.Y).toBe(120)
+		source:set(records(12))
+		t.expect(node.CanvasPosition.Y).toBe(140)
+		follow:set("none")
+		source:set(records(13))
+		t.expect(node.CanvasPosition.Y).toBe(140)
+		stop()
+		t.expect(function()
+			runtime.mount(function()
+				return UI.VirtualList({
+					from = source,
+					key = key,
+					follow = "bottom",
+					render = function(current)
+						return button(UI, current)
+					end,
+				})
+			end, target)
+		end).toThrow()
 		runtime.dispose()
 	end)
 
@@ -612,6 +687,70 @@ t.describe("Compose native collections", function()
 		cancel()
 		engine.heartbeat.fire(1)
 		t.expect(invoked).toBe(1)
+		runtime.dispose()
+	end)
+
+	t.it("never commits or opens a full swipe on an unmeasured row", function()
+		local engine, runtime, UI, target = setup()
+		local invoked, open = 0, Compose.cell(nil)
+		local stop, node = runtime.mount(function()
+			return UI.RowActions({
+				open = open,
+				content = button(UI, Compose.cell({ label = "Row" })),
+				trailing = {
+					{
+						id = "Archive",
+						label = "Archive",
+						onActivate = function()
+							invoked += 1
+						end,
+					},
+				},
+			})
+		end, target)
+		local detector = node:FindFirstChildWhichIsA("UIDragDetector")
+		detector.DragStart.fire(engine.types.Vector2.new(100, 0))
+		detector.DragContinue.fire(engine.types.Vector2.new(85, 0))
+		detector.DragEnd.fire()
+		t.expect(invoked).toBe(0)
+		t.expect(open:peek()).toBeNil()
+		stop()
+		runtime.dispose()
+	end)
+
+	t.it("restores a kept row after a destructive action so it can commit again", function()
+		local engine, runtime, UI, target = setup()
+		local invoked, open = 0, Compose.cell("trailing")
+		local stop, node = runtime.mount(function()
+			return UI.RowActions({
+				open = open,
+				reducedMotion = true,
+				content = button(UI, Compose.cell({ label = "Row" })),
+				trailing = {
+					{
+						id = "Delete",
+						label = "Delete",
+						role = "destructive",
+						onActivate = function()
+							invoked += 1
+						end,
+					},
+				},
+			})
+		end, target)
+		node.AbsoluteSize = engine.types.Vector2.new(300, 40)
+		local detector = node:FindFirstChildWhichIsA("UIDragDetector")
+		node:FindFirstChild("Delete", true).Activated.fire()
+		t.expect(invoked).toBe(1)
+		t.expect(node.Size.Y.Offset).toBe(0)
+		t.expect(detector.Enabled).toBe(false)
+		open:set("trailing")
+		t.expect(node.Size.Y.Offset).toBe(44)
+		t.expect(detector.Enabled).toBe(true)
+		t.expect(node:FindFirstChild("trailing").Visible).toBe(true)
+		node:FindFirstChild("Delete", true).Activated.fire()
+		t.expect(invoked).toBe(2)
+		stop()
 		runtime.dispose()
 	end)
 

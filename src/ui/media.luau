@@ -1,4 +1,5 @@
 --!strict
+local reducedMotion = require("./motion")
 local Types = require("./types")
 local Engine = require("./engine_types")
 local Media = require("./media_types")
@@ -347,6 +348,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.ProgressView = ctx.construct(function(spec: Media.ProgressViewProps): Frame
+		local motionReduced = reducedMotion(ctx)
 		local presentation = spec.presentation or "bar"
 		assert(
 			presentation == "bar" or presentation == "circular" or presentation == "spinner",
@@ -381,7 +383,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		local progress = Compose.formula(function(use: Compose.Use)
 			if timeline then
 				local phase = use(timeline.progress)
-				return if read(ctx.config.reducedMotion, use) then math.floor(phase * 4) / 4 else phase
+				return if motionReduced(use) then math.floor(phase * 4) / 4 else phase
 			end
 			local minimum, maximum = read(spec.min, use) or 0, read(spec.max, use) or 1
 			assert(maximum > minimum, "Facet ProgressView max must exceed min")
@@ -397,7 +399,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end)
 			Compose.watch(function(use: Compose.Use)
 				local value = use(progress)
-				if read(ctx.config.reducedMotion, use) or value >= previous then
+				if motionReduced(use) or value >= previous then
 					origin:set(value)
 					destination:set(value)
 					clock:seek(duration)
@@ -464,7 +466,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 							BorderSizePixel = 0,
 							ZIndex = 0,
 							Size = function(use: Compose.Use)
-								local fraction = if read(ctx.config.reducedMotion, use)
+								local fraction = if motionReduced(use)
 									then use(progress)
 									else math.max(use(trail :: Compose.Formula<number>), use(progress))
 								return if vertical(use) then D2.fromScale(1, fraction) else D2.fromScale(fraction, 1)
@@ -761,8 +763,9 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 
 	local skeletonClock = Compose.createSharedResource(function()
 		local clock = runtime.timeline({ duration = 1.4, repeats = math.huge })
+		local motionReduced = reducedMotion(ctx)
 		Compose.watch(function(use: Compose.Use)
-			if read(ctx.config.reducedMotion, use) then
+			if motionReduced(use) then
 				clock:pause()
 			else
 				clock:play()
@@ -778,6 +781,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		local count = spec.lines or 1
 		assert(count >= 1 and count % 1 == 0, "Facet Skeleton lines must be positive")
 		local clock = skeletonClock()
+		local motionReduced = reducedMotion(ctx)
 		local rows: { Compose.Child } = {}
 		for index = 1, count do
 			local native: Engine.FrameNativeProps = {
@@ -790,7 +794,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 				Host.UIGradient "Shimmer" {
 					Enabled = function(use: Compose.Use)
-						return not read(ctx.config.reducedMotion, use)
+						return not motionReduced(use)
 					end,
 					Offset = function(use: Compose.Use)
 						return V2.new(use(clock.progress) * 2 - 1, 0)

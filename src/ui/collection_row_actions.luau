@@ -1,4 +1,5 @@
 --!strict
+local reducedMotion = require("./motion")
 local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local CollectionTypes = require("./collection_types")
@@ -45,8 +46,9 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local committing: ComposeTypes.Cell<{ action: RowAction, edge: RowEdge }?> =
 			Compose.cell(nil :: { action: RowAction, edge: RowEdge }?)
 		local fired = false
+		local motionReduced = reducedMotion(ctx)
 		local function reduced(use: ComposeTypes.Use?): boolean
-			return read(if spec.reducedMotion == nil then ctx.config.reducedMotion else spec.reducedMotion, use) == true
+			return if spec.reducedMotion == nil then motionReduced(use) else read(spec.reducedMotion, use) == true
 		end
 		local function actions(edge: string, use: ComposeTypes.Use?): { RowAction }
 			return read(if edge == "leading" then leading else trailing, use)
@@ -155,6 +157,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 				invoke(action)
 			end
 		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			if read(open, use) ~= nil and fired then
+				fired = false
+				committing:set(nil)
+			end
+		end)
 		Compose.watch(function(use: ComposeTypes.Use)
 			if use(departure.completed) and not fired then
 				local commit = committing:peek()
@@ -279,7 +287,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return
 			end
 			local value = drag:peek()
-			if value ~= nil and axis == "horizontal" then
+			if value ~= nil and value ~= 0 and axis == "horizontal" and dimensions:peek().X > 0 then
 				local edge: RowEdge = if value > 0 then "leading" else "trailing"
 				local available = actions(edge)
 				local fullSwipe = if type(spec.fullSwipe) == "table"

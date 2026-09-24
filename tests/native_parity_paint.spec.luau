@@ -1279,8 +1279,9 @@ t.describe("native parity paint", function()
 		local function outlined(row: number): boolean
 			local enabled = nil
 			for column = 1, word.rules.COLS do
-				local outline = find(find(find(node, `tile{row}_{column}`), "fill"), "Outline")
+				local outline = find(find(node, `tile{row}_{column}`), "ActiveRow")
 				t.expect(outline.ClassName).toBe("UIStroke")
+				t.expect(outline:HasTag("facet-status-ring")).toBe(true)
 				if enabled == nil then
 					enabled = outline.Enabled
 				end
@@ -1290,10 +1291,7 @@ t.describe("native parity paint", function()
 		end
 		t.expect(outlined(1)).toBe(true)
 		t.expect(outlined(2)).toBe(false)
-		t.expect(game.tileSurface(1, 1)).toBe("chip")
 		t.expect(game.mark(1, 1)).toBe("_")
-		t.expect(find(find(node, "tile1_1"), "fill").BackgroundColor3)
-			.toBe(find(find(node, "tile1_2"), "fill").BackgroundColor3)
 		game.press("R")
 		t.expect(outlined(1)).toBe(true)
 		for _, letter in { "U", "L", "E", "S" } do
@@ -1302,16 +1300,15 @@ t.describe("native parity paint", function()
 		local function key(letter: string): any
 			return find(node, "key_" .. letter)
 		end
-		t.expect(key("R"):HasTag("facet-accent")).toBe(false)
+		t.expect(key("R"):HasTag("facet-status-success")).toBe(false)
 		game.press("Return")
 		t.expect(game.keyState("R")).toBe("correct")
 		t.expect(game.keyState("U")).toBe("absent")
 		t.expect(game.keyState("E")).toBe("present")
-		t.expect(key("R"):HasTag("facet-accent")).toBe(true)
-		t.expect(key("U"):HasTag("facet-appearance-utility")).toBe(true)
-		t.expect(key("U"):HasTag("facet-accent")).toBe(false)
-		t.expect(key("E"):HasTag("facet-appearance-soft")).toBe(true)
-		t.expect(key("Q"):GetAttribute("appearance")).toBe("standard")
+		t.expect(key("R"):HasTag("facet-status-success")).toBe(true)
+		t.expect(key("U"):HasTag("facet-status-neutral")).toBe(true)
+		t.expect(key("E"):HasTag("facet-status-warning")).toBe(true)
+		t.expect(find(find(node, "tile1_1"), "fill"):HasTag("facet-status-success")).toBe(true)
 		t.expect(game.activeRow()).toBe(2)
 		t.expect(outlined(1)).toBe(false)
 		t.expect(outlined(2)).toBe(true)

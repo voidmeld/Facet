@@ -11,6 +11,7 @@ export type ValueBinding<T> =
 export type EnabledOptions = { enabled: Value<boolean>?, disabled: Value<boolean>?, busy: Value<boolean>? }
 export type Row = { title: Value<string>?, description: Value<string>?, value: string?, icon: string? }
 export type Shortcut = { keyCode: string, modifiers: { shift: boolean? }? }
+export type ButtonCorners = "pill" | "square"
 export type ButtonRole = "default" | "cancel" | "destructive" | "onIndicator"
 export type ButtonVisualOptions = EnabledOptions & {
 	label: Value<string>?,
@@ -19,7 +20,7 @@ export type ButtonVisualOptions = EnabledOptions & {
 	pop: boolean?,
 	appearance: Value<string>?,
 	controlSize: Value<Shared.ControlSize>?,
-	corners: ("pill" | "square")?,
+	corners: Value<ButtonCorners>?,
 	shape: ("rect" | "circle")?,
 	role: Value<ButtonRole>?,
 	icon: Value<string>?,
