@@ -690,6 +690,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			tag("facet-appearance-soft", appearance == "soft")
 			tag("facet-appearance-utility", appearance == "utility")
 			tag("facet-appearance-link", appearance == "link")
+			tag("facet-quiet-destructive", role == "destructive" and (appearance == "utility" or appearance == "link"))
 			attribute("selected", selected)
 			attribute("busy", busy)
 			attribute("appearance", appearance)
@@ -876,6 +877,19 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				},
 				"toggle-mark"
 			)
+			local check = if presentation == "checkbox"
+				then ctx.icon("checkmark", {
+					Name = "Check",
+					AnchorPoint = V2.new(0.5, 0.5),
+					Position = D2.fromScale(0.5, 0.5),
+					Size = D2.fromOffset(16, 16),
+					BackgroundTransparency = 1,
+					Visible = false,
+				})
+				else nil
+			if check then
+				check:AddTag("facet-toggle-check")
+			end
 			local indicator = ctx.styled(
 				Host.Frame({
 					Name = "Indicator",
@@ -887,6 +901,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						else D2.new(0, -reserve, 0.5, 0),
 					ctx.corner(if presentation == "switch" then 12 else 4) :: ComposeTypes.Child,
 					mark,
+					check,
 				} :: Shared.FrameNativeProps),
 				"toggle-indicator"
 			)
@@ -895,8 +910,11 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				if presentation == "switch" then
 					mark.Position = D2.fromScale(if value then 0.7 else 0.3, 0.5)
 				else
-					mark.Size = D2.fromOffset(12, if mixed then 4 else 12)
-					mark.Visible = value or mixed
+					mark.Size = D2.fromOffset(12, 4)
+					mark.Visible = mixed
+					if check then
+						check.Visible = value == true and not mixed
+					end
 				end
 				indicator:SetAttribute("selected", value or mixed)
 				if value or mixed then
