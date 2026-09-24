@@ -896,10 +896,27 @@ function themes.createStyleSheet(
 		end
 		return transitions :: { [string]: TweenInfo }
 	end
+	local comparisons: { [ThemeTypes.RuleProperties]: { [ThemeTypes.RuleProperties]: boolean } } = setmetatable(
+		{},
+		{ __mode = "k" }
+	) :: any
+	local function sameRuleProperties(left: ThemeTypes.RuleProperties, right: ThemeTypes.RuleProperties): boolean
+		local known = comparisons[left]
+		if known == nil then
+			known = setmetatable({}, { __mode = "k" }) :: any
+			comparisons[left] = known
+		end
+		local same = known[right]
+		if same == nil then
+			same = sameProperties(left, right)
+			known[right] = same
+		end
+		return same :: boolean
+	end
 	local function apply(record: MountedRule, definition: NativeRule, timing: TweenInfo)
 		local properties = definition.properties
 		local propertiesChanged = record.properties == nil
-			or (record.properties ~= properties and not sameProperties(record.properties, properties))
+			or (record.properties ~= properties and not sameRuleProperties(record.properties, properties))
 		if not propertiesChanged and record.timing == timing then
 			return
 		end
