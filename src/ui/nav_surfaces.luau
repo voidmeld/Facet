@@ -407,8 +407,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							)
 						)
 					end,
-					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
-					contentRoot,
+					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }) :: Instance,
+					contentRoot :: Instance,
 				}
 				local layout: GuiObject
 				if fullScreen then
@@ -819,8 +819,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						ScrollBarThickness = 6,
 						Size = D2.new(1, 0, 0, 0),
 						ClipsDescendants = true,
-						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-						Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
+						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }) :: Instance,
+						Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }) :: Instance,
 						body(spec.content, nil),
 					},
 					ctx.padding(16, 12),
