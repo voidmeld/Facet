@@ -34,6 +34,7 @@ return function<K>(
 		writing = true
 		setOffset(value)
 		writing = false
+		previous = value
 	end
 	local function lowerBound(offset: number, total: number): number
 		local low, high = 1, total + 1
@@ -126,6 +127,9 @@ return function<K>(
 		end
 		if running then
 			cancel()
+		end
+		if not held and stopWait == nil then
+			gestureStart = previous
 		end
 		local now = clock()
 		if now > previousTime then

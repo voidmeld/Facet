@@ -17,7 +17,7 @@ where.
   still promises, but no candidate case tested it. The parity tests close
   837 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 56 cases remain.
-- 1,619 of the 3,131 covered cases have a weaker
+- 1,568 of the 3,131 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -30,7 +30,7 @@ where.
   gate evidence. `tools/package.sh publish` reads the `release` file and
   refuses anything but a clean, passing run of the same source.
 - The audit found 10 defects in `src` and 3 in the examples. All of them
-  are fixed. The parity tests found and fixed 12 more defects in `src` and
+  are fixed. The parity tests found and fixed 13 more defects in `src` and
   3 more in the examples. [Fixed after the audit](#fixed-after-the-audit)
   names the test for each fix.
 
@@ -88,7 +88,7 @@ last column names the candidate specs that the group cites most.
 | Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
 | Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
-| Scrolling | 330 | 93 | 60 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
+| Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 581 | 142 | 80 | 33 | 404 | 2 | `native_themes_media`, `native_navigation`, `native_inputs` |
 | Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
 | Theme packages | 379 | 146 | 68 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
@@ -509,6 +509,7 @@ defects. The same change fixes it.
 |---|---|---|
 | WA1 | `examples/gallery/examples/02_playlist_table.luau` | The Rating column showed a resize grip and took resize keys, but the readout said that Rating is locked. The column now sets `resizable = false`. |
 | WA2 | `src/ui/collection_table.luau` | With editing on and a destructive row action, the row cells moved right by the edit gutter, but the header did not. The Table now adds the widest row edit gutter to the header position and width, the collapse room and the canvas width. |
+| WA3 | `src/ui/collection_snap.luau` | A flick without a pointer press (wheel, trackpad or engine momentum) started from a stale offset. A fast flick up from row 8 went to the top, and a flick down after a snap did not advance. A scroll from rest now starts at the resting offset. |
 
 ## Gaps closed by this audit
 
@@ -748,6 +749,7 @@ field names the missing assertion.
 | `native_parity_weaker_apps` | Reference apps | `apps-01`, `apps-03`, `apps-34`, `apps-35`, `apps-40`, `apps-43`, `apps-51`, `apps-69`, `apps-77`, `apps-79`, `apps-81`, `apps-85`, `apps-93`, `apps-94`, `apps-97`, `apps-99`, `apps-103`, `apps-106`, `apps-107` | 43 | `apps-82` | 2 |
 | `native_parity_weaker_hud` | HUD and world targets | `apps2-130`, `apps-215`, `themes-P1-102` | 4 | `apps-206`, `apps-210`, `apps-214`, `apps-218`, `apps-221`, `apps-234`, `themes-P1-11`, `themes-P1-14` | 30 |
 | `native_parity_weaker_hud` | Replication and server state | `apps2-41`, `apps2-127` | 14 | - | 0 |
+| `native_parity_weaker_scrolling` | Scrolling | `apps2-267`, `apps-225`, `apps-231`, `collections-03`, `collections-15`, `collections-32`, `collections-125`, `collections-127`, `collections-176`, `collections-183`, `collections-231`, `collections-242`, `navigation-5-05` | 50 | `collections-262`, `navigation-1-18` | 7 |
 | `native_parity_weaker_tables` | Tables | `apps2-168`, `apps2-171`, `apps2-173`, `apps-242`, `collections-36`, `collections-37`, `collections-137`, `collections-142`, `collections-144`, `collections-151`, `collections-164`, `inputs-06` | 34 | `apps2-175`, `collections-133`, `collections-134`, `collections-203`, `collections-207` | 9 |
 
 ## Proposed tests for the largest gaps

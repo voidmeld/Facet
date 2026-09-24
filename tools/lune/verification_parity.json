@@ -285,7 +285,7 @@
     "scrolling": {
       "mainCases": 330,
       "a": 93,
-      "aWeaker": 60,
+      "aWeaker": 9,
       "b": 100,
       "c": 137,
       "d": 0,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1619
+    "coveredButWeaker": 1568
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -5865,9 +5865,9 @@
       "class": "a",
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::NVM-11 restores screen scroll from the shared model after presentation remount",
-        "native_virtual_monitors::native virtual monitors::NVM-16 permits only the active presentation to publish native scrolling"
-      ],
-      "weaker": "Main ran each app at three widths; candidate checks one window size per app."
+        "native_virtual_monitors::native virtual monitors::NVM-16 permits only the active presentation to publish native scrolling",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::apps2-267 Discover and Chat scroll positions survive presentation switches at 640/1280/1920"
+      ]
     },
     {
       "id": "apps2-268",
@@ -9315,9 +9315,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "VirtualList window reacts to CanvasPosition; not a general ScrollingFrame observer."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::apps-225 engine scrolling reaches the collection observer until teardown"
+      ]
     },
     {
       "id": "apps-226",
@@ -9387,9 +9387,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "Snap animation, not named-destination travel."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::apps-231 snap travel yields to native scrolling and never resumes toward its old target"
+      ]
     },
     {
       "id": "apps-232",
@@ -9847,9 +9847,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "NC21 asserts only that the canvas moves more than 200 px during a captured pointer drag and that the commit reaches an offscreen slot. No test asserts the clamp at the canvas end or at zero, that short content stays s..."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-03 autoscroll clamps at both canvas ends, stays armed and stops with the drag"
+      ]
     },
     {
       "id": "collections-04",
@@ -9998,9 +9998,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "Only the captured pointer path is asserted. These are not asserted: short content never arms, a keyboard (armed) session never autoscrolls (the src needs move.pointer), and a plain list has no autoscroll."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-15 edge autoscroll arms only for a captured pointer drag with room to scroll"
+      ]
     },
     {
       "id": "collections-16",
@@ -10226,9 +10226,9 @@
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
         "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows",
-        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions"
-      ],
-      "weaker": "The vertical list and Table window slides are asserted. For the sideways VirtualGrid, only CanvasPosition.X > 0 is asserted (GC4), not the window change."
+        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-32 list, both grid axes and table slide their windows from engine scrolling alone"
+      ]
     },
     {
       "id": "collections-33",
@@ -11522,9 +11522,9 @@
       "mainCases": 9,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "No test asserts: settling at the list end, content that fits the viewport never moving, a hard fling not pulled back, or a settle already on a boundary asking for no travel."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-125 snap resolves nearest, flick, fling, end and fitting content boundaries"
+      ]
     },
     {
       "id": "collections-126",
@@ -11548,9 +11548,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "The 'framework write is a rest' and 'anchor correction' cases are only implied (frameworkWrite() cancels). Default none is shown only by lists without snap that keep their offsets."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-127 engine-driven snap settles, travels, holds, yields and treats framework writes as rests"
+      ]
     },
     {
       "id": "collections-128",
@@ -12238,9 +12238,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
-      ],
-      "weaker": "Asserted on VirtualList. Table body focus scroll is not asserted."
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-176 table body focus scrolls rows into view minimally in both directions"
+      ]
     },
     {
       "id": "collections-177",
@@ -12326,9 +12326,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "Only that a commit happens. It is not asserted that scrolling stops after the release."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-183 table autoscroll needs a drag and releases with the drop"
+      ]
     },
     {
       "id": "collections-184",
@@ -12998,9 +12998,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
-        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions"
-      ],
-      "weaker": "The window change itself is not asserted for grids."
+        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-231 engine scroll slides a vertical grid window to whole lines at canvas offsets"
+      ]
     },
     {
       "id": "collections-232",
@@ -13156,9 +13156,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "Only CanvasPosition.X is asserted."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-242 native X scroll slides a horizontal grid window along X"
+      ]
     },
     {
       "id": "collections-243",
@@ -13460,9 +13460,10 @@
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
         "native_collections::Compose native collections::defers initial offscreen focus until native geometry and suppresses navigation while editing",
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-262 list keys bind arrows and D-pad to one action that steps and reveals rows"
       ],
-      "weaker": "The tests fire the named InputAction Pressed. Real KeyCode/DPad bindings are not exercised."
+      "weaker": "The case checks that each Collection action binds exactly the arrow key and its D-pad KeyCode to one InputAction. The fake engine cannot send a real KeyCode through the InputContext, so engine dispatch needs a Studio check."
     },
     {
       "id": "collections-263",
@@ -20783,7 +20784,7 @@
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
         "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
       ],
-      "weaker": "Covers VirtualList reaching offscreen keys; no generic scroll-to-visible for non-collection ScrollingFrames (engine selection autoscroll is native)"
+      "weaker": "Facet no longer has a scroll-to-visible API for a plain ScrollingFrame. The engine scrolls to the selection in a non-collection ScrollingFrame, and only a Studio check can show that. The collection keep-visible has headless tests in collections-176 and collections-262."
     },
     {
       "id": "mech3-32",
@@ -21945,9 +21946,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements"
+        "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::navigation-1-18 a long alert message scrolls inside a bounded region while the actions stay reachable"
       ],
-      "weaker": "Asserts the AlertMessage scroll height is bounded (<100) when content is 1000. It does not assert that the actions stay inside the card or scroll reachability through selection."
+      "weaker": "Card containment for the action buttons on 640x320 and 749x235 viewports needs real engine layout."
     },
     {
       "id": "navigation-1-19",
@@ -26045,7 +26047,6 @@
       "candidateCases": [
         "native_parity_navigation::native parity navigation::keeps a retained tab's scroll position on return and resets it when restoreScroll is off"
       ],
-      "weaker": "Covers the native CanvasPosition kept on a retained panel and the restoreScroll = false reset. Main also restored a keyed anchor after a reorder for a page that was not retained; the candidate removed serialized bookmarks, and api.md does not promise them.",
       "apiPromise": "api.md TabView: \"The control owns scroll and focus restoration\"; nav_pages.luau restoreScroll=false resets descendant ScrollingFrames.",
       "gap": {
         "description": "Serialized keyed bookmarks for evicted pages are deleted (retention=\"top\" now loses scroll; plain content no longer anchors to a keyed row after reorder). What remains - native CanvasPosition kept on retained panels a...",
@@ -26159,9 +26160,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab"
-      ],
-      "weaker": "Only a right-side overflow on topBar; no sidebar (Y axis) or leading-side reveal."
+        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::navigation-5-05 selecting an off-screen tab reveals it on either side of a top bar or sidebar"
+      ]
     },
     {
       "id": "navigation-5-06",
@@ -34416,6 +34417,14 @@
       "file": "src/ui/collection_table.luau",
       "title": "With editing on and a destructive row action, the row cells moved right by the edit gutter, but the header did not. The Table now adds the widest row edit gutter to the header position and width, the collapse room and the canvas width.",
       "fixedBy": "native_parity_weaker_tables::native parity weaker tables::collections-134 the header follows the reorder and edit gutters so columns stay aligned"
+    },
+    {
+      "id": "WA3",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collection_snap.luau",
+      "title": "A flick without a pointer press (wheel, trackpad or engine momentum) started from a stale offset. A fast flick up from row 8 went to the top, and a flick down after a snap did not advance. A scroll from rest now starts at the resting offset.",
+      "fixedBy": "native_parity_weaker_scrolling::native parity weaker scrolling::collections-125 snap resolves nearest, flick, fling, end and fitting content boundaries"
     }
   ]
 }
