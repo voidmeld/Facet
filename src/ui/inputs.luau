@@ -218,6 +218,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							end
 						end, {
 							priority = 250,
+							capture = true,
 							onReleased = function()
 								if arrow then
 									landing = false

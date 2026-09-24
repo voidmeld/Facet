@@ -167,7 +167,6 @@ return function(ctx)
 	local settings = Host.Frame "AvatarSettings" {
 		BorderSizePixel = 0,
 		SelectionGroup = true,
-		SelectionBehaviorUp = E.SelectionBehavior.Stop,
 		SelectionBehaviorDown = E.SelectionBehavior.Stop,
 		SelectionBehaviorLeft = E.SelectionBehavior.Stop,
 		SelectionBehaviorRight = E.SelectionBehavior.Stop,

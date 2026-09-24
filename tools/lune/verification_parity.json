@@ -461,9 +461,9 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3710,
-      "c": 6016,
-      "b": 1447,
+      "a": 3743,
+      "c": 5998,
+      "b": 1432,
       "d": 9
     },
     "auditByClass": {
@@ -473,9 +473,9 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1443,
-      "c": 833,
-      "b": 308,
+      "a": 1446,
+      "c": 831,
+      "b": 307,
       "d": 3
     },
     "mainCases": 10848,
@@ -8421,8 +8421,12 @@
       "candidateCases": [
         "native_inputs::native input controls::removes keyed chips toward the next then previous native target and caller fallback",
         "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page",
-        "native_parity_weaker_focus::native parity weaker focus::never strands selection on a removed focused row and skips disabled table rows"
-      ]
+        "native_parity_weaker_focus::native parity weaker focus::never strands selection on a removed focused row and skips disabled table rows",
+        "native_selection_parity::native selection parity with the main focus graph::falls to the nearest surviving neighbour when the selected control is removed",
+        "native_selection_parity::native selection parity with the main focus graph::moves a removed collection row's selection to the following key, then the preceding one",
+        "native_selection_parity::native selection parity with the main focus graph::takes the selection back from an engine fallback when the selected row's key is removed"
+      ],
+      "liveEvidence": "artifacts/gamepad/gamepad-parity-live.json"
     },
     {
       "id": "apps-148",
@@ -8550,9 +8554,15 @@
         "keyboard_navigation"
       ],
       "mainCases": 15,
-      "class": "b",
-      "nativeMechanism": "GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*); Facet binds no Tab key (no KeyCode.Tab in CAND src/ui)",
-      "nativeEvidence": "none"
+      "class": "a",
+      "candidateCases": [
+        "native_selection_parity::native selection parity with the main focus graph::walks Tab forward and Shift+Tab back in layout order and wraps at both ends",
+        "native_selection_parity::native selection parity with the main focus graph::skips hidden, disabled and removed controls and rereads the order on the next press",
+        "native_selection_parity::native selection parity with the main focus graph::traps Tab inside a modal and restores the launching control when it closes"
+      ],
+      "weaker": "Studio VirtualInput cannot send Tab, so the live check fires the Facet Traverse input action; Shift+Tab is headless only. Group-crossing rules follow the modal or screen scope, not main navigation groups.",
+      "liveEvidence": "artifacts/gamepad/gamepad-parity-live.json",
+      "restoredBy": "parity/gamepad"
     },
     {
       "id": "apps-159",
@@ -8565,8 +8575,11 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection",
-        "native_parity_weaker_focus::native parity weaker focus::takes modal selection on entry only for selection navigation across sheets and menus"
-      ]
+        "native_parity_weaker_focus::native parity weaker focus::takes modal selection on entry only for selection navigation across sheets and menus",
+        "native_selection_parity::native selection parity with the main focus graph::enters at the first eligible control and inside an open modal",
+        "native_selection_parity::native selection parity with the main focus graph::enters the screen at its first control on the first D-pad press and never moves a live selection"
+      ],
+      "liveEvidence": "artifacts/gamepad/gamepad-parity-live.json"
     },
     {
       "id": "apps-160",
@@ -8903,10 +8916,14 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page",
         "native_navigation::native navigation controls::removes dynamically deleted tab owners and preserves the selected survivor",
-        "native_parity_weaker_focus::native parity weaker focus::keeps collection focus on its key through a re-sort and a table sort change"
-      ]
+        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page",
+        "native_parity_weaker_focus::native parity weaker focus::keeps collection focus on its key through a re-sort and a table sort change",
+        "native_selection_parity::native selection parity with the main focus graph::falls to the nearest surviving neighbour when the selected control is removed",
+        "native_selection_parity::native selection parity with the main focus graph::moves a removed collection row's selection to the following key, then the preceding one",
+        "native_selection_parity::native selection parity with the main focus graph::takes the selection back from an engine fallback when the selected row's key is removed"
+      ],
+      "liveEvidence": "artifacts/gamepad/gamepad-parity-live.json"
     },
     {
       "id": "apps-186",
@@ -13762,8 +13779,14 @@
         "virtual_list_focus_policy"
       ],
       "mainCases": 17,
-      "class": "c",
-      "removal": "focusPolicy is not in collection_types.luau or api.md. Compose createFocusScope clears current (or autoFocuses the first) when the key disappears. There is no nearest survivor."
+      "class": "a",
+      "candidateCases": [
+        "native_selection_parity::native selection parity with the main focus graph::moves a removed collection row's selection to the following key, then the preceding one",
+        "native_selection_parity::native selection parity with the main focus graph::takes the selection back from an engine fallback when the selected row's key is removed"
+      ],
+      "weaker": "The nearest-survivor rule is restored for keyed rows. The focusPolicy field and its index policy stay removed.",
+      "liveEvidence": "artifacts/gamepad/gamepad-parity-live.json",
+      "restoredBy": "parity/gamepad"
     },
     {
       "id": "collections-261",
@@ -14436,8 +14459,13 @@
         "virtualization"
       ],
       "mainCases": 1,
-      "class": "c",
-      "removal": "Compose createFocusScope clears or autoFocuses the first. There is no nearest survivor. api.md makes no promise."
+      "class": "a",
+      "candidateCases": [
+        "native_selection_parity::native selection parity with the main focus graph::moves a removed collection row's selection to the following key, then the preceding one",
+        "native_selection_parity::native selection parity with the main focus graph::takes the selection back from an engine fallback when the selected row's key is removed"
+      ],
+      "liveEvidence": "artifacts/gamepad/gamepad-parity-live.json",
+      "restoredBy": "parity/gamepad"
     },
     {
       "id": "inputs-01",

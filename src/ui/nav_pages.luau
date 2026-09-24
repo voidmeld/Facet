@@ -573,6 +573,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end,
 			}),
 		}
+		Compose.watch(function(use: ComposeTypes.Use)
+			bar:SetAttribute("FacetEntry", use(spec.selection))
+		end)
 		local barSize, barPosition = ctx.observe(bar, "AbsoluteSize"), ctx.observe(bar, "AbsolutePosition")
 		Compose.watch(function(use: ComposeTypes.Use)
 			local selected = use(spec.selection)
@@ -659,8 +662,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					)
 					panels[id] = panel
 					local shown = ctx.observe(panel, "Visible")
+					local attached = Compose.cell(0)
+					runtime.connect(panel, "AncestryChanged", function()
+						attached:set(attached:peek() + 1)
+					end)
 					Compose.watch(function(use: ComposeTypes.Use)
-						if not use(shown) or not use(state).top or handoff ~= id or not gui then
+						use(attached)
+						if
+							not use(shown)
+							or not use(state).top
+							or handoff ~= id
+							or not gui
+							or panel:FindFirstAncestorWhichIsA("LayerCollector") == nil
+						then
 							return
 						end
 						handoff = nil

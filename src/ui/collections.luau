@@ -424,6 +424,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end)
 		)
 		root = ctx.styled(Host.ScrollingFrame(native), "Collection")
+		root:SetAttribute("FacetSelectionOwner", true)
 		if overlayReorder then
 			runtime.mount(function()
 				return overlayReorder(true)
@@ -504,6 +505,64 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end,
 		})
 		scope = focusScope
+		local knownKeys: { K } = {}
+		local priorKeys: { K } = {}
+		local function liveKeys(rows: { V }?): ({ K }, { [K]: boolean })
+			local keys, present = {}, {}
+			local list: { V } = rows or {}
+			for index, item in list do
+				local key = keyOf(item, index)
+				table.insert(keys, key)
+				if not policy.disabled(spec.disabled, item) then
+					present[key] = true
+				end
+			end
+			return keys, present
+		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			local keys = liveKeys(source(use))
+			priorKeys, knownKeys = knownKeys, keys
+		end)
+		local function peekRows(): { V }
+			return source(function<T>(value: ComposeTypes.Readable<T>): T
+				return value:peek()
+			end)
+		end
+		local function neighbourOf(lost: K): K?
+			local keys, present = liveKeys(peekRows())
+			if table.find(keys, lost) then
+				return nil
+			end
+			local before = if table.find(knownKeys, lost) then knownKeys else priorKeys
+			local at = table.find(before, lost)
+			if at == nil then
+				return nil
+			end
+			for index = at + 1, #before do
+				if present[before[index]] then
+					return before[index]
+				end
+			end
+			for index = at - 1, 1, -1 do
+				if present[before[index]] then
+					return before[index]
+				end
+			end
+			return nil
+		end
+		local lastFocused: K? = nil
+		Compose.watch(function(use: ComposeTypes.Use)
+			local key = use(focusScope.current)
+			local lost = lastFocused
+			lastFocused = key
+			if lost == nil or key == lost or not focusOwned then
+				return
+			end
+			local neighbour = neighbourOf(lost)
+			if neighbour ~= nil and neighbour ~= key then
+				focusScope.focus(neighbour)
+			end
+		end)
 		if spec.focus then
 			spec.focus.current = focusScope.current
 			spec.focus.focus = focusScope.focus
@@ -570,9 +629,53 @@ return function(ctx: Types.Context, UI: Controls): ()
 			if node and not restoring then
 				if belongsTo(node, root) then
 					focusActive:set(true)
+					for key, row in mounted do
+						if row and belongsTo(node, row) then
+							local neighbour = neighbourOf(key)
+							if neighbour ~= nil then
+								focusOwned = true
+								focusScope.focus(neighbour)
+								restoreFocus(neighbour)
+							end
+							break
+						end
+					end
 				else
-					focusOwned = false
+					local lost = lastFocused or focusScope.current:peek()
+					local neighbour = if focusOwned and lost ~= nil then neighbourOf(lost) else nil
+					if neighbour ~= nil and mounted[neighbour] then
+						focusScope.focus(neighbour)
+						restoreFocus(neighbour)
+					else
+						focusOwned = false
+					end
 				end
+			end
+		end)
+		Compose.watch(function(use: ComposeTypes.Use)
+			use(mountedVersion)
+			if gui == nil or use(selected) ~= root then
+				return
+			end
+			local target: GuiObject? = nil
+			local key = focusScope.current:peek()
+			if key ~= nil and mounted[key] then
+				target = findSelectable(assert(mounted[key]), nil, 1)
+			end
+			if target == nil then
+				local rows: { V } = read(spec.from) or {}
+				for index, item in rows do
+					local candidate = keyOf(item, index)
+					if mounted[candidate] and not policy.disabled(spec.disabled, item) then
+						target = findSelectable(assert(mounted[candidate]), nil, 1)
+						if target then
+							break
+						end
+					end
+				end
+			end
+			if target then
+				gui.SelectedObject = target
 			end
 		end)
 		local function eligible(use: ComposeTypes.Use): boolean

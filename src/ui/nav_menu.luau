@@ -572,10 +572,10 @@ return function(
 				table.insert(nextPath, assert(item.id))
 				path:set(nextPath)
 			end
-		end, { priority = 2100 })
+		end, { priority = 2100, capture = true })
 		ctx.action(modal, "MenuLeft", { E.KeyCode.Left, E.KeyCode.DPadLeft }, function(use: ComposeTypes.Use)
 			return #use(path) > 0
-		end, back, { priority = 2100 })
+		end, back, { priority = 2100, capture = true })
 		local focusIn = surfaces.selecting()
 		local placed = ctx.observe(modal, "Parent")
 		Compose.watch(function(use: ComposeTypes.Use)

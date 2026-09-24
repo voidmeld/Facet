@@ -294,6 +294,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				if body and spec.contentSelectable ~= false then
 					local scroller = body
 					runtime.decorate(scroller, { Selectable = room.overflowing })
+					scroller:SetAttribute("FacetSelectionOwner", true)
 					local gui = surfaces.service("GuiService")
 					local selected: ComposeTypes.Readable<GuiObject?> = if gui
 						then ctx.observe(gui, "SelectedObject")
@@ -318,7 +319,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							return if direction > 0 then y < limit - 0.5 else y > 0.5
 						end, function()
 							step(direction)
-						end, { priority = 3000 })
+						end, { priority = 3000, capture = true })
 					end
 					bind("DialogBodyDown", 1, { E.KeyCode.Down, E.KeyCode.DPadDown })
 					bind("DialogBodyUp", -1, { E.KeyCode.Up, E.KeyCode.DPadUp })

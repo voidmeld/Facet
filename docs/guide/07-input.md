@@ -14,6 +14,19 @@ Compose owns their Instances and subscriptions. Facet supplies the control
 eligibility and the interaction policy. Input contexts are siblings under a
 native host. Do not nest them.
 
+## Selection rules
+
+The engine moves the selection. Facet adds these rules, which the focus graph
+on main also had:
+
+- The first D-pad press selects the first control when nothing is selected.
+- Tab and Shift+Tab walk the controls in layout order and wrap.
+- A removed control gives the selection to its nearest neighbour.
+- A scroll container is not a selection stop.
+- A value control keeps Left and Right for its value.
+
+See [Selection](../reference/api.md#selection) for the full rules.
+
 ## Modal controls
 
 A modal control:

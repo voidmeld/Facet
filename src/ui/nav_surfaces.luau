@@ -406,6 +406,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				local actionBar = Host.Frame(actionProps)
 				local actionSize = ctx.observe(actionBar, "AbsoluteSize")
 				local scroll = Host.ScrollingFrame "AlertMessage" {
+					Selectable = false,
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					CanvasSize = D2.fromOffset(0, 0),

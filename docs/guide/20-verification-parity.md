@@ -65,9 +65,9 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 1443 | 2,294 | 3,710 |
-| b | Retired. The Roblox Engine or Compose owns the mechanism | 308 | 1,581 | 1,447 |
-| c | Retired. The feature or code was deleted and is not promised | 833 | 6,079 | 6,016 |
+| a | Covered by a candidate case | 1446 | 2,294 | 3,743 |
+| b | Retired. The Roblox Engine or Compose owns the mechanism | 307 | 1,581 | 1,432 |
+| c | Retired. The feature or code was deleted and is not promised | 831 | 6,079 | 5,998 |
 | d | Gap. A promise remains and no candidate case verifies it | 3 | 894 | 9 |
 
 The contract counts and the main-case counts with new tests are the sums over
