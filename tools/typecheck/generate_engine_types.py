@@ -65,6 +65,12 @@ def generate(definitions, schema):
                 return True
             name = entries[name]['parent']
         return False
+    aliases = {}
+    def alias(native):
+        if native not in aliases:
+            aliases[native] = ''.join(part[:1].upper() + part[1:] for part in re.findall(r'\w+', native)) + ('Optional' if native.endswith('?') else '') + 'Value'
+        return aliases[native]
+    declarations = []
     for name in ordered:
         parent = entries[name]['parent']
         fields = ['\tAttributes: Attributes?,'] if name == 'Instance' else []
@@ -78,12 +84,13 @@ def generate(definitions, schema):
                     arguments = re.sub(r'\bany\b', 'unknown', arguments)
                 fields.append(f'\t{key}: (({arguments}) -> ())?,')
             elif key in schema[name]['writable']:
-                value = f'Value<{native_type(native)}>'
+                value = alias(native_type(native))
                 if any(is_instance(word) for word in re.findall(r'\b\w+\b', native)):
                     value = '(' + value + ' | StaticValue)'
                 fields.append(f'\t{key}: {value}?,')
         base = parent + 'Properties & ' if parent else ''
-        result += [f'export type {name}Properties = {base}{{', *fields, '}', f'export type {name}NativeProps = {name}Properties & {{ [number]: Compose.Child }}', f'export type {name}Props = {name}NativeProps & {{ ref: (({name}) -> ())? }}', '']
+        declarations += [f'export type {name}Properties = {base}{{', *fields, '}', f'export type {name}NativeProps = {name}Properties & {{ [number]: Compose.Child }}', f'export type {name}Props = {name}NativeProps & {{ ref: (({name}) -> ())? }}', '']
+    result += [f'type {aliases[native]} = Value<{native}>' for native in sorted(aliases, key=aliases.get)] + [''] + declarations
     datatypes = 'UDim UDim2 Vector2 Vector3 Color3 CFrame Enum Font Rect ColorSequence ColorSequenceKeypoint NumberSequence NumberSequenceKeypoint NumberRange Path2DControlPoint FloatCurveKey TweenInfo'.split()
     result += ['export type RobloxTypes = {', *[f'\t{name}: typeof({name}),' for name in datatypes], '}', '']
     observed = set('AbsoluteContentSize AbsolutePosition AbsoluteSize AbsoluteWindowSize CanvasPosition CurrentPage DisplayImage DisplayName Enabled FontFace GamepadEnabled GuiState Interactable KeyCode KeyboardEnabled MouseEnabled Parent Position PreferredBinding PreferredInput PreferredTransparency PrimaryModifier ReducedMotionEnabled SecondaryModifier SelectedObject Size Text TextBounds TextFits TextSize TextColor3 TextXAlignment TextYAlignment TextWrapped RichText TextScaled TextTruncate LineHeight TouchEnabled Visible'.split())

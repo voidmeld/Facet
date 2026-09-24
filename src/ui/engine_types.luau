@@ -22,6 +22,84 @@ export type AttributeValue =
 	| Font
 export type Attributes = { [string]: Value<AttributeValue?> }
 
+type BasePartOptionalValue = Value<BasePart?>
+type BooleanValue = Value<boolean>
+type CFrameValue = Value<CFrame>
+type CameraValue = Value<Camera>
+type Color3Value = Value<Color3>
+type ColorSequenceValue = Value<ColorSequence>
+type ContentValue = Value<Content>
+type EnumApplyStrokeModeValue = Value<Enum.ApplyStrokeMode>
+type EnumAspectTypeValue = Value<Enum.AspectType>
+type EnumAutomaticSizeValue = Value<Enum.AutomaticSize>
+type EnumBorderModeValue = Value<Enum.BorderMode>
+type EnumBorderStrokePositionValue = Value<Enum.BorderStrokePosition>
+type EnumButtonStyleValue = Value<Enum.ButtonStyle>
+type EnumCameraTypeValue = Value<Enum.CameraType>
+type EnumDominantAxisValue = Value<Enum.DominantAxis>
+type EnumEasingDirectionValue = Value<Enum.EasingDirection>
+type EnumEasingStyleValue = Value<Enum.EasingStyle>
+type EnumElasticBehaviorValue = Value<Enum.ElasticBehavior>
+type EnumFieldOfViewModeValue = Value<Enum.FieldOfViewMode>
+type EnumFillDirectionValue = Value<Enum.FillDirection>
+type EnumFontValue = Value<Enum.Font>
+type EnumFrameStyleValue = Value<Enum.FrameStyle>
+type EnumGradientTileModeValue = Value<Enum.GradientTileMode>
+type EnumGradientTypeValue = Value<Enum.GradientType>
+type EnumHorizontalAlignmentValue = Value<Enum.HorizontalAlignment>
+type EnumInputActionTypeValue = Value<Enum.InputActionType>
+type EnumInputBindingTypeValue = Value<Enum.InputBindingType>
+type EnumInputSinkValue = Value<Enum.InputSink>
+type EnumItemLineAlignmentValue = Value<Enum.ItemLineAlignment>
+type EnumKeyCodeValue = Value<Enum.KeyCode>
+type EnumLineJoinModeValue = Value<Enum.LineJoinMode>
+type EnumModelStreamingModeValue = Value<Enum.ModelStreamingMode>
+type EnumNormalIdValue = Value<Enum.NormalId>
+type EnumResamplerModeValue = Value<Enum.ResamplerMode>
+type EnumSafeAreaCompatibilityValue = Value<Enum.SafeAreaCompatibility>
+type EnumScaleTypeValue = Value<Enum.ScaleType>
+type EnumScreenInsetsValue = Value<Enum.ScreenInsets>
+type EnumScrollBarInsetValue = Value<Enum.ScrollBarInset>
+type EnumScrollingDirectionValue = Value<Enum.ScrollingDirection>
+type EnumSelectionBehaviorValue = Value<Enum.SelectionBehavior>
+type EnumSizeConstraintValue = Value<Enum.SizeConstraint>
+type EnumSortOrderValue = Value<Enum.SortOrder>
+type EnumStrokeSizingModeValue = Value<Enum.StrokeSizingMode>
+type EnumSurfaceGuiSizingModeValue = Value<Enum.SurfaceGuiSizingMode>
+type EnumTextDirectionValue = Value<Enum.TextDirection>
+type EnumTextTruncateValue = Value<Enum.TextTruncate>
+type EnumTextXAlignmentValue = Value<Enum.TextXAlignment>
+type EnumTextYAlignmentValue = Value<Enum.TextYAlignment>
+type EnumUIDragDetectorBoundingBehaviorValue = Value<Enum.UIDragDetectorBoundingBehavior>
+type EnumUIDragDetectorDragRelativityValue = Value<Enum.UIDragDetectorDragRelativity>
+type EnumUIDragDetectorDragSpaceValue = Value<Enum.UIDragDetectorDragSpace>
+type EnumUIDragDetectorDragStyleValue = Value<Enum.UIDragDetectorDragStyle>
+type EnumUIDragDetectorResponseStyleValue = Value<Enum.UIDragDetectorResponseStyle>
+type EnumUIDragSpeedAxisMappingValue = Value<Enum.UIDragSpeedAxisMapping>
+type EnumUIFlexAlignmentValue = Value<Enum.UIFlexAlignment>
+type EnumUIFlexModeValue = Value<Enum.UIFlexMode>
+type EnumVerticalAlignmentValue = Value<Enum.VerticalAlignment>
+type EnumVerticalScrollBarPositionValue = Value<Enum.VerticalScrollBarPosition>
+type EnumZIndexBehaviorValue = Value<Enum.ZIndexBehavior>
+type FontValue = Value<Font>
+type GuiBase2dValue = Value<GuiBase2d>
+type GuiButtonValue = Value<GuiButton>
+type GuiObjectValue = Value<GuiObject>
+type HapticEffectValue = Value<HapticEffect>
+type HumanoidBasePartNilValue = Value<Humanoid | BasePart | nil>
+type InstanceOptionalValue = Value<Instance?>
+type InstanceValue = Value<Instance>
+type LocalizationTableValue = Value<LocalizationTable>
+type NumberSequenceValue = Value<NumberSequence>
+type NumberValue = Value<number>
+type RectValue = Value<Rect>
+type SecurityCapabilitiesValue = Value<SecurityCapabilities>
+type StringValue = Value<string>
+type UDim2Value = Value<UDim2>
+type UDimValue = Value<UDim>
+type Vector2Value = Value<Vector2>
+type Vector3Value = Value<Vector3>
+
 export type ObjectProperties = {
 	Changed: ((string) -> ())?,
 }
@@ -31,17 +109,17 @@ export type ObjectProps = ObjectNativeProps & { ref: ((Object) -> ())? }
 export type InstanceProperties = ObjectProperties & {
 	Attributes: Attributes?,
 	AncestryChanged: ((Instance, Instance?) -> ())?,
-	Archivable: Value<boolean>?,
+	Archivable: BooleanValue?,
 	AttributeChanged: ((string) -> ())?,
-	Capabilities: Value<SecurityCapabilities>?,
+	Capabilities: SecurityCapabilitiesValue?,
 	ChildAdded: ((Instance) -> ())?,
 	ChildRemoved: ((Instance) -> ())?,
 	DescendantAdded: ((Instance) -> ())?,
 	DescendantRemoving: ((Instance) -> ())?,
 	Destroying: (() -> ())?,
-	Name: Value<string>?,
-	Parent: (Value<Instance?> | StaticValue)?,
-	Sandboxed: Value<boolean>?,
+	Name: StringValue?,
+	Parent: (InstanceOptionalValue | StaticValue)?,
+	Sandboxed: BooleanValue?,
 	StyledPropertiesChanged: (() -> ())?,
 }
 export type InstanceNativeProps = InstanceProperties & { [number]: Compose.Child }
@@ -52,42 +130,42 @@ export type GuiBaseNativeProps = GuiBaseProperties & { [number]: Compose.Child }
 export type GuiBaseProps = GuiBaseNativeProps & { ref: ((GuiBase) -> ())? }
 
 export type GuiBase2dProperties = GuiBaseProperties & {
-	AutoLocalize: Value<boolean>?,
-	RootLocalizationTable: (Value<LocalizationTable> | StaticValue)?,
-	SelectionBehaviorDown: Value<Enum.SelectionBehavior>?,
-	SelectionBehaviorLeft: Value<Enum.SelectionBehavior>?,
-	SelectionBehaviorRight: Value<Enum.SelectionBehavior>?,
-	SelectionBehaviorUp: Value<Enum.SelectionBehavior>?,
+	AutoLocalize: BooleanValue?,
+	RootLocalizationTable: (LocalizationTableValue | StaticValue)?,
+	SelectionBehaviorDown: EnumSelectionBehaviorValue?,
+	SelectionBehaviorLeft: EnumSelectionBehaviorValue?,
+	SelectionBehaviorRight: EnumSelectionBehaviorValue?,
+	SelectionBehaviorUp: EnumSelectionBehaviorValue?,
 	SelectionChanged: ((boolean, GuiObject, GuiObject) -> ())?,
-	SelectionGroup: Value<boolean>?,
+	SelectionGroup: BooleanValue?,
 }
 export type GuiBase2dNativeProps = GuiBase2dProperties & { [number]: Compose.Child }
 export type GuiBase2dProps = GuiBase2dNativeProps & { ref: ((GuiBase2d) -> ())? }
 
 export type LayerCollectorProperties = GuiBase2dProperties & {
-	Enabled: Value<boolean>?,
-	ResetOnSpawn: Value<boolean>?,
-	ZIndexBehavior: Value<Enum.ZIndexBehavior>?,
+	Enabled: BooleanValue?,
+	ResetOnSpawn: BooleanValue?,
+	ZIndexBehavior: EnumZIndexBehaviorValue?,
 }
 export type LayerCollectorNativeProps = LayerCollectorProperties & { [number]: Compose.Child }
 export type LayerCollectorProps = LayerCollectorNativeProps & { ref: ((LayerCollector) -> ())? }
 
 export type BillboardGuiProperties = LayerCollectorProperties & {
-	Active: Value<boolean>?,
-	Adornee: (Value<Instance> | StaticValue)?,
-	AlwaysOnTop: Value<boolean>?,
-	Brightness: Value<number>?,
-	ClipsDescendants: Value<boolean>?,
-	DistanceStep: Value<number>?,
-	ExtentsOffset: Value<Vector3>?,
-	ExtentsOffsetWorldSpace: Value<Vector3>?,
-	LightInfluence: Value<number>?,
-	MaxDistance: Value<number>?,
-	PlayerToHideFrom: (Value<Instance> | StaticValue)?,
-	Size: Value<UDim2>?,
-	SizeOffset: Value<Vector2>?,
-	StudsOffset: Value<Vector3>?,
-	StudsOffsetWorldSpace: Value<Vector3>?,
+	Active: BooleanValue?,
+	Adornee: (InstanceValue | StaticValue)?,
+	AlwaysOnTop: BooleanValue?,
+	Brightness: NumberValue?,
+	ClipsDescendants: BooleanValue?,
+	DistanceStep: NumberValue?,
+	ExtentsOffset: Vector3Value?,
+	ExtentsOffsetWorldSpace: Vector3Value?,
+	LightInfluence: NumberValue?,
+	MaxDistance: NumberValue?,
+	PlayerToHideFrom: (InstanceValue | StaticValue)?,
+	Size: UDim2Value?,
+	SizeOffset: Vector2Value?,
+	StudsOffset: Vector3Value?,
+	StudsOffsetWorldSpace: Vector3Value?,
 }
 export type BillboardGuiNativeProps = BillboardGuiProperties & { [number]: Compose.Child }
 export type BillboardGuiProps = BillboardGuiNativeProps & { ref: ((BillboardGui) -> ())? }
@@ -97,71 +175,71 @@ export type PVInstanceNativeProps = PVInstanceProperties & { [number]: Compose.C
 export type PVInstanceProps = PVInstanceNativeProps & { ref: ((PVInstance) -> ())? }
 
 export type CameraProperties = PVInstanceProperties & {
-	CFrame: Value<CFrame>?,
-	CameraSubject: (Value<Humanoid | BasePart | nil> | StaticValue)?,
-	CameraType: Value<Enum.CameraType>?,
-	DiagonalFieldOfView: Value<number>?,
-	FieldOfView: Value<number>?,
-	FieldOfViewMode: Value<Enum.FieldOfViewMode>?,
-	Focus: Value<CFrame>?,
-	HeadLocked: Value<boolean>?,
-	HeadScale: Value<number>?,
+	CFrame: CFrameValue?,
+	CameraSubject: (HumanoidBasePartNilValue | StaticValue)?,
+	CameraType: EnumCameraTypeValue?,
+	DiagonalFieldOfView: NumberValue?,
+	FieldOfView: NumberValue?,
+	FieldOfViewMode: EnumFieldOfViewModeValue?,
+	Focus: CFrameValue?,
+	HeadLocked: BooleanValue?,
+	HeadScale: NumberValue?,
 	InterpolationFinished: (() -> ())?,
-	MaxAxisFieldOfView: Value<number>?,
-	VRTiltAndRollEnabled: Value<boolean>?,
+	MaxAxisFieldOfView: NumberValue?,
+	VRTiltAndRollEnabled: BooleanValue?,
 }
 export type CameraNativeProps = CameraProperties & { [number]: Compose.Child }
 export type CameraProps = CameraNativeProps & { ref: ((Camera) -> ())? }
 
 export type GuiObjectProperties = GuiBase2dProperties & {
-	Active: Value<boolean>?,
-	AnchorPoint: Value<Vector2>?,
-	AutomaticSize: Value<Enum.AutomaticSize>?,
-	BackgroundColor3: Value<Color3>?,
-	BackgroundTransparency: Value<number>?,
-	BorderColor3: Value<Color3>?,
-	BorderMode: Value<Enum.BorderMode>?,
-	BorderSizePixel: Value<number>?,
-	ClipsDescendants: Value<boolean>?,
+	Active: BooleanValue?,
+	AnchorPoint: Vector2Value?,
+	AutomaticSize: EnumAutomaticSizeValue?,
+	BackgroundColor3: Color3Value?,
+	BackgroundTransparency: NumberValue?,
+	BorderColor3: Color3Value?,
+	BorderMode: EnumBorderModeValue?,
+	BorderSizePixel: NumberValue?,
+	ClipsDescendants: BooleanValue?,
 	InputBegan: ((InputObject) -> ())?,
 	InputChanged: ((InputObject) -> ())?,
 	InputEnded: ((InputObject) -> ())?,
-	InputSink: Value<Enum.InputSink>?,
-	Interactable: Value<boolean>?,
-	LayoutOrder: Value<number>?,
+	InputSink: EnumInputSinkValue?,
+	Interactable: BooleanValue?,
+	LayoutOrder: NumberValue?,
 	MouseEnter: ((number, number) -> ())?,
 	MouseLeave: ((number, number) -> ())?,
 	MouseMoved: ((number, number) -> ())?,
 	MouseWheelBackward: ((number, number) -> ())?,
 	MouseWheelForward: ((number, number) -> ())?,
-	NextSelectionDown: (Value<GuiObject> | StaticValue)?,
-	NextSelectionLeft: (Value<GuiObject> | StaticValue)?,
-	NextSelectionRight: (Value<GuiObject> | StaticValue)?,
-	NextSelectionUp: (Value<GuiObject> | StaticValue)?,
-	Position: Value<UDim2>?,
-	Rotation: Value<number>?,
-	Selectable: Value<boolean>?,
+	NextSelectionDown: (GuiObjectValue | StaticValue)?,
+	NextSelectionLeft: (GuiObjectValue | StaticValue)?,
+	NextSelectionRight: (GuiObjectValue | StaticValue)?,
+	NextSelectionUp: (GuiObjectValue | StaticValue)?,
+	Position: UDim2Value?,
+	Rotation: NumberValue?,
+	Selectable: BooleanValue?,
 	SelectionGained: (() -> ())?,
-	SelectionImageObject: (Value<GuiObject> | StaticValue)?,
+	SelectionImageObject: (GuiObjectValue | StaticValue)?,
 	SelectionLost: (() -> ())?,
-	SelectionOrder: Value<number>?,
-	Size: Value<UDim2>?,
-	SizeConstraint: Value<Enum.SizeConstraint>?,
+	SelectionOrder: NumberValue?,
+	Size: UDim2Value?,
+	SizeConstraint: EnumSizeConstraintValue?,
 	TouchLongPress: (({ Vector2 }, Enum.UserInputState) -> ())?,
 	TouchPan: (({ Vector2 }, Vector2, Vector2, Enum.UserInputState) -> ())?,
 	TouchPinch: (({ Vector2 }, number, number, Enum.UserInputState) -> ())?,
 	TouchRotate: (({ Vector2 }, number, number, Enum.UserInputState) -> ())?,
 	TouchSwipe: ((Enum.SwipeDirection, number) -> ())?,
 	TouchTap: (({ Vector2 }) -> ())?,
-	Visible: Value<boolean>?,
-	ZIndex: Value<number>?,
+	Visible: BooleanValue?,
+	ZIndex: NumberValue?,
 }
 export type GuiObjectNativeProps = GuiObjectProperties & { [number]: Compose.Child }
 export type GuiObjectProps = GuiObjectNativeProps & { ref: ((GuiObject) -> ())? }
 
 export type CanvasGroupProperties = GuiObjectProperties & {
-	GroupColor3: Value<Color3>?,
-	GroupTransparency: Value<number>?,
+	GroupColor3: Color3Value?,
+	GroupTransparency: NumberValue?,
 }
 export type CanvasGroupNativeProps = CanvasGroupProperties & { [number]: Compose.Child }
 export type CanvasGroupProps = CanvasGroupNativeProps & { ref: ((CanvasGroup) -> ())? }
@@ -171,46 +249,46 @@ export type FolderNativeProps = FolderProperties & { [number]: Compose.Child }
 export type FolderProps = FolderNativeProps & { ref: ((Folder) -> ())? }
 
 export type FrameProperties = GuiObjectProperties & {
-	Style: Value<Enum.FrameStyle>?,
+	Style: EnumFrameStyleValue?,
 }
 export type FrameNativeProps = FrameProperties & { [number]: Compose.Child }
 export type FrameProps = FrameNativeProps & { ref: ((Frame) -> ())? }
 
 export type GuiButtonProperties = GuiObjectProperties & {
 	Activated: ((InputObject, number) -> ())?,
-	AutoButtonColor: Value<boolean>?,
-	HoverHapticEffect: (Value<HapticEffect> | StaticValue)?,
-	Modal: Value<boolean>?,
+	AutoButtonColor: BooleanValue?,
+	HoverHapticEffect: (HapticEffectValue | StaticValue)?,
+	Modal: BooleanValue?,
 	MouseButton1Click: (() -> ())?,
 	MouseButton1Down: ((number, number) -> ())?,
 	MouseButton1Up: ((number, number) -> ())?,
 	MouseButton2Click: (() -> ())?,
 	MouseButton2Down: ((number, number) -> ())?,
 	MouseButton2Up: ((number, number) -> ())?,
-	PressHapticEffect: (Value<HapticEffect> | StaticValue)?,
+	PressHapticEffect: (HapticEffectValue | StaticValue)?,
 	SecondaryActivated: ((InputObject) -> ())?,
-	Selected: Value<boolean>?,
-	Style: Value<Enum.ButtonStyle>?,
+	Selected: BooleanValue?,
+	Style: EnumButtonStyleValue?,
 }
 export type GuiButtonNativeProps = GuiButtonProperties & { [number]: Compose.Child }
 export type GuiButtonProps = GuiButtonNativeProps & { ref: ((GuiButton) -> ())? }
 
 export type ImageButtonProperties = GuiButtonProperties & {
-	HoverImage: Value<string>?,
-	HoverImageContent: Value<Content>?,
-	Image: Value<string>?,
-	ImageColor3: Value<Color3>?,
-	ImageContent: Value<Content>?,
-	ImageRectOffset: Value<Vector2>?,
-	ImageRectSize: Value<Vector2>?,
-	ImageTransparency: Value<number>?,
-	PressedImage: Value<string>?,
-	PressedImageContent: Value<Content>?,
-	ResampleMode: Value<Enum.ResamplerMode>?,
-	ScaleType: Value<Enum.ScaleType>?,
-	SliceCenter: Value<Rect>?,
-	SliceScale: Value<number>?,
-	TileSize: Value<UDim2>?,
+	HoverImage: StringValue?,
+	HoverImageContent: ContentValue?,
+	Image: StringValue?,
+	ImageColor3: Color3Value?,
+	ImageContent: ContentValue?,
+	ImageRectOffset: Vector2Value?,
+	ImageRectSize: Vector2Value?,
+	ImageTransparency: NumberValue?,
+	PressedImage: StringValue?,
+	PressedImageContent: ContentValue?,
+	ResampleMode: EnumResamplerModeValue?,
+	ScaleType: EnumScaleTypeValue?,
+	SliceCenter: RectValue?,
+	SliceScale: NumberValue?,
+	TileSize: UDim2Value?,
 }
 export type ImageButtonNativeProps = ImageButtonProperties & { [number]: Compose.Child }
 export type ImageButtonProps = ImageButtonNativeProps & { ref: ((ImageButton) -> ())? }
@@ -220,106 +298,106 @@ export type GuiLabelNativeProps = GuiLabelProperties & { [number]: Compose.Child
 export type GuiLabelProps = GuiLabelNativeProps & { ref: ((GuiLabel) -> ())? }
 
 export type ImageLabelProperties = GuiLabelProperties & {
-	Image: Value<string>?,
-	ImageColor3: Value<Color3>?,
-	ImageContent: Value<Content>?,
-	ImageRectOffset: Value<Vector2>?,
-	ImageRectSize: Value<Vector2>?,
-	ImageTransparency: Value<number>?,
-	ResampleMode: Value<Enum.ResamplerMode>?,
-	ScaleType: Value<Enum.ScaleType>?,
-	SliceCenter: Value<Rect>?,
-	SliceScale: Value<number>?,
-	TileSize: Value<UDim2>?,
+	Image: StringValue?,
+	ImageColor3: Color3Value?,
+	ImageContent: ContentValue?,
+	ImageRectOffset: Vector2Value?,
+	ImageRectSize: Vector2Value?,
+	ImageTransparency: NumberValue?,
+	ResampleMode: EnumResamplerModeValue?,
+	ScaleType: EnumScaleTypeValue?,
+	SliceCenter: RectValue?,
+	SliceScale: NumberValue?,
+	TileSize: UDim2Value?,
 }
 export type ImageLabelNativeProps = ImageLabelProperties & { [number]: Compose.Child }
 export type ImageLabelProps = ImageLabelNativeProps & { ref: ((ImageLabel) -> ())? }
 
 export type InputActionProperties = InstanceProperties & {
-	Enabled: Value<boolean>?,
+	Enabled: BooleanValue?,
 	Pressed: (() -> ())?,
 	Released: (() -> ())?,
 	StateChanged: ((unknown) -> ())?,
-	Type: Value<Enum.InputActionType>?,
+	Type: EnumInputActionTypeValue?,
 }
 export type InputActionNativeProps = InputActionProperties & { [number]: Compose.Child }
 export type InputActionProps = InputActionNativeProps & { ref: ((InputAction) -> ())? }
 
 export type InputBindingProperties = InstanceProperties & {
-	Backward: Value<Enum.KeyCode>?,
-	ClampMagnitudeToOne: Value<boolean>?,
-	DisplayImage: Value<Content>?,
-	DisplayName: Value<string>?,
-	Down: Value<Enum.KeyCode>?,
-	Forward: Value<Enum.KeyCode>?,
-	KeyCode: Value<Enum.KeyCode>?,
-	Left: Value<Enum.KeyCode>?,
-	PointerIndex: Value<number>?,
-	PressedThreshold: Value<number>?,
-	PrimaryModifier: Value<Enum.KeyCode>?,
-	ReleasedThreshold: Value<number>?,
-	ResponseCurve: Value<number>?,
-	Right: Value<Enum.KeyCode>?,
-	Scale: Value<number>?,
-	SecondaryModifier: Value<Enum.KeyCode>?,
-	Type: Value<Enum.InputBindingType>?,
-	UIButton: (Value<GuiButton> | StaticValue)?,
-	UIModifier: (Value<GuiButton> | StaticValue)?,
-	Up: Value<Enum.KeyCode>?,
-	Vector2Scale: Value<Vector2>?,
-	Vector3Scale: Value<Vector3>?,
+	Backward: EnumKeyCodeValue?,
+	ClampMagnitudeToOne: BooleanValue?,
+	DisplayImage: ContentValue?,
+	DisplayName: StringValue?,
+	Down: EnumKeyCodeValue?,
+	Forward: EnumKeyCodeValue?,
+	KeyCode: EnumKeyCodeValue?,
+	Left: EnumKeyCodeValue?,
+	PointerIndex: NumberValue?,
+	PressedThreshold: NumberValue?,
+	PrimaryModifier: EnumKeyCodeValue?,
+	ReleasedThreshold: NumberValue?,
+	ResponseCurve: NumberValue?,
+	Right: EnumKeyCodeValue?,
+	Scale: NumberValue?,
+	SecondaryModifier: EnumKeyCodeValue?,
+	Type: EnumInputBindingTypeValue?,
+	UIButton: (GuiButtonValue | StaticValue)?,
+	UIModifier: (GuiButtonValue | StaticValue)?,
+	Up: EnumKeyCodeValue?,
+	Vector2Scale: Vector2Value?,
+	Vector3Scale: Vector3Value?,
 }
 export type InputBindingNativeProps = InputBindingProperties & { [number]: Compose.Child }
 export type InputBindingProps = InputBindingNativeProps & { ref: ((InputBinding) -> ())? }
 
 export type InputContextProperties = InstanceProperties & {
-	Enabled: Value<boolean>?,
-	Priority: Value<number>?,
-	Sink: Value<boolean>?,
+	Enabled: BooleanValue?,
+	Priority: NumberValue?,
+	Sink: BooleanValue?,
 }
 export type InputContextNativeProps = InputContextProperties & { [number]: Compose.Child }
 export type InputContextProps = InputContextNativeProps & { ref: ((InputContext) -> ())? }
 
 export type Path2DProperties = GuiBaseProperties & {
-	Closed: Value<boolean>?,
-	Color3: Value<Color3>?,
+	Closed: BooleanValue?,
+	Color3: Color3Value?,
 	ControlPointChanged: (() -> ())?,
-	Thickness: Value<number>?,
-	Visible: Value<boolean>?,
-	ZIndex: Value<number>?,
+	Thickness: NumberValue?,
+	Visible: BooleanValue?,
+	ZIndex: NumberValue?,
 }
 export type Path2DNativeProps = Path2DProperties & { [number]: Compose.Child }
 export type Path2DProps = Path2DNativeProps & { ref: ((Path2D) -> ())? }
 
 export type ScreenGuiProperties = LayerCollectorProperties & {
-	ClipToDeviceSafeArea: Value<boolean>?,
-	DisplayOrder: Value<number>?,
-	IgnoreGuiInset: Value<boolean>?,
-	SafeAreaCompatibility: Value<Enum.SafeAreaCompatibility>?,
-	ScreenInsets: Value<Enum.ScreenInsets>?,
+	ClipToDeviceSafeArea: BooleanValue?,
+	DisplayOrder: NumberValue?,
+	IgnoreGuiInset: BooleanValue?,
+	SafeAreaCompatibility: EnumSafeAreaCompatibilityValue?,
+	ScreenInsets: EnumScreenInsetsValue?,
 }
 export type ScreenGuiNativeProps = ScreenGuiProperties & { [number]: Compose.Child }
 export type ScreenGuiProps = ScreenGuiNativeProps & { ref: ((ScreenGui) -> ())? }
 
 export type ScrollingFrameProperties = GuiObjectProperties & {
-	AutomaticCanvasSize: Value<Enum.AutomaticSize>?,
-	BottomImage: Value<string>?,
-	BottomImageContent: Value<Content>?,
-	CanvasPosition: Value<Vector2>?,
-	CanvasSize: Value<UDim2>?,
-	ElasticBehavior: Value<Enum.ElasticBehavior>?,
-	HorizontalScrollBarInset: Value<Enum.ScrollBarInset>?,
-	MidImage: Value<string>?,
-	MidImageContent: Value<Content>?,
-	ScrollBarImageColor3: Value<Color3>?,
-	ScrollBarImageTransparency: Value<number>?,
-	ScrollBarThickness: Value<number>?,
-	ScrollingDirection: Value<Enum.ScrollingDirection>?,
-	ScrollingEnabled: Value<boolean>?,
-	TopImage: Value<string>?,
-	TopImageContent: Value<Content>?,
-	VerticalScrollBarInset: Value<Enum.ScrollBarInset>?,
-	VerticalScrollBarPosition: Value<Enum.VerticalScrollBarPosition>?,
+	AutomaticCanvasSize: EnumAutomaticSizeValue?,
+	BottomImage: StringValue?,
+	BottomImageContent: ContentValue?,
+	CanvasPosition: Vector2Value?,
+	CanvasSize: UDim2Value?,
+	ElasticBehavior: EnumElasticBehaviorValue?,
+	HorizontalScrollBarInset: EnumScrollBarInsetValue?,
+	MidImage: StringValue?,
+	MidImageContent: ContentValue?,
+	ScrollBarImageColor3: Color3Value?,
+	ScrollBarImageTransparency: NumberValue?,
+	ScrollBarThickness: NumberValue?,
+	ScrollingDirection: EnumScrollingDirectionValue?,
+	ScrollingEnabled: BooleanValue?,
+	TopImage: StringValue?,
+	TopImageContent: ContentValue?,
+	VerticalScrollBarInset: EnumScrollBarInsetValue?,
+	VerticalScrollBarPosition: EnumVerticalScrollBarPositionValue?,
 }
 export type ScrollingFrameNativeProps = ScrollingFrameProperties & { [number]: Compose.Child }
 export type ScrollingFrameProps = ScrollingFrameNativeProps & { ref: ((ScrollingFrame) -> ())? }
@@ -331,8 +409,8 @@ export type StyleBaseNativeProps = StyleBaseProperties & { [number]: Compose.Chi
 export type StyleBaseProps = StyleBaseNativeProps & { ref: ((StyleBase) -> ())? }
 
 export type StyleRuleProperties = StyleBaseProperties & {
-	Priority: Value<number>?,
-	Selector: Value<string>?,
+	Priority: NumberValue?,
+	Selector: StringValue?,
 }
 export type StyleRuleNativeProps = StyleRuleProperties & { [number]: Compose.Child }
 export type StyleRuleProps = StyleRuleNativeProps & { ref: ((StyleRule) -> ())? }
@@ -342,104 +420,104 @@ export type StyleSheetNativeProps = StyleSheetProperties & { [number]: Compose.C
 export type StyleSheetProps = StyleSheetNativeProps & { ref: ((StyleSheet) -> ())? }
 
 export type SurfaceGuiBaseProperties = LayerCollectorProperties & {
-	Active: Value<boolean>?,
-	Adornee: (Value<Instance> | StaticValue)?,
-	Face: Value<Enum.NormalId>?,
+	Active: BooleanValue?,
+	Adornee: (InstanceValue | StaticValue)?,
+	Face: EnumNormalIdValue?,
 }
 export type SurfaceGuiBaseNativeProps = SurfaceGuiBaseProperties & { [number]: Compose.Child }
 export type SurfaceGuiBaseProps = SurfaceGuiBaseNativeProps & { ref: ((SurfaceGuiBase) -> ())? }
 
 export type SurfaceGuiProperties = SurfaceGuiBaseProperties & {
-	AlwaysOnTop: Value<boolean>?,
-	Brightness: Value<number>?,
-	CanvasSize: Value<Vector2>?,
-	ClipsDescendants: Value<boolean>?,
-	LightInfluence: Value<number>?,
-	MaxDistance: Value<number>?,
-	PixelsPerStud: Value<number>?,
-	SizingMode: Value<Enum.SurfaceGuiSizingMode>?,
-	ToolPunchThroughDistance: Value<number>?,
-	ZOffset: Value<number>?,
+	AlwaysOnTop: BooleanValue?,
+	Brightness: NumberValue?,
+	CanvasSize: Vector2Value?,
+	ClipsDescendants: BooleanValue?,
+	LightInfluence: NumberValue?,
+	MaxDistance: NumberValue?,
+	PixelsPerStud: NumberValue?,
+	SizingMode: EnumSurfaceGuiSizingModeValue?,
+	ToolPunchThroughDistance: NumberValue?,
+	ZOffset: NumberValue?,
 }
 export type SurfaceGuiNativeProps = SurfaceGuiProperties & { [number]: Compose.Child }
 export type SurfaceGuiProps = SurfaceGuiNativeProps & { ref: ((SurfaceGui) -> ())? }
 
 export type TextBoxProperties = GuiObjectProperties & {
-	ClearTextOnFocus: Value<boolean>?,
-	CursorPosition: Value<number>?,
+	ClearTextOnFocus: BooleanValue?,
+	CursorPosition: NumberValue?,
 	FocusLost: ((boolean, InputObject) -> ())?,
 	Focused: (() -> ())?,
-	Font: Value<Enum.Font>?,
-	FontFace: Value<Font>?,
-	LineHeight: Value<number>?,
-	MaxVisibleGraphemes: Value<number>?,
-	MultiLine: Value<boolean>?,
-	OpenTypeFeatures: Value<string>?,
-	PlaceholderColor3: Value<Color3>?,
-	PlaceholderText: Value<string>?,
+	Font: EnumFontValue?,
+	FontFace: FontValue?,
+	LineHeight: NumberValue?,
+	MaxVisibleGraphemes: NumberValue?,
+	MultiLine: BooleanValue?,
+	OpenTypeFeatures: StringValue?,
+	PlaceholderColor3: Color3Value?,
+	PlaceholderText: StringValue?,
 	ReturnPressedFromOnScreenKeyboard: (() -> ())?,
-	RichText: Value<boolean>?,
-	SelectionStart: Value<number>?,
-	ShowNativeInput: Value<boolean>?,
-	Text: Value<string>?,
-	TextColor3: Value<Color3>?,
-	TextDirection: Value<Enum.TextDirection>?,
-	TextEditable: Value<boolean>?,
-	TextScaled: Value<boolean>?,
-	TextSize: Value<number>?,
-	TextStrokeColor3: Value<Color3>?,
-	TextStrokeTransparency: Value<number>?,
-	TextTransparency: Value<number>?,
-	TextTruncate: Value<Enum.TextTruncate>?,
-	TextWrapped: Value<boolean>?,
-	TextXAlignment: Value<Enum.TextXAlignment>?,
-	TextYAlignment: Value<Enum.TextYAlignment>?,
+	RichText: BooleanValue?,
+	SelectionStart: NumberValue?,
+	ShowNativeInput: BooleanValue?,
+	Text: StringValue?,
+	TextColor3: Color3Value?,
+	TextDirection: EnumTextDirectionValue?,
+	TextEditable: BooleanValue?,
+	TextScaled: BooleanValue?,
+	TextSize: NumberValue?,
+	TextStrokeColor3: Color3Value?,
+	TextStrokeTransparency: NumberValue?,
+	TextTransparency: NumberValue?,
+	TextTruncate: EnumTextTruncateValue?,
+	TextWrapped: BooleanValue?,
+	TextXAlignment: EnumTextXAlignmentValue?,
+	TextYAlignment: EnumTextYAlignmentValue?,
 }
 export type TextBoxNativeProps = TextBoxProperties & { [number]: Compose.Child }
 export type TextBoxProps = TextBoxNativeProps & { ref: ((TextBox) -> ())? }
 
 export type TextButtonProperties = GuiButtonProperties & {
-	Font: Value<Enum.Font>?,
-	FontFace: Value<Font>?,
-	LineHeight: Value<number>?,
-	MaxVisibleGraphemes: Value<number>?,
-	OpenTypeFeatures: Value<string>?,
-	RichText: Value<boolean>?,
-	Text: Value<string>?,
-	TextColor3: Value<Color3>?,
-	TextDirection: Value<Enum.TextDirection>?,
-	TextScaled: Value<boolean>?,
-	TextSize: Value<number>?,
-	TextStrokeColor3: Value<Color3>?,
-	TextStrokeTransparency: Value<number>?,
-	TextTransparency: Value<number>?,
-	TextTruncate: Value<Enum.TextTruncate>?,
-	TextWrapped: Value<boolean>?,
-	TextXAlignment: Value<Enum.TextXAlignment>?,
-	TextYAlignment: Value<Enum.TextYAlignment>?,
+	Font: EnumFontValue?,
+	FontFace: FontValue?,
+	LineHeight: NumberValue?,
+	MaxVisibleGraphemes: NumberValue?,
+	OpenTypeFeatures: StringValue?,
+	RichText: BooleanValue?,
+	Text: StringValue?,
+	TextColor3: Color3Value?,
+	TextDirection: EnumTextDirectionValue?,
+	TextScaled: BooleanValue?,
+	TextSize: NumberValue?,
+	TextStrokeColor3: Color3Value?,
+	TextStrokeTransparency: NumberValue?,
+	TextTransparency: NumberValue?,
+	TextTruncate: EnumTextTruncateValue?,
+	TextWrapped: BooleanValue?,
+	TextXAlignment: EnumTextXAlignmentValue?,
+	TextYAlignment: EnumTextYAlignmentValue?,
 }
 export type TextButtonNativeProps = TextButtonProperties & { [number]: Compose.Child }
 export type TextButtonProps = TextButtonNativeProps & { ref: ((TextButton) -> ())? }
 
 export type TextLabelProperties = GuiLabelProperties & {
-	Font: Value<Enum.Font>?,
-	FontFace: Value<Font>?,
-	LineHeight: Value<number>?,
-	MaxVisibleGraphemes: Value<number>?,
-	OpenTypeFeatures: Value<string>?,
-	RichText: Value<boolean>?,
-	Text: Value<string>?,
-	TextColor3: Value<Color3>?,
-	TextDirection: Value<Enum.TextDirection>?,
-	TextScaled: Value<boolean>?,
-	TextSize: Value<number>?,
-	TextStrokeColor3: Value<Color3>?,
-	TextStrokeTransparency: Value<number>?,
-	TextTransparency: Value<number>?,
-	TextTruncate: Value<Enum.TextTruncate>?,
-	TextWrapped: Value<boolean>?,
-	TextXAlignment: Value<Enum.TextXAlignment>?,
-	TextYAlignment: Value<Enum.TextYAlignment>?,
+	Font: EnumFontValue?,
+	FontFace: FontValue?,
+	LineHeight: NumberValue?,
+	MaxVisibleGraphemes: NumberValue?,
+	OpenTypeFeatures: StringValue?,
+	RichText: BooleanValue?,
+	Text: StringValue?,
+	TextColor3: Color3Value?,
+	TextDirection: EnumTextDirectionValue?,
+	TextScaled: BooleanValue?,
+	TextSize: NumberValue?,
+	TextStrokeColor3: Color3Value?,
+	TextStrokeTransparency: NumberValue?,
+	TextTransparency: NumberValue?,
+	TextTruncate: EnumTextTruncateValue?,
+	TextWrapped: BooleanValue?,
+	TextXAlignment: EnumTextXAlignmentValue?,
+	TextYAlignment: EnumTextYAlignmentValue?,
 }
 export type TextLabelNativeProps = TextLabelProperties & { [number]: Compose.Child }
 export type TextLabelProps = TextLabelNativeProps & { ref: ((TextLabel) -> ())? }
@@ -457,9 +535,9 @@ export type UIConstraintNativeProps = UIConstraintProperties & { [number]: Compo
 export type UIConstraintProps = UIConstraintNativeProps & { ref: ((UIConstraint) -> ())? }
 
 export type UIAspectRatioConstraintProperties = UIConstraintProperties & {
-	AspectRatio: Value<number>?,
-	AspectType: Value<Enum.AspectType>?,
-	DominantAxis: Value<Enum.DominantAxis>?,
+	AspectRatio: NumberValue?,
+	AspectType: EnumAspectTypeValue?,
+	DominantAxis: EnumDominantAxisValue?,
 }
 export type UIAspectRatioConstraintNativeProps = UIAspectRatioConstraintProperties & { [number]: Compose.Child }
 export type UIAspectRatioConstraintProps =
@@ -467,63 +545,63 @@ export type UIAspectRatioConstraintProps =
 	& { ref: ((UIAspectRatioConstraint) -> ())? }
 
 export type UICornerProperties = UIComponentProperties & {
-	BottomLeftRadius: Value<UDim>?,
-	BottomRightRadius: Value<UDim>?,
-	CornerRadius: Value<UDim>?,
-	TopLeftRadius: Value<UDim>?,
-	TopRightRadius: Value<UDim>?,
+	BottomLeftRadius: UDimValue?,
+	BottomRightRadius: UDimValue?,
+	CornerRadius: UDimValue?,
+	TopLeftRadius: UDimValue?,
+	TopRightRadius: UDimValue?,
 }
 export type UICornerNativeProps = UICornerProperties & { [number]: Compose.Child }
 export type UICornerProps = UICornerNativeProps & { ref: ((UICorner) -> ())? }
 
 export type UIDragDetectorProperties = UIComponentProperties & {
-	ActivatedCursorIcon: Value<string>?,
-	ActivatedCursorIconContent: Value<Content>?,
-	BoundingBehavior: Value<Enum.UIDragDetectorBoundingBehavior>?,
-	BoundingUI: (Value<GuiBase2d> | StaticValue)?,
-	CursorIcon: Value<string>?,
-	CursorIconContent: Value<Content>?,
-	DragAxis: Value<Vector2>?,
+	ActivatedCursorIcon: StringValue?,
+	ActivatedCursorIconContent: ContentValue?,
+	BoundingBehavior: EnumUIDragDetectorBoundingBehaviorValue?,
+	BoundingUI: (GuiBase2dValue | StaticValue)?,
+	CursorIcon: StringValue?,
+	CursorIconContent: ContentValue?,
+	DragAxis: Vector2Value?,
 	DragContinue: ((Vector2) -> ())?,
 	DragEnd: ((Vector2) -> ())?,
-	DragRelativity: Value<Enum.UIDragDetectorDragRelativity>?,
-	DragRotation: Value<number>?,
-	DragSpace: Value<Enum.UIDragDetectorDragSpace>?,
+	DragRelativity: EnumUIDragDetectorDragRelativityValue?,
+	DragRotation: NumberValue?,
+	DragSpace: EnumUIDragDetectorDragSpaceValue?,
 	DragStart: ((Vector2) -> ())?,
-	DragStyle: Value<Enum.UIDragDetectorDragStyle>?,
-	DragUDim2: Value<UDim2>?,
-	Enabled: Value<boolean>?,
-	MaxDragAngle: Value<number>?,
-	MaxDragTranslation: Value<UDim2>?,
-	MinDragAngle: Value<number>?,
-	MinDragTranslation: Value<UDim2>?,
-	ReferenceUIInstance: (Value<GuiObject> | StaticValue)?,
-	ResponseStyle: Value<Enum.UIDragDetectorResponseStyle>?,
-	SelectionModeDragSpeed: Value<UDim2>?,
-	SelectionModeRotateSpeed: Value<number>?,
-	UIDragSpeedAxisMapping: Value<Enum.UIDragSpeedAxisMapping>?,
+	DragStyle: EnumUIDragDetectorDragStyleValue?,
+	DragUDim2: UDim2Value?,
+	Enabled: BooleanValue?,
+	MaxDragAngle: NumberValue?,
+	MaxDragTranslation: UDim2Value?,
+	MinDragAngle: NumberValue?,
+	MinDragTranslation: UDim2Value?,
+	ReferenceUIInstance: (GuiObjectValue | StaticValue)?,
+	ResponseStyle: EnumUIDragDetectorResponseStyleValue?,
+	SelectionModeDragSpeed: UDim2Value?,
+	SelectionModeRotateSpeed: NumberValue?,
+	UIDragSpeedAxisMapping: EnumUIDragSpeedAxisMappingValue?,
 }
 export type UIDragDetectorNativeProps = UIDragDetectorProperties & { [number]: Compose.Child }
 export type UIDragDetectorProps = UIDragDetectorNativeProps & { ref: ((UIDragDetector) -> ())? }
 
 export type UIFlexItemProperties = UIComponentProperties & {
-	FlexMode: Value<Enum.UIFlexMode>?,
-	GrowRatio: Value<number>?,
-	ItemLineAlignment: Value<Enum.ItemLineAlignment>?,
-	ShrinkRatio: Value<number>?,
+	FlexMode: EnumUIFlexModeValue?,
+	GrowRatio: NumberValue?,
+	ItemLineAlignment: EnumItemLineAlignmentValue?,
+	ShrinkRatio: NumberValue?,
 }
 export type UIFlexItemNativeProps = UIFlexItemProperties & { [number]: Compose.Child }
 export type UIFlexItemProps = UIFlexItemNativeProps & { ref: ((UIFlexItem) -> ())? }
 
 export type UIGradientProperties = UIComponentProperties & {
-	Color: Value<ColorSequence>?,
-	Enabled: Value<boolean>?,
-	Offset: Value<Vector2>?,
-	Rotation: Value<number>?,
-	Scale: Value<number>?,
-	TileMode: Value<Enum.GradientTileMode>?,
-	Transparency: Value<NumberSequence>?,
-	Type: Value<Enum.GradientType>?,
+	Color: ColorSequenceValue?,
+	Enabled: BooleanValue?,
+	Offset: Vector2Value?,
+	Rotation: NumberValue?,
+	Scale: NumberValue?,
+	TileMode: EnumGradientTileModeValue?,
+	Transparency: NumberSequenceValue?,
+	Type: EnumGradientTypeValue?,
 }
 export type UIGradientNativeProps = UIGradientProperties & { [number]: Compose.Child }
 export type UIGradientProps = UIGradientNativeProps & { ref: ((UIGradient) -> ())? }
@@ -533,105 +611,105 @@ export type UILayoutNativeProps = UILayoutProperties & { [number]: Compose.Child
 export type UILayoutProps = UILayoutNativeProps & { ref: ((UILayout) -> ())? }
 
 export type UIGridStyleLayoutProperties = UILayoutProperties & {
-	FillDirection: Value<Enum.FillDirection>?,
-	HorizontalAlignment: Value<Enum.HorizontalAlignment>?,
-	SortOrder: Value<Enum.SortOrder>?,
-	VerticalAlignment: Value<Enum.VerticalAlignment>?,
+	FillDirection: EnumFillDirectionValue?,
+	HorizontalAlignment: EnumHorizontalAlignmentValue?,
+	SortOrder: EnumSortOrderValue?,
+	VerticalAlignment: EnumVerticalAlignmentValue?,
 }
 export type UIGridStyleLayoutNativeProps = UIGridStyleLayoutProperties & { [number]: Compose.Child }
 export type UIGridStyleLayoutProps = UIGridStyleLayoutNativeProps & { ref: ((UIGridStyleLayout) -> ())? }
 
 export type UIListLayoutProperties = UIGridStyleLayoutProperties & {
-	HorizontalFlex: Value<Enum.UIFlexAlignment>?,
-	ItemLineAlignment: Value<Enum.ItemLineAlignment>?,
-	Padding: Value<UDim>?,
-	VerticalFlex: Value<Enum.UIFlexAlignment>?,
-	Wraps: Value<boolean>?,
+	HorizontalFlex: EnumUIFlexAlignmentValue?,
+	ItemLineAlignment: EnumItemLineAlignmentValue?,
+	Padding: UDimValue?,
+	VerticalFlex: EnumUIFlexAlignmentValue?,
+	Wraps: BooleanValue?,
 }
 export type UIListLayoutNativeProps = UIListLayoutProperties & { [number]: Compose.Child }
 export type UIListLayoutProps = UIListLayoutNativeProps & { ref: ((UIListLayout) -> ())? }
 
 export type UIPaddingProperties = UIComponentProperties & {
-	PaddingBottom: Value<UDim>?,
-	PaddingLeft: Value<UDim>?,
-	PaddingRight: Value<UDim>?,
-	PaddingTop: Value<UDim>?,
+	PaddingBottom: UDimValue?,
+	PaddingLeft: UDimValue?,
+	PaddingRight: UDimValue?,
+	PaddingTop: UDimValue?,
 }
 export type UIPaddingNativeProps = UIPaddingProperties & { [number]: Compose.Child }
 export type UIPaddingProps = UIPaddingNativeProps & { ref: ((UIPadding) -> ())? }
 
 export type UIPageLayoutProperties = UIGridStyleLayoutProperties & {
-	Animated: Value<boolean>?,
-	Circular: Value<boolean>?,
-	EasingDirection: Value<Enum.EasingDirection>?,
-	EasingStyle: Value<Enum.EasingStyle>?,
-	GamepadInputEnabled: Value<boolean>?,
-	Padding: Value<UDim>?,
+	Animated: BooleanValue?,
+	Circular: BooleanValue?,
+	EasingDirection: EnumEasingDirectionValue?,
+	EasingStyle: EnumEasingStyleValue?,
+	GamepadInputEnabled: BooleanValue?,
+	Padding: UDimValue?,
 	PageEnter: ((Instance) -> ())?,
 	PageLeave: ((Instance) -> ())?,
-	ScrollWheelInputEnabled: Value<boolean>?,
+	ScrollWheelInputEnabled: BooleanValue?,
 	Stopped: ((Instance) -> ())?,
-	TouchInputEnabled: Value<boolean>?,
-	TweenTime: Value<number>?,
+	TouchInputEnabled: BooleanValue?,
+	TweenTime: NumberValue?,
 }
 export type UIPageLayoutNativeProps = UIPageLayoutProperties & { [number]: Compose.Child }
 export type UIPageLayoutProps = UIPageLayoutNativeProps & { ref: ((UIPageLayout) -> ())? }
 
 export type UIScaleProperties = UIComponentProperties & {
-	Scale: Value<number>?,
+	Scale: NumberValue?,
 }
 export type UIScaleNativeProps = UIScaleProperties & { [number]: Compose.Child }
 export type UIScaleProps = UIScaleNativeProps & { ref: ((UIScale) -> ())? }
 
 export type UIShadowProperties = UIComponentProperties & {
-	BlurRadius: Value<UDim>?,
-	Color: Value<Color3>?,
-	Enabled: Value<boolean>?,
-	Offset: Value<UDim2>?,
-	Spread: Value<UDim2>?,
-	Transparency: Value<number>?,
-	ZIndex: Value<number>?,
+	BlurRadius: UDimValue?,
+	Color: Color3Value?,
+	Enabled: BooleanValue?,
+	Offset: UDim2Value?,
+	Spread: UDim2Value?,
+	Transparency: NumberValue?,
+	ZIndex: NumberValue?,
 }
 export type UIShadowNativeProps = UIShadowProperties & { [number]: Compose.Child }
 export type UIShadowProps = UIShadowNativeProps & { ref: ((UIShadow) -> ())? }
 
 export type UISizeConstraintProperties = UIConstraintProperties & {
-	MaxSize: Value<Vector2>?,
-	MinSize: Value<Vector2>?,
+	MaxSize: Vector2Value?,
+	MinSize: Vector2Value?,
 }
 export type UISizeConstraintNativeProps = UISizeConstraintProperties & { [number]: Compose.Child }
 export type UISizeConstraintProps = UISizeConstraintNativeProps & { ref: ((UISizeConstraint) -> ())? }
 
 export type UIStrokeProperties = UIComponentProperties & {
-	ApplyStrokeMode: Value<Enum.ApplyStrokeMode>?,
-	BorderOffset: Value<UDim>?,
-	BorderStrokePosition: Value<Enum.BorderStrokePosition>?,
-	Color: Value<Color3>?,
-	Enabled: Value<boolean>?,
-	LineJoinMode: Value<Enum.LineJoinMode>?,
-	StrokeSizingMode: Value<Enum.StrokeSizingMode>?,
-	Thickness: Value<number>?,
-	Transparency: Value<number>?,
-	ZIndex: Value<number>?,
+	ApplyStrokeMode: EnumApplyStrokeModeValue?,
+	BorderOffset: UDimValue?,
+	BorderStrokePosition: EnumBorderStrokePositionValue?,
+	Color: Color3Value?,
+	Enabled: BooleanValue?,
+	LineJoinMode: EnumLineJoinModeValue?,
+	StrokeSizingMode: EnumStrokeSizingModeValue?,
+	Thickness: NumberValue?,
+	Transparency: NumberValue?,
+	ZIndex: NumberValue?,
 }
 export type UIStrokeNativeProps = UIStrokeProperties & { [number]: Compose.Child }
 export type UIStrokeProps = UIStrokeNativeProps & { ref: ((UIStroke) -> ())? }
 
 export type ViewportFrameProperties = GuiObjectProperties & {
-	Ambient: Value<Color3>?,
-	CurrentCamera: (Value<Camera> | StaticValue)?,
-	ImageColor3: Value<Color3>?,
-	ImageTransparency: Value<number>?,
-	LightColor: Value<Color3>?,
-	LightDirection: Value<Vector3>?,
+	Ambient: Color3Value?,
+	CurrentCamera: (CameraValue | StaticValue)?,
+	ImageColor3: Color3Value?,
+	ImageTransparency: NumberValue?,
+	LightColor: Color3Value?,
+	LightDirection: Vector3Value?,
 }
 export type ViewportFrameNativeProps = ViewportFrameProperties & { [number]: Compose.Child }
 export type ViewportFrameProps = ViewportFrameNativeProps & { ref: ((ViewportFrame) -> ())? }
 
 export type ModelProperties = PVInstanceProperties & {
-	ModelStreamingMode: Value<Enum.ModelStreamingMode>?,
-	PrimaryPart: (Value<BasePart?> | StaticValue)?,
-	WorldPivot: Value<CFrame>?,
+	ModelStreamingMode: EnumModelStreamingModeValue?,
+	PrimaryPart: (BasePartOptionalValue | StaticValue)?,
+	WorldPivot: CFrameValue?,
 }
 export type ModelNativeProps = ModelProperties & { [number]: Compose.Child }
 export type ModelProps = ModelNativeProps & { ref: ((Model) -> ())? }
@@ -641,7 +719,7 @@ export type WorldRootNativeProps = WorldRootProperties & { [number]: Compose.Chi
 export type WorldRootProps = WorldRootNativeProps & { ref: ((WorldRoot) -> ())? }
 
 export type WorldModelProperties = WorldRootProperties & {
-	UseWorkspaceCollisionGroups: Value<boolean>?,
+	UseWorkspaceCollisionGroups: BooleanValue?,
 }
 export type WorldModelNativeProps = WorldModelProperties & { [number]: Compose.Child }
 export type WorldModelProps = WorldModelNativeProps & { ref: ((WorldModel) -> ())? }
