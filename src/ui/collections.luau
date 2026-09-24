@@ -280,6 +280,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 						Name = "Content",
 						Size = D2.fromScale(1, 1),
 						BackgroundTransparency = 1,
+						Attributes = { FacetCollectionRow = true } :: EngineTypes.Attributes,
 						rendered,
 					}
 					if spec.onSelectionChange or spec.onActivate or spec.selection or spec.selectionMode then

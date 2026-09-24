@@ -404,13 +404,18 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end)
 		end
 		local readout: TextLabel?
-		if spec.showValue or spec.endLabel then
+		local ending: TextLabel? = if spec.endLabel
+			then ctx.text({
+				Name = "EndLabel",
+				Text = function(use: Compose.Use)
+					return read(spec.endLabel, use) or ""
+				end,
+			})
+			else nil
+		if spec.showValue then
 			readout = ctx.text({
 				Name = "Value",
 				Text = function(use: Compose.Use)
-					if spec.endLabel then
-						return read(spec.endLabel, use)
-					end
 					if indeterminate then
 						return "Loading"
 					end
@@ -683,26 +688,35 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end
 		end
 		local children: { Compose.Child } = {}
-		if presentation == "bar" and spec.label and readout then
-			runtime.decorate(readout, { LayoutOrder = 2 })
+		local trailing: { Compose.Child } = {}
+		if readout then
+			table.insert(trailing, readout)
+		end
+		if ending then
+			table.insert(trailing, ending)
+		end
+		if presentation == "bar" and spec.label and #trailing > 0 then
+			local header: { Compose.Child } = {
+				UI.Label({
+					label = spec.label,
+					LayoutOrder = 1,
+					Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+				}),
+			}
+			for _, node in trailing do
+				table.insert(header, node)
+			end
 			table.insert(
 				children,
-				ctx.row({
-					UI.Label({
-						label = spec.label,
-						LayoutOrder = 1,
-						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-					}),
-					readout,
-				}, { Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
+				ctx.row(header, { Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 			)
-			readout = nil
+			trailing = {}
 		elseif spec.label then
 			table.insert(children, UI.Label({ label = spec.label }))
 		end
 		table.insert(children, content)
-		if readout then
-			table.insert(children, readout)
+		for _, node in trailing do
+			table.insert(children, node)
 		end
 		local root = ctx.column(
 			children,
