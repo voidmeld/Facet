@@ -363,6 +363,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end
 		end
 
+		if spec.row and spec.Size == nil then
+			p.Size = function(use: ComposeTypes.Use)
+				return D2.new(1, 0, 0, ctx.controlSize(spec.controlSize, "height", use))
+			end
+			p.AutomaticSize = spec.AutomaticSize or E.AutomaticSize.Y
+		end
 		if spec.shape == "circle" then
 			if spec.Size == nil then
 				p.Size = function(use: ComposeTypes.Use)
@@ -539,6 +545,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end)
 			end)
 		)
+		local pressHaptic = ctx.config.pressHaptic
+		if p.PressHapticEffect == nil and pressHaptic then
+			p.PressHapticEffect = Compose.static(pressHaptic)
+		end
 		node = ctx.styled(Host.TextButton(p), "button")
 		if rich and (spec.subtitle ~= nil or spec.hint ~= nil or (spec.row ~= nil and spec.row.description ~= nil)) then
 			node:AddTag("facet-button-described")

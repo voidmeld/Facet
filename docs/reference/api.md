@@ -107,6 +107,9 @@ document their own write-then-notify behavior below.
 - `theme`: a theme package or a readable of one. The controls use it for
   metrics, artwork and icon resolution.
 - `reducedMotion` and `icons`: these can also be reactive.
+- `pressHaptic`: a native `HapticEffect`. Each button that has no
+  `PressHapticEffect` uses it as its native `PressHapticEffect`. Thus buttons,
+  segments and toggles play the effect when they are pressed.
 - `controlSize`: the control-size step (`compact`, `regular` or `large`) for
   theme icons.
 - `onError`: receives a failure from the content of a presented Alert. The

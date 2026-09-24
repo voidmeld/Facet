@@ -37,6 +37,11 @@ local lifetime = Compose.createRootOwner(function()
 	local motionPolicy = Compose.formula(function(use)
 		return if use(reducedMotion) then "reduced" else "full"
 	end)
+	local pressHaptic = Host.HapticEffect "PressHaptic" { Type = Enum.HapticEffectType.UIClick }
+	pressHaptic.Parent = players.LocalPlayer:WaitForChild("PlayerGui")
+	Compose.cleanup(function()
+		pressHaptic:Destroy()
+	end)
 	local cameraGoal = Compose.cell(CFrame.lookAt(Vector3.new(0, 7.6, -29), Vector3.new(0, 7, 0)))
 	local cameraMotion, modeMotion
 	local camera = workspace.CurrentCamera
@@ -188,7 +193,13 @@ local lifetime = Compose.createRootOwner(function()
 		return if use(reducedMotion) then (if use(mode) == "Screen" then 1 else 0) else use(modeMotion)
 	end)
 	local function sceneActions(spatial, package)
-		local actions = { model = model, spatial = spatial, theme = package, reducedMotion = reducedMotion }
+		local actions = {
+			model = model,
+			spatial = spatial,
+			theme = package,
+			reducedMotion = reducedMotion,
+			pressHaptic = pressHaptic,
+		}
 		local function active(use)
 			return if spatial then use(mode) == "Spatial" else use(mode) == "Screen"
 		end
@@ -265,7 +276,7 @@ local lifetime = Compose.createRootOwner(function()
 					views,
 					model,
 					modeProgress,
-					{ theme = package, reducedMotion = reducedMotion }
+					{ theme = package, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
 				)
 			),
 		}

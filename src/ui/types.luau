@@ -110,6 +110,7 @@ export type Config = {
 	theme: Value<Theme.ThemePackage>?,
 	icons: Value<{ [string]: Theme.IconEntry }>?,
 	reducedMotion: Value<boolean>?,
+	pressHaptic: HapticEffect?,
 	onError: ((unknown) -> ())?,
 }
 export type ResolvedConfig = Config & { services: Services }

@@ -1027,6 +1027,36 @@ t.describe("native input controls", function()
 			end)
 		end).toThrow()
 	end)
+	t.it("uses the application press haptic unless a button names its own", function()
+		local effect, own
+		local node, stop = world(function(UI, _, runtime)
+			return runtime.constructors.Frame({
+				UI.Button "Plain" { label = "Play" },
+				UI.Button "Custom" { label = "Play", PressHapticEffect = own },
+			})
+		end, function(engine)
+			effect, own = engine.new("HapticEffect"), engine.new("HapticEffect")
+			return { pressHaptic = effect }
+		end)
+		t.expect(find(node, "Plain").PressHapticEffect).toBe(effect)
+		t.expect(find(node, "Custom").PressHapticEffect).toBe(own)
+		stop()
+	end)
+
+	t.it("fills the width with a row button unless a size is given", function()
+		local row, rowStop = world(function(UI)
+			return UI.Button({ row = { title = "Coast" }, onActivate = function() end })
+		end)
+		t.expect(row.Size.X.Scale).toBe(1)
+		t.expect(row:FindFirstChild("Disclosure", true) ~= nil).toBe(true)
+		rowStop()
+		local fixed, fixedStop = world(function(UI, engine)
+			return UI.Button({ row = { title = "Coast" }, Size = engine.types.UDim2.fromOffset(120, 44) })
+		end)
+		t.expect(fixed.Size.X.Offset).toBe(120)
+		fixedStop()
+	end)
+
 	t.it("mirrors native caption alignment and typography without a text geometry solver", function()
 		local node, stop, engine = world(function(UI)
 			return UI.Button({ label = "Centered" })

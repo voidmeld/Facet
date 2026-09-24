@@ -6,10 +6,13 @@ function screens.create(Facet: any, runtime: any, actions: any)
 	local model = actions.model
 	local types = actions.types or getfenv(0)
 	local D, D2, V2, C3, CF, E = types.UDim, types.UDim2, types.Vector2, types.Color3, types.CFrame, types.Enum
-	local UI = Facet.controls(
-		runtime,
-		{ types = types, services = actions.services, theme = actions.theme, reducedMotion = actions.reducedMotion }
-	)
+	local UI = Facet.controls(runtime, {
+		types = types,
+		services = actions.services,
+		theme = actions.theme,
+		reducedMotion = actions.reducedMotion,
+		pressHaptic = actions.pressHaptic,
+	})
 	local services = actions.services
 	local environmentGame = getfenv(0).game
 	local inputService = (services and services.UserInputService)

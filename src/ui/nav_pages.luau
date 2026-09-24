@@ -763,19 +763,37 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						Visible = function(use: Core.Use)
 							return use(state).top
 						end,
-						ctx.row({
+						Host.Frame "NavigationBar" {
+							BackgroundTransparency = 1,
+							Size = D2.new(1, 0, 0, chrome),
+							Visible = chrome > 0,
+							ctx.styled(
+								ctx.text({
+									Name = "Title",
+									Text = destination.title or "",
+									Size = D2.fromScale(1, 1),
+									TextTruncate = E.TextTruncate.AtEnd,
+									TextXAlignment = function(use: Core.Use)
+										return if use(state).index > 1
+											then E.TextXAlignment.Center
+											else E.TextXAlignment.Left
+									end,
+								}),
+								if entry == rootEntry then "type-title" else "type-heading"
+							) :: Types.Child,
 							Compose.show(function(use: Core.Use)
 								return use(state).index > 1
 							end, function()
-								return UI.Button "Back" { label = spec.backLabel or "Back", onActivate = pop }
+								return UI.Button "Back" {
+									label = spec.backLabel or "Back",
+									icon = "chevron.leading",
+									appearance = "link",
+									AnchorPoint = V2.new(0, 0.5),
+									Position = D2.fromScale(0, 0.5),
+									onActivate = pop,
+								}
 							end),
-							ctx.text({ Text = destination.title or "" }),
-						}, {
-							Name = "NavigationBar",
-							Size = D2.new(1, 0, 0, chrome),
-							Visible = chrome > 0,
-							AutomaticSize = E.AutomaticSize.None,
-						}),
+						},
 						Host.Frame "Destination" {
 							BackgroundTransparency = 1,
 							Position = D2.fromOffset(0, chrome),
@@ -802,6 +820,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local visible, parent = ctx.observe(panel, "Visible"), ctx.observe(panel, "Parent")
 					local remembered: GuiObject?
 					local previousTop: boolean?
+					local focusing = surfaces.selecting()
 					Compose.watch(function(use: Core.Use)
 						local selected = use(selectedObject)
 						if selected and selected:IsA("GuiObject") and surfaces.within(selected, panel) then
@@ -820,6 +839,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							and use(parent)
 							and previousTop ~= true
 							and (previousTop == false or use(state).index > 1)
+							and (gui.SelectedObject ~= nil or focusing(use))
 						then
 							gui.SelectedObject = if remembered
 									and remembered.Parent

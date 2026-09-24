@@ -102,6 +102,22 @@ t.describe("native virtual monitors", function()
 		t.expect(path.Thickness).toBe(3)
 		path:Destroy()
 	end)
+	t.it("plays the showcase press haptic from every monitor button", function()
+		local effect = engineModule.new().new("HapticEffect")
+		withScreens(function(world)
+			local count = 0
+			for _, name in { "Discover", "Avatar", "Chat" } do
+				for _, node in world[name]:GetDescendants() do
+					if node:HasTag("facet-button") then
+						t.expect(node.PressHapticEffect).toBe(effect)
+						count += 1
+					end
+				end
+			end
+			t.expect(count > 0).toBe(true)
+		end, { pressHaptic = effect })
+	end)
+
 	t.it("filters and sorts the full catalog with stable tie order", function()
 		withModel(function(model)
 			t.expect(#model.catalog.items:peek()).toBe(36)

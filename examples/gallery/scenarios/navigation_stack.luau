@@ -187,11 +187,11 @@ return {
 										local id = item:peek().id
 										return UI.Button({
 											Name = "Result-" .. id,
-											Size = UDim2.new(1, 0, 0, 0),
-											AutomaticSize = Enum.AutomaticSize.Y,
-											label = function(use)
-												return use(item).label
-											end,
+											row = {
+												title = function(use)
+													return use(item).label
+												end,
+											},
 											onActivate = function()
 												destination:set(id)
 												push({ id = "details" })
@@ -227,6 +227,7 @@ return {
 								Size = UDim2.new(1, 0, 0, 0),
 								AutomaticSize = Enum.AutomaticSize.Y,
 								Text = "Choose a destination. Your choices stay with you when you go back.",
+								textRole = "caption",
 								TextWrapped = true,
 								TextYAlignment = Enum.TextYAlignment.Top,
 								TextXAlignment = Enum.TextXAlignment.Left,
@@ -234,6 +235,7 @@ return {
 							searchLayout,
 							UI.Button "Continue" {
 								label = "Plan details",
+								appearance = "emphasis",
 								onActivate = function()
 									push({ id = "details" })
 								end,
@@ -443,6 +445,12 @@ return {
 				local root = Host.Frame "NavigationFlow" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
+					Host.UIPadding({
+						PaddingTop = UDim.new(0, 8),
+						PaddingBottom = UDim.new(0, 12),
+						PaddingLeft = UDim.new(0, 16),
+						PaddingRight = UDim.new(0, 16),
+					}),
 					journey(),
 				}
 				local function measure()
