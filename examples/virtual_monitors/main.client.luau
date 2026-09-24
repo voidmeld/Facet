@@ -273,7 +273,7 @@ local lifetime = Compose.createRootOwner(function()
 			local sheet = Facet.themes.createStyleSheet(runtime, package, {
 				reducedMotion = reducedMotion,
 				theme = function(use)
-					return if use(dark) then "Dark" else "Light"
+					return theme.paletteName(use(model.palette), use(dark))
 				end,
 			})
 			local views = screens.create(Facet, runtime, sceneActions(true, package))
@@ -300,7 +300,7 @@ local lifetime = Compose.createRootOwner(function()
 	end
 	local desktopPackage = theme.create(Facet, "Discover")
 	local palette = function(use)
-		return if use(dark) then "Dark" else "Light"
+		return theme.paletteName(use(model.palette), use(dark))
 	end
 	local showing = function(use)
 		return use(modeProgress) > 0
@@ -401,6 +401,8 @@ local lifetime = Compose.createRootOwner(function()
 				mode:set(argument)
 			elseif command == "dark" then
 				dark:set(argument == true)
+			elseif command == "accent" and (argument == "sage" or argument == "clay" or argument == "iris") then
+				model.palette:set(argument)
 			elseif command == "focus" then
 				model.focus(argument)
 			elseif command == "tab" then
@@ -420,7 +422,12 @@ local lifetime = Compose.createRootOwner(function()
 				model.prompt(argument)
 				model.chat.send()
 			end
-			return { mode = mode:peek(), dark = dark:peek(), focused = model.focused:peek() }
+			return {
+				mode = mode:peek(),
+				dark = dark:peek(),
+				accent = model.palette:peek(),
+				focused = model.focused:peek(),
+			}
 		end),
 	}
 end, runtime.reactor)

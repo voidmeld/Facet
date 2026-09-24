@@ -4,6 +4,7 @@ local Compose = require("../src/vendor/compose/core")
 local Roblox = require("../src/vendor/compose/roblox")
 local modelModule = require("../examples/virtual_monitors/model")
 local screens = require("../examples/virtual_monitors/screens")
+local theme = require("../examples/virtual_monitors/theme")
 local engineModule = require("./lib/native_engine")
 
 local function withModel(body)
@@ -26,6 +27,26 @@ local function find(node, name)
 		end
 	end
 	return nil
+end
+
+local function ratio(first, second)
+	local function luminance(value)
+		local function linear(channel)
+			return if channel <= 0.04045 then channel / 12.92 else ((channel + 0.055) / 1.055) ^ 2.4
+		end
+		return 0.2126 * linear(value.r) + 0.7152 * linear(value.g) + 0.0722 * linear(value.b)
+	end
+	local a, b = luminance(first), luminance(second)
+	return (math.max(a, b) + 0.05) / (math.min(a, b) + 0.05)
+end
+
+local function rule(sheet, selector)
+	for _, node in sheet:GetChildren() do
+		if node.Selector == selector then
+			return node:GetProperties()
+		end
+	end
+	error("No rule: " .. selector)
 end
 
 local function engage(card)
@@ -1492,5 +1513,103 @@ t.describe("native virtual monitors", function()
 			t.expect(model.discoveryScroll:peek()).toBe(400)
 			stop()
 		end, { spatial = true })
+	end)
+
+	t.it("NVM-Accent derives every accent in both appearances with readable contrast", function()
+		local Facet = require("../src")
+		for _, app in { "Discover", "Avatar", "Chat" } do
+			local package, report = theme.create(Facet, app)
+			t.expect(report.ok).toBe(true)
+			for _, result in report.contrast do
+				t.expect(result.ok).toBe(true)
+			end
+			t.expect(#package.style.themes).toBe(#theme.ACCENTS * 2)
+			for _, entry in theme.ACCENTS do
+				for _, dark in { false, true } do
+					local name = theme.paletteName(entry.id, dark)
+					local palette
+					for _, candidate in package.style.themes do
+						if candidate.name == name then
+							palette = candidate
+						end
+					end
+					t.expect(palette ~= nil).toBe(true)
+					local colors, extra = palette.colors, palette.extra
+					local expected = if dark then entry.dark else entry.light
+					for _, channel in { "r", "g", "b" } do
+						t.expect(colors.accent[channel]).toBe(expected[channel])
+						t.expect(extra.controlSelected[channel]).toBe(expected[channel])
+					end
+					t.expect(ratio(colors.onAccent, colors.accent) >= 4.5).toBe(true)
+					t.expect(ratio(extra.onSelected, extra.controlSelected) >= 4.5).toBe(true)
+					t.expect(ratio(colors.accent, colors.surface) >= 4.5).toBe(true)
+					t.expect(ratio(colors.accent, colors.surfaceStrong) >= 4.5).toBe(true)
+					t.expect(ratio(colors.accent, extra.control) >= 3).toBe(true)
+				end
+			end
+		end
+		t.expect(theme.paletteName("sage", true)).toBe("Dark")
+		t.expect(theme.paletteName("sage", false)).toBe("Light")
+		t.expect(theme.paletteName("clay", true)).toBe("Clay Dark")
+		t.expect(theme.paletteName("iris", false)).toBe("Iris Light")
+	end)
+
+	t.it("NVM-Accent swaps the native accent paint from the Accent picker and the quick accent menu", function()
+		withScreens(function(world)
+			local Facet = require("../src")
+			local model, types = world.model, world.types
+			local package = theme.create(Facet, "Avatar")
+			local sheet
+			local stop = world.runtime.mount(function()
+				sheet = Facet.themes.createStyleSheet(world.runtime, package, {
+					types = types,
+					reducedMotion = true,
+					theme = function(use)
+						return theme.paletteName(use(model.palette), use(model.dark))
+					end,
+				})
+				return sheet
+			end, world.target)
+			local function expectAccent(id, dark)
+				for _, entry in theme.ACCENTS do
+					if entry.id == id then
+						local value = if dark then entry.dark else entry.light
+						local expected = types.Color3.new(value.r, value.g, value.b)
+						t.expect(rule(sheet, ".facet-accent").BackgroundColor3).toBe(expected)
+						t.expect(rule(sheet, ".facet-selected").BackgroundColor3).toBe(expected)
+						t.expect(rule(sheet, ".facet-toggle-on").BackgroundColor3).toBe(expected)
+					end
+				end
+			end
+			local avatar = world.Avatar
+			t.expect(find(avatar, "PaletteLabel").Text).toBe("Accent")
+			for _, dark in { true, false } do
+				model.dark:set(dark)
+				model.palette:set("sage")
+				expectAccent("sage", dark)
+				find(find(avatar, "Palette"), "clay").Activated.fire()
+				t.expect(model.palette:peek()).toBe("clay")
+				expectAccent("clay", dark)
+				model.palette:set("iris")
+				expectAccent("iris", dark)
+			end
+			model.hatTint:set({ 46, 52, 64 })
+			model.palette:set("clay")
+			t.expect(model.hatTint:peek()[1]).toBe(46)
+			find(avatar, "Summary").Activated.fire()
+			local fact = find(world.target, "SummaryPalette")
+			t.expect(find(fact, "Label").Text).toBe("Accent")
+			t.expect(find(fact, "Value").Text).toBe("Clay")
+			find(world.target, "Done").Activated.fire()
+			model.resetAvatarPresented:set(true)
+			find(world.target, "reset").Activated.fire()
+			t.expect(model.palette:peek()).toBe("sage")
+			expectAccent("sage", false)
+			find(find(avatar, "QuickPalette"), "Launcher").Activated.fire()
+			find(find(world.target, "RadialPanel"), "iris").Activated.fire()
+			t.expect(model.palette:peek()).toBe("iris")
+			expectAccent("iris", false)
+			stop()
+		end)
 	end)
 end)
