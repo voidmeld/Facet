@@ -92,7 +92,7 @@ return {
 					BackgroundTransparency = 1,
 					UI.Label "Title" {
 						Text = COPY.title,
-						TextSize = 24,
+						textRole = "title",
 						Size = UDim2.new(1, 0, 0, 36),
 						BackgroundTransparency = 1,
 					},

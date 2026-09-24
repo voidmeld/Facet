@@ -450,7 +450,7 @@ return function(ctx: any, options: any)
 				UI.Label "Title" {
 					LayoutOrder = 1,
 					Text = options.title,
-					TextSize = 24,
+					textRole = "title",
 					TextWrapped = true,
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,

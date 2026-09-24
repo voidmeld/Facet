@@ -248,7 +248,7 @@ return {
 					UI.Label({
 
 						label = "Outpost 7 — World terminal",
-						TextSize = 20,
+						textRole = "heading",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 54),
 					}),

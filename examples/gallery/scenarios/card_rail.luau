@@ -60,14 +60,14 @@ return {
 			local nameProbe = UI.Label "NameMeasure" {
 				Visible = false,
 				Text = "Livery 000",
-				TextSize = 14,
+				textRole = "label",
 				Size = D2.new(),
 				AutomaticSize = E.AutomaticSize.XY,
 			}
 			local badgeProbe = UI.Label "BadgeMeasure" {
 				Visible = false,
 				Text = "Endurance",
-				TextSize = 12,
+				textRole = "caption",
 				Size = D2.new(),
 				AutomaticSize = E.AutomaticSize.XY,
 			}
@@ -144,7 +144,7 @@ return {
 								Text = function(use)
 									return use(current).name
 								end,
-								TextSize = 14,
+								textRole = "label",
 								LayoutOrder = 2,
 								Size = D2.new(1, 0, 0, 0),
 								AutomaticSize = E.AutomaticSize.Y,
@@ -156,7 +156,7 @@ return {
 								Text = function(use)
 									return use(current).badge
 								end,
-								TextSize = 12,
+								textRole = "caption",
 								LayoutOrder = 3,
 								Size = D2.new(1, 0, 0, 0),
 								AutomaticSize = E.AutomaticSize.Y,
