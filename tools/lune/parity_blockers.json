@@ -50,7 +50,7 @@
       "id": "G05",
       "sourceReference": "`scenarios/demo_tabs.luau:24`",
       "remaining": [],
-      "requiredEvidence": "A\u2192B\u2192A must report A and its current model without remounting A.",
+      "requiredEvidence": "A→B→A must report A and its current model without remounting A.",
       "cases": [
         "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility"
       ],
@@ -89,7 +89,7 @@
     },
     {
       "id": "G09",
-      "sourceReference": "`table_virtualized` \u2192 `collection_demo`",
+      "sourceReference": "`table_virtualized` → `collection_demo`",
       "remaining": [],
       "requiredEvidence": "Open Large table and attempt each named main task. Preserve native table virtualization and selection; replace the removed imperative facade with current control/model APIs.",
       "cases": [
@@ -120,7 +120,7 @@
     },
     {
       "id": "G12",
-      "sourceReference": "`with_animation`, `time_curves` \u2192 `motion_demo`",
+      "sourceReference": "`with_animation`, `time_curves` → `motion_demo`",
       "remaining": [],
       "requiredEvidence": "Keep Compose motion ownership; restore each page's distinct tasks. Test intermediate motion, synchronized completion, reversal, state identity and reduced-motion/informational distinction.",
       "cases": [
@@ -196,7 +196,23 @@
   "pendingLiveRisks": [
     "Collection toolbar under phone/largest-text and compact landscape",
     "Shell measured reservation and Settings reachability under themes/largest text",
-    "Actual native PreferredTransparency hot-swap",
-    "Retained A\u2192B\u2192A transient/haptic/motion visibility and lifetime"
+    "Retained A→B→A transient/haptic/motion visibility and lifetime"
+  ],
+  "resolvedLiveRisks": [
+    {
+      "risk": "Actual native PreferredTransparency hot-swap",
+      "resolvedBy": "f1cc5e2c Honor the player's Background transparency preference",
+      "evidence": {
+        "date": "2026-09-23",
+        "host": "Roblox Studio playtest, HD 720 (1280x720), studio sync stamp 9f7f1afa61f0",
+        "steps": "Motion and layout > Transparency; Roblox menu > Settings > Background transparency stepped 1.0 to 0.0 (ten PreferredTransparency change events observed); opened the alert and read the page.",
+        "before": "At f1cc5e2c^ the alert backdrop and translucent surfaces rendered identically at preference 1 and 0.",
+        "after": "At preference 0 the alert backdrop is opaque, the page reads 'Your setting: 0%', and the translucent surface matches the opaque panel.",
+        "headless": [
+          "native_themes_media::scales translucent theme surfaces by the player's background transparency preference",
+          "native_navigation::darkens modal scrims as the player lowers background transparency"
+        ]
+      }
+    }
   ]
 }
