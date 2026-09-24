@@ -4051,4 +4051,80 @@ t.describe("native parity reference applications", function()
 			runtime:dispose()
 		end)
 	end)
+
+	t.describe("Menu scenario copy", function()
+		t.it("takes every player-visible string from its exported copy", function()
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local gui = engine.new("GuiService")
+			local input = engine.new("UserInputService")
+			input.GetFocusedTextBox = function()
+				return nil
+			end
+			local ctx = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = runtime,
+				Host = runtime.constructors,
+				types = engine.types,
+				viewport = Compose.cell({ width = 1280, height = 720 }),
+				inputTarget = engine.new("Folder"),
+				guiService = gui,
+				UI = Facet.controls(
+					runtime,
+					{
+						types = engine.types,
+						guiService = gui,
+						services = { GuiService = gui, UserInputService = input },
+					} :: any
+				),
+			}
+			local scenario = require("../examples/gallery/scenarios/menu")
+			local host = engine.new("ScreenGui")
+			local built
+			local stop = runtime.mount(function()
+				built = scenario.build(ctx)
+				return built.screen()
+			end, host)
+			local function fromCopy(text: string): boolean
+				for _, value in scenario.copy do
+					if type(value) == "string" and value ~= "" and string.find(text, value, 1, true) then
+						return true
+					end
+				end
+				return false
+			end
+			local function strays(): { string }
+				local out = {}
+				for _, node in host:GetDescendants() do
+					if (node.ClassName == "TextLabel" or node.ClassName == "TextButton") and node.Text ~= "" then
+						if not fromCopy(node.Text) then
+							table.insert(out, node.Text)
+						end
+					end
+				end
+				return out
+			end
+			t.expect(table.concat(strays(), " | ")).toBe("")
+			local cards = 0
+			for _, node in host:GetDescendants() do
+				if node.Name == "Trigger" and node.ClassName == "TextButton" then
+					cards += 1
+				end
+			end
+			t.expect(cards).toBe(5)
+			local trigger
+			for _, node in host:GetDescendants() do
+				if node.Name == "Trigger" and node.Text == scenario.copy.tap then
+					trigger = node
+				end
+			end
+			assert(trigger, "no Tap card").Activated.fire()
+			t.expect(hasText(host, scenario.copy.accessory)).toBe(true)
+			t.expect(table.concat(strays(), " | ")).toBe("")
+			t.expect(fromCopy("A string the scenario never exported")).toBe(false)
+			stop()
+			runtime:dispose()
+		end)
+	end)
 end)
