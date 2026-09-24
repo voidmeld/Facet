@@ -162,7 +162,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			end,
 		})
 	end
-	local function shell(name, body, extra)
+	local function shell(name, build)
 		local about = Compose.cell(false)
 		local statusOpen = Compose.cell(false)
 		local width = Compose.cell(920)
@@ -269,7 +269,32 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						return not actions.spatial or use(model.focused) == name
 					end,
 					UI.fill(),
-					body,
+					UI.ErrorBoundary "AppBoundary" {
+						width = "fill",
+						height = "fill",
+						view = function()
+							local body, extra = build()
+							return UI.ZStack "AppContent" { width = "fill", height = "fill", body, extra }
+						end,
+						fallback = function(_, retry)
+							return UI.VStack "AppFailure" {
+								width = "fill",
+								gap = "s",
+								padding = "l",
+								words(
+									"FailureTitle",
+									`{if name == "Chat" then "Assistant" else name} stopped`,
+									"heading"
+								),
+								quiet(
+									"FailureMessage",
+									"Something in this app failed. Your saved games, notes and messages are safe.",
+									"label"
+								),
+								button("Retry", "Try again", retry),
+							}
+						end,
+					},
 				},
 			},
 			button("WakeMonitor", "", function()
@@ -362,7 +387,6 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					},
 				},
 			},
-			extra,
 		})
 		root:AddTag("facet-surface")
 		local dimensions = observeSize(root)
@@ -895,7 +919,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			end),
 		}
 	end
-	local function Discover()
+	local function discoverContent()
 		local dimensions = Compose.cell(V2.new(screens.CANVAS.w, screens.CANVAS.h))
 		local function compact(use)
 			return use(dimensions).X < 620
@@ -1240,9 +1264,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			end),
 		}
 		measure(body, dimensions)
-		return shell(
-			"Discover",
-			body,
+		return body,
 			UI.ZStack "Overlays" {
 				width = "fill",
 				height = "fill",
@@ -1287,7 +1309,6 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				},
 				toastFor("Discover"),
 			}
-		)
 	end
 	local ctx = {
 		Facet = Facet,
@@ -1315,13 +1336,18 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		panelShadow = panelShadow,
 		toastFor = toastFor,
 	}
+	local function Discover()
+		return shell("Discover", discoverContent)
+	end
 	local function Avatar()
-		local body, overlays = require("./avatar")(ctx)
-		return shell("Avatar", body, overlays)
+		return shell("Avatar", function()
+			return require("./avatar")(ctx)
+		end)
 	end
 	local function Chat()
-		local body, overlays = require("./chat")(ctx)
-		return shell("Chat", body, overlays)
+		return shell("Chat", function()
+			return require("./chat")(ctx)
+		end)
 	end
 	return { Discover = Discover, Avatar = Avatar, Chat = Chat }
 end

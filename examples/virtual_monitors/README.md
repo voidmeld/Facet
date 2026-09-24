@@ -30,7 +30,9 @@ Each app uses `UI.Screen`, `UI.NavBar`, stacks, `UI.ScrollView` and `UI.fill`
 for its layout. The header has the app title, the presentation, appearance and
 About actions, and the profile avatar. The avatar opens a `UI.Popover` that
 sets the presence (Online, Away or Busy) of every avatar. About is a
-`UI.Dialog` that shows `Facet.VERSION` and `Facet.COMPOSE_COMMIT`. In spatial
+`UI.Dialog` that shows `Facet.VERSION` and `Facet.COMPOSE_COMMIT`. A
+`UI.ErrorBoundary` contains each app: a failure shows "App stopped" with Try
+again, and the header and the other apps stay. In spatial
 mode, Focus fits a monitor to the camera, and All monitors returns to the
 overview. In screen mode, native Facet tabs select the app. Model state
 survives page and monitor disposal. Compact viewports and ten-foot interfaces
