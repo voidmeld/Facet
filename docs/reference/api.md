@@ -234,10 +234,13 @@ cannot be interacted with, and the selection never stays on it.
 | NavigationStack push | The new page slides in from the trailing edge. The old page moves 30 percent to the leading edge and dims. Critically damped spring with a 0.3 second period, visually complete in approximately 0.35 seconds. | Pop is the reverse. |
 | TabView page change | Crossfade, 0.2 seconds, Quad Out. | The same. |
 | Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. A side sheet slides in from its edge. The scrim fades in. | Slides down, or toward its edge, 0.2 seconds. |
-| Alert | Scales from 0.94 to 1 and fades in, 0.2 seconds, Cubic Out. The scrim fades in. | The reverse, 0.15 seconds. |
+| Alert, Dialog, CollapsibleView | Scales from 0.94 to 1 and fades in, 0.2 seconds, Cubic Out. The scrim fades in. | The reverse, 0.15 seconds. |
 | Callout, Button `help`, Menu, Picker menu, Popover | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
-| Snackbar | Slides up from below the layer, 0.2 seconds. | Slides down, 0.2 seconds. |
-| Dialog, Notice, NavBar | No motion. | No motion. |
+| Popover compact sheet | The Sheet motion. | The Sheet motion. |
+| Snackbar | Slides up from below the layer and fades in, 0.2 seconds, Cubic Out. | Slides down and fades out, 0.2 seconds. |
+| DisclosureGroup | The content height opens from 0, and the content fades in, 0.25 seconds, Cubic Out. The chevron turns 90 degrees with it. | The reverse, 0.2 seconds. |
+| Notice | The height opens from 0, 0.25 seconds, Cubic Out. | After a press on its close button, the height closes to 0 in 0.2 seconds. Then `onDismiss` runs. |
+| NavBar | No motion. | No motion. |
 
 - Reduced motion (`reducedMotion` or `GuiService.ReducedMotionEnabled`) removes
   all of this motion. The change is immediate.
@@ -245,6 +248,36 @@ cannot be interacted with, and the selection never stays on it.
   available, leaves immediately.
 - If you present a control again during its exit, the exit reverses.
 - PageView keeps its native page swipe.
+- Collapsing DisclosureGroup content cannot be interacted with. If the
+  selection is in it, the selection moves to the header when the collapse
+  starts.
+- A Notice whose close button was pressed cannot be interacted with, and it
+  clears a selection inside it. If the notice stays mounted after
+  `onDismiss`, it opens again.
+
+### Modal input
+
+Dialog, Alert, Sheet, Popover, Menu, CollapsibleView and the other modal
+surfaces put an Active full-screen root and an Active scrim button over the
+layer. Thus a press, a tap or a drag under the modal does not reach the
+content below.
+
+Roblox can send a touch pan or the mouse wheel to a ScrollingFrame below the
+scrim. Thus, while a modal is open, Facet sets `ScrollingEnabled = false` on
+each ScrollingFrame in the same LayerCollector that is outside the top modal:
+
+- Facet records the value of each frame before it changes the frame. When no
+  modal holds the frame, Facet writes the recorded value back. A frame that
+  was already `false` stays `false`.
+- With stacked modals, only the ScrollingFrames of the top modal scroll. When
+  the top modal closes, the modal below it scrolls again.
+- A ScrollingFrame that is added to the layer while a modal is open is held
+  in the same way. A held frame that leaves the layer gets its recorded value
+  back at once.
+- A modal gives the frames back when its exit starts, not when its exit ends.
+- ScrollingFrames in a different LayerCollector do not change.
+- Do not write `ScrollingEnabled` on a frame outside the modal while the modal
+  is open. Facet writes the recorded value back when the modal closes.
 
 ### Haptics
 
@@ -1433,9 +1466,14 @@ reduced motion the sheet appears at rest after the same wait. See
 ### DisclosureGroup and CollapsibleView
 
 Both require a writable `expanded` and `content`. DisclosureGroup expands its
-content in the document flow. CollapsibleView opens its content as a larger
-presented surface. For outer layout, use the native properties on their
-returned roots.
+content in the document flow. The content is in a clipped Frame named
+`Reveal` that holds a CanvasGroup named `RevealFade`. The height of `Reveal`
+opens with the motion, and then follows the content with `AutomaticSize`.
+The chevron keeps its `chevron.trailing` and `chevron.down` art and turns
+between them. CollapsibleView opens its content as a larger presented surface
+in a CanvasGroup named `ExpandedPresentation`, with the Dialog motion. For
+outer layout, use the native properties on their returned roots. See
+[Motion](#motion).
 
 ### Callout
 
@@ -1521,7 +1559,8 @@ Other options:
 A dialog needs a title, content, a hero, an action label or actions. The
 height is the layer height less the keyboard height and the margins. When the
 pinned regions and a short body do not fit, every region moves into one
-scrolling column named `Room`. The dialog has no enter or exit motion.
+scrolling column named `Room`. The panel is a CanvasGroup. It scales from
+0.94 and fades in with its scrim. See [Motion](#motion).
 
 ### Popover
 
@@ -1565,7 +1604,10 @@ removes the arrow.
 `compact` is `sheet` (the default) or `popover`. With `sheet`, a touch player
 on a layer narrower than 600 pixels gets the Sheet route. A live change of
 input or width switches the route without a proposal. Only one content owner
-exists at a time, and the selection returns to the same content node.
+exists at a time, and the selection returns to the same content node. The
+sheet uses the `hug` detent, so its height fits the content. `title` (a string
+or a bound string) shows in the sheet header beside Done. Without `title`, the
+header shows only Done.
 
 The trigger keeps its own `onActivate`. The panel scales and fades from the
 edge nearest to its source. See [Motion](#motion).
@@ -1615,8 +1657,10 @@ A row with an action or a close button uses `controls.snackbar.maxWidth`,
 bounded by the layer. The action moves below long text. Arrival never takes the
 selection. Cancel on a selected row returns the selection to the content, also
 when the caller refuses. A visible row sets the `FacetInsetBottom` attribute on
-its layer until it has slid out. The row slides up to enter and down to leave.
-Under reduced motion it arrives and leaves at once.
+its layer until it has slid out. The row is a CanvasGroup named `Snack`. It
+slides up and fades in to enter, and slides down and fades out to leave. A
+leaving row cannot be interacted with. Under reduced motion it arrives and
+leaves at once.
 
 To show a snackbar from code, mount a `UI.Snackbar` with `runtime.mount`. The
 stop function that the mount returns releases the row and reports `cancel`.
@@ -1635,12 +1679,17 @@ state changes. It is never modal.
   plate.
 - `actions`: up to two actions. Roles only paint. There is no default or
   cancel key.
-- `onDismiss`: shows a close button and reports the press. Remove the notice
-  yourself.
+- `onDismiss`: shows a close button. A press closes the height of the
+  notice and then calls `onDismiss`. Remove the notice yourself. If the notice
+  stays mounted, it opens again. Under reduced motion, or before the notice
+  has drawn a frame, `onDismiss` runs at once.
 - `placement`: `inline` (the default) or `affixed`.
 
 The link and actions sit beside the copy when the measured width holds them.
-Otherwise they move below it. The notice does not take the selection. An
+Otherwise they move below it. The notice does not take the selection. A new
+notice opens its height from 0, so the content below it moves down smoothly.
+While the height moves, the notice clips its content and uses
+`AutomaticSize = None`. At rest it uses its own `Size` and `AutomaticSize`. An
 affixed notice fills the width and sets the `FacetInsetTop` attribute on its
 layer to its bottom edge. Several affixed notices keep the deepest edge.
 Content that must avoid the notice reads the attribute and pads by it.

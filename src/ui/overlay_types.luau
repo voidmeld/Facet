@@ -70,6 +70,7 @@ export type PopoverSpec = Types.FrameProps & {
 	maxWidth: number?,
 	maxHeight: number?,
 	compact: ("sheet" | "popover")?,
+	title: Value<string>?,
 }
 
 export type SnackbarDismissReason = "action" | "close" | "timeout" | "superseded" | "cancel"

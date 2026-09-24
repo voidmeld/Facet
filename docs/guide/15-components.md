@@ -165,9 +165,11 @@ StyleRule transitions own the theme paint animation.
 
 Navigation and presented controls animate by default. Do not add your own
 motion to them. NavigationStack slides a pushed page in from the trailing edge.
-TabView crossfades its pages. Sheet slides up. Alert scales and fades in.
-Callout, Button `help` and Menu scale and fade from their anchor. Each exit
-plays the reverse, faster. Reduced motion removes this motion. To use a
+TabView crossfades its pages. Sheet slides up. Alert, Dialog and
+CollapsibleView scale and fade in. Callout, Button `help`, Menu and Popover
+scale and fade from their anchor. Snackbar slides up and fades in.
+DisclosureGroup and Notice open their height. Each exit plays the reverse,
+faster. Reduced motion removes this motion. To use a
 crossfade in NavigationStack or TabView, supply `transition` with Compose tween
 options. To remove the motion, supply `transition = false`. The
 [motion table](../reference/api.md#motion) gives each duration and curve.

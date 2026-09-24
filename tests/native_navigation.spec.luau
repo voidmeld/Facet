@@ -302,14 +302,17 @@ t.describe("native navigation controls", function()
 			t.expect(built).toBe(0)
 			local function checkOrder()
 				local content = find(world.screen, "Details")
-				local body = if appearance == "divided" then content.Parent else content
+				local wrapped = if appearance == "divided" then content.Parent else content
+				local body = wrapped.Parent.Parent
+				t.expect(body.Name).toBe("Reveal")
+				t.expect(wrapped.Parent.Name).toBe("RevealFade")
 				t.expect(body.Parent).toBe(header.Parent)
 				t.expect(body.LayoutOrder).toBe(2)
 				t.expect(header.LayoutOrder < body.LayoutOrder).toBe(true)
 				t.expect(header.Parent:FindFirstChildWhichIsA("UIListLayout").SortOrder)
 					.toBe(world.engine.types.Enum.SortOrder.LayoutOrder)
 				if appearance == "divided" then
-					t.expect(find(body, "Divider").LayoutOrder < content.LayoutOrder).toBe(true)
+					t.expect(find(wrapped, "Divider").LayoutOrder < content.LayoutOrder).toBe(true)
 				end
 				return content
 			end

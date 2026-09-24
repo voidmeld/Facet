@@ -70,6 +70,8 @@ local function new(options: any?)
 		StateChanged = true,
 		TouchLongPress = true,
 		AncestryChanged = true,
+		DescendantAdded = true,
+		DescendantRemoving = true,
 		Destroying = true,
 		FocusLost = true,
 		InputBegan = true,
@@ -126,6 +128,9 @@ local function new(options: any?)
 				if signals[name] then
 					signals[name].fire(...)
 				end
+			end,
+			_hasSignal = function(_, name)
+				return signals[name] ~= nil
 			end,
 			_fireAncestry = function()
 				if signals.AncestryChanged then
@@ -368,6 +373,26 @@ local function new(options: any?)
 				return destroyed == true
 			end,
 		}
+		local function lineage(start, name)
+			local listeners = {}
+			local cursor = start
+			while cursor do
+				if cursor:_hasSignal(name) then
+					table.insert(listeners, cursor)
+				end
+				cursor = cursor.Parent
+			end
+			if listeners[1] == nil then
+				return
+			end
+			local subtree = node:GetDescendants()
+			table.insert(subtree, 1, node)
+			for _, listener in listeners do
+				for _, member in subtree do
+					listener:_fireSignal(name, member)
+				end
+			end
+		end
 		node = setmetatable({}, {
 			__index = function(_, key)
 				if methods[key] then
@@ -469,6 +494,9 @@ local function new(options: any?)
 						return
 					end
 				end
+				if key == "Parent" and previous then
+					lineage(previous, "DescendantRemoving")
+				end
 				if key == "Parent" then
 					if previous then
 						local siblings = previous._children
@@ -488,6 +516,7 @@ local function new(options: any?)
 					end
 					if value then
 						value:_fireSignal("ChildAdded", node)
+						lineage(value, "DescendantAdded")
 					end
 					methods._fireAncestry()
 				end

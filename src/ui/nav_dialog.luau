@@ -25,6 +25,7 @@ local KEYS = {
 	"width",
 	"contentSelectable",
 }
+local DIALOG = table.freeze({ enter = 0.2, exit = 0.15 })
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
@@ -169,7 +170,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 		local input = surfaces.service("UserInputService")
 		surfaces.attach(root, {
-			surfaces.overlay(root, condition, function()
+			surfaces.overlay(root, condition, function(phase: Nav.PresencePhase?)
 				local layer = assert(root:FindFirstAncestorWhichIsA("LayerCollector"))
 				local extent = ctx.observe(layer, "AbsoluteSize")
 				local keyboard = keyboardHeight(input)
@@ -324,8 +325,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					bind("DialogBodyDown", 1, { E.KeyCode.Down, E.KeyCode.DPadDown })
 					bind("DialogBodyUp", -1, { E.KeyCode.Up, E.KeyCode.DPadUp })
 				end
+				local shown = surfaces.appearance(phase, DIALOG)
 				local panel = ctx.styled(
-					Host.Frame({
+					Host.CanvasGroup({
 						Name = "Panel",
 						AnchorPoint = V2.new(0.5, 0.5),
 						Position = function(use: ComposeTypes.Use)
@@ -337,9 +339,17 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						AutomaticSize = E.AutomaticSize.Y,
 						BackgroundTransparency = 0,
 						BorderSizePixel = 0,
+						GroupTransparency = function(use: ComposeTypes.Use)
+							return 1 - shown(use)
+						end,
 						room.frame :: Instance,
 						ctx.padding(16, 16),
 						ctx.corner(),
+						Host.UIScale "PresentationScale" {
+							Scale = function(use: ComposeTypes.Use)
+								return 0.94 + 0.06 * shown(use)
+							end,
+						} :: Instance,
 					}),
 					"dialog"
 				)
@@ -382,8 +392,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					onOutside = function()
 						propose(false, "outside")
 					end,
+					exiting = if phase then phase.exiting else nil,
+					appearance = shown,
 				})
-			end),
+			end, { motion = DIALOG }),
 		})
 		Compose.cleanup(function()
 			disposed = true

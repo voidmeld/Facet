@@ -804,7 +804,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		return root
 	end)
 
-	surfaces.sheetModal = function(spec: Nav.SheetSpec, request: Nav.SheetRequest): Frame
-		return modalFor(spec, prepare(spec), request, nil)
+	surfaces.sheetModal = function(spec: Nav.SheetSpec, request: Nav.SheetRequest, phase: Nav.PresencePhase?): Frame
+		return modalFor(spec, prepare(spec), request, phase)
 	end
 end

@@ -6,6 +6,7 @@ local help = require("./help")
 local Inputs = require("./input_types")
 local placement = require("./overlay_placement")
 local reducedMotion = require("./motion")
+local scrollLock = require("./scroll_lock")
 
 return function(ctx: Types.Context): Nav.Surfaces
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
@@ -221,9 +222,11 @@ return function(ctx: Types.Context): Nav.Surfaces
 			Name = spec.Name or "Modal",
 			Size = D2.fromScale(1, 1),
 			BackgroundTransparency = 1,
+			Active = true,
 			ZIndex = spec.ZIndex or 100,
 			Host.TextButton "DismissOutside" {
 				Size = D2.fromScale(1, 1),
+				Active = true,
 				Text = "",
 				BackgroundTransparency = if spec.backgroundTransparency == nil
 					then nil
@@ -283,11 +286,32 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end
 		end
 		local released = false
+		local locked: Instance? = nil
+		local function unlock()
+			local layer = locked
+			locked = nil
+			if layer then
+				scrollLock.release(layer, root)
+			end
+		end
+		local function lock()
+			local layer = if released then nil else root:FindFirstAncestorWhichIsA("LayerCollector")
+			if layer == locked then
+				return
+			end
+			unlock()
+			if layer then
+				locked = layer
+				scrollLock.acquire(layer, root)
+			end
+		end
+		runtime.connect(root, "AncestryChanged", lock)
 		local function claim()
 			local modals = table.clone(ctx.modalScopes:peek())
 			table.insert(modals, root)
 			ctx.modalScopes:set(modals)
 			released = false
+			lock()
 		end
 		claim()
 		local function release()
@@ -295,6 +319,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 				return
 			end
 			released = true
+			unlock()
 			local remaining = {}
 			for _, modal in ctx.modalScopes:peek() do
 				if modal ~= root then
