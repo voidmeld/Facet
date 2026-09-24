@@ -889,7 +889,7 @@ Some cases were added on `main` after the baseline. Each family records them her
 
 ### Content and navigation
 
-`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 76 contracts and 76 main cases (a: 74, b: 2). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 120 contracts and 132 main cases (a: 111, b: 6, c: 15). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
 
 | Contract | Main spec | Main cases | Class | Candidate cases | Note |
 |---|---|---:|---|---|---|
@@ -969,6 +969,50 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-grid-05 | `virtual_grid` | 1 | a | `collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent` |  |
 | post-grid-06 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
 | post-grid-07 | `virtual_hgrid` | 1 | a | `collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent` |  |
+| post-menu-01 | `menu` | 1 | a | `opens on ButtonA, closes on ButtonB with the selection back on the trigger, and opens again` | ButtonA is the native Activated event of the trigger; ButtonB is the ModalBack action. |
+| post-menu-02 | `menu` | 1 | a | `places the root panel by edge and align and keeps bottom and start when they are absent` | The trigger and panel rectangles are injected; the native popover draws the panel. |
+| post-menu-03 | `menu` | 1 | a | `sets the floating panel width from width` |  |
+| post-menu-04 | `menu` | 1 | a | `keeps the panel width for rows with a badge, a shortcut label or a section heading` |  |
+| post-menu-05 | `menu` | 1 | a | `leads plain rows like accessory rows and gives every row the target floor` | Row heights and the left content alignment are asserted; label x positions and hit rectangles need Studio. |
+| post-menu-06 | `menu` | 1 | a | `bounds a floating panel by the screen so a long list scrolls` |  |
+| post-menu-07 | `menu` | 1 | a | `opens a level on its selected row, centred in the scrolled list` | The row and list rectangles are injected; the centring is computed from them. |
+| post-menu-08 | `menu` | 1 | a | `bounds the whole panel by maxHeight while the rows keep their ids and activation` | The keyboard walk to the last row and its scroll into view are native ScrollingFrame selection behavior. |
+| post-menu-09 | `menu` | 1 | a | `keeps submenus anchored to their parent level in a bounded list` |  |
+| post-menu-10 | `menu` | 1 | a | `shares one row recipe for badge, avatar, sectionTitle and a display-only shortcutLabel` |  |
+| post-menu-11 | `menu` | 1 | a | `refuses malformed placement and bounds by name` | width is a number of pixels natively; main refused a bare number because it took a dimension table. The native control refuses 0 and a string. |
+| post-menu-12 | `menu` | 4 | c | - | The solver path shape and its hairline card geometry are not native. Native rows are TextButtons named by id under MenuRows in a ScrollingFrame; the row fill is the native button background. |
+| post-menu-13 | `menu_scenario` | 1 | c | - | A path rename of the solver tree only; the native scenario rows are found by id. |
+| post-menu-14 | `stateful_menu` | 1 | c | - | A path rename of the solver tree only; native_parity_navigation toggles checked and selected rows by id. |
+| post-menu-15 | `popup_button` | 1 | a | `carries a Picker option badge into its menu row as the count seal` | The badge reaches the menu row; a Picker option sectionTitle belongs to the Picker option type of the pickers family. |
+| post-tab-01 | `tab_view` | 1 | a | `nests a TabView that a page builds later inside one of its branches` |  |
+| post-tab-02 | `tab_view` | 1 | a | `paints a tab indicator as a StatusIndicator in its own tab and keeps it through every switch` |  |
+| post-tab-03 | `tab_view` | 1 | a | `refuses a tab indicator that is not a StatusIndicator spec by name` |  |
+| post-tab-04 | `tab_view` | 1 | a | `keeps a disabled tab in the strip and refuses its selection on every route` |  |
+| post-tab-05 | `tab_view_scenario` | 4 | c | - | A path shape of the solver tree only; native tab rows are named TabRow-<id> when sections exist. |
+| post-showcase-01 | `showcase_tabs` | 1 | a | `shrinks tab words toward the caption role in a filling bottom bar before they truncate` | The measured word width and the tab width are injected; the real glyph widths at 320 and 389 px need Studio. |
+| post-showcase-02 | `showcase_tabs` | 4 | a | `names the Status and Menus groups and the Paging and Steps tabs in All controls` | native_gallery mounts every all_controls tab; the category bar walk is the native TabView. |
+| post-showcase-03 | `showcase_tabs` | 1 | b | - | Native TabView content frame and ScrollingFrame canvas. |
+| post-showcase-04 | `showcase_tabs` | 1 | b | - | Native AutomaticSize X on each tab button follows the engine text bounds. |
+| post-showcase-05 | `showcase_tabs` | 1 | c | - | UI.ViewThatFits and the candidate solver were deleted (contracts mech1-04, mech1-126). A screen chooses a form with Compose.show on observed native bounds. |
+| post-fits-01 | `container_memo` | 1 | c | - | UI.ViewThatFits was deleted with the solver (mech1-04, mech1-126); there is no candidate rule to verify. |
+| post-lab-01 | `error_boundary` | 1 | c | - | UI.ErrorBoundary and the text primitive were deleted (mech1-115). Containment stays for presented Alert content and NavigationStack destinations; constructors take the native Name or the constructor name form. |
+| post-lab-02 | `theme_package` | 3 | a | `paints omitted semantic pairs from the neutral fallbacks in every palette`, `lists Neutral first then names, keeps the installed package on reselection and selects a palette` |  |
+| post-lab-03 | `tab_view` | 1 | a | `nests a TabView that a page builds later inside one of its branches` |  |
+| post-lab-04 | `preview` | 1 | c | - | The environment and its preview were deleted with the application shell. The engine owns the preferred text size and transparency; Studio emulates them. The gallery previews only viewing distance. |
+| post-lab-05 | `gallery_chrome` | 1 | c | - | The showcase settings have no device, orientation or input preview; the native gallery keeps only the viewing-distance preview. |
+| post-lab-06 | `disclosure_group` | 1 | a | `closes up a collapsed outline section in a scroller and reopens it` | The content leaves and returns and the canvas is native AutomaticCanvasSize; the canvas height needs Studio. |
+| post-lab-07 | `api` | 1 | a | `fades a subtree as one group and keeps a transparent group laid out while removal closes up` | The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false; Compose.show removes the node. Guide 17 documents both. |
+| post-navh-01 | `focus_chrome_mixed` | 2 | b | `yields native directional navigation at value bounds and rearms on focus return` | Native gamepad and arrow selection owns horizontal movement; a selected Slider or Stepper binds Left and Right only while it is selected and yields them at its bounds. No focus chrome host exists. |
+| post-recipes-01 | `view_recipes` | 1 | a | `runs one activation in a styled group and disables it by inheritance` | The disabled group is native Interactable on the ancestor. |
+| post-recipes-02 | `view_recipes` | 1 | a | `declares fixed, quarter and fill axes as native sizes and flex` | Native Size and UIFlexItem are asserted; hug, minimum and the overflow rectangle need Studio. |
+| post-recipes-03 | `view_recipes` | 1 | a | `sizes 1:1, 16:9 and 9:16 subjects inside the same 96 by 96 offer and centres them` | The subject sizes and centred anchors are asserted; solved rectangles need Studio. |
+| post-recipes-04 | `view_recipes` | 1 | a | `scales paint with a UIScale while the declared box stays` | The UIScale and the unchanged box are asserted; the painted footprint needs Studio. |
+| post-recipes-05 | `view_recipes` | 1 | a | `fades a subtree as one group and keeps a transparent group laid out while removal closes up` | Zero-transparency focus is native CanvasGroup behavior; selection of a faded button needs Studio. |
+| post-recipes-06 | `view_recipes` | 1 | a | `moves a child through spare room with nine alignments` | Anchor and scale position are asserted; the hugging parent case needs Studio. |
+| post-recipes-07 | `view_recipes` | 1 | a | `spaces siblings with a gap and moves only the named edges with padding` | Padding values are asserted; sibling rectangles need Studio. |
+| post-recipes-08 | `view_recipes` | 1 | a | `wraps a row to a second line, or keeps it on one line in a sideways scroller` | Wraps and the X scroller are asserted; the overrun and clip rectangles need Studio. |
+| post-recipes-09 | `view_recipes` | 1 | a | `rounds, strokes and shadows one node with native modifiers` | A UICorner rounds every corner with one radius natively; main painted per-corner radii. |
+| post-recipes-10 | `recipes_common` | 1 | a | `insets and paints the recipe dividers from the installed theme` | The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported. |
 
 ## Use the data
 

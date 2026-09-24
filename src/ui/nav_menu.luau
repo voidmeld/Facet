@@ -2,7 +2,10 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
+local Media = require("./media_types")
 local ComposeTypes = require("../vendor/compose/core")
+
+type MenuEntry<V> = { key: string, heading: string?, item: Nav.MenuItem<V>? }
 
 return function(
 	ctx: Types.Context,
@@ -13,6 +16,8 @@ return function(
 		ComboBox: Types.Constructor<Nav.ComboBoxSpec, Frame>,
 		Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
 		TextInput: Types.Constructor<Inputs.TextInputProps, TextBox>,
+		Badge: Types.Constructor<Media.BadgeProps, GuiObject>,
+		Avatar: Types.Constructor<Media.AvatarProps, TextButton>,
 	},
 	surfaces: Nav.Surfaces
 ): ()
@@ -138,7 +143,46 @@ return function(
 			end
 		end
 		local widths = Compose.cell({} :: { [string]: number })
-		local rows = ctx.column({
+		local function landing(items: { Nav.MenuItem<V> }): string?
+			for _, item in items do
+				if item.divider ~= true then
+					local action = actionItem(item)
+					if
+						action.selected ~= nil
+						and read(action.selected) == action.value
+						and read(action.enabled) ~= false
+					then
+						return tostring(item.id)
+					end
+				end
+			end
+			return nil
+		end
+		local entries = Compose.formula(function(use: ComposeTypes.Use): { MenuEntry<V> }
+			local out: { MenuEntry<V> } = {}
+			for index, item in use(current) do
+				local key = tostring(item.id or index)
+				if item.divider ~= true then
+					local heading = read(actionItem(item).sectionTitle, use)
+					if heading ~= nil and heading ~= "" then
+						table.insert(out, { key = "Section:" .. key, heading = heading })
+					end
+				end
+				table.insert(out, { key = key, item = item })
+			end
+			return out
+		end)
+		local rows = Host.Frame({
+			Name = "MenuRows",
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+			Host.UIListLayout({
+				FillDirection = E.FillDirection.Vertical,
+				SortOrder = E.SortOrder.LayoutOrder,
+				Padding = D.new(0, 8),
+			}) :: Types.Child,
 			Compose.show(function()
 				return spec.query ~= nil
 			end, function()
@@ -154,15 +198,42 @@ return function(
 				return UI.Button "Back" {
 					label = spec.backLabel or "Back",
 					onActivate = back,
+					LayoutOrder = -1,
 					Size = D2.new(1, 0, 0, 44),
 				}
 			end),
 			Compose.keyed({
-				from = current,
-				key = function(item: Nav.MenuItem<V>, index: number)
-					return item.id or index
+				from = entries,
+				key = function(entry: MenuEntry<V>)
+					return entry.key
 				end,
-				render = function(source: ComposeTypes.Readable<Nav.MenuItem<V>>, index: ComposeTypes.Readable<number>)
+				render = function(
+					entrySource: ComposeTypes.Readable<MenuEntry<V>>,
+					index: ComposeTypes.Readable<number>
+				)
+					local entry = entrySource:peek()
+					if entry.heading then
+						local title = ctx.text({
+							Name = "SectionTitle",
+							Text = function(use: ComposeTypes.Use): string
+								return use(entrySource).heading or ""
+							end,
+						})
+						title:AddTag("facet-type-caption")
+						title:AddTag("facet-secondary")
+						return Host.Frame({
+							Name = entry.key,
+							LayoutOrder = index,
+							BackgroundTransparency = 1,
+							Size = D2.new(1, 0, 0, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+							ctx.padding(12, 4) :: Types.Child,
+							title :: Types.Child,
+						})
+					end
+					local source = Compose.formula(function(use: ComposeTypes.Use): Nav.MenuItem<V>
+						return assert(use(entrySource).item)
+					end)
 					local item = source:peek()
 					if item.divider then
 						return ctx.styled(
@@ -219,6 +290,72 @@ return function(
 						end,
 					})
 					row:AddTag("facet-menu-item")
+					local accessories: { Types.Child } = {
+						Host.UIListLayout({
+							FillDirection = E.FillDirection.Horizontal,
+							SortOrder = E.SortOrder.LayoutOrder,
+							VerticalAlignment = E.VerticalAlignment.Center,
+							Padding = D.new(0, 8),
+						}) :: Types.Child,
+					}
+					if item.badge ~= nil then
+						table.insert(
+							accessories,
+							UI.Badge({
+								Name = "Count",
+								LayoutOrder = 1,
+								label = function(use: ComposeTypes.Use): string
+									local badge = read(actionItem(use(source)).badge, use)
+									return if badge == nil then "" else tostring(badge)
+								end,
+							}) :: Types.Child
+						)
+					end
+					if item.shortcutLabel ~= nil then
+						local shortcut = ctx.text({
+							Name = "Shortcut",
+							LayoutOrder = 2,
+							Text = function(use: ComposeTypes.Use): string
+								return read(actionItem(use(source)).shortcutLabel, use) or ""
+							end,
+						})
+						shortcut:AddTag("facet-secondary")
+						table.insert(accessories, shortcut :: Types.Child)
+					end
+					if #accessories > 1 then
+						surfaces.attach(row, {
+							Host.Frame({
+								Name = "Accessories",
+								BackgroundTransparency = 1,
+								AnchorPoint = V2.new(1, 0.5),
+								Position = D2.new(
+									1,
+									if item.checked or item.selected or item.marked then -32 else 0,
+									0.5,
+									0
+								),
+								Size = D2.fromOffset(0, 0),
+								AutomaticSize = E.AutomaticSize.XY,
+								ZIndex = 2,
+								table.unpack(accessories),
+							}) :: Types.Child,
+						})
+					end
+					local avatar = item.avatar
+					local rowContent = row:FindFirstChild("Content")
+					if avatar and rowContent then
+						runtime.mount(function()
+							return UI.Avatar({
+								Name = "Avatar",
+								LayoutOrder = 0,
+								name = avatar.name,
+								image = avatar.image,
+								userId = avatar.userId,
+								controlSize = "compact" :: Types.ControlSize,
+								Selectable = false,
+							})
+						end, rowContent)
+					end
 					local check = if item.children then nil else row:FindFirstChild("TrailingIcon", true)
 					if check and check:IsA("GuiObject") then
 						Compose.watch(function(use: ComposeTypes.Use)
@@ -253,11 +390,15 @@ return function(
 					return row
 				end,
 			}),
-			ctx.padding(8, 8),
-			ctx.corner(),
-		}, { Name = "MenuRows", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
+			ctx.padding(8, 8) :: Types.Child,
+			ctx.corner() :: Types.Child,
+		})
 		local rowSize = ctx.observe(rows, "AbsoluteSize")
 		local function panelWidth(use: ComposeTypes.Use): number
+			local authored = read(spec.width, use)
+			if authored ~= nil then
+				return authored
+			end
 			local widest = 0
 			for _, width in use(widths) do
 				widest = math.max(widest, width)
@@ -313,6 +454,7 @@ return function(
 					backgroundTransparency = 1,
 					onOutside = close,
 					exiting = if phase then phase.exiting else nil,
+					initialFocus = landing(current:peek()),
 				}
 			)
 		if nonmodal then
@@ -340,9 +482,47 @@ return function(
 			end
 			local left, top = at.X - offset.X + #use(path) * 288, at.Y - offset.Y + bounds.Y + 4
 			local above = false
-			if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
-				top = at.Y - offset.Y - panelSize.Y - 4
-				above = true
+			local edge, align = spec.edge or "bottom", spec.align or "start"
+			if #use(path) > 0 or (edge == "bottom" and align == "start") then
+				if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
+					top = at.Y - offset.Y - panelSize.Y - 4
+					above = true
+				end
+			else
+				local x, y = at.X - offset.X, at.Y - offset.Y
+				local function along(start: number, length: number, extentAlong: number): number
+					return if align == "center"
+						then start + (length - extentAlong) / 2
+						elseif align == "end" then start + length - extentAlong
+						else start
+				end
+				if edge == "top" or edge == "bottom" then
+					left = along(x, bounds.X, panelSize.X)
+					local below, over = y + bounds.Y + 4, y - panelSize.Y - 4
+					above = edge == "top"
+					if edge == "bottom" and offer.Y > 0 and below + panelSize.Y > offer.Y - 8 and over >= 8 then
+						above = true
+					elseif edge == "top" and over < 8 and (offer.Y <= 0 or below + panelSize.Y <= offer.Y - 8) then
+						above = false
+					end
+					top = if above then over else below
+				else
+					top = along(y, bounds.Y, panelSize.Y)
+					local after, before = x + bounds.X + 4, x - panelSize.X - 4
+					left = if edge == "trailing" then after else before
+					if edge == "trailing" and offer.X > 0 and after + panelSize.X > offer.X - 8 and before >= 8 then
+						left = before
+					elseif
+						edge == "leading"
+						and before < 8
+						and (offer.X <= 0 or after + panelSize.X <= offer.X - 8)
+					then
+						left = after
+					end
+					if offer.Y > 0 then
+						top = math.clamp(top, 8, math.max(8, offer.Y - panelSize.Y - 8))
+					end
+				end
 			end
 			if offer.X > 0 then
 				left = math.clamp(left, 8, math.max(8, offer.X - panelSize.X - 8))
@@ -352,7 +532,7 @@ return function(
 		end
 		runtime.decorate(panel, {
 			Size = function(use: ComposeTypes.Use)
-				local height = math.min(use(rowSize).Y, math.max(44, use(extent).Y - 24))
+				local height = math.min(use(rowSize).Y, math.max(44, use(extent).Y - 24), spec.maxHeight or math.huge)
 				return if use(asSheet) then D2.new(1, -24, 0, height) else D2.fromOffset(panelWidth(use), height)
 			end,
 		})
@@ -402,6 +582,10 @@ return function(
 			if gui and not nonmodal and focusIn(use) then
 				local target = if pendingFocus then surfaces.firstSelectable(panel, pendingFocus) else nil
 				if not target then
+					local chosen = landing(rows)
+					target = if chosen then surfaces.firstSelectable(panel, chosen) else nil
+				end
+				if not target then
 					for _, item in rows do
 						if not item.divider and read(item.enabled, use) ~= false then
 							target = surfaces.firstSelectable(panel, tostring(item.id))
@@ -415,6 +599,27 @@ return function(
 					gui.SelectedObject = target
 				end
 			end
+		end)
+		local centered: string? = nil
+		Compose.watch(function(use: ComposeTypes.Use)
+			local level = table.concat(use(path), "/")
+			if centered == level then
+				return
+			end
+			local chosen = landing(use(current))
+			if chosen == nil then
+				centered = level
+				return
+			end
+			local window, canvas = use(measured).Y, use(rowSize).Y
+			local row = rows:FindFirstChild(chosen)
+			if row == nil or not row:IsA("GuiObject") or window <= 0 or canvas <= 0 then
+				return
+			end
+			local offset = row.AbsolutePosition.Y - rows.AbsolutePosition.Y
+			local target = math.clamp(offset + row.AbsoluteSize.Y / 2 - window / 2, 0, math.max(0, canvas - window))
+			panel.CanvasPosition = V2.new(panel.CanvasPosition.X, target)
+			centered = level
 		end)
 		surfaces.attach(modal, {
 			Compose.keyed({
@@ -529,6 +734,24 @@ return function(
 	UI.Menu = ctx.construct("Menu", function<V>(spec: Nav.MenuSpec<V>): Frame
 		assert(spec.items ~= nil, "Menu requires items")
 		menuItems(read(spec.items))
+		assert(
+			spec.edge == nil or table.find({ "top", "bottom", "leading", "trailing" }, spec.edge),
+			"Facet UI.Menu: edge must be top, bottom, leading or trailing"
+		)
+		assert(
+			spec.align == nil or table.find({ "start", "center", "end" }, spec.align),
+			"Facet UI.Menu: align must be start, center or end"
+		)
+		assert(
+			spec.maxHeight == nil
+				or (type(spec.maxHeight) == "number" and spec.maxHeight > 0 and spec.maxHeight < math.huge),
+			"Facet UI.Menu: maxHeight must be a finite number of pixels above 0"
+		)
+		local width = read(spec.width)
+		assert(
+			width == nil or (type(width) == "number" and width > 0 and width < math.huge),
+			"Facet UI.Menu: width must be a finite number of pixels above 0, or a readable of one"
+		)
 		local opened = spec.isPresented or Compose.cell(false)
 		local function close()
 			if opened:peek() then
@@ -615,6 +838,10 @@ return function(
 			"onClose",
 			"enabled",
 			"isPresented",
+			"edge",
+			"align",
+			"width",
+			"maxHeight",
 		}, {
 			Name = "Menu",
 			BackgroundTransparency = 1,
@@ -963,6 +1190,7 @@ return function(
 						label = option.label,
 						icon = option.icon,
 						description = option.description,
+						badge = option.badge,
 						dismiss = not spec.multiple,
 						marked = function(use: ComposeTypes.Use)
 							return isSelected(option.value, use)

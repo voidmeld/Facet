@@ -1313,7 +1313,7 @@ t.describe("native parity paint", function()
 				t.expect(padding.PaddingTop).toBe(UDim.new(0, 0))
 				local line = find(divider, "Line")
 				t.expect(line:HasTag("facet-divider")).toBe(true)
-				t.expect(line.Size.Y.Offset).toBe(if name == "DividerHeavy" then 3 else hairline)
+				t.expect(line.Size.Y.Offset).toBe(if name == "DividerHeavy" then 3 * hairline else hairline)
 			end
 		end
 		check(theme:peek())

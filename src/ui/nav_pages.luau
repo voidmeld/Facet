@@ -2,6 +2,7 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
+local Media = require("./media_types")
 local ComposeTypes = require("../vendor/compose/core")
 local reducedMotion = require("./motion")
 
@@ -12,6 +13,7 @@ type Controls = {
 	Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
 	Menu: Nav.MenuConstructor,
 	Picker: Nav.PickerConstructor,
+	StatusIndicator: Types.Constructor<Media.StatusIndicatorProps, TextLabel>,
 }
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
@@ -112,7 +114,28 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"TabView.retention uses Compose all or top"
 		)
 		local depth = tabDepth
-		local nested = depth > 0
+		local nested = Compose.cell(depth > 0)
+		local statuses: { [string]: boolean } =
+			{ neutral = true, info = true, success = true, warning = true, error = true, accent = true }
+		local forms: { [string]: boolean } = { dot = true, ring = true, square = true, dash = true }
+		for _, tab in read(spec.tabs) do
+			local indicator = tab.indicator
+			if indicator ~= nil then
+				assert(
+					type(indicator) == "table",
+					"Facet UI.TabView: tab.indicator must be a StatusIndicator spec table { form?, status?, count?, max? }"
+				)
+				assert(
+					indicator.status == nil or statuses[indicator.status],
+					"Facet UI.TabView: tab.indicator.status must be neutral, info, success, warning, error or accent"
+				)
+				assert(
+					indicator.form == nil or forms[indicator.form],
+					"Facet UI.TabView: tab.indicator.form must be dot, ring, square or dash"
+				)
+			end
+		end
+		local fit = spec.textSize == nil or spec.textSize == "fit"
 		assert(
 			spec.style == nil or table.find({ "automatic", "sidebarAdaptable", "collapsible" }, spec.style),
 			"Invalid TabView.style"
@@ -160,6 +183,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"onChange",
 		}, { Name = "TabView", BackgroundTransparency = 1, Size = D2.fromScale(1, 1) }))
 		local dimensions = ctx.observe(root, "AbsoluteSize")
+		local function locate()
+			local at: Instance? = root.Parent
+			local inside = depth > 0
+			while at and not inside do
+				inside = at:GetAttribute("FacetTabPage") == true
+				at = at.Parent
+			end
+			if nested:peek() ~= inside then
+				nested:set(inside)
+			end
+		end
+		runtime.connect(root, "AncestryChanged", locate)
+		locate()
 		local input = surfaces.service("UserInputService")
 		local primaryInput = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
 		local function resolvePlacement(use: ComposeTypes.Use): Nav.Placement
@@ -170,7 +206,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if explicit and explicit ~= "automatic" then
 				return explicit
 			end
-			if nested then
+			if use(nested) then
 				return "topBar"
 			end
 			local size = use(dimensions)
@@ -193,7 +229,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if spec.style == "collapsible" then
 				return true
 			end
-			if not nested or (spec.style ~= nil and spec.style ~= "automatic") then
+			if not use(nested) or (spec.style ~= nil and spec.style ~= "automatic") then
 				return false
 			end
 			local explicit = read(spec.placement, use)
@@ -302,8 +338,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			previous = id
 		end)
+		local function tabEnabled(id: string, use: ComposeTypes.Use?): boolean
+			local tab = read(tabMap, use)[id]
+			return tab ~= nil and read(tab.enabled, use) ~= false
+		end
 		local function select(id: string): ()
-			if read(spec.enabled) == false or id == spec.selection:peek() then
+			if read(spec.enabled) == false or id == spec.selection:peek() or not tabEnabled(id) then
 				return
 			end
 			spec.selection:set(id)
@@ -363,13 +403,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								.. (if badge ~= nil and badge ~= "" then " (" .. tostring(badge) .. ")" else "")
 						end,
 						icon = tab.icon,
-						TextSize = spec.textSize,
+						TextSize = if fit then nil else (spec.textSize :: unknown) :: Types.Value<number>,
 						LayoutOrder = index,
 						Size = function(use: ComposeTypes.Use)
-							return if use(placement) == "sidebar" then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
+							local place = use(placement)
+							if fit and string.find(place, "bottom") ~= nil then
+								return D2.new(1 / math.max(1, #use(visibleTabs)), -4, 0, 44)
+							end
+							return if place == "sidebar" then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
 						end,
 						AutomaticSize = function(use: ComposeTypes.Use)
-							return if use(placement) == "sidebar" then E.AutomaticSize.None else E.AutomaticSize.X
+							local place = use(placement)
+							return if place == "sidebar" or (fit and string.find(place, "bottom") ~= nil)
+								then E.AutomaticSize.None
+								else E.AutomaticSize.X
 						end,
 						TextXAlignment = function(use: ComposeTypes.Use)
 							return if use(placement) == "sidebar"
@@ -377,7 +424,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								else E.TextXAlignment.Center
 						end,
 						TextTruncate = E.TextTruncate.AtEnd,
-						enabled = spec.enabled,
+						enabled = function(use: ComposeTypes.Use): boolean
+							return read(spec.enabled, use) ~= false and read(use(current).enabled, use) ~= false
+						end,
 						selected = function(use: ComposeTypes.Use)
 							return use(spec.selection) == tab.id and read(spec.indicator, use) == "pill"
 						end,
@@ -386,6 +435,49 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end,
 					})
 					button:AddTag("facet-tab-item")
+					if fit then
+						local measure = ctx.text({
+							Name = "LabelMeasure",
+							Visible = false,
+							TextWrapped = false,
+							Text = function(use: ComposeTypes.Use): string
+								return tostring(read(use(current).label, use) or tab.id)
+							end,
+							TextSize = function(use: ComposeTypes.Use): number
+								return (ctx.metric("typography.control.size", use))
+							end,
+						})
+						surfaces.attach(button, { measure :: Types.Child })
+						local natural = ctx.observe(measure, "TextBounds")
+						local room = ctx.observe(button, "AbsoluteSize")
+						Compose.watch(function(use: ComposeTypes.Use)
+							local width = use(natural).X
+							local available = use(room).X - 2 * ctx.controlSize(nil, "paddingX", use)
+							if string.find(use(placement), "bottom") == nil or width <= 0 or available <= 0 then
+								button:ResetPropertyToDefault("TextSize")
+								return
+							end
+							local largest = ctx.metric("typography.control.size", use)
+							local smallest = ctx.metric("typography.caption.size", use)
+							button.TextSize = math.clamp(math.floor(largest * available / width), smallest, largest)
+						end)
+						button:SetAttribute("FacetTextFit", true)
+					end
+					local indicator = tab.indicator
+					if indicator then
+						surfaces.attach(button, {
+							UI.StatusIndicator({
+								Name = "Status",
+								status = indicator.status,
+								form = indicator.form,
+								count = indicator.count,
+								max = indicator.max,
+								AnchorPoint = V2.new(1, 0),
+								Position = D2.new(1, -4, 0, 4),
+								ZIndex = 3,
+							}) :: Types.Child,
+						})
+					end
 					Compose.watch(function(use: ComposeTypes.Use)
 						local current = use(spec.selection) == tab.id
 						local place = use(placement)
@@ -528,6 +620,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								return use(state).top
 							end,
 							SelectionGroup = true,
+							Attributes = { FacetTabPage = true } :: Types.Attributes,
 							built,
 						},
 						state,
@@ -617,6 +710,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								id = tab.id,
 								label = tab.label or tab.id,
 								icon = tab.icon,
+								enabled = tab.enabled,
 								marked = function(use: ComposeTypes.Use)
 									return use(spec.selection) == tab.id
 								end,
@@ -722,9 +816,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					break
 				end
 			end
-			local nextIndex = if spec.shoulderNavigation == "content"
-				then math.clamp(at + direction, 1, #list)
-				else (at - 1 + direction) % #list + 1
+			local nextIndex = at
+			for _ = 1, #list do
+				local candidate = if spec.shoulderNavigation == "content"
+					then math.clamp(nextIndex + direction, 1, #list)
+					else (nextIndex - 1 + direction) % #list + 1
+				if candidate == nextIndex then
+					break
+				end
+				nextIndex = candidate
+				if tabEnabled(list[nextIndex].id) then
+					break
+				end
+			end
 			select(list[nextIndex].id)
 		end
 		if ctx.action then

@@ -470,6 +470,25 @@ menus keep the control-specific navigation of the menu.
   item that opened it.
 - The menu panel scales and fades from the edge nearest to its trigger. See
   [Motion](#motion).
+- `edge` (`top`, `bottom`, `leading` or `trailing`) and `align` (`start`,
+  `center` or `end`) place the root panel against its trigger. The default is
+  `bottom` and `start`. When the panel does not fit on its edge and fits on
+  the opposite edge, it flips. Submenus keep their position beside their
+  parent level. A malformed value causes an error that names the option.
+- `width` is the width of the floating panel in pixels, or a readable of one.
+  `maxHeight` bounds the whole floating panel in pixels. The panel is always
+  bounded by the screen, and its rows scroll inside it. The row ids and the
+  activation do not change.
+- A level whose `selected` group holds one of its rows opens with the
+  selection on that row, and scrolls that row to the center of the list. A
+  `checked` item does not move the landing.
+- Every row is at least the target size (44) tall, and the label leads the row.
+  A row can also have `badge` (a string, a number or a readable, shown as a
+  Badge named `Count`), `avatar` (`{ name, image?, userId? }`, a compact
+  Avatar that takes no selection), `sectionTitle` (a caption heading before the
+  row, never a selection stop) and `shortcutLabel` (display text such as
+  "Ctrl+B"). `shortcutLabel` binds no key. Bind the key where the action is.
+  Picker passes the option `badge` to its menu rows.
 
 SplitButton combines a primary `label` and `onActivate` action with the
 secondary `items` of the menu. Use it when the secondary operations supplement
@@ -529,6 +548,21 @@ cannot be hidden.
 `onChange(id)` reports a user selection. A programmatic selection change does
 not look like user input. The control owns scroll and focus restoration and
 shoulder navigation.
+
+A tab can have `indicator`, a StatusIndicator spec `{ form?, status?, count?,
+max? }`. It shows in that tab's own button. The whole-control `indicator` is a
+different setting. A tab with `enabled = false` stays in the strip, but no
+route selects it: a press, shoulder navigation and the collapsed menu skip or
+refuse it. A malformed tab indicator causes an error that names `indicator`.
+
+`textSize` defaults to `fit`. In a bottom bar each tab gets an equal share of
+the width, and its words shrink from the `control` type size toward the
+`caption` size to fit that share before the engine truncates them. The control
+measures the words at the control size. A number or a readable number sets a
+fixed size.
+
+A TabView that is built inside the page of another TabView is nested, also
+when a branch of that page builds it later. A nested TabView uses a top band.
 
 A page change uses a native crossfade. The default is
 `transition = { seconds = 0.2, ease = Compose.easing.outQuad }`. Supply other
@@ -1002,9 +1036,11 @@ from `body` with the `SemiBold` weight. If a definition sets `control` and does
 not set `numeral`, `define` makes `numeral` from `control` with the `Bold`
 weight. The derived role keeps the family, style, size and line height.
 
-- `neutralPackage()` returns a mutable copy of the neutral theme package.
+- `neutralPackage()` returns a mutable copy of the neutral theme package. It
+  has the palettes `Dark` (the default) and `Light`.
 - `define(definition)` derives from `base` (neutral by default) and returns
-  `package?, report`. Check `report.ok` before use. An accepted theme package is
+  `package?, report`. A derived package keeps only the first palette of its
+  base, unless the definition gives its own `style.themes`. Check `report.ok` before use. An accepted theme package is
   recursively frozen. Callbacks, cycles and malformed definitions are rejected.
   A type role needs a positive size. Each `metrics.space` step needs a pixel
   size of 0 or more. A chrome shadow name must be a

@@ -15,6 +15,7 @@ local names = {
 	"collections",
 	"component_motion",
 	"container_grid",
+	"containers",
 	"flow_wrap",
 	"hud",
 	"identity",

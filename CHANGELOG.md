@@ -29,6 +29,10 @@
 - `UI.StepIndicator` shows the state of each workflow step. `current` alone sets the underline and the summary. Only navigable, enabled steps with `onSelect` are Buttons. When the measured width is too small, the row changes to "Step n of m" and a Steps menu.
 - `UI.Vote` shows up, down or none over the caller's value in the segmented strip paint. A press proposes the next value, and a press on the chosen side proposes `none`. A read-only vote shows the choice with no Button.
 - `UI.Card` shows an item with artwork and a title, and reveals a primary action and a More menu on engagement. The action plate is always laid out, so the card and its siblings never move. An engaged card lifts to 1.04 with a raised shadow. In a VirtualGrid, `browseTarget` and `controls.enterActions()` make the cell the browse stop and let a gamepad enter the actions.
+- Menu takes `edge`, `align`, `width` and `maxHeight`. A floating panel is always bounded by the screen. A level opens with the selection on its selected row, which scrolls to the center. Rows take `badge`, `avatar`, `sectionTitle` and a display-only `shortcutLabel`, and Picker passes an option `badge` to its menu rows.
+- TabView takes a per-tab `indicator` and `enabled`. Tab words in a bottom bar shrink toward the caption size to fit before they truncate. A TabView that a page builds later in a branch is nested.
+- The Facet Neutral package has a `Light` palette after `Dark`, so theme pickers offer Neutral Light. A derived package keeps only the first palette of its base.
+- The gallery adds Motion and layout > Layout > Containers, which shows each container job with native objects and the layout constructors. The Practical recipes guide lists them. The heavy recipe divider is three theme hairlines.
 - `UI.VirtualGrid` keeps half of each gap at its outer edges, so a lifted card in a corner cell is not cut by the scroll clip. The lanes are narrower by one cross gap and the canvas is longer by one gap.
 
 ## Pre-0.12.0 development history

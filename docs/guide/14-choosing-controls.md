@@ -55,6 +55,11 @@ views. A label such as "game" or "gallery" does not change the navigation role.
 Use NavigationStack for drill-down. Do not encode a path as a set of unrelated
 tabs.
 
+Leave the placement automatic at both levels. Build the inner TabView anywhere
+under an outer page: in its content factory, or later in a `Compose.show` or
+`Compose.keyed` branch of that page. The inner TabView is then nested and uses a
+top band.
+
 ## Radial actions
 
 Choose a RadialMenu when all these conditions are true:

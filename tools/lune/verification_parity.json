@@ -35991,6 +35991,684 @@
       ],
       "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-01",
+      "group": "input-actions",
+      "title": "ButtonA opens, ButtonB closes, and the next ButtonA opens again",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::opens on ButtonA, closes on ButtonB with the selection back on the trigger, and opens again"
+      ],
+      "weaker": "ButtonA is the native Activated event of the trigger; ButtonB is the ModalBack action.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-02",
+      "group": "layout-geometry",
+      "title": "edge and align place the root panel; absent keeps bottom/start",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::places the root panel by edge and align and keeps bottom and start when they are absent"
+      ],
+      "weaker": "The trigger and panel rectangles are injected; the native popover draws the panel.",
+      "needsLive": "menu-placement",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-03",
+      "group": "menus-pickers",
+      "title": "width sets the panel width",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::sets the floating panel width from width"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-04",
+      "group": "menus-pickers",
+      "title": "Rows with a badge, a shortcut or a section heading never collapse the panel",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::keeps the panel width for rows with a badge, a shortcut label or a section heading"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-05",
+      "group": "layout-geometry",
+      "title": "Plain rows lead like accessory rows, and every row reserves the target floor",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::leads plain rows like accessory rows and gives every row the target floor"
+      ],
+      "weaker": "Row heights and the left content alignment are asserted; label x positions and hit rectangles need Studio.",
+      "needsLive": "menu-rows",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-06",
+      "group": "menus-pickers",
+      "title": "A floating panel never outgrows the screen: a long list scrolls",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::bounds a floating panel by the screen so a long list scrolls"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-07",
+      "group": "focus-selection",
+      "title": "A menu opens on its selected row, centred in the scrolled list",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::opens a level on its selected row, centred in the scrolled list"
+      ],
+      "weaker": "The row and list rectangles are injected; the centring is computed from them.",
+      "needsLive": "menu-landing",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-08",
+      "group": "menus-pickers",
+      "title": "maxHeight bounds the whole panel and the rows scroll, with ids and activation intact",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::bounds the whole panel by maxHeight while the rows keep their ids and activation"
+      ],
+      "weaker": "The keyboard walk to the last row and its scroll into view are native ScrollingFrame selection behavior.",
+      "needsLive": "menu-landing",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-09",
+      "group": "menus-pickers",
+      "title": "A bounded list keeps submenus anchored to their parent row",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::keeps submenus anchored to their parent level in a bounded list"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-10",
+      "group": "menus-pickers",
+      "title": "badge, avatar, sectionTitle and a display-only shortcutLabel share the row recipe",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::shares one row recipe for badge, avatar, sectionTitle and a display-only shortcutLabel"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-11",
+      "group": "error-handling",
+      "title": "Malformed placement and bounds are refused by name",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::refuses malformed placement and bounds by name"
+      ],
+      "weaker": "width is a number of pixels natively; main refused a bare number because it took a dimension table. The native control refuses 0 and a string.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-12",
+      "group": "layout-geometry",
+      "title": "Floating rows sit one path level deeper (List/Rows); the fill spans the card inside its hairline",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 4,
+      "class": "c",
+      "removal": "The solver path shape and its hairline card geometry are not native. Native rows are TextButtons named by id under MenuRows in a ScrollingFrame; the row fill is the native button background.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-13",
+      "group": "gallery-examples",
+      "title": "Menu scenario rows use the List/Rows path",
+      "mainSpecs": [
+        "menu_scenario"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "A path rename of the solver tree only; the native scenario rows are found by id.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-14",
+      "group": "menus-pickers",
+      "title": "Stateful menu rows use the List/Rows path",
+      "mainSpecs": [
+        "stateful_menu"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "A path rename of the solver tree only; native_parity_navigation toggles checked and selected rows by id.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-menu-15",
+      "group": "menus-pickers",
+      "title": "Picker menu rows carry badge and sectionTitle on every list engine",
+      "mainSpecs": [
+        "popup_button"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::carries a Picker option badge into its menu row as the count seal"
+      ],
+      "weaker": "The badge reaches the menu row; a Picker option sectionTitle belongs to the Picker option type of the pickers family.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-01",
+      "group": "navigation-containers",
+      "title": "A page TabView built later inside a branch of the page is nested too",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::nests a TabView that a page builds later inside one of its branches"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-02",
+      "group": "navigation-containers",
+      "title": "A tab's indicator is a StatusIndicator in its own segment, and survives every switch",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::paints a tab indicator as a StatusIndicator in its own tab and keeps it through every switch"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-03",
+      "group": "error-handling",
+      "title": "An indicator that is not a StatusIndicator spec is refused by name",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::refuses a tab indicator that is not a StatusIndicator spec by name"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-04",
+      "group": "navigation-containers",
+      "title": "A disabled tab cannot be selected by a tap and keeps its place in the strip",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::keeps a disabled tab in the strip and refuses its selection on every route"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-tab-05",
+      "group": "gallery-examples",
+      "title": "Bottom tabs lost their SectionRow wrapper",
+      "mainSpecs": [
+        "tab_view_scenario"
+      ],
+      "mainCases": 4,
+      "class": "c",
+      "removal": "A path shape of the solver tree only; native tab rows are named TabRow-<id> when sections exist.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-01",
+      "group": "text-measure-fit",
+      "title": "The phone bottom bar shrinks its category words to fit before it truncates one",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::shrinks tab words toward the caption role in a filling bottom bar before they truncate"
+      ],
+      "weaker": "The measured word width and the tab width are injected; the real glyph widths at 320 and 389 px need Studio.",
+      "needsLive": "tab-fit",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-02",
+      "group": "gallery-examples",
+      "title": "Showcase categories are Status and Menus; every inner tab is visited",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 4,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::names the Status and Menus groups and the Paging and Steps tabs in All controls"
+      ],
+      "weaker": "native_gallery mounts every all_controls tab; the category bar walk is the native TabView.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-03",
+      "group": "layout-geometry",
+      "title": "A category page is the room under its bar: Choices' Vote row is not below the fold",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "needsLive": "showcase-room",
+      "nativeMechanism": "Native TabView content frame and ScrollingFrame canvas.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-04",
+      "group": "text-measure-fit",
+      "title": "Every inner tab widens to its engine width when the words arrive",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "needsLive": "tab-fit",
+      "nativeMechanism": "Native AutomaticSize X on each tab button follows the engine text bounds.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-showcase-05",
+      "group": "layout-geometry",
+      "title": "The Basics footer stacks its actions at 320x640 Largest (ViewThatFits measure and arrange agree)",
+      "mainSpecs": [
+        "showcase_tabs"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "UI.ViewThatFits and the candidate solver were deleted (contracts mech1-04, mech1-126). A screen chooses a form with Compose.show on observed native bounds.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-fits-01",
+      "group": "layout-geometry",
+      "title": "ViewThatFits: an honest candidate that fits wins; measure and arrange choose at the same box",
+      "mainSpecs": [
+        "container_memo"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "UI.ViewThatFits was deleted with the solver (mech1-04, mech1-126); there is no candidate rule to verify.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-01",
+      "group": "error-handling",
+      "title": "G1: app.controls.ErrorBoundary takes the region dispatch; the id refusal names the naming form",
+      "mainSpecs": [
+        "error_boundary"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "UI.ErrorBoundary and the text primitive were deleted (mech1-115). Containment stays for presented Alert content and NavigationStack destinations; constructors take the native Name or the constructor name form.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-02",
+      "group": "theme-packages",
+      "title": "G3: Facet Neutral declares its Light theme; a derived package keeps its own variant list",
+      "mainSpecs": [
+        "theme_package"
+      ],
+      "mainCases": 3,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_themes::native parity themes::paints omitted semantic pairs from the neutral fallbacks in every palette",
+        "native_parity_themes::native parity themes::lists Neutral first then names, keeps the installed package on reselection and selects a palette"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-03",
+      "group": "navigation-containers",
+      "title": "G4: a TabView built later in a branch of a page is nested",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::nests a TabView that a page builds later inside one of its branches"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-04",
+      "group": "adaptive-environment",
+      "title": "G5: the environment preview previews text size and transparency, and reset returns every fact to automatic",
+      "mainSpecs": [
+        "preview"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "The environment and its preview were deleted with the application shell. The engine owns the preferred text size and transparency; Studio emulates them. The gallery previews only viewing distance.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-05",
+      "group": "gallery-examples",
+      "title": "G5: Reset everything to Automatic clears every preview choice",
+      "mainSpecs": [
+        "gallery_chrome"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "The showcase settings have no device, orientation or input preview; the native gallery keeps only the viewing-distance preview.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-06",
+      "group": "layout-geometry",
+      "title": "G7: a collapsed outline section closes up in a ScrollView",
+      "mainSpecs": [
+        "disclosure_group"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::closes up a collapsed outline section in a scroller and reopens it"
+      ],
+      "weaker": "The content leaves and returns and the canvas is native AutomaticCanvasSize; the canvas height needs Studio.",
+      "needsLive": "outline-closeup",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-lab-07",
+      "group": "layout-geometry",
+      "title": "hidden keeps its layout space; UI.When removes it",
+      "mainSpecs": [
+        "api"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::fades a subtree as one group and keeps a transparent group laid out while removal closes up"
+      ],
+      "weaker": "The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false; Compose.show removes the node. Guide 17 documents both.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-navh-01",
+      "group": "input-actions",
+      "title": "A focused horizontal value control and live chrome share one owner of the arrows",
+      "mainSpecs": [
+        "focus_chrome_mixed"
+      ],
+      "mainCases": 2,
+      "class": "b",
+      "candidateCases": [
+        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return"
+      ],
+      "nativeMechanism": "Native gamepad and arrow selection owns horizontal movement; a selected Slider or Stepper binds Left and Right only while it is selected and yields them at its bounds. No focus chrome host exists.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-01",
+      "group": "layout-geometry",
+      "title": "a styled group with one activation, disabled by inheritance",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::runs one activation in a styled group and disables it by inheritance"
+      ],
+      "weaker": "The disabled group is native Interactable on the ancestor.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-02",
+      "group": "layout-geometry",
+      "title": "fixed, percent, fill, hug and minimum axes; a fixed axis lets its child overflow",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::declares fixed, quarter and fill axes as native sizes and flex"
+      ],
+      "weaker": "Native Size and UIFlexItem are asserted; hug, minimum and the overflow rectangle need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-03",
+      "group": "layout-geometry",
+      "title": "1:1, 16:9 and 9:16 all fit inside the same 96x96 offer",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::sizes 1:1, 16:9 and 9:16 subjects inside the same 96 by 96 offer and centres them"
+      ],
+      "weaker": "The subject sizes and centred anchors are asserted; solved rectangles need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-04",
+      "group": "layout-geometry",
+      "title": "scale paints larger or smaller while the solved and input rects stay put",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::scales paint with a UIScale while the declared box stays"
+      ],
+      "weaker": "The UIScale and the unchanged box are asserted; the painted footprint needs Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-05",
+      "group": "layout-geometry",
+      "title": "group opacity fades a nested subtree as one group; zero still focuses, hidden does not",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::fades a subtree as one group and keeps a transparent group laid out while removal closes up"
+      ],
+      "weaker": "Zero-transparency focus is native CanvasGroup behavior; selection of a faded button needs Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-06",
+      "group": "layout-geometry",
+      "title": "nine alignments move a child through spare room; a hugging parent has none",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::moves a child through spare room with nine alignments"
+      ],
+      "weaker": "Anchor and scale position are asserted; the hugging parent case needs Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-07",
+      "group": "layout-geometry",
+      "title": "gaps space siblings without insetting them; a per-edge padding moves only its edge",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::spaces siblings with a gap and moves only the named edges with padding"
+      ],
+      "weaker": "Padding values are asserted; sibling rectangles need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-08",
+      "group": "layout-geometry",
+      "title": "wrap moves children to a second line; no-wrap overruns; clip cuts at the edge",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::wraps a row to a second line, or keeps it on one line in a sideways scroller"
+      ],
+      "weaker": "Wraps and the X scroller are asserted; the overrun and clip rectangles need Studio.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-09",
+      "group": "layout-geometry",
+      "title": "mixed per-corner rounding, an authored stroke and a shadow are data on one node",
+      "mainSpecs": [
+        "view_recipes"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_content_navigation::native content navigation deltas::rounds, strokes and shadows one node with native modifiers"
+      ],
+      "weaker": "A UICorner rounds every corner with one radius natively; main painted per-corner radii.",
+      "needsLive": "containers-rects",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-recipes-10",
+      "group": "paint-theming",
+      "title": "The heavy divider is three theme hairlines; the leading inset starts at the text",
+      "mainSpecs": [
+        "recipes_common"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_paint::native parity paint::insets and paints the recipe dividers from the installed theme"
+      ],
+      "weaker": "The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
     }
   ],
   "bugs": [
@@ -36459,24 +37137,32 @@
     "content-navigation": {
       "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
-      "contracts": 76,
-      "mainCases": 76,
+      "contracts": 120,
+      "mainCases": 132,
       "mainCasesByClass": {
-        "a": 74,
-        "b": 2
+        "a": 111,
+        "b": 6,
+        "c": 15
       },
       "needsLive": [
         "card-envelope",
         "card-grid",
         "card-pad",
+        "containers-rects",
+        "menu-landing",
+        "menu-placement",
+        "menu-rows",
+        "outline-closeup",
         "pagination-arrows-still",
         "pagination-fit",
         "pagination-hug",
         "pagination-neighbours",
         "pagination-targets",
+        "showcase-room",
         "steps-circle",
         "steps-fit",
         "steps-underline",
+        "tab-fit",
         "vote-pad",
         "vote-targets"
       ]
