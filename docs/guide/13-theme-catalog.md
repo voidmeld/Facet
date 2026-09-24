@@ -7,7 +7,7 @@ native StyleSheet and StyleLink.
 
 | Theme package family | Purpose |
 |---|---|
-| Facet Neutral | Baseline semantic colors, control sizes and typography. |
+| Facet Neutral | Baseline semantic colors, control sizes and typography, in a Dark and a Light palette. |
 | Classic Desktop / Compact Pointer | Dense presentation for tools. |
 | Glossy Mobile / Glossy Touch | Rounded, prominent touch controls. |
 | Fantasy Parchment / Fantasy Ornate | Paper, framed surfaces and illustrated chrome. |

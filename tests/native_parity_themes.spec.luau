@@ -415,10 +415,17 @@ t.describe("native parity themes", function()
 		t.expect(report.ok).toBe(true)
 		local derived, derivedReport = themes.define({ base = package, identity = { id = "derived-two" } })
 		t.expect(derivedReport.ok).toBe(true)
-		t.expect(#derived.style.themes).toBe(2)
+		t.expect(#derived.style.themes).toBe(1)
+		t.expect(derived.style.themes[1].name).toBe("Dark")
+		local neutralNames = {}
+		for _, palette in themes.neutralPackage().style.themes do
+			table.insert(neutralNames, palette.name)
+		end
+		t.expect(table.concat(neutralNames, ",")).toBe("Dark,Light")
 		local h = harness()
 		for _, candidate in { package, derived } do
-			for _, name in { "Dark", "Light" } do
+			for _, palette in candidate.style.themes do
+				local name = palette.name
 				local sheet, stop = sheetFor(h, candidate, { theme = name })
 				local function expectRole(selector: string, property: string, role: string)
 					local value = neutral[role]
@@ -889,6 +896,7 @@ t.describe("native parity themes", function()
 		alpha.identity.id = "alpha"
 		alpha.identity.displayName = "Alpha"
 		alpha.style.defaultTheme = "Dawn"
+		alpha.style.themes = { alpha.style.themes[1] }
 		alpha.style.themes[1].name = "Dawn"
 		local dusk = table.clone(alpha.style.themes[1])
 		dusk.name = "Dusk"
@@ -896,6 +904,7 @@ t.describe("native parity themes", function()
 		local zeta = themes.neutralPackage()
 		zeta.identity.id = "zeta"
 		zeta.identity.displayName = "Zeta"
+		zeta.style.themes = { zeta.style.themes[1] }
 		local ctx: any = {
 			Facet = Facet,
 			Compose = Compose,
@@ -961,7 +970,7 @@ t.describe("native parity themes", function()
 		find(root, "Settings").Activated.fire()
 		local picker = find(root, "Theme")
 		t.expect(choices(picker)).toEqual({ "Facet Neutral", "Alpha", "Zeta" })
-		t.expect(find(root, "Mode")).toBe(nil)
+		t.expect(choices(find(root, "Mode"))).toEqual({ "Dark", "Light" })
 		local initialWrites = writes
 		find(picker, "Alpha").Activated.fire()
 		t.expect(ctx.theme:peek()).toBe(alpha)
