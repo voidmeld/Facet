@@ -5107,4 +5107,430 @@ t.describe("native parity reference applications", function()
 			end
 		)
 	end)
+
+	t.describe("NavigationStack and CollapsibleView", function()
+		type StackWorld = {
+			engine: any,
+			runtime: any,
+			gui: any,
+			input: any,
+			screen: any,
+			baseline: { live: number, connections: number },
+			stop: () -> (),
+		}
+
+		local function world(build: (any, any) -> any, options: { [string]: any }?): StackWorld
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local gui = engine.new("GuiService")
+			local input = engine.new("UserInputService")
+			input.GetFocusedTextBox = function()
+				return nil
+			end
+			input.IsKeyDown = function()
+				return false
+			end
+			local config: { [string]: any } = {
+				types = engine.types,
+				guiService = gui,
+				services = { GuiService = gui, UserInputService = input },
+			}
+			for key, value in (options or {}) :: { [string]: any } do
+				config[key] = value
+			end
+			local target = engine.new("Folder")
+			local baseline = engine.census()
+			local UI = Facet.controls(runtime, config :: any)
+			local Host = runtime.constructors
+			local stop, screen = runtime.mount(function()
+				return Host.ScreenGui({ build(UI, Host) })
+			end, target)
+			return {
+				engine = engine,
+				runtime = runtime,
+				gui = gui,
+				input = input,
+				screen = screen,
+				baseline = baseline,
+				stop = function()
+					stop()
+					runtime:dispose()
+				end,
+			}
+		end
+
+		local function find(root: any, name: string): any
+			if root.Name == name then
+				return root
+			end
+			for _, child in root:GetChildren() do
+				local found = find(child, name)
+				if found then
+					return found
+				end
+			end
+			return nil
+		end
+
+		local function layers(stack: any): { any }
+			local found = {}
+			for _, child in stack:GetChildren() do
+				if child:IsA("GuiObject") then
+					table.insert(found, child)
+				end
+			end
+			return found
+		end
+
+		local function counted(Host: any, name: string, counts: { built: number, disposed: number })
+			return function()
+				counts.built += 1
+				Compose.cleanup(function()
+					counts.disposed += 1
+				end)
+				return Host.Frame({ Name = name })
+			end
+		end
+
+		t.it("fades a pushed page in over its transition and swaps immediately under reduced motion", function()
+			local path = Compose.cell({})
+			local counts = { built = 0, disposed = 0 }
+			local w = world(function(UI, Host)
+				return UI.NavigationStack({
+					path = path,
+					transition = { seconds = 0.2 },
+					root = { title = "Root", content = counted(Host, "RootBody", counts) },
+					destinations = {
+						detail = { title = "Detail", content = counted(Host, "DetailBody", counts) },
+						more = { title = "More", content = counted(Host, "MoreBody", counts) },
+					},
+				})
+			end)
+			local root = find(w.screen, "@root")
+			t.expect(root.ClassName).toBe("CanvasGroup")
+			w.engine.heartbeat.fire(0.3)
+			t.expect(root.GroupTransparency).toBe(0)
+			t.expect(root.Visible).toBe(true)
+			t.expect(root.Interactable).toBe(true)
+			path:set({ { id = "detail" } })
+			local detail = find(w.screen, "DetailBody").Parent.Parent
+			t.expect(detail.Name).toBe("detail")
+			t.expect(detail.ClassName).toBe("CanvasGroup")
+			t.expect(detail.GroupTransparency).toBe(1)
+			t.expect(detail.Interactable).toBe(true)
+			t.expect(root.Interactable).toBe(false)
+			w.engine.heartbeat.fire(0.1)
+			t.expect(detail.GroupTransparency).toBeGreaterThan(0)
+			t.expect(detail.GroupTransparency).toBeLessThan(1)
+			t.expect(root.GroupTransparency).toBeGreaterThan(0)
+			t.expect(root.GroupTransparency).toBeLessThan(1)
+			t.expect(root.Visible).toBe(true)
+			t.expect(root.Interactable).toBe(false)
+			w.engine.heartbeat.fire(0.2)
+			t.expect(detail.GroupTransparency).toBe(0)
+			t.expect(detail.Visible).toBe(true)
+			t.expect(root.Visible).toBe(false)
+			t.expect(root.GroupTransparency).toBe(1)
+			w.gui.ReducedMotionEnabled = true
+			path:set({ path:peek()[1], { id = "more" } })
+			local more = find(w.screen, "MoreBody").Parent.Parent
+			t.expect(more.Name).toBe("more")
+			t.expect(more.GroupTransparency).toBe(0)
+			t.expect(more.Visible).toBe(true)
+			t.expect(more.Interactable).toBe(true)
+			t.expect(detail.Visible).toBe(false)
+			t.expect(detail.Interactable).toBe(false)
+			t.expect(counts.built).toBe(3)
+			t.expect(counts.disposed).toBe(0)
+			w.stop()
+			t.expect(counts.disposed).toBe(3)
+		end)
+
+		t.it("leaves one opaque interactive root page after rapid pushes and pops under a fade", function()
+			local path = Compose.cell({})
+			local counts = { built = 0, disposed = 0 }
+			local w = world(function(UI, Host)
+				return UI.NavigationStack({
+					path = path,
+					transition = { seconds = 0.2 },
+					root = { title = "Root", content = counted(Host, "RootBody", counts) },
+					destinations = { detail = { title = "Detail", content = counted(Host, "DetailBody", counts) } },
+				})
+			end)
+			local stack = find(w.screen, "NavigationStack")
+			local root = find(w.screen, "@root")
+			w.engine.heartbeat.fire(0.3)
+			for _ = 1, 4 do
+				path:set({ { id = "detail" } })
+				w.engine.heartbeat.fire(1 / 120)
+				t.expect(root.Interactable).toBe(false)
+				path:set({})
+				w.engine.heartbeat.fire(1 / 120)
+				t.expect(root.Interactable).toBe(true)
+			end
+			t.expect(counts.built).toBe(5)
+			t.expect(counts.disposed).toBe(4)
+			w.engine.heartbeat.fire(1)
+			local present = layers(stack)
+			t.expect(#present).toBe(1)
+			t.expect(present[1]).toBe(root)
+			t.expect(root.Visible).toBe(true)
+			t.expect(root.GroupTransparency).toBe(0)
+			t.expect(root.Interactable).toBe(true)
+			t.expect(find(w.screen, "DetailBody")).toBeNil()
+			t.expect(counts.built - counts.disposed).toBe(1)
+			w.stop()
+			t.expect(counts.disposed).toBe(5)
+		end)
+
+		t.it("restores the remembered page focus when surviving chrome holds selection during a pop", function()
+			local path = Compose.cell({})
+			local w = world(function(UI, Host)
+				return Host.Frame({
+					UI.Button "Chrome" { label = "Chrome" },
+					UI.NavigationStack({
+						path = path,
+						root = {
+							content = function()
+								return Host.Frame({
+									UI.Button "First" { label = "First" },
+									UI.Button "RootAction" { label = "Root" },
+								})
+							end,
+						},
+						destinations = {
+							detail = {
+								content = function()
+									return UI.Button "DetailAction" { label = "Detail" }
+								end,
+							},
+						},
+					}),
+				})
+			end)
+			local chrome, action = find(w.screen, "Chrome"), find(w.screen, "RootAction")
+			w.gui.SelectedObject = action
+			path:set({ { id = "detail" } })
+			t.expect(w.gui.SelectedObject.Name).toBe("Back")
+			w.gui.SelectedObject = chrome
+			path:set({})
+			t.expect(w.gui.SelectedObject).toBe(action)
+			w.gui.SelectedObject = chrome
+			path:set({ { id = "detail" } })
+			path:set({})
+			path:set({ { id = "detail" } })
+			path:set({})
+			t.expect(w.gui.SelectedObject).toBe(action)
+			w.gui.SelectedObject = nil
+			path:set({ { id = "detail" } })
+			path:set({})
+			t.expect(w.gui.SelectedObject).toBeNil()
+			w.stop()
+		end)
+
+		t.it(
+			"falls back to the first selectable control when the remembered control was disabled while away",
+			function()
+				local path, enabled = Compose.cell({}), Compose.cell(true)
+				local w = world(function(UI, Host)
+					return UI.NavigationStack({
+						path = path,
+						root = {
+							content = function()
+								return Host.Frame({
+									UI.Button "First" { label = "First" },
+									UI.Button "Remember" { label = "Remember", enabled = enabled },
+								})
+							end,
+						},
+						destinations = {
+							detail = {
+								content = function()
+									return UI.Button "DetailAction" { label = "Detail" }
+								end,
+							},
+						},
+					})
+				end)
+				local remember = find(w.screen, "Remember")
+				w.gui.SelectedObject = remember
+				path:set({ { id = "detail" } })
+				t.expect(w.gui.SelectedObject.Name).toBe("Back")
+				path:set({})
+				t.expect(w.gui.SelectedObject).toBe(remember)
+				path:set({ { id = "detail" } })
+				enabled:set(false)
+				t.expect(remember.Interactable).toBe(false)
+				path:set({})
+				t.expect(w.gui.SelectedObject.Name).toBe("First")
+				t.expect(w.gui.SelectedObject ~= remember).toBe(true)
+				w.stop()
+			end
+		)
+
+		t.it("refuses malformed specs, paths and transitions before building any page", function()
+			local function attempt(mutate: (spec: { [string]: any }) -> ()): (string?, number)
+				local built = 0
+				local engine: any = engineLib.new()
+				local runtime = Facet.Roblox.createRuntime(engine)
+				local gui = engine.new("GuiService")
+				local UI = Facet.controls(runtime, { types = engine.types, services = { GuiService = gui } } :: any)
+				local function content()
+					built += 1
+					return runtime.constructors.Frame({})
+				end
+				local spec: { [string]: any } = {
+					path = Compose.cell({}),
+					root = { title = "Root", content = content },
+					destinations = { detail = { title = "Detail", content = content } },
+				}
+				mutate(spec)
+				local ok, message = pcall(function()
+					local stop = runtime.mount(function()
+						return UI.NavigationStack(spec)
+					end, engine.new("ScreenGui"))
+					stop()
+				end)
+				runtime:dispose()
+				return if ok then nil else tostring(message), built
+			end
+			local accepted, acceptedBuilt = attempt(function() end)
+			t.expect(accepted).toBeNil()
+			t.expect(acceptedBuilt).toBe(1)
+			local required = "NavigationStack requires path, root and destinations"
+			local cases: { { mutate: (spec: { [string]: any }) -> (), expected: string } } = {
+				{
+					mutate = function(spec)
+						spec.unknown = true
+					end,
+					expected = "Unknown Facet option unknown",
+				},
+				{
+					mutate = function(spec)
+						spec.path = Compose.formula(function()
+							return {}
+						end)
+					end,
+					expected = required,
+				},
+				{
+					mutate = function(spec)
+						spec.path = Compose.cell({ { id = "missing" } })
+					end,
+					expected = "NavigationStack path has an undeclared destination",
+				},
+				{
+					mutate = function(spec)
+						spec.destinations = nil
+					end,
+					expected = required,
+				},
+				{
+					mutate = function(spec)
+						spec.root = nil
+					end,
+					expected = required,
+				},
+				{
+					mutate = function(spec)
+						spec.transition = { unknown = true }
+					end,
+					expected = "Navigation transition uses Compose tween options: seconds, ease",
+				},
+			}
+			for _, case in cases do
+				local message, built = attempt(case.mutate)
+				t.expect(message ~= nil and string.find(message, case.expected, 1, true) ~= nil).toBe(true)
+				t.expect(built).toBe(0)
+			end
+		end)
+
+		t.it("keeps the mounted page through viewport theme input and reduced motion changes", function()
+			local path = Compose.cell({})
+			local counts = { built = 0, disposed = 0 }
+			local theme = Compose.cell(Facet.themes.neutralPackage())
+			local viewport = Compose.cell({ width = 1280, height = 720 })
+			local w = world(function(UI, Host)
+				return UI.NavigationStack({
+					path = path,
+					transition = { seconds = 0.2 },
+					root = { title = "Root", content = counted(Host, "RootBody", counts) },
+					destinations = { detail = { title = "Detail", content = counted(Host, "DetailBody", counts) } },
+				})
+			end, { theme = theme, viewport = viewport })
+			local Enum, V2 = w.engine.types.Enum, w.engine.types.Vector2
+			path:set({ { id = "detail" } })
+			w.engine.heartbeat.fire(0.3)
+			local body, stack = find(w.screen, "DetailBody"), find(w.screen, "NavigationStack")
+			local page = body.Parent.Parent
+			t.expect(counts.built).toBe(2)
+			w.gui.ReducedMotionEnabled = true
+			w.input.PreferredInput = Enum.PreferredInput.Gamepad
+			w.input.PreferredInput = Enum.PreferredInput.Touch
+			stack.AbsoluteSize = V2.new(400, 800)
+			w.screen.AbsoluteSize = V2.new(400, 800)
+			viewport:set({ width = 400, height = 800 })
+			local evening = Facet.themes.neutralPackage()
+			theme:set(evening)
+			w.gui.ReducedMotionEnabled = false
+			w.engine.heartbeat.fire(0.3)
+			t.expect(find(w.screen, "DetailBody")).toBe(body)
+			t.expect(find(w.screen, "detail")).toBe(page)
+			t.expect(page.Visible).toBe(true)
+			t.expect(page.GroupTransparency).toBe(0)
+			t.expect(counts.built).toBe(2)
+			t.expect(counts.disposed).toBe(0)
+			w.stop()
+			t.expect(counts.disposed).toBe(2)
+		end)
+
+		t.it("releases an expanded collapsible surface across open close cycles and on unmount", function()
+			local expanded, image = Compose.cell(false), Compose.cell("rbxassetid://1")
+			local w = world(function(UI)
+				return UI.CollapsibleView "Summary" {
+					label = "Summary",
+					image = image,
+					expanded = expanded,
+					content = function()
+						return UI.Button "DetailsAction" { label = "Details" }
+					end,
+				}
+			end)
+			local summary = find(w.screen, "Summary")
+			w.gui.SelectedObject = summary
+			local collapsed = w.engine.census()
+			expanded:set(true)
+			t.expect(find(w.screen, "Expanded") ~= nil).toBe(true)
+			t.expect(w.engine.census().live).toBeGreaterThan(collapsed.live)
+			expanded:set(false)
+			t.expect(find(w.screen, "Expanded")).toBeNil()
+			local settled = w.engine.census()
+			for index = 1, 20 do
+				expanded:set(true)
+				t.expect(find(w.screen, "Expanded") ~= nil).toBe(true)
+				image:set(if index % 2 == 0 then "rbxassetid://1" else "rbxassetid://2")
+				expanded:set(false)
+				t.expect(find(w.screen, "Expanded")).toBeNil()
+				t.expect(w.gui.SelectedObject).toBe(summary)
+			end
+			image:set("rbxassetid://1")
+			local after = w.engine.census()
+			t.expect(after.live).toBe(settled.live)
+			t.expect(after.connections).toBe(settled.connections)
+			expanded:set(true)
+			local panel, back = find(w.screen, "Expanded"), find(w.screen, "ModalBack")
+			t.expect(panel ~= nil).toBe(true)
+			t.expect(back ~= nil).toBe(true)
+			t.expect(w.gui.SelectedObject ~= summary).toBe(true)
+			w.stop()
+			t.expect(panel:isDestroyed()).toBe(true)
+			t.expect(back:isDestroyed()).toBe(true)
+			t.expect(summary:isDestroyed()).toBe(true)
+			local selected = w.gui.SelectedObject
+			t.expect(selected).toBeNil()
+			local final = w.engine.census()
+			t.expect(final.live).toBe(w.baseline.live)
+			t.expect(final.connections).toBe(w.baseline.connections)
+		end)
+	end)
 end)
