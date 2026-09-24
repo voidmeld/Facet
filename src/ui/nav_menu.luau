@@ -338,7 +338,7 @@ return function(
 			if use(asSheet) then
 				return V2.new(12, math.max(12, offer.Y - panelSize.Y - 12)), V2.new(panelSize.X / 2, panelSize.Y)
 			end
-			local left, top = at.X - offset.X + #use(path) * (panelWidth(use) + 8), at.Y - offset.Y + bounds.Y + 4
+			local left, top = at.X - offset.X + #use(path) * 288, at.Y - offset.Y + bounds.Y + 4
 			local above = false
 			if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
 				top = at.Y - offset.Y - panelSize.Y - 4
@@ -690,8 +690,24 @@ return function(
 		"textSize",
 		"isPresented",
 	}
+	local optionFields: { [string]: boolean } = {
+		id = true,
+		value = true,
+		label = true,
+		description = true,
+		icon = true,
+		badge = true,
+		enabled = true,
+	}
 	UI.Picker = ctx.construct("Picker", function<V>(spec: Nav.PickerSpec<V>): GuiObject
 		writable(spec.selected, "Picker.selected")
+		assert(spec.onChange == nil or type(spec.onChange) == "function", "Picker.onChange must be a function")
+		assert(spec.onChanging == nil or type(spec.onChanging) == "function", "Picker.onChanging must be a function")
+		assert(spec.required == nil or type(spec.required) == "boolean", "Picker.required must be a boolean")
+		assert(
+			spec.enabled == nil or type(read(spec.enabled)) == "boolean",
+			"Picker.enabled must be a boolean or a readable boolean"
+		)
 		assert(
 			type(spec.options) == "table" or type(spec.options) == "function",
 			"Facet UI.Picker: options must be an array of { value, label } entries, a Compose readable, or a function(use) that returns one"
@@ -757,9 +773,28 @@ return function(
 				)
 			end
 			for _, option in list do
+				for field in (option :: unknown) :: { [unknown]: unknown } do
+					assert(
+						type(field) == "string" and optionFields[field] == true,
+						`Unknown Picker option field {tostring(field)}`
+					)
+				end
 				assert(
 					option.description == nil or type(read(option.description, use)) == "string",
 					"Picker description must be text"
+				)
+				assert(
+					option.enabled == nil or type(read(option.enabled, use)) == "boolean",
+					"Picker option enabled must be a boolean"
+				)
+				assert(
+					option.icon == nil or type(read(option.icon, use)) == "string",
+					"Picker option icon must be an icon name"
+				)
+				local badge = read(option.badge, use)
+				assert(
+					badge == nil or type(badge) == "string" or type(badge) == "number",
+					"Picker option badge must be text or a number"
 				)
 				local key = option.id or option.value
 				assert(key ~= nil and not seen[key], "Picker options require unique values or ids")
@@ -975,10 +1010,12 @@ return function(
 		end
 		if style == "navigationLink" then
 			local opened = spec.isPresented or Compose.cell(false)
-			local trigger = UI.Button({
-				Name = spec.Name or "Picker",
-				enabled = spec.enabled,
-				label = spec.label or function(use: ComposeTypes.Use)
+			local native: Types.FrameNativeProps = ctx.props(spec, pickerKeys)
+			local triggerProps = (native :: unknown) :: Inputs.ButtonProps
+			triggerProps.Name = spec.Name or "Picker"
+			triggerProps.enabled = spec.enabled
+			triggerProps.label = spec.label
+				or function(use: ComposeTypes.Use)
 					for _, option in read(spec.options, use) do
 						if isSelected(option.value, use) then
 							local label: string = read(option.label, use)
@@ -986,11 +1023,11 @@ return function(
 						end
 					end
 					return read(spec.placeholder, use) or "Choose"
-				end,
-				onActivate = function()
-					opened:set(true)
-				end,
-			})
+				end
+			triggerProps.onActivate = function()
+				opened:set(true)
+			end
+			local trigger = UI.Button(triggerProps)
 			surfaces.attach(trigger, {
 				surfaces.overlay(trigger, opened, function()
 					local choices: Nav.PickerSpec<V>

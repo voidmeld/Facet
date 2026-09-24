@@ -236,6 +236,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local tabsReady = false
 		local panels: { [string]: GuiObject } = {}
 		local bookmarks: { [string]: GuiObject? } = {}
+		local bookmarkPaths: { [string]: { string } } = {}
 		local tabButtons: { [string]: TextButton } = {}
 		local tabMeasures: { [string]: { position: ComposeTypes.Readable<Vector2>, size: ComposeTypes.Readable<Vector2> } } =
 			{}
@@ -555,6 +556,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 						handoff = nil
 						local bookmark = bookmarks[id]
+						if not bookmark and bookmarkPaths[id] then
+							local node: Instance? = panel
+							for _, name in bookmarkPaths[id] do
+								node = if node then node:FindFirstChild(name) else nil
+							end
+							bookmark = if node and node:IsA("GuiObject") then node else nil
+						end
+						bookmarkPaths[id] = nil
 						local button = tabButtons[id]
 						gui.SelectedObject = if bookmark
 								and surfaces.within(bookmark, panel)
@@ -568,6 +577,16 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								else nil)
 					end)
 					Compose.cleanup(function()
+						local bookmark = bookmarks[id]
+						if bookmark and surfaces.within(bookmark, panel) then
+							local names: { string } = {}
+							local node: Instance? = bookmark
+							while node and node ~= panel do
+								table.insert(names, 1, node.Name)
+								node = node.Parent
+							end
+							bookmarkPaths[id] = names
+						end
 						panels[id], bookmarks[id] = nil, nil
 					end)
 					return panel

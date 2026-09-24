@@ -86,25 +86,25 @@ last column names the candidate specs that the group cites most.
 | Lifetime and ownership | 316 | 142 | 6 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
 | Layout and geometry | 1,326 | 280 | 211 | 218 | 827 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 497 | 63 | 27 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 532 | 103 | 49 | 257 | 172 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
-| Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Focus and selection | 532 | 103 | 3 | 257 | 172 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Input actions | 332 | 101 | 13 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
+| Pointer, touch and drag | 368 | 63 | 0 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 581 | 144 | 4 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
 | Paint and theming | 709 | 199 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
 | Theme packages | 379 | 149 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 251 | 116 | 0 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 394 | 96 | 57 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
-| Value controls | 249 | 221 | 128 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
-| Text input | 119 | 70 | 26 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 141 | 103 | 58 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
-| Navigation containers | 72 | 69 | 36 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 287 | 124 | 81 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Action controls | 394 | 96 | 9 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Value controls | 249 | 221 | 8 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
+| Text input | 119 | 70 | 0 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
+| Menus and pickers | 141 | 103 | 8 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Navigation containers | 72 | 69 | 4 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
+| Presented surfaces | 287 | 124 | 33 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 214 | 159 | 6 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 1 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
 | Row actions | 264 | 149 | 13 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 166 | 46 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 419 | 32 | 17 | 51 | 336 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| Adaptive environment | 419 | 32 | 3 | 51 | 336 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 89 | 0 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 0 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 425 | 246 | 51 | 113 | 66 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
@@ -534,6 +534,20 @@ defects. The same change fixes it.
 | `WA5` | `examples/gallery/scenarios/action_controls.luau` | The Distant TV preview scales the gallery by 1.5, but the action controls demo read the unscaled viewport width. At 1440 px the Showroom and Race Setup sections stayed side by side under the preview. The gallery now gives demos `ctx.sceneViewport`, the viewport divided by the preview scale, and the demo reads it. |
 | `WA6` | `src/ui/collections.luau` | VirtualList and VirtualGrid wrote an equal CanvasSize again on each scroll and on each edit to a row outside the window. Table wrote its outer Size, body Size, body CanvasSize and header Position again on each vertical scroll. These properties now bind to the numeric extent and the horizontal scroll offset, so only a real change writes. |
 | `WA7` | `src/ui/media.luau` | AvatarGroup kept the old resource lease and image when the resource of a member changed under the same id. A member with a resource is now keyed by its id and its resource, so only that face mounts again with a new lease. |
+| `WB1` | `src/ui/input_value.luau` | The default value format showed `-0` for a value between -0.005 and 0. |
+| `WB2` | `src/ui/media.luau` | Badge accepted an incorrect `iconPosition` and put the icon on the leading side. |
+| `WB3` | `src/ui/media.luau` | Badge and StatusIndicator read a `false` status as `neutral`. Now it causes an error. |
+| `WB4` | `src/ui/media.luau` | StatusIndicator ignored `name`. Now `name` sets the accessible label. |
+| `WB5` | `src/ui/inputs.luau` | The Rating and Slider value actions had a lower priority than the collection arrows. In a VirtualList or Table row, the arrow keys did not change the value. |
+| `WB6` | `src/ui/inputs.luau` | ShortcutHint raised an error when the native key service failed. Now it shows the key name. |
+| `WB7` | `src/ui/inputs.luau` | ShortcutHint accepted an unknown `over` option, and `separator` with `action`. |
+| `WB8` | `src/ui/inputs.luau` | The Stepper buttons and the TextInput clear button were less than 44 px high. |
+| `WB9` | `src/ui/nav_menu.luau` | The current cascade submenu level overlapped its parent level. |
+| `WB10` | `src/ui/nav_menu.luau` | Picker accepted incorrect callback, flag and option field types. |
+| `WB11` | `src/ui/nav_menu.luau` | A `navigationLink` Picker dropped the native properties of its trigger. |
+| `WB12` | `src/ui/nav_radial.luau` | RadialMenu Back left the selection on the removed child item. Now it selects the parent item. |
+| `WB13` | `src/ui/nav_radial.luau` | After a pointer press on the launcher with no native echo, the launcher ignored the next gamepad or keyboard activation. |
+| `WB14` | `src/ui/nav_pages.luau` | A TabView with `retention = "top"` lost the focus bookmark of an evicted page. |
 
 ### Fixed with the final gap tests
 
@@ -794,6 +808,16 @@ assertion. A contract that gets no new case is not in this table. Its
 | `native_parity_weaker_scrolling` | Scrolling | `apps2-267`, `apps-225`, `apps-231`, `collections-03`, `collections-15`, `collections-32`, `collections-125`, `collections-127`, `collections-176`, `collections-183`, `collections-231`, `collections-242`, `navigation-5-05` | 50 | `collections-262`, `navigation-1-18` | 7 |
 | `native_parity_weaker_tables` | Tables | `apps2-168`, `apps2-171`, `apps2-173`, `apps-242`, `collections-36`, `collections-37`, `collections-137`, `collections-142`, `collections-144`, `collections-151`, `collections-164`, `inputs-06` | 34 | `apps2-175`, `collections-133`, `collections-134`, `collections-203`, `collections-207` | 9 |
 | `native_parity_weaker_virtual` | Virtual collections | `apps2-141`, `apps2-243`, `apps-122`, `collections-07`, `collections-09`, `collections-19`, `collections-20`, `collections-208`, `collections-222`, `collections-223`, `collections-240`, `collections-249`, `collections-258`, `collections-274`, `collections-296`, `collections-299`, `collections-300`, `collections-305`, `mech1-72`, `mech1-96`, `mech2-30`, `mech3-03`, `mech3-97`, `themes-P1-35` | 121 | `apps2-57`, `apps2-231`, `navigation-4-68` | 6 |
+| `native_parity_weaker_values` | Value controls | `apps-129`, `apps-167`, `apps2-36`, `apps2-254`, `inputs-03`, `inputs-53`, `inputs-113`, `inputs-115`, `inputs-119`, `inputs-155`, `inputs-177`, `inputs-200`, `inputs-201`, `inputs-203`, `inputs-204`, `inputs-212`, `inputs-215`, `navigation-3-66`, `navigation-3-67`, `navigation-4-27`, `navigation-4-32`, `paint-19`, `paint-45`, `themes-P1-50`, `themes-P1-51`, `themes-P1-54`, `themes-P1-63`, `themes-P1-80`, `themes-P1-109`, `themes-P1-110`, `themes-P1-115`, `themes-P4-24`, `themes-P5-37` | 120 | `mech3-14`, `themes-P5-29` | 8 |
+| `native_parity_weaker_actions` | Action controls | `apps2-65`, `apps2-219`, `inputs-02`, `inputs-16`, `inputs-35`, `inputs-38`, `inputs-74`, `inputs-76`, `inputs-87`, `mech1-25`, `mech2-23`, `mech3-69`, `navigation-2-14`, `navigation-2-73`, `navigation-3-40`, `navigation-4-50`, `navigation-4-51`, `paint-07` | 48 | `navigation-2-17`, `paint-04` | 9 |
+| `native_parity_weaker_actions` | Text input | `apps2-28`, `apps2-31`, `apps2-263`, `inputs-07`, `inputs-138`, `inputs-179`, `inputs-180`, `inputs-182`, `inputs-184` | 26 | - | 0 |
+| `native_parity_weaker_focus` | Focus and selection | `apps-137`, `apps-147`, `apps-159`, `apps-185`, `apps2-179`, `apps2-185`, `apps2-276`, `collections-17`, `collections-147`, `collections-149`, `collections-196`, `collections-259`, `inputs-158`, `navigation-1-13`, `navigation-1-57`, `navigation-2-18`, `navigation-2-63`, `navigation-4-41`, `navigation-5-12` | 46 | `apps-160`, `apps-181` | 3 |
+| `native_parity_weaker_focus` | Input actions | `apps2-210`, `collections-79`, `inputs-19`, `inputs-167`, `inputs-171`, `inputs-172`, `navigation-2-67`, `navigation-3-21`, `navigation-4-36`, `navigation-4-66` | 35 | `apps-162`, `collections-84`, `navigation-4-38` | 13 |
+| `native_parity_weaker_menus` | Menus and pickers | `apps-135`, `apps-136`, `apps-195`, `apps-197`, `apps-198`, `apps2-121`, `apps2-269`, `collections-81`, `collections-82`, `navigation-1-08`, `navigation-2-26`, `navigation-2-34`, `navigation-2-35`, `navigation-2-40`, `navigation-2-54`, `navigation-3-75`, `navigation-3-78`, `navigation-3-82`, `navigation-4-01`, `navigation-4-02`, `navigation-4-03`, `navigation-4-04`, `navigation-4-19`, `navigation-4-21`, `navigation-4-55` | 50 | `apps-196`, `apps-237`, `navigation-3-85` | 8 |
+| `native_parity_weaker_navigation` | Navigation containers | `apps-189`, `apps-190`, `apps-191`, `apps-245`, `apps2-106`, `apps2-199`, `apps2-201`, `apps2-260`, `mech1-74`, `navigation-1-01`, `navigation-1-10`, `navigation-2-05`, `navigation-2-20`, `navigation-3-01`, `navigation-3-06`, `navigation-3-12`, `navigation-3-39`, `navigation-5-01`, `navigation-5-11`, `paint-33` | 32 | `apps2-225`, `navigation-4-60` | 4 |
+| `native_parity_weaker_pointer` | Adaptive environment | `apps2-134`, `apps2-257`, `mech1-88`, `mech1-121`, `navigation-1-63`, `navigation-3-73`, `themes-P5-51` | 14 | `apps2-191` | 3 |
+| `native_parity_weaker_pointer` | Pointer, touch and drag | `apps2-15`, `apps2-204`, `apps2-205`, `apps2-206`, `apps2-209`, `apps2-215`, `collections-70`, `collections-112`, `collections-177`, `inputs-117`, `inputs-157`, `mech1-42`, `mech2-107`, `navigation-2-28`, `navigation-4-39` | 48 | - | 0 |
+| `native_parity_weaker_surfaces` | Presented surfaces | `apps2-226`, `apps2-255`, `apps2-270`, `inputs-12`, `inputs-90`, `mech3-89`, `navigation-1-11`, `navigation-1-23`, `navigation-1-50`, `navigation-1-59`, `navigation-2-02`, `navigation-2-30`, `navigation-2-65`, `navigation-2-69`, `navigation-2-70`, `navigation-3-08`, `navigation-4-37`, `navigation-4-47`, `navigation-5-53`, `navigation-5-55` | 48 | `apps2-44`, `apps2-247`, `mech1-120`, `mech2-104`, `mech3-87`, `navigation-1-14` | 33 |
 
 ### Final gap tests
 

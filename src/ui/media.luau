@@ -46,7 +46,8 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	local function statusTag(node: GuiObject, source: Types.Value<Media.Status>?)
 		local previous: string?
 		Compose.watch(function(use: ComposeTypes.Use)
-			local status = read(source, use) or "neutral"
+			local requested = read(source, use)
+			local status = if requested == nil then "neutral" else requested
 			assert(
 				({ neutral = true, info = true, success = true, warning = true, error = true, accent = true })[status],
 				"Facet: invalid status"
@@ -127,6 +128,10 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.Badge = ctx.construct("Badge", function(spec: Media.BadgeProps): GuiObject
+		assert(
+			spec.iconPosition == nil or spec.iconPosition == "leading" or spec.iconPosition == "trailing",
+			"Facet Badge invalid iconPosition"
+		)
 		local caption = Compose.formula(function(use: ComposeTypes.Use)
 			local value = read(spec.label, use)
 			assert(value == nil or type(value) == "string", "Facet Badge label must be a string")
@@ -175,7 +180,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			})
 		end
 		ctx.styled(pill, "badge")
-		if spec.status then
+		if spec.status ~= nil then
 			statusTag(pill, spec.status)
 		end
 		local previousAppearance: string?
@@ -251,6 +256,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			spec,
 			{ "status", "form", "count", "max", "name", "diameter", "controlSize", "cutout" },
 			{
+				Attributes = if spec.name ~= nil then { AccessibleLabel = spec.name } :: Engine.Attributes else nil,
 				Size = function(use: ComposeTypes.Use)
 					return D2.fromOffset(
 						if spec.count ~= nil then 0 else size(use),

@@ -3,7 +3,7 @@
     "menus-pickers": {
       "mainCases": 141,
       "a": 103,
-      "aWeaker": 58,
+      "aWeaker": 8,
       "b": 0,
       "c": 38,
       "d": 0,
@@ -45,7 +45,7 @@
     "controls-actions": {
       "mainCases": 394,
       "a": 96,
-      "aWeaker": 57,
+      "aWeaker": 9,
       "b": 1,
       "c": 297,
       "d": 0,
@@ -87,7 +87,7 @@
     "presented-surfaces": {
       "mainCases": 287,
       "a": 124,
-      "aWeaker": 81,
+      "aWeaker": 33,
       "b": 5,
       "c": 158,
       "d": 0,
@@ -157,7 +157,7 @@
     "pointer-touch-drag": {
       "mainCases": 368,
       "a": 63,
-      "aWeaker": 48,
+      "aWeaker": 0,
       "b": 97,
       "c": 208,
       "d": 0,
@@ -199,7 +199,7 @@
     "controls-values": {
       "mainCases": 249,
       "a": 221,
-      "aWeaker": 128,
+      "aWeaker": 8,
       "b": 0,
       "c": 28,
       "d": 0,
@@ -214,7 +214,7 @@
     "adaptive-environment": {
       "mainCases": 419,
       "a": 32,
-      "aWeaker": 17,
+      "aWeaker": 3,
       "b": 51,
       "c": 336,
       "d": 0,
@@ -242,7 +242,7 @@
     "controls-text-input": {
       "mainCases": 119,
       "a": 70,
-      "aWeaker": 26,
+      "aWeaker": 0,
       "b": 28,
       "c": 21,
       "d": 0,
@@ -256,7 +256,7 @@
     "focus-selection": {
       "mainCases": 532,
       "a": 103,
-      "aWeaker": 49,
+      "aWeaker": 3,
       "b": 257,
       "c": 172,
       "d": 0,
@@ -370,7 +370,7 @@
     "navigation-containers": {
       "mainCases": 72,
       "a": 69,
-      "aWeaker": 36,
+      "aWeaker": 4,
       "b": 1,
       "c": 2,
       "d": 0,
@@ -412,7 +412,7 @@
     "input-actions": {
       "mainCases": 332,
       "a": 101,
-      "aWeaker": 48,
+      "aWeaker": 13,
       "b": 105,
       "c": 121,
       "d": 5,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 893
+    "coveredButWeaker": 426
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2183,9 +2183,9 @@
       "candidateCases": [
         "native_games::examples/07 native Match3 parity::uses detector release position and preserves the next keyboard activation after dragging",
         "native_games::examples/07 native Match3 parity::cancels uncaptured releases, outside taps and drags that return to their start",
-        "native_games::examples/07 native Match3 parity::selects detector taps once and swaps adjacent tiles with mouse and touch"
-      ],
-      "weaker": "Main swept three specific targets (2,3),(2,4),(4,3) for adjacency; candidate drags one tile one cell right and checks cancels."
+        "native_games::examples/07 native Match3 parity::selects detector taps once and swaps adjacent tiles with mouse and touch",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::swaps a dragged Match3 tile only with the orthogonal neighbour in the drag direction"
+      ]
     },
     {
       "id": "apps2-16",
@@ -2402,9 +2402,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts the additional temperature and confirmation tutorials"
-      ],
-      "weaker": "The candidate calls built.clear() but asserts nothing about the field, preview or Result afterwards."
+        "native_gallery::native gallery::mounts the additional temperature and confirmation tutorials",
+        "native_parity_weaker_actions::native parity weaker actions::converts typed Fahrenheit live, commits on Enter and focus loss, and Clear resets every readout"
+      ]
     },
     {
       "id": "apps2-29",
@@ -2452,9 +2452,9 @@
         "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows",
         "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings",
         "native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit",
-        "native_inputs::native input controls::deduplicates shortcut/default bindings and yields shortcuts during native text editing"
-      ],
-      "weaker": "Filtering is driven by writing filterText directly, not by typing into the field; row identity across filtering and the clear button's visibility are asserted only at control level."
+        "native_inputs::native input controls::deduplicates shortcut/default bindings and yields shortcuts during native text editing",
+        "native_parity_weaker_actions::native parity weaker actions::filters the playlist from typed text, keeps row identity and never navigates the table"
+      ]
     },
     {
       "id": "apps2-32",
@@ -2530,9 +2530,10 @@
       "candidateCases": [
         "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows",
         "native_inputs::native input controls::supports clearing a rating and keeps read-only levels inert",
-        "native_inputs::native input controls::keeps composite control roots transparent instead of exposing native stock plates"
-      ],
-      "weaker": "The playlist test writes ratingFor(id) directly; no in-cell tap or pointer scrub on the playlist is driven."
+        "native_inputs::native input controls::keeps composite control roots transparent instead of exposing native stock plates",
+        "native_parity_weaker_values::native parity weaker values::playlist rating inside a table cell sets that track by tap and scrub without remount",
+        "native_parity_weaker_values::native parity weaker values::rating is five glyph stars with the default star pair and no tint"
+      ]
     },
     {
       "id": "apps2-37",
@@ -2661,9 +2662,10 @@
       "class": "a",
       "candidateCases": [
         "native_gallery::native gallery::mounts the additional temperature and confirmation tutorials",
-        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back"
+        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
+        "native_parity_weaker_surfaces::presented surface strength::traps and cancels the confirmation tutorial and restores the delete trigger"
       ],
-      "weaker": "Focus trap/Back is verified on a generic Alert, not the tutorial."
+      "weaker": "Directional selection movement between Cancel and Confirm inside the tutorial modal row (DPadRight/DPadLeft) needs real engine gamepad selection."
     },
     {
       "id": "apps2-45",
@@ -2957,9 +2959,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::removes keyed chips toward the next then previous native target and caller fallback",
-        "native_gallery_workflows::native gallery workflows::reflows one recipe action set and preserves controlled checks and keyed chips"
-      ],
-      "weaker": "Not driven on the gallery setting rows scenario."
+        "native_gallery_workflows::native gallery workflows::reflows one recipe action set and preserves controlled checks and keyed chips",
+        "native_parity_weaker_actions::native parity weaker actions::drives the gallery setting rows and removable race tags and stops reporting after unmount"
+      ]
     },
     {
       "id": "apps2-66",
@@ -3559,9 +3561,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_shell::native gallery shell parity::keeps API theme and palette choices consistent and rejects invalid demos"
-      ],
-      "weaker": "One forward step only."
+        "native_gallery_shell::native gallery shell parity::keeps API theme and palette choices consistent and rejects invalid demos",
+        "native_parity_weaker_navigation::native parity weaker navigation::steps the gallery catalogue forward and back with wrapping and full cycles"
+      ]
     },
     {
       "id": "apps2-107",
@@ -3779,9 +3781,9 @@
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-14 launcher press slide releases directly into an action",
         "native_radial_controls::native radial interaction policies::NRAD-9 Compose exit presence releases native ownership after animation",
-        "native_navigation::native navigation controls::navigates radial branches and applies action completion"
-      ],
-      "weaker": "Main used rootCount()==0 after close; candidate asserts panel destroyed after exit (NRAD-9) and launcher open+commit (NRAD-14), in separate cases."
+        "native_navigation::native navigation controls::navigates radial branches and applies action completion",
+        "native_parity_weaker_menus::native parity weaker menus::opens a radial menu from its launcher, runs only the chosen command and releases every native object"
+      ]
     },
     {
       "id": "apps2-122",
@@ -3983,9 +3985,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_perf_evidence::console / ten-foot profile (UI-PARADIGM-003, XP-A1)::declares ten-foot display and gamepad facts"
-      ],
-      "weaker": "Main applied the profile to Facet's environment and asserted the derived ten-foot policy (type floor, overscan) engaged; candidate only reads the declared profile table. Facet's environment module (src/env) no longer ..."
+        "native_perf_evidence::console / ten-foot profile (UI-PARADIGM-003, XP-A1)::declares ten-foot display and gamepad facts",
+        "native_parity_weaker_pointer::adaptive environment strength::applies the ten-foot console profile facts to native input and engages the gamepad policies"
+      ]
     },
     {
       "id": "apps2-135",
@@ -4643,9 +4645,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Table::stops adjusting a column width once its grip loses selection"
+        "native_parity_apps::Table::stops adjusting a column width once its grip loses selection",
+        "native_parity_weaker_focus::native parity weaker focus::releases a column grip when selection moves to another grip or the table leaves"
       ],
-      "weaker": "A column is held only while its grip has the native selection. The candidate has no separate Cancel or second-Activate release, so only the selection-loss release is tested.",
       "apiPromise": "src/ui/collection_table.luau:370-390 selected cell set on SelectionGained, cleared on SelectionLost, gating NarrowColumn/WidenColumn",
       "gap": {
         "description": "Only SelectionGained+NarrowColumn is tested; nothing fires SelectionLost and asserts the adjust action no longer changes widths.",
@@ -4734,9 +4736,9 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-1 analog hold commits once and respects dead-zone hysteresis",
-        "radial_geometry::radial geometry::radial sectors exclude the hole, preserve compass gaps, and bound overshoot"
-      ],
-      "weaker": "NRAD-1 only aims due north on a compass ring and checks the committed id; no diagonal aim on an even ring, no check that GuiService.SelectedObject stays on the wedge across frames (engine has no repeat clock, so the o..."
+        "radial_geometry::radial geometry::radial sectors exclude the hole, preserve compass gaps, and bound overshoot",
+        "native_parity_weaker_focus::native parity weaker focus::keeps native selection on a diagonal wedge of an even ring across held aim frames"
+      ]
     },
     {
       "id": "apps2-186",
@@ -4826,9 +4828,10 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-6 adapts into native scrolling list without losing a branch",
-        "native_radial_controls::native radial interaction policies::NRAD-16 keeps round button swatches circular and expands the same targets into compact rows"
+        "native_radial_controls::native radial interaction policies::NRAD-16 keeps round button swatches circular and expands the same targets into compact rows",
+        "native_parity_weaker_pointer::adaptive environment strength::falls back to a spaced touch list in small space, keeps activation and returns to a ring with its clearance"
       ],
-      "weaker": "Candidate drives Modal.AbsoluteSize=180x180 only; no preferred-text-size input, no explicit clearance retained in the list, no row gap/scroll-into-view on Down."
+      "weaker": "The preferred-text-size input and scroll-into-view of the focused list row need the real engine (PreferredTextSize scaling and native ScrollingFrame selection scrolling)."
     },
     {
       "id": "apps2-192",
@@ -4950,9 +4953,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_radial_controls::native radial interaction policies::NRAD-12 empty center keeps ring Back and full-label preview"
-      ],
-      "weaker": "Does not check the SW (225 deg) slot, that ring Back at root closes, or the corner-preset Back position."
+        "native_radial_controls::native radial interaction policies::NRAD-12 empty center keeps ring Back and full-label preview",
+        "native_parity_weaker_navigation::native parity weaker navigation::places the empty-center ring Back in the south-west compass slot and closes from the root",
+        "native_parity_weaker_navigation::native parity weaker navigation::keeps the empty-center Back inside a corner arc and returns one level from a branch"
+      ]
     },
     {
       "id": "apps2-200",
@@ -4988,9 +4992,9 @@
         "native_radial_controls::native radial interaction policies::NRAD-7 state items stay open and completion precedes callbacks",
         "native_radial_controls::native radial interaction policies::NRAD-8 nested expansion preserves parents and completion back returns",
         "native_radial_controls::native radial interaction policies::NRAD-12 empty center keeps ring Back and full-label preview",
-        "native_navigation::native navigation controls::navigates radial branches and applies action completion"
-      ],
-      "weaker": "Back via ButtonB with focus restoration to the parent item is not asserted for RadialMenu."
+        "native_navigation::native navigation controls::navigates radial branches and applies action completion",
+        "native_parity_weaker_navigation::native parity weaker navigation::backs a radial branch out with ButtonB and returns the selection to the parent item"
+      ]
     },
     {
       "id": "apps2-202",
@@ -5040,9 +5044,9 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-14 launcher press slide releases directly into an action",
-        "native_radial_controls::native radial interaction policies::NRAD-16 keeps round button swatches circular and expands the same targets into compact rows"
-      ],
-      "weaker": "Launcher tap-latch without a drag (release at center keeps it open with no commit) is not asserted separately; 44px checked only for buttons appearance."
+        "native_radial_controls::native radial interaction policies::NRAD-16 keeps round button swatches circular and expands the same targets into compact rows",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::latches a launcher tap open without a commit and keeps every ring target at the touch floor"
+      ]
     },
     {
       "id": "apps2-205",
@@ -5055,9 +5059,9 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-12 empty center keeps ring Back and full-label preview",
-        "native_radial_controls::native radial interaction policies::NRAD-4 direction gestures work outside paint while bounded gestures cancel"
-      ],
-      "weaker": "NRAD-12 checks hover preview text; NRAD-4 bounded release outside cancels. Returning the drag to the center and releasing (no commit, menu closes) is not tested."
+        "native_radial_controls::native radial interaction policies::NRAD-4 direction gestures work outside paint while bounded gestures cancel",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::previews a dragged or hovered choice without running it and cancels when the drag returns to the center"
+      ]
     },
     {
       "id": "apps2-206",
@@ -5070,9 +5074,9 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-3 suppresses the native activation echo after gesture commit",
-        "native_radial_controls::native radial interaction policies::NRAD-14 launcher press slide releases directly into an action"
-      ],
-      "weaker": "Only the Activated-after-release order is tested; the before order and the list-presentation launcher echo are not."
+        "native_radial_controls::native radial interaction policies::NRAD-14 launcher press slide releases directly into an action",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::commits once when native Activated arrives before the release and when a list launcher echoes a touch"
+      ]
     },
     {
       "id": "apps2-207",
@@ -5118,9 +5122,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_radial_controls::native radial interaction policies::NRAD-4 direction gestures work outside paint while bounded gestures cancel"
-      ],
-      "weaker": "NRAD-4 does not use a short viewport, so it does not check that gestureSelection=\"direction\" suppresses the list fallback."
+        "native_radial_controls::native radial interaction policies::NRAD-4 direction gestures work outside paint while bounded gestures cancel",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::keeps the radial ring in a short viewport when gestures select by direction and commits beyond it"
+      ]
     },
     {
       "id": "apps2-210",
@@ -5133,9 +5137,9 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-1 analog hold commits once and respects dead-zone hysteresis",
-        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back"
-      ],
-      "weaker": "Cancel/ButtonB closing a RadialMenu is only covered through the shared modal Back test on other controls; Tab traversal within the ring is not tested."
+        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
+        "native_parity_weaker_focus::native parity weaker focus::previews radial aim without committing and closes on semantic Back one level at a time"
+      ]
     },
     {
       "id": "apps2-211",
@@ -5209,9 +5213,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::RadialMenu::lets input through an empty center while edge catchers dismiss around it"
+        "native_parity_apps::RadialMenu::lets input through an empty center while edge catchers dismiss around it",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::cuts the pass-through aperture around a moved anchor and restores capture in the list fallback"
       ],
-      "weaker": "The fake engine cannot route input to a node under the menu. The test shows that a center touch is never captured, against the same touch without pass-through.",
       "apiPromise": "api.md RadialMenu option `centerPassThrough`; nav_radial.luau sets RadialPanel.Active=false, hides DismissOutside and builds four edge rectangles around the center.",
       "gap": {
         "description": "Untested. Probe: RadialPanel.Active=false and DismissOutside.Visible=false with center=\"empty\"; edge rectangles not asserted.",
@@ -5272,9 +5276,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_gallery_workflows::native gallery workflows::reflows one recipe action set and preserves controlled checks and keyed chips"
-      ],
-      "weaker": "Main also asserted equal action widths, Save emphasis/Delete destructive appearance, hidden focus targets excluded, and chip selection after removal; candidate checks form switching, identity, requests and one reorder."
+        "native_gallery_workflows::native gallery workflows::reflows one recipe action set and preserves controlled checks and keyed chips",
+        "native_parity_weaker_actions::native parity weaker actions::keeps recipe action order, equal column widths, appearances, focus targets, checks, chips and commands"
+      ]
     },
     {
       "id": "apps2-220",
@@ -5368,9 +5372,13 @@
         "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
         "native_gallery_shell::native gallery shell parity::keeps API theme and palette choices consistent and rejects invalid demos",
         "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility",
-        "(native_gallery 'mounts all_controls/<tab>' cases)"
+        "(native_gallery 'mounts all_controls/<tab>' cases)",
+        "native_parity_weaker_navigation::native parity weaker navigation::mounts and selects every nested showcase tab at three sizes and releases the whole tree",
+        "native_parity_weaker_navigation::native parity weaker navigation::adapts showcase category navigation while keeping the page and its inner top tabs",
+        "native_parity_weaker_navigation::native parity weaker navigation::switches gallery display previews without remounting the page and keeps its tabs selectable",
+        "native_parity_weaker_navigation::native parity weaker navigation::keeps the nested showcase selections in independent cells and shows the inner page"
       ],
-      "weaker": "Nested tab mounting is per-tab in isolation; release is asserted only for the whole gallery root. 'retains gamepad routes' across previews is not asserted."
+      "weaker": "D-pad movement between strip buttons (Basics to Writing, Inputs to Actions) after each preview needs real engine gamepad selection movement. Headless tests assert that the buttons stay the same instances, stay Selectable and accept selection."
     },
     {
       "id": "apps2-226",
@@ -5383,9 +5391,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_workflows::native gallery workflows::expires passive toasts while retaining access to the underlying action",
-        "native_navigation::native navigation controls::hides a callout while its retained tab is away and shows it again on return"
-      ],
-      "weaker": "Main retired toasts on leaving; candidate/live evidence (parity_blockers resolvedLiveRisks) says toasts keep expiring on their timers while away. The leaving-the-page behavior is not asserted headlessly."
+        "native_navigation::native navigation controls::hides a callout while its retained tab is away and shows it again on return",
+        "native_parity_weaker_surfaces::gallery surface page strength::offers toasts under Indicators and hides and expires them after leaving the page"
+      ]
     },
     {
       "id": "apps2-227",
@@ -5669,9 +5677,16 @@
       "candidateCases": [
         "native_gallery_parity::restored native gallery parity::bounds toast priority queues protects reading supersedes in place and reverses dismissal",
         "native_gallery_parity::restored native gallery parity::reflows measured toast heights with owned motion and releases the departing card",
-        "native_gallery_workflows::native gallery workflows::expires passive toasts while retaining access to the underlying action"
+        "native_gallery_workflows::native gallery workflows::expires passive toasts while retaining access to the underlying action",
+        "native_parity_weaker_surfaces::gallery toast strength::drops exactly the least urgent newest burst toast at the queue cap and drains the rest",
+        "native_parity_weaker_surfaces::gallery toast strength::keeps reduced-motion toasts on screen for the same durations as animated ones",
+        "native_parity_weaker_surfaces::gallery toast strength::releases dismissed toasts within the half-second cap and returns the counters and instances",
+        "native_parity_weaker_surfaces::gallery toast strength::leaves selection, modal scope and the control beneath untouched while a toast shows",
+        "native_parity_weaker_surfaces::gallery toast strength::fits toast width to measured text within the floor, the cap and the available row",
+        "native_parity_weaker_surfaces::gallery toast strength::docks a bottom strip that grows upward and slides top survivors into the vacated slot",
+        "native_parity_weaker_surfaces::gallery toast strength::supersedes queued toasts in place and bounds the queue without dropping a showing toast"
       ],
-      "weaker": "Burst drop is asserted as dropped>0 without a reason; the 500 ms dismissal cap is only checked at 0.3 s; reduced motion checks visible counts, not equal durations; 'body spans the row and title has real width' is not ..."
+      "weaker": "Painted geometry (toast body rect wider than 200 px and title rect with real width) needs real engine layout. Per-dismissal reason codes are not a live promise: examples/gallery/scenarios/sponsor_toast.luau reports only dropped and superseded counters."
     },
     {
       "id": "apps2-248",
@@ -5759,9 +5774,9 @@
       "class": "a",
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::has one model spin driver with reduced-motion and reset semantics",
-        "native_virtual_monitors::native virtual monitors::NVM-Avatar restores the shared preset ladder slider increment and zeroable spin control"
-      ],
-      "weaker": "Main asserted a faster auto-spin level advances more than a slower one; candidate checks one speed (3 deg per 0.1s) and the reduced-motion hold only."
+        "native_virtual_monitors::native virtual monitors::NVM-Avatar restores the shared preset ladder slider increment and zeroable spin control",
+        "native_parity_weaker_values::native parity weaker values::avatar auto-spin advances faster at each higher level and holds still when off or reduced"
+      ]
     },
     {
       "id": "apps2-255",
@@ -5773,9 +5788,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_virtual_monitors::native virtual monitors::NVM-2 retains native avatar controls across narrow layouts and expands live HUD"
-      ],
-      "weaker": "HUD degradation is checked only as LookRich present iff width>=760; main checked reduced region has zero width under space pressure and expanded plate text 'Sage · Hat on'."
+        "native_virtual_monitors::native virtual monitors::NVM-2 retains native avatar controls across narrow layouts and expands live HUD",
+        "native_parity_weaker_surfaces::virtual monitors surface strength::names the live look in the rich HUD and degrades it to a compact summary under space pressure",
+        "native_parity_weaker_surfaces::virtual monitors surface strength::presents the look summary from its button and collapses tips without a leftover overlay"
+      ]
     },
     {
       "id": "apps2-256",
@@ -5800,9 +5816,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional"
-      ],
-      "weaker": "Candidate checks Chrome hidden at 393 wide and About reachable through ActionsMenu; it does not assert the wide header shows the row and hides the Menu, nor that the Menu fallback lists and runs the mode action."
+        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional",
+        "native_parity_weaker_pointer::adaptive environment strength::shows the monitor header actions when they fit and runs them from the menu when they do not"
+      ]
     },
     {
       "id": "apps2-258",
@@ -5843,9 +5859,9 @@
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::NVM-5 supports native card drop saving and similar-game contextual saving",
         "native_virtual_monitors::native virtual monitors::mounts the actual three screens and drives their controls through native events",
-        "native_virtual_monitors::native virtual monitors::NVM-15 keeps six recommendations and the original per-game trend values"
-      ],
-      "weaker": "Main asserted every pick shares the selected game's genre and excludes it, and that Save toggles back off; candidate asserts six rows, save on and open-to-about only."
+        "native_virtual_monitors::native virtual monitors::NVM-15 keeps six recommendations and the original per-game trend values",
+        "native_parity_weaker_navigation::native parity weaker navigation::lists only same-genre matches under More like this, opens one on its info and toggles Save off"
+      ]
     },
     {
       "id": "apps2-261",
@@ -5887,9 +5903,9 @@
       "class": "a",
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::filters and sorts the full catalog with stable tie order",
-        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional"
-      ],
-      "weaker": "Main toggled a genre chip off by pressing it again (genre nil); candidate uses the Genre menu and ClearFilters."
+        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional",
+        "native_parity_weaker_actions::native parity weaker actions::filters the monitor feed by genre and typed search, opens the chosen game and clears back"
+      ]
     },
     {
       "id": "apps2-264",
@@ -5970,9 +5986,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_virtual_monitors::native virtual monitors::NVM-6 keeps quick palette shared and adapts its button ring to a phone list"
-      ],
-      "weaker": "Main asserted the list ring height >= 400 inside its box; candidate asserts it becomes a ScrollingFrame at 320x420."
+        "native_virtual_monitors::native virtual monitors::NVM-6 keeps quick palette shared and adapts its button ring to a phone list",
+        "native_parity_weaker_menus::native parity weaker menus::overlays the quick palette on a 393 pixel phone inside its own box and sets the shared palette"
+      ]
     },
     {
       "id": "apps2-270",
@@ -5984,9 +6000,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_virtual_monitors::native virtual monitors::NVM-4 loads creator thumbnails with owned shimmer and stable native sparklines"
-      ],
-      "weaker": "Dismissed through its Dismiss button, not an outside tap."
+        "native_virtual_monitors::native virtual monitors::NVM-4 loads creator thumbnails with owned shimmer and stable native sparklines",
+        "native_parity_weaker_surfaces::virtual monitors surface strength::anchors the about this rating popover to its line and dismisses it on an outside tap"
+      ]
     },
     {
       "id": "apps2-271",
@@ -6059,9 +6075,9 @@
       "class": "a",
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::NVM-12 native modals capture selection and restore the launching control",
-        "native_virtual_monitors::native virtual monitors::NVM-19 grows a game card into the screen and returns to its retained card and scroll"
-      ],
-      "weaker": "Avatar Look sheet focus capture/return is not asserted specifically (only the game detail modal)."
+        "native_virtual_monitors::native virtual monitors::NVM-19 grows a game card into the screen and returns to its retained card and scroll",
+        "native_parity_weaker_focus::native parity weaker focus::captures selection in the avatar look sheet and reset alert and returns it to their openers"
+      ]
     },
     {
       "id": "apps2-277",
@@ -8149,9 +8165,12 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets",
-        "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery"
-      ],
-      "weaker": "Single native TextButton root asserted once; main repeated per preferred input (Gamepad/Keyboard/Touch/MouseKeyboard)."
+        "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
+        "native_parity_weaker_values::native parity weaker values::keeps one semantic target and readable row content for Gamepad input",
+        "native_parity_weaker_values::native parity weaker values::keeps one semantic target and readable row content for Keyboard input",
+        "native_parity_weaker_values::native parity weaker values::keeps one semantic target and readable row content for Touch input",
+        "native_parity_weaker_values::native parity weaker values::keeps one semantic target and readable row content for MouseKeyboard input"
+      ]
     },
     {
       "id": "apps-130",
@@ -8226,9 +8245,10 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::bounds menu scrolling, prunes removed branches and closes every level on tap away",
-        "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal"
-      ],
-      "weaker": "Trigger-toggle-closed case and 'no selection change' on dismiss are not asserted for Menu."
+        "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal",
+        "native_parity_weaker_menus::native parity weaker menus::closes an open menu picker on a tap away without changing the selection and restores the trigger",
+        "native_parity_weaker_menus::native parity weaker menus::closes an open menu picker on Back and leaves Back unclaimed while it is closed"
+      ]
     },
     {
       "id": "apps-136",
@@ -8241,9 +8261,10 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
-        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch"
-      ],
-      "weaker": "Asserted on Alert/compact menu; ModalBack destroyed after close stands in for 'not consumed when closed'."
+        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch",
+        "native_parity_weaker_menus::native parity weaker menus::closes an open menu picker on Back and leaves Back unclaimed while it is closed",
+        "native_parity_weaker_menus::native parity weaker menus::closes an open menu picker on a tap away without changing the selection and restores the trigger"
+      ]
     },
     {
       "id": "apps-137",
@@ -8256,9 +8277,10 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
-        "native_collections::Compose native collections::uses the shared native menu for all actions and restores focus after cancellation"
-      ],
-      "weaker": "Trap/restore asserted for Alert and the row-action menu; Menu/Picker trigger restore after outside tap, cancel row and api close are not each asserted."
+        "native_collections::Compose native collections::uses the shared native menu for all actions and restores focus after cancellation",
+        "native_parity_weaker_focus::native parity weaker focus::traps an open menu and returns selection to its trigger after outside tap, Back and model close",
+        "native_parity_weaker_focus::native parity weaker focus::returns a submenu Back row to the item that opened it and traps a picker menu"
+      ]
     },
     {
       "id": "apps-138",
@@ -8394,9 +8416,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::removes keyed chips toward the next then previous native target and caller fallback",
-        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page"
-      ],
-      "weaker": "Chip removal and navigation survivors only; not a general focused-node removal."
+        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page",
+        "native_parity_weaker_focus::native parity weaker focus::never strands selection on a removed focused row and skips disabled table rows"
+      ]
     },
     {
       "id": "apps-148",
@@ -8538,9 +8560,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection"
-      ],
-      "weaker": "Asserted for modal entry only, not screen entry."
+        "native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection",
+        "native_parity_weaker_focus::native parity weaker focus::takes modal selection on entry only for selection navigation across sheets and menus"
+      ]
     },
     {
       "id": "apps-160",
@@ -8552,9 +8574,11 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back"
+        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
+        "native_parity_weaker_focus::native parity weaker focus::groups modal selection and enters at the first selectable control in document order",
+        "native_parity_weaker_focus::native parity weaker focus::keeps Tab and Escape native while an alert owns safe initial selection and Back"
       ],
-      "weaker": "Direction Stop asserted; Tab traversal not modeled."
+      "weaker": "Engine selection movement cannot be shown to stay inside the modal without live GuiService traversal. Headless tests assert SelectionGroup with four Stop behaviors, reserved Tab and Escape, and background contexts disabled."
     },
     {
       "id": "apps-161",
@@ -8578,9 +8602,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection"
+        "native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection",
+        "native_parity_weaker_focus::native parity weaker focus::activates a selected button once per Return or Space press and leaves a disabled one inert"
       ],
-      "weaker": "Return+Space bound in one Activate action; no double-count or 'consumes' assertion."
+      "weaker": "Headless proves one activation per Activate press, a sinking Return and Space binding, and an inert disabled button. Whether the engine also fires the selected GuiButton's Activated for the same Return press (a double count) needs a live check."
     },
     {
       "id": "apps-163",
@@ -8647,9 +8672,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::allocates native value actions only for the selected control and preserves descendant focus"
-      ],
-      "weaker": "Increase action asserted; Space on a focused step button not separately asserted."
+        "native_inputs::native input controls::allocates native value actions only for the selected control and preserves descendant focus",
+        "native_parity_weaker_values::native parity weaker values::stepper step buttons take Return and Space activation and the Adjust keys step the value"
+      ]
     },
     {
       "id": "apps-168",
@@ -8823,9 +8848,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back"
+        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
+        "native_parity_weaker_focus::native parity weaker focus::groups modal selection and enters at the first selectable control in document order"
       ],
-      "weaker": "Trap only; document order inside the modal not asserted."
+      "weaker": "The initial selection is proved to be the first selectable in a document-order walk of the panel. The order in which the engine then moves through the modal needs live selection movement."
     },
     {
       "id": "apps-182",
@@ -8873,9 +8899,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page"
-      ],
-      "weaker": "NavigationStack survivor restore, not group replacement."
+        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page",
+        "native_navigation::native navigation controls::removes dynamically deleted tab owners and preserves the selected survivor",
+        "native_parity_weaker_focus::native parity weaker focus::keeps collection focus on its key through a re-sort and a table sort change"
+      ]
     },
     {
       "id": "apps-186",
@@ -8922,9 +8949,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_parity::restored native gallery parity::reports and navigates Journey across measured widths native edits and declared steps"
-      ],
-      "weaker": "One theme and input; main swept themes/input facts and asserted visits==exits and livePages==0."
+        "native_gallery_parity::restored native gallery parity::reports and navigates Journey across measured widths native edits and declared steps",
+        "native_parity_weaker_navigation::native parity weaker navigation::adapts one Journey flow across themes sizes and inputs and releases every page"
+      ]
     },
     {
       "id": "apps-190",
@@ -8937,9 +8964,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_parity::restored native gallery parity::reports and navigates Journey across measured widths native edits and declared steps",
-        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page"
-      ],
-      "weaker": "No input-class switch; ten-foot distance geometry is deleted (no distanceProfile)."
+        "native_navigation::native navigation controls::restores surviving navigation focus and moves paging focus into the visible page",
+        "native_parity_weaker_navigation::native parity weaker navigation::keeps the compact Journey flow through input switches and returns selection on each Back"
+      ]
     },
     {
       "id": "apps-191",
@@ -8951,9 +8978,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_parity::restored native gallery parity::reports and navigates Journey across measured widths native edits and declared steps"
-      ],
-      "weaker": "Search instance identity and match counts asserted; focus return to the chosen result not asserted."
+        "native_gallery_parity::restored native gallery parity::reports and navigates Journey across measured widths native edits and declared steps",
+        "native_parity_weaker_navigation::native parity weaker navigation::keeps Journey search filtering through adaptation and restores the chosen result on Back"
+      ]
     },
     {
       "id": "apps-192",
@@ -9006,9 +9033,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors"
-      ],
-      "weaker": "Refusal of radio/absent icons not asserted."
+        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors",
+        "native_parity_weaker_menus::native parity weaker menus::renders the icon-only glyph without a label and refuses an option without an icon"
+      ]
     },
     {
       "id": "apps-196",
@@ -9021,9 +9048,11 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::keeps plain picker segments native while retaining live description sources",
-        "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement"
+        "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement",
+        "native_parity_weaker_menus::native parity weaker menus::keeps choice rows, their selection focus and missing selected values through live replacements",
+        "native_parity_weaker_menus::native parity weaker menus::keeps a focused menu row while its live description appears, changes and disappears"
       ],
-      "weaker": "Focus retention through replacement not asserted."
+      "weaker": "A live icon replacement is not reflected: src/ui/nav_menu.luau:1086 reads option.icon once when the row is created, so a readable option whose icon changes keeps the old glyph. Main asserted the new glyph; this is a product gap that is not fixed here."
     },
     {
       "id": "apps-197",
@@ -9035,9 +9064,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto"
-      ],
-      "weaker": "Segmented style, not radioGroup."
+        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto",
+        "native_parity_weaker_menus::native parity weaker menus::keeps a radio group exclusive and skips a disabled option without rewriting the owner state"
+      ]
     },
     {
       "id": "apps-198",
@@ -9050,9 +9079,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_navigation::native parity navigation::refuses malformed picker options, labels, icons, indicators, axes and styles"
+        "native_parity_navigation::native parity navigation::refuses malformed picker options, labels, icons, indicators, axes and styles",
+        "native_parity_weaker_menus::native parity weaker menus::refuses malformed picker options and callback contracts by name for static and live sources"
       ],
-      "weaker": "A non-function onChange is not refused.",
       "apiPromise": "docs/reference/api.md 'Options and native properties': 'An unsupported control option causes an error'; Picker 'Each option has value and label'",
       "gap": {
         "description": "No pcall/error assertion on Picker options in CAND tests. Probe: a missing value and duplicate values both raise 'Picker options require unique values or ids' (src/ui/nav_menu.luau:698), so behavior exists but is unpi...",
@@ -9624,9 +9653,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options"
+        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
+        "native_parity_weaker_menus::native parity weaker menus::collapses four long labels off the segmented strip below 360 pixels with no environment wiring"
       ],
-      "weaker": "Driven by PreferredInput and measured width; size class no longer exists."
+      "weaker": "Whether four long labels still fit a segmented strip between 360 and about 400 px without clipping needs real TextBounds; the headless rule (below 360 px -> inline for gamepad or menu for touch, >= 360 px -> segmented, no wiring) is asserted."
     },
     {
       "id": "apps-238",
@@ -9720,9 +9750,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup"
-      ],
-      "weaker": "Sidebar vs bottom bar asserted via accessory placement at 1200 vs 401 widths."
+        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup",
+        "native_parity_weaker_navigation::native parity weaker navigation::resolves every tab home from measured shape and input without author wiring and re-homes one strip"
+      ]
     },
     {
       "id": "apps-246",
@@ -10205,9 +10235,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::defers initial offscreen focus until native geometry and suppresses navigation while editing",
-        "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys"
-      ],
-      "weaker": "The main contract also said a skipped row still activates on a tap. In CAND, disabled() makes RowHit non-Interactable, so that half is gone."
+        "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
+        "native_parity_weaker_focus::native parity weaker focus::never strands selection on a removed focused row and skips disabled table rows"
+      ]
     },
     {
       "id": "collections-18",
@@ -10919,9 +10949,10 @@
         "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
-        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route"
-      ],
-      "weaker": "No test asserts snapping closed under half a tray, or repeated short swipes on the same row."
+        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::settles row action trays at half the tray width and snaps every repeated short swipe closed",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::sends ties to the vertical axis, tracks linearly and commits a full swipe at seventy percent"
+      ]
     },
     {
       "id": "collections-71",
@@ -11052,9 +11083,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
-        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route"
-      ],
-      "weaker": "Backspace and the trailing-before-leading search order are not asserted."
+        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
+        "native_parity_weaker_focus::native parity weaker focus::deletes with Delete or Backspace through the first enabled destructive action, trailing first"
+      ]
     },
     {
       "id": "collections-80",
@@ -11079,9 +11110,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses the shared native menu for all actions and restores focus after cancellation",
         "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
-        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input"
-      ],
-      "weaker": "Opened with MouseButton2 only. The ButtonX/Menu binding and a destructive action run from the menu (full commit) are not asserted."
+        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
+        "native_parity_weaker_menus::native parity weaker menus::opens the row menu from ButtonX and Menu, lists leading then trailing actions and scopes it to the selected row",
+        "native_parity_weaker_menus::native parity weaker menus::runs a destructive row action from its menu through the full departure and closes the menu first"
+      ]
     },
     {
       "id": "collections-82",
@@ -11094,9 +11126,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_controls::native parity controls::keeps Delete and swipes inert while the row menu is open and leaks nothing across menu toggles"
+        "native_parity_controls::native parity controls::keeps Delete and swipes inert while the row menu is open and leaks nothing across menu toggles",
+        "native_parity_weaker_menus::native parity weaker menus::runs a destructive row action from its menu through the full departure and closes the menu first"
       ],
-      "weaker": "Main closed an open row menu on a full swipe. In the candidate the open menu is a modal surface, so a swipe on the row is refused while the menu is open; the case asserts that refusal.",
       "apiPromise": "src collection_row_actions.luau: RowActionsDelete eligibility requires `not menuOpen`; execute() closes menuOpen",
       "gap": {
         "description": "Not tested.",
@@ -11129,7 +11161,7 @@
       "candidateCases": [
         "native_parity_controls::native parity controls::toggles the row menu with Shift+Return, reveals it with ButtonX and dismisses it with the row"
       ],
-      "weaker": "Headless only. The engine routing of Shift+Return is not verified: the focused content Button keeps its own Activate context (priority 5000, Return), which outranks RowActionsToggle (priority 300). A live Studio check must show that Shift+Return opens the menu and does not also activate the content.",
+      "weaker": "Headless only. The engine routing of Shift+Return is not verified: the focused content Button keeps its own Activate context (priority 5000, Return), which outranks RowActionsToggle (priority 300). A live check must show that Shift+Return opens the menu and does not also activate the content.",
       "apiPromise": "src collection_row_actions.luau RowActionsToggle (Return with Shift held); api.md 'Native swipe, context, and keyboard and gamepad actions reach the same commands.'",
       "gap": {
         "description": "The toggle, the no-double-fire behavior, plain Return and Delete while open are all untested.",
@@ -11554,9 +11586,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
-        "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags"
-      ],
-      "weaker": "The pure state machine is gone. The rules are asserted through the mounted control. The full-swipe threshold is now 70% of the row width (main: 60%)."
+        "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::sends ties to the vertical axis, tracks linearly and commits a full swipe at seventy percent",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::settles row action trays at half the tray width and snaps every repeated short swipe closed"
+      ]
     },
     {
       "id": "collections-113",
@@ -12102,9 +12135,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies"
-      ],
-      "weaker": "Only a forward shift range is asserted."
+        "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
+        "native_parity_weaker_focus::native parity weaker focus::extends reversed and focus-anchored ranges and toggles additive taps in multi selection"
+      ]
     },
     {
       "id": "collections-148",
@@ -12127,9 +12160,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies"
-      ],
-      "weaker": "The additive toggle is asserted in multi mode only through a range."
+        "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
+        "native_parity_weaker_focus::native parity weaker focus::extends reversed and focus-anchored ranges and toggles additive taps in multi selection"
+      ]
     },
     {
       "id": "collections-150",
@@ -12493,9 +12526,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "The drag is not touch-typed. The 44 px touch grip size is asserted."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::widens a touch grip and clamps a touch resize to the column minimum and maximum"
+      ]
     },
     {
       "id": "collections-178",
@@ -12751,9 +12784,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies"
-      ],
-      "weaker": "Only the multi toggle through RowHit."
+        "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
+        "native_parity_weaker_focus::native parity weaker focus::toggles multi selection from the pad in edit mode without a focus landing undoing it"
+      ]
     },
     {
       "id": "collections-197",
@@ -13692,9 +13725,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
-      ],
-      "weaker": "Keyed remount restoration is asserted, but a re-sort under the cursor is not."
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_parity_weaker_focus::native parity weaker focus::keeps collection focus on its key through a re-sort and a table sort change"
+      ]
     },
     {
       "id": "collections-260",
@@ -14397,9 +14430,9 @@
       "candidateCases": [
         "native_inputs::native input controls::uses native properties and events and releases them with its Compose owner",
         "native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection",
-        "native_inputs::native input controls::activates programmatically selected buttons through the native GuiService property"
-      ],
-      "weaker": "Headless tests fire GuiButton.Activated (engine path for mouse/touch/ButtonA) and the Facet-owned Return/Space Activate InputAction; touch and gamepad ButtonA are not distinguished."
+        "native_inputs::native input controls::activates programmatically selected buttons through the native GuiService property",
+        "native_parity_weaker_actions::native parity weaker actions::activates a plain Button once from pointer, touch, gamepad and keyboard with no wiring"
+      ]
     },
     {
       "id": "inputs-03",
@@ -14412,9 +14445,11 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle requests controlled and clears a writable mixed state",
-        "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery"
-      ],
-      "weaker": "Only the Activated path is exercised for Toggle; the shared Button Return/Space Activate action is tested on Button, not Toggle."
+        "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
+        "native_parity_weaker_values::native parity weaker values::switch toggle flips once through every input and refuses input when disabled",
+        "native_parity_weaker_values::native parity weaker values::checkbox toggle flips once through every input and refuses input when disabled",
+        "native_parity_weaker_values::native parity weaker values::button toggle flips once through every input and refuses input when disabled"
+      ]
     },
     {
       "id": "inputs-04",
@@ -14466,9 +14501,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit",
-        "native_collections::Compose native collections::defers initial offscreen focus until native geometry and suppresses navigation while editing"
-      ],
-      "weaker": "Asserts the FacetTextEditing context (priority 10000 sink over arrows/DPad) is enabled only while editing; no test fires an arrow key during editing to prove a lower context does not receive it."
+        "native_collections::Compose native collections::defers initial offscreen focus until native geometry and suppresses navigation while editing",
+        "native_parity_weaker_actions::native parity weaker actions::sinks navigation keys from lower contexts only while a field edits"
+      ]
     },
     {
       "id": "inputs-08",
@@ -14530,9 +14565,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal",
-        "native_navigation::native navigation controls::snaps native sheet drags to declared detents and respects dismissal policy"
-      ],
-      "weaker": "outsideTapCancel=false barrier variant maps to Sheet dismissal policy; click-through to a base control is not asserted directly."
+        "native_navigation::native navigation controls::snaps native sheet drags to declared detents and respects dismissal policy",
+        "native_parity_weaker_surfaces::presented surface strength::pops one modal per outside tap, routes inside taps and never clicks through to the base"
+      ]
     },
     {
       "id": "inputs-13",
@@ -14583,9 +14618,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::owns busy animation only while visible and suppresses busy activation"
-      ],
-      "weaker": "Starts not busy; an initially busy button is not mounted in a test."
+        "native_inputs::native input controls::owns busy animation only while visible and suppresses busy activation",
+        "native_parity_weaker_actions::native parity weaker actions::mounts an initially busy Button with its spinner and releases it when busy ends"
+      ]
     },
     {
       "id": "inputs-17",
@@ -14633,9 +14668,10 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::repeats while held and cancels native frame subscriptions on disposal",
-        "native_inputs::native input controls::deduplicates shortcut/default bindings and yields shortcuts during native text editing"
-      ],
-      "weaker": "Only mouse release-inside is tested; touch, keyboard and gamepad holds, release-before/after ordering, busy interrupting a repeat and pointer-leave followed by a shortcut are not asserted."
+        "native_inputs::native input controls::deduplicates shortcut/default bindings and yields shortcuts during native text editing",
+        "native_parity_weaker_focus::native parity weaker focus::repeats touch, keyboard and gamepad holds and suppresses the trailing activation in either order",
+        "native_parity_weaker_focus::native parity weaker focus::stops a held repeat when busy begins and keeps the next shortcut after a pointer leaves"
+      ]
     },
     {
       "id": "inputs-20",
@@ -14867,9 +14903,9 @@
       "candidateCases": [
         "native_inputs::native input controls::uses native properties and events and releases them with its Compose owner",
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
-        "native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection"
-      ],
-      "weaker": "Destructive-role disabled combination is not asserted."
+        "native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection",
+        "native_parity_weaker_actions::native parity weaker actions::keeps a disabled destructive Button disabled on every input and re-enables it in place"
+      ]
     },
     {
       "id": "inputs-36",
@@ -14906,9 +14942,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes",
-        "native_inputs::native input controls::reflows Button and circle sizes from live theme metrics and control rungs"
-      ],
-      "weaker": "Explicit shape='rect' and a bound (readable) label on a circle are not mounted."
+        "native_inputs::native input controls::reflows Button and circle sizes from live theme metrics and control rungs",
+        "native_parity_weaker_actions::native parity weaker actions::mounts an explicit rect shape as an ordinary Button and a circle with a bound label"
+      ]
     },
     {
       "id": "inputs-39",
@@ -15101,9 +15137,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_gallery_workflows::native gallery workflows::reflows one recipe action set and preserves controlled checks and keyed chips"
-      ],
-      "weaker": "Only a gallery chip's Activated is fired; onToggle request semantics, keyboard Activate and gamepad paths on Chip are not asserted (probe: onToggle receives true and leaves the cell unchanged)."
+        "native_gallery_workflows::native gallery workflows::reflows one recipe action set and preserves controlled checks and keyed chips",
+        "native_parity_weaker_values::native parity weaker values::chip requests onToggle without writing the cell and toggles a writable cell from every input"
+      ]
     },
     {
       "id": "inputs-54",
@@ -15416,9 +15452,9 @@
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
         "native_navigation::native navigation controls::validates combo custom commits and cancels editable text",
         "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives",
-        "native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection"
-      ],
-      "weaker": "Per-control tests; no single matrix over pointer/touch/keyboard/gamepad for each control."
+        "native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection",
+        "native_parity_weaker_actions::native parity weaker actions::shares activation and disable guards across Toggle, Button, ComboBox and SplitButton on every input"
+      ]
     },
     {
       "id": "inputs-75",
@@ -15441,9 +15477,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value"
-      ],
-      "weaker": "The application supplies the HapticEffect (pressHaptic); there is no Facet default 'contact' waveform."
+        "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value",
+        "native_parity_weaker_actions::native parity weaker actions::hands one application press haptic to buttons, segments and toggles and leaves hover and fields alone"
+      ]
     },
     {
       "id": "inputs-77",
@@ -15584,9 +15620,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value"
-      ],
-      "weaker": "Effect is caller-supplied via pressHaptic; HoverHapticEffect untouched and non-GuiButton exclusion are not asserted."
+        "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value",
+        "native_parity_weaker_actions::native parity weaker actions::hands one application press haptic to buttons, segments and toggles and leaves hover and fields alone"
+      ]
     },
     {
       "id": "inputs-88",
@@ -15621,9 +15657,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::shows button help after a pointer rests on it and never on touch"
-      ],
-      "weaker": "Touch is modelled only as PreferredInput=Touch; a touch tap that moves selection is not exercised."
+        "native_navigation::native navigation controls::shows button help after a pointer rests on it and never on touch",
+        "native_parity_weaker_surfaces::presented surface strength::shows help for gamepad selection but never when a touch tap moves the selection"
+      ]
     },
     {
       "id": "inputs-91",
@@ -15956,9 +15992,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::supports clearing a rating and keeps read-only levels inert"
-      ],
-      "weaker": "Selectable=false for readOnly is not asserted."
+        "native_inputs::native input controls::supports clearing a rating and keeps read-only levels inert",
+        "native_parity_weaker_values::native parity weaker values::level picker read-only is not selectable and refuses pointer scrub and adjust input"
+      ]
     },
     {
       "id": "inputs-114",
@@ -15993,9 +16029,12 @@
       "candidateCases": [
         "native_inputs::native input controls::supports clearing a rating and keeps read-only levels inert",
         "native_inputs::native input controls::keeps level marks inert with one focus target and a cancellable native scrub",
-        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return"
-      ],
-      "weaker": "Keyboard/gamepad and limit yield are asserted on Rating (same implementation), not LevelPicker."
+        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return",
+        "native_parity_weaker_values::native parity weaker values::level picker pointer tap and touch scrub reach the level arithmetic",
+        "native_parity_weaker_values::native parity weaker values::level picker keyboard and gamepad adjust only while selected and yield at the limit",
+        "native_parity_weaker_values::native parity weaker values::level picker cancels a pointer scrub back to its snapshot when the gamepad takes over",
+        "native_parity_weaker_values::native parity weaker values::level picker disabled refuses pointer scrub and adjust input"
+      ]
     },
     {
       "id": "inputs-116",
@@ -16020,9 +16059,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::keeps level marks inert with one focus target and a cancellable native scrub",
-        "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics"
-      ],
-      "weaker": "LevelPicker scrub cancel is via the Cancel action; the PreferredInput=Gamepad hot-switch cancel is only asserted on Slider."
+        "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::cancels a Rating and a LevelPicker scrub back to its value when the player switches to a gamepad"
+      ]
     },
     {
       "id": "inputs-118",
@@ -16045,9 +16084,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::supports clearing a rating and keeps read-only levels inert"
-      ],
-      "weaker": "Default glyph pair not asserted."
+        "native_inputs::native input controls::supports clearing a rating and keeps read-only levels inert",
+        "native_parity_weaker_values::native parity weaker values::rating is five glyph stars with the default star pair and no tint"
+      ]
     },
     {
       "id": "inputs-120",
@@ -16284,9 +16323,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit"
-      ],
-      "weaker": "Asserts FacetTextEditing.Enabled=false after disable; not after an OSK-surface loss."
+        "native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit",
+        "native_parity_weaker_actions::native parity weaker actions::brings the editing sink down when the engine drops the editing surface without Enter"
+      ]
     },
     {
       "id": "inputs-139",
@@ -16518,9 +16557,11 @@
       "candidateCases": [
         "native_inputs::native input controls::supports clearing a rating and keeps read-only levels inert",
         "native_inputs::native input controls::keeps level marks inert with one focus target and a cancellable native scrub",
-        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return"
-      ],
-      "weaker": "Focus-stop count, read-only and scrub are asserted on LevelPicker (shared implementation) not Rating."
+        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return",
+        "native_parity_weaker_values::native parity weaker values::rating is one focus stop that pointer touch keyboard and gamepad all adjust",
+        "native_parity_weaker_values::native parity weaker values::rating read-only and disabled refuse every input class",
+        "native_parity_weaker_values::native parity weaker values::level picker read-only is not selectable and refuses pointer scrub and adjust input"
+      ]
     },
     {
       "id": "inputs-156",
@@ -16554,9 +16595,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics"
-      ],
-      "weaker": "Gamepad hot-switch cancel asserted for Slider only."
+        "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::cancels a Rating and a LevelPicker scrub back to its value when the player switches to a gamepad"
+      ]
     },
     {
       "id": "inputs-158",
@@ -16568,9 +16609,9 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return"
-      ],
-      "weaker": "Minimum-side yield and neighbour controls/rows are not exercised."
+        "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return",
+        "native_parity_weaker_focus::native parity weaker focus::yields the minimum-side arrow at the bound while bumpers stay bound, also inside a list row"
+      ]
     },
     {
       "id": "inputs-159",
@@ -16693,9 +16734,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::names keys that have no printable character",
-        "native_inputs::native input controls::replaces native hint art when the preferred asset changes representation"
-      ],
-      "weaker": "Service failure is not tested; GetStringForKeyCode/GetImageForKeyCode are not pcall-guarded in src, so a throwing service would propagate instead of keeping a readable label."
+        "native_inputs::native input controls::replaces native hint art when the preferred asset changes representation",
+        "native_parity_weaker_focus::native parity weaker focus::keeps readable key names and no glyph when the native key service fails"
+      ]
     },
     {
       "id": "inputs-168",
@@ -16740,9 +16781,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::updates explicit shortcut alternatives without owning input bindings"
-      ],
-      "weaker": "controlSize rung change not asserted."
+        "native_inputs::native input controls::updates explicit shortcut alternatives without owning input bindings",
+        "native_parity_weaker_focus::native parity weaker focus::tracks separator and control rung on the same hint node without a rebuild"
+      ]
     },
     {
       "id": "inputs-172",
@@ -16754,9 +16795,9 @@
       "mainCases": 13,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::updates explicit shortcut alternatives without owning input bindings"
-      ],
-      "weaker": "Only keys={{''}} is asserted; no census for leftovers; CAND silently accepts separatorOnAction and 'over' (declared semantic key, undocumented and unused), and 'size' refusal depends on controlSize lookup."
+        "native_inputs::native input controls::updates explicit shortcut alternatives without owning input bindings",
+        "native_parity_weaker_focus::native parity weaker focus::refuses every malformed shortcut hint declaration without native leftovers"
+      ]
     },
     {
       "id": "inputs-173",
@@ -16828,9 +16869,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls",
-        "native_inputs::native input controls::steps from the minimum, respects live stepping and gates all activation"
-      ],
-      "weaker": "Refusal is asserted on the shared model (input_value), not on a mounted Slider with a literal step<=0."
+        "native_inputs::native input controls::steps from the minimum, respects live stepping and gates all activation",
+        "native_parity_weaker_values::native parity weaker values::slider refuses a literal non-positive step and a live step that turns non-positive"
+      ]
     },
     {
       "id": "inputs-178",
@@ -16853,9 +16894,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation"
-      ],
-      "weaker": "PlaceholderText is not asserted (probe: placeholder maps to PlaceholderText)."
+        "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation",
+        "native_parity_weaker_actions::native parity weaker actions::shows the owner value and placeholder in a native TextBox and edits without optional services"
+      ]
     },
     {
       "id": "inputs-180",
@@ -16868,9 +16909,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation",
-        "native_inputs::native input controls::limits UTF-8 characters, rejects validation and restores an edit on cancel"
-      ],
-      "weaker": "Only the 'submit' reason is asserted; 'focusLost' is not."
+        "native_inputs::native input controls::limits UTF-8 characters, rejects validation and restores an edit on cancel",
+        "native_parity_weaker_actions::native parity weaker actions::enters editing on native focus, flows typed text to onChange and names both commit reasons"
+      ]
     },
     {
       "id": "inputs-181",
@@ -16894,9 +16935,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit"
-      ],
-      "weaker": "Asserts the sink context's Enabled flag, not key delivery."
+        "native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit",
+        "native_parity_weaker_actions::native parity weaker actions::sinks navigation keys from lower contexts only while a field edits",
+        "native_parity_weaker_actions::native parity weaker actions::brings the editing sink down when the engine drops the editing surface without Enter"
+      ]
     },
     {
       "id": "inputs-183",
@@ -16923,9 +16965,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation",
-        "native_inputs::native input controls::limits UTF-8 characters, rejects validation and restores an edit on cancel"
-      ],
-      "weaker": "Paste-like multi-char append and over-long commit reconciliation are not separately asserted."
+        "native_inputs::native input controls::limits UTF-8 characters, rejects validation and restores an edit on cancel",
+        "native_parity_weaker_actions::native parity weaker actions::keeps onChange and onCommit distinct, clamps a pasted append and reconciles an over-long commit"
+      ]
     },
     {
       "id": "inputs-185",
@@ -17165,9 +17207,14 @@
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle requests controlled and clears a writable mixed state",
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
-        "native_inputs::native input controls::keeps mixed checkbox geometry live and validates presentation-specific options"
-      ],
-      "weaker": "presentation='button' is never mounted; keyboard/gamepad Toggle paths are not exercised (Activated only)."
+        "native_inputs::native input controls::keeps mixed checkbox geometry live and validates presentation-specific options",
+        "native_parity_weaker_values::native parity weaker values::switch toggle flips once through every input and refuses input when disabled",
+        "native_parity_weaker_values::native parity weaker values::checkbox toggle flips once through every input and refuses input when disabled",
+        "native_parity_weaker_values::native parity weaker values::button toggle flips once through every input and refuses input when disabled",
+        "native_parity_weaker_values::native parity weaker values::switch toggle waits for model approval through every input",
+        "native_parity_weaker_values::native parity weaker values::checkbox toggle waits for model approval through every input",
+        "native_parity_weaker_values::native parity weaker values::button toggle waits for model approval through every input"
+      ]
     },
     {
       "id": "inputs-201",
@@ -17181,9 +17228,16 @@
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle requests controlled and clears a writable mixed state",
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
-        "native_inputs::native input controls::does not mutate writable controlled models before callbacks accept requests"
-      ],
-      "weaker": "One presentation/input per assertion; formula and function values are not mounted."
+        "native_inputs::native input controls::does not mutate writable controlled models before callbacks accept requests",
+        "native_parity_weaker_values::native parity weaker values::switch toggle waits for model approval through every input",
+        "native_parity_weaker_values::native parity weaker values::checkbox toggle waits for model approval through every input",
+        "native_parity_weaker_values::native parity weaker values::button toggle waits for model approval through every input",
+        "native_parity_weaker_values::native parity weaker values::row toggle waits for model approval through every input",
+        "native_parity_weaker_values::native parity weaker values::toggle reads an accepted cell source without a writable proxy",
+        "native_parity_weaker_values::native parity weaker values::toggle reads an accepted formula source without a writable proxy",
+        "native_parity_weaker_values::native parity weaker values::toggle reads an accepted function source without a writable proxy",
+        "native_parity_weaker_values::native parity weaker values::toggle edits writable cells without a callback in every presentation and refuses read-only sources"
+      ]
     },
     {
       "id": "inputs-202",
@@ -17216,9 +17270,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery"
-      ],
-      "weaker": "No slide animation remains; only the final mark position is asserted."
+        "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
+        "native_parity_weaker_values::native parity weaker values::switch paints its initial value on the first frame and each change at once"
+      ]
     },
     {
       "id": "inputs-204",
@@ -17231,9 +17285,10 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::keeps mixed checkbox geometry live and validates presentation-specific options",
-        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets"
-      ],
-      "weaker": "Row approval is not asserted per input."
+        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets",
+        "native_parity_weaker_values::native parity weaker values::row indicator on the leading side requests model approval through every input",
+        "native_parity_weaker_values::native parity weaker values::row indicator on the trailing side requests model approval through every input"
+      ]
     },
     {
       "id": "inputs-205",
@@ -17329,9 +17384,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls",
-        "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics"
-      ],
-      "weaker": "Negative-zero formatting and non-integer grids landing exactly on bounds are not asserted."
+        "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics",
+        "native_parity_weaker_values::native parity weaker values::value controls format without negative zero and land non-integer grids on the bounds"
+      ]
     },
     {
       "id": "inputs-213",
@@ -17379,9 +17434,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::keeps authored slider widths with an inline readout and a vertically sized row presentation",
-        "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls"
-      ],
-      "weaker": "Asserted on Slider readout and model.format, not the Stepper Value label."
+        "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls",
+        "native_parity_weaker_values::native parity weaker values::stepper value label follows the value and a custom format in place"
+      ]
     },
     {
       "id": "inputs-216",
@@ -17839,9 +17894,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion",
-        "native_themes_media::native themes and media::uses native shadows with reactive theme parameters and Compose disposal"
+        "native_themes_media::native themes and media::uses native shadows with reactive theme parameters and Compose disposal",
+        "native_parity_weaker_actions::native parity weaker actions::returns a pressed pop to its rest under an authored scale and keeps the native shadow"
       ],
-      "weaker": "Button pop test checks return to Scale 1 and reduced motion, not an authored non-1 resting scale or shadow survival after a press.",
       "apiPromise": "Button presentation option `pop`."
     },
     {
@@ -18061,9 +18116,9 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "Only one Table body scroller: asserts canvas advances past 200 during an edge drag and the drop slot is correct. No dwell-before-arm, nested-scroller chain rule, pinned-inner transparency, retraction/leave disarm, mid..."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::autoscrolls a reorder only from the edge bands, stops on retraction and release, and clamps both ends"
+      ]
     },
     {
       "id": "mech1-43",
@@ -18453,9 +18508,11 @@
         "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup",
         "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders",
         "native_navigation::native navigation controls::collapses a nested tab strip into one menu row when its region is short",
-        "native_navigation::native navigation controls::renders sidebar sections and collapsed tab destinations through the shared menu"
-      ],
-      "weaker": "Placement-flip test asserts accessory owners, not that visited page owners survive the flip."
+        "native_navigation::native navigation controls::renders sidebar sections and collapsed tab destinations through the shared menu",
+        "native_parity_weaker_navigation::native parity weaker navigation::keeps page owners and the strip across every declared home and evicts only on selection",
+        "native_parity_weaker_navigation::native parity weaker navigation::retires tab accessories per home through Compose ownership in every placement",
+        "native_parity_weaker_navigation::native parity weaker navigation::reopens collapsed tabs through their menu and selects each destination in turn"
+      ]
     },
     {
       "id": "mech1-75",
@@ -18651,9 +18708,9 @@
       "candidateCases": [
         "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes",
         "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input",
-        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors"
-      ],
-      "weaker": "Target floor only checked on Table rows (44) and navigation indicators; not every interactive control."
+        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors",
+        "native_parity_weaker_pointer::adaptive environment strength::keeps every interactive control target at 44 pixels under touch and gamepad at every text size"
+      ]
     },
     {
       "id": "mech1-89",
@@ -19080,9 +19137,10 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal",
-        "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves"
+        "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves",
+        "native_parity_weaker_surfaces::presented surface strength::keeps the top modal active when the covered surface beneath it is dismissed"
       ],
-      "weaker": "Candidate closes only the top modal; dismissal of a non-top covered surface is not driven."
+      "weaker": "Selection movement inside the surviving modal (Down to the next action) needs real engine gamepad selection."
     },
     {
       "id": "mech1-121",
@@ -19094,9 +19152,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_stress::native stress invariants::preserves UTF8 edit state and gates actions through 200 seeded preference and visibility storms"
-      ],
-      "weaker": "Garbage platform-fact clamping into size/typography classes is gone with the environment module."
+        "native_stress::native stress invariants::preserves UTF8 edit state and gates actions through 200 seeded preference and visibility storms",
+        "native_parity_weaker_pointer::adaptive environment strength::keeps controls legal and mounted through seeded preferred-input, transparency, motion and garbage bound storms"
+      ]
     },
     {
       "id": "mech1-122",
@@ -19588,9 +19646,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::uses native properties and events and releases them with its Compose owner",
-        "native_public_surface::native public surface::gates native actions through retained ancestors and detaches observations"
-      ],
-      "weaker": "tag asserted on a busy Button only; no disposal while an ancestor is non-Interactable"
+        "native_public_surface::native public surface::gates native actions through retained ancestors and detaches observations",
+        "native_parity_weaker_actions::native parity weaker actions::tags every disabled control for the theme and tears down cleanly under a non-interactable ancestor"
+      ]
     },
     {
       "id": "mech2-24",
@@ -20628,9 +20686,10 @@
         "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves",
         "native_navigation::native navigation controls::captures alert payload and closes before invoking its action",
         "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
-        "native_inputs::native input controls::activates programmatically selected buttons through the native GuiService property"
+        "native_inputs::native input controls::activates programmatically selected buttons through the native GuiService property",
+        "native_parity_weaker_surfaces::presented surface strength::routes activation to the selected control of the top modal and survives a re-entrant dismiss"
       ],
-      "weaker": "base-screen document-order initial focus is now native selection (no assertion)"
+      "weaker": "Selection movement and wrap inside the trapped modal (Down twice) needs real engine gamepad selection."
     },
     {
       "id": "mech2-105",
@@ -20666,9 +20725,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
-        "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows"
-      ],
-      "weaker": "re-enable restoring a session not asserted"
+        "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::gives a disabled row no drag session and restores the session when it is enabled again"
+      ]
     },
     {
       "id": "mech2-108",
@@ -20941,9 +21000,10 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets"
+        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets",
+        "native_parity_weaker_values::native parity weaker values::toggle label column reserves the track beside a growing native label across reference packages"
       ],
-      "weaker": "Covers UIPadding follows controlSize and theme contentInsets and label text updates; does not measure that the row is wide enough for label+track across reference packages"
+      "weaker": "Still missing: a measurement that the solved row width is at least the label TextBounds plus the track across reference packages; native AutomaticSize and TextBounds need live Studio layout. Structure (AutomaticSize XY, unwrapped native label, reserved padding equal to track width plus gap plus theme inset, indicator inside the reserve, live label growth) is asserted for four packages."
     },
     {
       "id": "mech3-15",
@@ -21636,9 +21696,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::shows button help after a pointer rests on it and never on touch"
-      ],
-      "weaker": "Button.help replaces the disclosure plate: hover dwell (0.45s) covered; touch now never shows (main showed on long-press)"
+        "native_navigation::native navigation controls::shows button help after a pointer rests on it and never on touch",
+        "native_parity_gaps::native parity gaps::shows button help when gamepad selection rests on the button and hides it on deselection",
+        "native_parity_weaker_actions::native parity weaker actions::waits for a resting pointer, restarts the dwell, shows current help text and never engages on touch"
+      ]
     },
     {
       "id": "mech3-70",
@@ -21851,9 +21912,15 @@
       "candidateCases": [
         "native_gallery_parity::restored native gallery parity::bounds toast priority queues protects reading supersedes in place and reverses dismissal",
         "native_gallery_parity::restored native gallery parity::reflows measured toast heights with owned motion and releases the departing card",
-        "native_gallery_workflows::native gallery workflows::expires passive toasts while retaining access to the underlying action"
+        "native_gallery_workflows::native gallery workflows::expires passive toasts while retaining access to the underlying action",
+        "native_parity_weaker_surfaces::gallery toast strength::releases dismissed toasts within the half-second cap and returns the counters and instances",
+        "native_parity_weaker_surfaces::gallery toast strength::leaves selection, modal scope and the control beneath untouched while a toast shows",
+        "native_parity_weaker_surfaces::gallery toast strength::fits toast width to measured text within the floor, the cap and the available row",
+        "native_parity_weaker_surfaces::gallery toast strength::docks a bottom strip that grows upward and slides top survivors into the vacated slot",
+        "native_parity_weaker_surfaces::gallery toast strength::keeps reduced-motion toasts on screen for the same durations as animated ones",
+        "native_parity_weaker_surfaces::gallery toast strength::dismisses showing and queued toasts by id and ignores an unknown id"
       ],
-      "weaker": "Covers slot reflow, hug width 264, Active/Selectable false with Beneath still pressable, top edge AnchorPoint, expiry and heartbeat.count()==0 after close; focus-untouched and 'not a presented surface' are implicit. T..."
+      "weaker": "Absolute geometry (short and long hug toasts centred at x=195, wrapped long toast taller than the short one) needs real engine layout and TextBounds."
     },
     {
       "id": "mech3-88",
@@ -21877,9 +21944,13 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_parity::restored native gallery parity::bounds toast priority queues protects reading supersedes in place and reverses dismissal",
-        "native_gallery_workflows::native gallery workflows::expires passive toasts while retaining access to the underlying action"
-      ],
-      "weaker": "Example-owned scheduler; covers 3 visible/queue, read-floor protection, urgent promotion, subject replace in place, burst drop, clear/dismiss; does not test 'unknown id returns false', FIFO within priority, or weakest..."
+        "native_gallery_workflows::native gallery workflows::expires passive toasts while retaining access to the underlying action",
+        "native_parity_weaker_surfaces::gallery toast strength::schedules toasts with per-toast timeouts that promote the queue in the same frame",
+        "native_parity_weaker_surfaces::gallery toast strength::orders the toast queue by priority first in first out and preempts only the weakest showing toast",
+        "native_parity_weaker_surfaces::gallery toast strength::supersedes queued toasts in place and bounds the queue without dropping a showing toast",
+        "native_parity_weaker_surfaces::gallery toast strength::dismisses showing and queued toasts by id and ignores an unknown id",
+        "native_parity_weaker_surfaces::gallery toast strength::drops exactly the least urgent newest burst toast at the queue cap and drains the rest"
+      ]
     },
     {
       "id": "mech3-90",
@@ -22083,9 +22154,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup"
+        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup",
+        "native_parity_weaker_navigation::native parity weaker navigation::binds the sidebar preference without rebuilding pages or moving focus off page content",
+        "native_parity_weaker_navigation::native parity weaker navigation::shows a persistent sidebar by default on a wide pointer viewport without a toggle"
       ],
-      "weaker": "Candidate asserts preference->placement (head vs trailing accessory) and compact width overriding 'sidebar'; it does not count page content builds or assert focus stays on page content across preference flips.",
       "apiPromise": "api.md TabView: 'sidebarPreference ... refine the presentation'; sidebar on a sufficiently wide native viewport."
     },
     {
@@ -22202,9 +22274,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch"
-      ],
-      "weaker": "Candidate adapts by width only. Main switched on input (Gamepad->single panel, mouse->cascade); CAND nav_menu uses Touch->sheet and gamepad keeps the cascade. The input rule is untested."
+        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch",
+        "native_parity_weaker_menus::native parity weaker menus::presents a wide menu as a cascade for pointer and gamepad and as a sheet for touch",
+        "native_parity_weaker_menus::native parity weaker menus::becomes a sheet for a touch or narrow menu picker and anchors to its trigger for a wide pointer"
+      ]
     },
     {
       "id": "navigation-1-09",
@@ -22227,9 +22300,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup"
-      ],
-      "weaker": "Candidate asserts that the head accessory offsets the rail (Tabs Y=52) and the slot moves between placements. It does not assert vertical centring beside a tall trailing accessory or foot alignment."
+        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup",
+        "native_parity_weaker_navigation::native parity weaker navigation::centres the top bar beside a tall trailing accessory and anchors rail accessories to the rail ends"
+      ]
     },
     {
       "id": "navigation-1-11",
@@ -22241,9 +22314,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::animates alerts from native sources and reclaims interrupted Compose presence"
-      ],
-      "weaker": "Candidate asserts that the panel lands at the centre (X=400 of 800). The max-width bound and row-form 'cancel leading' (LayoutOrder 0 when not stacked) are not asserted."
+        "native_navigation::native navigation controls::animates alerts from native sources and reclaims interrupted Compose presence",
+        "native_parity_weaker_surfaces::presented surface strength::centers a content-sized alert card under its width bound and leads the row with cancel"
+      ]
     },
     {
       "id": "navigation-1-12",
@@ -22271,9 +22344,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
-        "native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection"
-      ],
-      "weaker": "The ten-foot focus-ring profile is gone. Tab/Escape reservation is not tested."
+        "native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection",
+        "native_parity_weaker_focus::native parity weaker focus::keeps Tab and Escape native while an alert owns safe initial selection and Back"
+      ]
     },
     {
       "id": "navigation-1-14",
@@ -22285,9 +22358,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements"
+        "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements",
+        "native_parity_weaker_surfaces::presented surface strength::stacks more than two alert actions with the likely action on top and cancel last"
       ],
-      "weaker": "Candidate stacks 2 actions from a narrow offer and puts cancel last. The '#actions > 2' rule and 'likely action on top' are not asserted."
+      "weaker": "Up from Cancel reaching the stacked Delete action needs real engine gamepad selection."
     },
     {
       "id": "navigation-1-15",
@@ -22428,9 +22502,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::takes selection into a modal only for players navigating by selection",
-        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back"
-      ],
-      "weaker": "Repeated set(true) not stacking a second modal, and programmatic set(false) not invoking cancel onActivate, are not asserted."
+        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
+        "native_parity_weaker_surfaces::presented surface strength::binds alert presentation both ways without stacking or invoking action callbacks"
+      ]
     },
     {
       "id": "navigation-1-24",
@@ -22862,9 +22936,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away"
-      ],
-      "weaker": "Asserts the left shift (X=32) only. The edge (below), arrow direction and arrow X within the anchor are not asserted."
+        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away",
+        "native_parity_weaker_surfaces::presented surface strength::hangs a callout below a top-right anchor with its arrow at the anchor and its body shifted left"
+      ]
     },
     {
       "id": "navigation-1-51",
@@ -22966,9 +23040,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away"
-      ],
-      "weaker": "The catcher z-order check is replaced by UserInputService.InputBegan observation (no catcher). 'Not modal' is inferred from the anchor keeping its selection; background focus traversal is not asserted."
+        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away",
+        "native_parity_weaker_focus::native parity weaker focus::leaves background selection and shortcuts live while a callout is shown"
+      ]
     },
     {
       "id": "navigation-1-58",
@@ -22997,9 +23071,9 @@
       "candidateCases": [
         "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away",
         "native_navigation::native navigation controls::keeps measured callout arrows outside automatic content bounds",
-        "native_navigation::native navigation controls::queues callouts by priority and retires once without writing model facts"
-      ],
-      "weaker": "Wrap is checked through AutomaticSize Y with author TextWrapped content. The width bound min(280, extent-16) and 1.4x pseudo-localized copy are not asserted."
+        "native_navigation::native navigation controls::queues callouts by priority and retires once without writing model facts",
+        "native_parity_weaker_surfaces::presented surface strength::carries the given callout content tree and bounds long copy to the viewport width"
+      ]
     },
     {
       "id": "navigation-1-60",
@@ -23059,9 +23133,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_navigation::native parity navigation::keeps device names out of the control sources"
+        "native_parity_navigation::native parity navigation::keeps device names out of the control sources",
+        "native_parity_weaker_pointer::adaptive environment strength::keeps device names and platform branches out of the framework and example sources"
       ],
-      "weaker": "Scans src/ui for platform names. It does not prove that no behavior depends on a platform fact.",
       "apiPromise": "AGENTS.md §6 forbids branching on a device name; CAND nav_surfaces.luau Callout.",
       "gap": {
         "description": "No candidate test scans src/ui for platform names.",
@@ -23202,9 +23276,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::renders disclosure appearances and collapsible summaries with native assets and close policy"
-      ],
-      "weaker": "Main also asserted the bound summary label updates on choice and focus returns to the trigger after collapse; candidate asserts only Close -> expanded=false, content destroyed, trigger identity kept."
+        "native_navigation::native navigation controls::renders disclosure appearances and collapsible summaries with native assets and close policy",
+        "native_parity_weaker_surfaces::presented surface strength::updates the bound summary label on a choice and returns selection to the same trigger"
+      ]
     },
     {
       "id": "navigation-2-03",
@@ -23253,9 +23327,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::renders sidebar sections and collapsed tab destinations through the shared menu",
-        "native_navigation::native navigation controls::collapses a nested tab strip into one menu row when its region is short"
-      ],
-      "weaker": "No assertion that focus enters the menu and returns to the trigger after selection, nor the customized-without-indicator variant."
+        "native_navigation::native navigation controls::collapses a nested tab strip into one menu row when its region is short",
+        "native_parity_weaker_navigation::native parity weaker navigation::moves selection into the collapsed tab menu and returns it to the trigger after a choice"
+      ]
     },
     {
       "id": "navigation-2-06",
@@ -23384,9 +23458,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::owns disclosure content only while expanded"
-      ],
-      "weaker": "Main asserted an animated rotation toward 90 and back; candidate swaps the caret icon (chevron.trailing <-> chevron.down) instantly and asserts only the Image change."
+        "native_navigation::native navigation controls::owns disclosure content only while expanded",
+        "native_parity_weaker_actions::native parity weaker actions::shows the disclosure state on a leading or trailing caret through header activation"
+      ]
     },
     {
       "id": "navigation-2-15",
@@ -23423,9 +23497,10 @@
       "candidateCases": [
         "native_navigation::native navigation controls::owns disclosure content only while expanded",
         "native_navigation::native navigation controls::renders disclosure appearances and collapsible summaries with native assets and close policy",
-        "native_themes_media::native themes and media::shares selected contrast across rich disclosure titles and chevrons"
+        "native_themes_media::native themes and media::shares selected contrast across rich disclosure titles and chevrons",
+        "native_parity_weaker_actions::native parity weaker actions::paints contained disclosures, places a trailing caret after the label and follows a bound description"
       ],
-      "weaker": "Contained panel paint, trailing caret placement, reactive description update and header height growth with a description are not asserted."
+      "weaker": "Header height growth with a description needs engine AutomaticSize layout; headless asserts AutomaticSize XY, the described padding tag and the Description caption only."
     },
     {
       "id": "navigation-2-18",
@@ -23437,9 +23512,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::returns disclosure focus before unmounting its content"
-      ],
-      "weaker": "Only caller collapse with focus inside is tested; main also checked child-initiated collapse and that focus outside the group is not stolen."
+        "native_navigation::native navigation controls::returns disclosure focus before unmounting its content",
+        "native_parity_weaker_focus::native parity weaker focus::returns disclosure focus to the header for a child collapse and leaves outside focus alone"
+      ]
     },
     {
       "id": "navigation-2-19",
@@ -23463,9 +23538,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::hands selection to the shown tab panel and restores it on return"
-      ],
-      "weaker": "Main also required eviction of content while remembering focus and that pointer entry overrides; candidate retains content (retention=all) and tests neither."
+        "native_navigation::native navigation controls::hands selection to the shown tab panel and restores it on return",
+        "native_parity_weaker_navigation::native parity weaker navigation::remembers a tab's focus after its page is evicted and lets a direct selection override it"
+      ]
     },
     {
       "id": "navigation-2-21",
@@ -23553,9 +23628,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::mounts menus in the native layer, traverses submenus and closes after action",
-        "native_navigation::native navigation controls::renders sidebar sections and collapsed tab destinations through the shared menu"
-      ],
-      "weaker": "Placement against the trigger rect is not asserted."
+        "native_navigation::native navigation controls::renders sidebar sections and collapsed tab destinations through the shared menu",
+        "native_parity_weaker_menus::native parity weaker menus::opens a menu against its trigger rectangle, flips above it near the bottom and runs an item once"
+      ]
     },
     {
       "id": "navigation-2-27",
@@ -23588,9 +23663,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives"
-      ],
-      "weaker": "Exercised through SplitButton's internal Menu, not a plain UI.Menu trigger."
+        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::opens a plain menu when a touch long press begins and only then"
+      ]
     },
     {
       "id": "navigation-2-29",
@@ -23623,9 +23698,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::bounds menu scrolling, prunes removed branches and closes every level on tap away"
-      ],
-      "weaker": "Not repeated on the automatic compact (sheet) idiom."
+        "native_navigation::native navigation controls::bounds menu scrolling, prunes removed branches and closes every level on tap away",
+        "native_parity_weaker_surfaces::presented surface strength::closes every open menu level on a tap away from the automatic compact sheet"
+      ]
     },
     {
       "id": "navigation-2-31",
@@ -23691,9 +23766,10 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch"
-      ],
-      "weaker": "One test covers wide->compact flip, Back row and path retention; entering a submenu while already compact is not separately exercised."
+        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch",
+        "native_parity_weaker_menus::native parity weaker menus::replaces a compact sheet level on entry and walks back one level from the row, Left and Back",
+        "native_parity_weaker_menus::native parity weaker menus::presents a wide menu as a cascade for pointer and gamepad and as a sheet for touch"
+      ]
     },
     {
       "id": "navigation-2-35",
@@ -23705,9 +23781,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch"
-      ],
-      "weaker": "Only asserts an AncestorMenu exists; candidate places each level at the trigger's y offset by depth*288 rather than anchoring to the originating row, and no position is asserted."
+        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch",
+        "native_parity_weaker_menus::native parity weaker menus::stacks each cascade level beside its parent at the trigger without overlapping it"
+      ]
     },
     {
       "id": "navigation-2-36",
@@ -23803,9 +23879,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch"
-      ],
-      "weaker": "Finds the row by Name 'Back'; its displayed label is not asserted."
+        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch",
+        "native_parity_weaker_menus::native parity weaker menus::labels the sheet Back row with the literal Back unless backLabel replaces it"
+      ]
     },
     {
       "id": "navigation-2-41",
@@ -23996,9 +24072,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch"
-      ],
-      "weaker": "Unit-level Menu only; not through the scenario."
+        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch",
+        "native_parity_weaker_menus::native parity weaker menus::switches the menu scenario idiom at depth and rebuilds the open chain in place"
+      ]
     },
     {
       "id": "navigation-2-55",
@@ -24121,9 +24197,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back"
-      ],
-      "weaker": "DismissOutside.Selectable=false is not asserted."
+        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
+        "native_parity_weaker_focus::native parity weaker focus::keeps the scrim out of selection so a rejected scrim selection leaves focus in the modal"
+      ]
     },
     {
       "id": "navigation-2-64",
@@ -24147,9 +24223,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::bounds menu scrolling, prunes removed branches and closes every level on tap away"
-      ],
-      "weaker": "Menu's transparent (backgroundTransparency=1) catcher dismisses; transparency is not asserted and the public scrim='none' option no longer exists."
+        "native_navigation::native navigation controls::bounds menu scrolling, prunes removed branches and closes every level on tap away",
+        "native_parity_weaker_surfaces::presented surface strength::dismisses through a fully transparent menu catcher"
+      ]
     },
     {
       "id": "navigation-2-66",
@@ -24174,9 +24250,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back"
-      ],
-      "weaker": "The HUD-resign half of the main case is not exercised here."
+        "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
+        "native_parity_weaker_focus::native parity weaker focus::dismisses every modal presentation on the default Back without an authored cancel action"
+      ]
     },
     {
       "id": "navigation-2-68",
@@ -24201,9 +24277,9 @@
       "candidateCases": [
         "native_navigation::native navigation controls::captures alert payload and closes before invoking its action",
         "native_navigation::native navigation controls::contains failed alert factories and accepts a later valid presentation",
-        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice"
-      ],
-      "weaker": "No test fires the defaultAction shortcut, and none counts live content across two successful presentations."
+        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
+        "native_parity_weaker_surfaces::presented surface strength::owns alert content through repeated presentation and dismisses on the default action shortcut"
+      ]
     },
     {
       "id": "navigation-2-70",
@@ -24215,9 +24291,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::queues callouts by priority and retires once without writing model facts"
-      ],
-      "weaker": "Re-presenting after retirement (stays retired, content not rebuilt) is not asserted."
+        "native_navigation::native navigation controls::queues callouts by priority and retires once without writing model facts",
+        "native_parity_weaker_surfaces::presented surface strength::keeps a retired callout retired and unbuilt when it is presented again"
+      ]
     },
     {
       "id": "navigation-2-71",
@@ -24263,9 +24339,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives"
-      ],
-      "weaker": "Pointer form's Alternatives menu is not opened, and a plain primary tap after switching to Touch is not asserted."
+        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives",
+        "native_parity_weaker_actions::native parity weaker actions::keeps split primary and alternatives separate in pointer form and runs a plain touch tap"
+      ]
     },
     {
       "id": "navigation-3-01",
@@ -24278,9 +24354,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::retains covered navigation destinations and disposes popped pages",
-        "native_conformance::native constructor conformance::NavigationStack preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "No repeated push/Back cycles driven from page content; candidate retains the covered root (built=2) where main kept exactly one live page."
+        "native_conformance::native constructor conformance::NavigationStack preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_weaker_navigation::native parity weaker navigation::repeats push and Back from page content and releases each popped page"
+      ]
     },
     {
       "id": "navigation-3-02",
@@ -24350,9 +24426,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::uses native page layout for model navigation and engine swipes"
-      ],
-      "weaker": "Indicator taps and the 'Page N of M' summary text are not asserted; only Next and UIPageLayout:JumpTo are."
+        "native_navigation::native navigation controls::uses native page layout for model navigation and engine swipes",
+        "native_parity_weaker_navigation::native parity weaker navigation::selects pages from the indicators and summarizes the current page"
+      ]
     },
     {
       "id": "navigation-3-07",
@@ -24376,9 +24452,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::keeps sheet content in a native flex remainder and explicit close operable",
-        "native_navigation::native navigation controls::snaps native sheet drags to declared detents and respects dismissal policy"
-      ],
-      "weaker": "Content factory re-invocation on each reopen and content disposal on close/owner stop (main's live/visits counters) are not asserted."
+        "native_navigation::native navigation controls::snaps native sheet drags to declared detents and respects dismissal policy",
+        "native_parity_weaker_surfaces::presented surface strength::rebuilds sheet content on each presentation and disposes it on close and owner stop"
+      ]
     },
     {
       "id": "navigation-3-09",
@@ -24426,9 +24502,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::retains covered navigation destinations and disposes popped pages"
-      ],
-      "weaker": "Single push only; no repeated routes or pop-to-root; handle api.push/pop/popToRoot/back no longer exists (caller writes path)."
+        "native_navigation::native navigation controls::retains covered navigation destinations and disposes popped pages",
+        "native_parity_weaker_navigation::native parity weaker navigation::keeps the caller path through repeated routes and pop to root and releases every page"
+      ]
     },
     {
       "id": "navigation-3-13",
@@ -24569,9 +24645,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves",
-        "native_navigation::native navigation controls::routes nested Back through the focused native context before its parent"
-      ],
-      "weaker": "Modal blocking is shown for a Button shortcut, not NavigationBack; the root-depth gate (#path>0) that leaves Back unconsumed is not asserted."
+        "native_navigation::native navigation controls::routes nested Back through the focused native context before its parent",
+        "native_parity_weaker_focus::native parity weaker focus::lets a presented modal own Back over a navigation stack and leaves root Back unconsumed"
+      ]
     },
     {
       "id": "navigation-3-22",
@@ -24832,9 +24908,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::uses native page layout for model navigation and engine swipes"
-      ],
-      "weaker": "Page size (fromScale(1,1)) not asserted."
+        "native_navigation::native navigation controls::uses native page layout for model navigation and engine swipes",
+        "native_parity_weaker_navigation::native parity weaker navigation::sizes every page to the pager viewport and moves the page with owner-held selection"
+      ]
     },
     {
       "id": "navigation-3-40",
@@ -24847,9 +24923,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::uses native page layout for model navigation and engine swipes",
-        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto"
-      ],
-      "weaker": "Indicators (segmented Picker 'Indicators') are never tapped in a PageView test; only Next."
+        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto",
+        "native_parity_weaker_actions::native parity weaker actions::selects a page from pointer and touch taps on its indicators"
+      ]
     },
     {
       "id": "navigation-3-41",
@@ -25221,9 +25297,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options"
-      ],
-      "weaker": "Empty badge hiding untested; CAND renders '' as ' ()' (see bugs)."
+        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
+        "native_parity_weaker_values::native parity weaker values::picker badge on an unselected option stays live and an empty badge hides"
+      ]
     },
     {
       "id": "navigation-3-67",
@@ -25235,9 +25311,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps plain picker segments native while retaining live description sources"
-      ],
-      "weaker": "Replaces the whole readable options list; a Readable label value and FacetLabel update are not asserted."
+        "native_navigation::native navigation controls::keeps plain picker segments native while retaining live description sources",
+        "native_parity_weaker_values::native parity weaker values::picker readable option label updates the text and announced label in place"
+      ]
     },
     {
       "id": "navigation-3-68",
@@ -25320,9 +25396,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options"
-      ],
-      "weaker": "KeyboardAndMouse rung and compact-screen fallback not asserted; main's size-class/distance facts replaced by width + PreferredInput."
+        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
+        "native_parity_weaker_pointer::adaptive environment strength::resolves an automatic picker from width, option shape and every preferred input"
+      ]
     },
     {
       "id": "navigation-3-74",
@@ -25355,9 +25431,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label"
-      ],
-      "weaker": "Disclosure chevron and label row not asserted."
+        "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label",
+        "native_parity_weaker_menus::native parity weaker menus::shows the selected value, the disclosure chevron and the label row on a menu picker trigger"
+      ]
     },
     {
       "id": "navigation-3-76",
@@ -25411,9 +25487,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch"
-      ],
-      "weaker": "Exercised on UI.Menu, not via Picker."
+        "native_navigation::native navigation controls::adapts an open menu to a compact sheet without losing its branch",
+        "native_parity_weaker_menus::native parity weaker menus::becomes a sheet for a touch or narrow menu picker and anchors to its trigger for a wide pointer"
+      ]
     },
     {
       "id": "navigation-3-79",
@@ -25469,9 +25545,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::opens searchable picker content only when presented and commits filtered results"
-      ],
-      "weaker": "Row fill width not asserted."
+        "native_navigation::native navigation controls::opens searchable picker content only when presented and commits filtered results",
+        "native_parity_weaker_menus::native parity weaker menus::forwards authored native properties to a navigation link and fills its search rows"
+      ]
     },
     {
       "id": "navigation-3-83",
@@ -25517,9 +25593,10 @@
         "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label",
         "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto",
         "native_navigation::native navigation controls::shows a labelled segmented picker beside its label and a labelled list above it",
-        "native_navigation::native navigation controls::opens searchable picker content only when presented and commits filtered results"
+        "native_navigation::native navigation controls::opens searchable picker content only when presented and commits filtered results",
+        "native_parity_weaker_menus::native parity weaker menus::opens, picks and dismisses every picker style for each theme and input with focus restored"
       ],
-      "weaker": "One theme, one viewport, no text preference; no overlap/containment checks; dismiss restoring focus not asserted."
+      "weaker": "Overlap, containment and truncation checks across themes, text-size preferences and viewports need real layout and TextBounds; the preferred text size is applied by the engine, not by Facet."
     },
     {
       "id": "navigation-3-86",
@@ -25574,9 +25651,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label",
-        "native_navigation::native navigation controls::closes menu and picker presentations when native ancestors become unavailable"
-      ],
-      "weaker": "Candidate asserts trigger.Text equals the selected label and MenuPanel absent while closed; it does not count focus stops or check a runtime error sink."
+        "native_navigation::native navigation controls::closes menu and picker presentations when native ancestors become unavailable",
+        "native_parity_weaker_menus::native parity weaker menus::shows the selected value, the disclosure chevron and the label row on a menu picker trigger"
+      ]
     },
     {
       "id": "navigation-4-02",
@@ -25589,9 +25666,10 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label",
-        "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement"
-      ],
-      "weaker": "Only one non-selected option row is looked up; not every option/label is asserted. Touch vs mouse is a single native Activated path (no touch-typed variant)."
+        "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement",
+        "native_parity_weaker_menus::native parity weaker menus::lists every option with its label and check after pointer and touch activation of the trigger",
+        "native_parity_weaker_menus::native parity weaker menus::shows the selected value, the disclosure chevron and the label row on a menu picker trigger"
+      ]
     },
     {
       "id": "navigation-4-03",
@@ -25604,9 +25682,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label",
-        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto"
-      ],
-      "weaker": "Menu-style test asserts selected + relabel but not onChange count nor that the popup closed; the no-redundant-onChange rule is only asserted for style=segmented."
+        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto",
+        "native_parity_weaker_menus::native parity weaker menus::shows the selected value, the disclosure chevron and the label row on a menu picker trigger"
+      ]
     },
     {
       "id": "navigation-4-04",
@@ -25619,9 +25697,10 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::bounds menu scrolling, prunes removed branches and closes every level on tap away",
-        "native_navigation::native navigation controls::closes menu and picker presentations when native ancestors become unavailable"
-      ],
-      "weaker": "Tap-away close is tested on a plain Menu, not a Picker, and selection-unchanged after tap-away is not asserted. The explicit Cancel row no longer exists (DismissOutside/Back replace it)."
+        "native_navigation::native navigation controls::closes menu and picker presentations when native ancestors become unavailable",
+        "native_parity_weaker_menus::native parity weaker menus::closes an open menu picker on a tap away without changing the selection and restores the trigger",
+        "native_parity_weaker_menus::native parity weaker menus::closes an open menu picker on Back and leaves Back unclaimed while it is closed"
+      ]
     },
     {
       "id": "navigation-4-05",
@@ -25837,9 +25916,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement",
-        "native_navigation::native navigation controls::keeps plain picker segments native while retaining live description sources"
-      ],
-      "weaker": "Menu row identity is asserted across description change, and hide-on-empty only for segmented; focus retention on the row is not asserted."
+        "native_navigation::native navigation controls::keeps plain picker segments native while retaining live description sources",
+        "native_parity_weaker_menus::native parity weaker menus::keeps a focused menu row while its live description appears, changes and disappears"
+      ]
     },
     {
       "id": "navigation-4-20",
@@ -25864,9 +25943,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement"
-      ],
-      "weaker": "Does not assert that selecting a disabled/filtered-out value is a no-op, nor selection survival after disposal."
+        "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement",
+        "native_parity_weaker_menus::native parity weaker menus::refuses to choose filtered or disabled menu rows and keeps multiple selection after disposal"
+      ]
     },
     {
       "id": "navigation-4-22",
@@ -25934,9 +26013,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors"
-      ],
-      "weaker": "Asserts presence/move of the underline SelectionIndicator child only; no Visible/paint check, pill skin (selected paint) not asserted."
+        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors",
+        "native_parity_weaker_values::native parity weaker values::picker indicator paints the initial selection at first paint and follows every change"
+      ]
     },
     {
       "id": "navigation-4-28",
@@ -26003,9 +26082,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors"
-      ],
-      "weaker": "Candidate only asserts the underline disappears. Semantics changed: in CAND \"none\" also removes the selected paint and -current tag (no visible selection at all), unlike main where none kept the ordinary selection paint."
+        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors",
+        "native_parity_weaker_values::native parity weaker values::picker indicator none keeps the ordinary selection paint without a bar"
+      ]
     },
     {
       "id": "navigation-4-33",
@@ -26066,9 +26145,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors",
-        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto"
-      ],
-      "weaker": "Return is native GuiButton activation; only Activated.fire is exercised."
+        "native_navigation::native navigation controls::selects enabled picker values once and honors changing veto",
+        "native_parity_weaker_focus::native parity weaker focus::selects an indicated picker option once by tap and by Return on the selected segment"
+      ]
     },
     {
       "id": "navigation-4-37",
@@ -26080,9 +26159,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::retargets native sheet motion and honors live reduced motion without losing content"
-      ],
-      "weaker": "Only large (0.95*720=684 with the default available height) is asserted; medium and a measured overlay height are not."
+        "native_navigation::native navigation controls::retargets native sheet motion and honors live reduced motion without losing content",
+        "native_parity_weaker_surfaces::presented surface strength::resolves every sheet detent to a height inside the measured available height"
+      ]
     },
     {
       "id": "navigation-4-38",
@@ -26094,9 +26173,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps sheet content in a native flex remainder and explicit close operable"
+        "native_navigation::native navigation controls::keeps sheet content in a native flex remainder and explicit close operable",
+        "native_parity_weaker_focus::native parity weaker focus::cycles sheet detents from the selectable grabber for tap, mouse and gamepad activation"
       ],
-      "weaker": "Activated.fire only; keyboard/gamepad reach it through native selection (Selectable asserted)."
+      "weaker": "Gamepad ButtonA reaches the grabber only through native engine activation of the selected Grabber TextButton, which needs a live check. Tap, mouse and gamepad-shaped Activated inputs, the detent wrap, Selectable and the single-detent state are asserted headless."
     },
     {
       "id": "navigation-4-39",
@@ -26108,9 +26188,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::snaps native sheet drags to declared detents and respects dismissal policy"
-      ],
-      "weaker": "Only a downward drag snapping large->medium; no upward drag to large."
+        "native_navigation::native navigation controls::snaps native sheet drags to declared detents and respects dismissal policy",
+        "native_parity_weaker_pointer::pointer, touch and drag strength::resizes a sheet live while its handle is dragged up and snaps to the nearest detent"
+      ]
     },
     {
       "id": "navigation-4-40",
@@ -26144,9 +26224,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
-        "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal"
-      ],
-      "weaker": "Back-driven dismissal + focus restore is asserted for Alert; for Sheet only backdrop taps and the blocked-Back case are tested. Ten-foot centered placement part is gone."
+        "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal",
+        "native_parity_weaker_focus::native parity weaker focus::dismisses a sheet with Back and returns selection to the control that opened it"
+      ]
     },
     {
       "id": "navigation-4-42",
@@ -26232,9 +26312,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps sheet content in a native flex remainder and explicit close operable"
-      ],
-      "weaker": "Asserts ScrollingFrame body with Fill flex and Close in Header; the 220px minimum panel height for tiny height detents is not asserted."
+        "native_navigation::native navigation controls::keeps sheet content in a native flex remainder and explicit close operable",
+        "native_parity_weaker_surfaces::presented surface strength::keeps a usable minimum panel and a reachable close for tiny sheet detents"
+      ]
     },
     {
       "id": "navigation-4-48",
@@ -26282,9 +26362,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives"
-      ],
-      "weaker": "Only the Primary activation is fired in pointer form; opening the Alternatives menu without running the primary, and adjacency, are not asserted."
+        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives",
+        "native_parity_weaker_actions::native parity weaker actions::keeps split primary and alternatives separate in pointer form and runs a plain touch tap"
+      ]
     },
     {
       "id": "navigation-4-51",
@@ -26296,9 +26376,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives"
-      ],
-      "weaker": "A plain tap in touch form is not asserted to run the action (only the suppressed echo after long press)."
+        "native_navigation::native navigation controls::keeps split primary activation separate from touch long-press alternatives",
+        "native_parity_weaker_actions::native parity weaker actions::keeps split primary and alternatives separate in pointer form and runs a plain touch tap"
+      ]
     },
     {
       "id": "navigation-4-52",
@@ -26345,9 +26425,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps checked menu state and required radio values while honoring dismissal"
-      ],
-      "weaker": "Candidate passes dismiss=false explicitly (the default no-dismiss path for checked/selected items is not exercised) and does not assert the check/radio marks."
+        "native_navigation::native navigation controls::keeps checked menu state and required radio values while honoring dismissal",
+        "native_parity_weaker_menus::native parity weaker menus::keeps checked and radio menu items open by default with their marks while actions dismiss"
+      ]
     },
     {
       "id": "navigation-4-56",
@@ -26404,9 +26484,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::collapses a nested tab strip into one menu row when its region is short"
+        "native_navigation::native navigation controls::collapses a nested tab strip into one menu row when its region is short",
+        "native_parity_weaker_navigation::native parity weaker navigation::fits nested horizontal tabs at a large text size without mounting section headings"
       ],
-      "weaker": "Preferred text size and the gallery tab_view scenario are not exercised; only the nested collapse rule."
+      "weaker": "Whether tab labels actually fit at the player's Largest preferred text size needs live TextBounds and engine layout. PreferredTextSize is applied by the engine, not by Facet."
     },
     {
       "id": "navigation-4-61",
@@ -26508,9 +26589,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves"
-      ],
-      "weaker": "Modal-scope disabling of lower InputContexts is asserted for a Button shortcut under an Alert, not for TabView shoulders under a Menu/Picker popup."
+        "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves",
+        "native_parity_weaker_focus::native parity weaker focus::gives an open menu or picker popup the shoulders before tab content paging"
+      ]
     },
     {
       "id": "navigation-4-67",
@@ -26594,9 +26675,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup",
-        "native_navigation::native navigation controls::collapses a nested tab strip into one menu row when its region is short"
+        "native_navigation::native navigation controls::collapses a nested tab strip into one menu row when its region is short",
+        "native_parity_weaker_navigation::native parity weaker navigation::resolves every tab home from measured shape and input without author wiring and re-homes one strip"
       ],
-      "weaker": "Only sidebar (1200x800 sidebarAdaptable) and bottomBar (401x777) homes plus declared topBar are exercised. Not asserted: Gamepad PreferredInput -> topBar, aspect>1.4 -> bottomBarCompact, FillDirection Vertical on side...",
       "apiPromise": "api.md TabView: 'The control shows a sidebar on a sufficiently wide native viewport. It shows a bottom bar on other viewports. `placement` sets an explicit choice.'"
     },
     {
@@ -26736,9 +26817,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility"
-      ],
-      "weaker": "Asserted through demo_tabs (gallery) rather than a bare control test; inner content path not asserted."
+        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility",
+        "native_parity_weaker_navigation::native parity weaker navigation::keeps the nested showcase selections in independent cells and shows the inner page"
+      ]
     },
     {
       "id": "navigation-5-12",
@@ -26750,9 +26831,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::hands selection to the shown tab panel and restores it on return"
-      ],
-      "weaker": "Body is a single Button; no list/Table body, no deep bookmark, and no shoulder-driven entry. restoreFocus=false is not tested."
+        "native_navigation::native navigation controls::hands selection to the shown tab panel and restores it on return",
+        "native_parity_weaker_focus::native parity weaker focus::restores a deep tab bookmark on shoulder entry and skips restoration when restoreFocus is off"
+      ]
     },
     {
       "id": "navigation-5-13",
@@ -27445,9 +27526,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away"
-      ],
-      "weaker": "app.presentAnchored is gone; Callout is the remaining nonmodal anchored surface. The test proves the anchor still activates and tap-away is non-consuming, but does not scan for opaque full-viewport nodes."
+        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away",
+        "native_parity_weaker_surfaces::presented surface strength::adds no full-viewport cover or modal scope while a nonmodal callout is showing"
+      ]
     },
     {
       "id": "navigation-5-54",
@@ -27480,9 +27561,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency"
-      ],
-      "weaker": "Asserts the Alert DismissOutside transparency (0.35 scaled by preference); does not assert it is the only full-viewport node, and it is no longer a theme 'scrim' role."
+        "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency",
+        "native_parity_weaker_surfaces::presented surface strength::makes the modal scrim the only full-viewport cover and keeps it translucent in every theme"
+      ]
     },
     {
       "id": "navigation-5-56",
@@ -27573,9 +27654,10 @@
         "native_inputs::native input controls::reflows Button and circle sizes from live theme metrics and control rungs",
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
         "native_inputs::native input controls::uses native properties and events and releases them with its Compose owner",
-        "native_themes_media::native themes and media::accepts the Virtual Monitors package without optional art sections"
+        "native_themes_media::native themes and media::accepts the Virtual Monitors package without optional art sections",
+        "native_parity_weaker_actions::native parity weaker actions::resolves live control-size rungs in place, retracts nil to regular and keeps selection"
       ],
-      "weaker": "Only Button height and Toggle attributes are asserted; paddingX per rung, nil retraction back to regular, and focus retention across a rung change are not asserted."
+      "weaker": "paddingX per rung is not asserted: no src consumes controlSizes.<rung>.paddingX (ctx.controlSize accepts the field, src/ui/context.luau:87, but has no caller for it; Button padding is the constant 12 or chrome insets, src/ui/themes.luau:553-563). Nil retraction, in-place rung changes and selection retention are now asserted."
     },
     {
       "id": "paint-05",
@@ -27620,9 +27702,9 @@
       "class": "a",
       "candidateCases": [
         "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error",
-        "native_parity_gaps::native parity gaps::refuses an unknown lower-case option on every public constructor"
-      ],
-      "weaker": "native_parity_gaps.spec.luau is untracked (being written concurrently); a reactive corners source is not covered (see bugs)."
+        "native_parity_gaps::native parity gaps::refuses an unknown lower-case option on every public constructor",
+        "native_parity_weaker_actions::native parity weaker actions::refuses a readable corners source that turns into an illegal word"
+      ]
     },
     {
       "id": "paint-08",
@@ -27798,9 +27880,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::clamps progress, counts badges and releases stage scenes with Compose",
-        "native_themes_media::native themes and media::preserves fractional segmented meter fill and mounted identities"
-      ],
-      "weaker": "The facet-fill/facet-track paint tags and the no-rebuild identity of the single-segment Fill1 are not asserted."
+        "native_themes_media::native themes and media::preserves fractional segmented meter fill and mounted identities",
+        "native_parity_weaker_values::native parity weaker values::progress bar maps clamps and repaints the same fill with track and fill paint tags"
+      ]
     },
     {
       "id": "paint-20",
@@ -28002,9 +28084,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::owns disclosure content only while expanded",
-        "native_navigation::native navigation controls::returns disclosure focus before unmounting its content"
-      ],
-      "weaker": "\"Expanding leaves focus on the header\" is not asserted."
+        "native_navigation::native navigation controls::returns disclosure focus before unmounting its content",
+        "native_parity_weaker_navigation::native parity weaker navigation::leaves the selection on the disclosure header when the header expands the group"
+      ]
     },
     {
       "id": "paint-34",
@@ -28191,9 +28273,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive"
-      ],
-      "weaker": "The 8%-of-diameter thickness rule for large diameters and diameter->nil retraction are not asserted."
+        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive",
+        "native_parity_weaker_values::native parity weaker values::circular progress thickness follows eight percent of a live diameter and retracts to theme metrics"
+      ]
     },
     {
       "id": "paint-46",
@@ -30441,9 +30523,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions"
-      ],
-      "weaker": "Caption invalid->recovery asserted; controlSize rung changes untested."
+        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
+        "native_parity_weaker_values::native parity weaker values::badge caption and control size rung stay live through invalid captions"
+      ]
     },
     {
       "id": "themes-P1-51",
@@ -30456,9 +30538,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
-        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing"
-      ],
-      "weaker": "label=3 and unnamed icon refused, named icon label asserted; invalid iconPosition ('above' is silently leading), invalid appearance/status at construction untested."
+        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
+        "native_parity_weaker_values::native parity weaker values::badge refuses meaningless content and invalid options at construction"
+      ]
     },
     {
       "id": "themes-P1-52",
@@ -30512,9 +30594,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions"
-      ],
-      "weaker": "Only non-string caption refusal/recovery is asserted; status=false now silently reads as neutral."
+        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
+        "native_parity_weaker_values::native parity weaker values::badge quarantines an empty unnamed caption and a false status then recovers"
+      ]
     },
     {
       "id": "themes-P1-55",
@@ -30620,9 +30702,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive"
-      ],
-      "weaker": "0.5 and 1.0 endpoints asserted; the 25%->3 o'clock endpoint is not."
+        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive",
+        "native_parity_weaker_values::native parity weaker values::circular progress at a quarter ends at three o'clock"
+      ]
     },
     {
       "id": "themes-P1-64",
@@ -30905,9 +30987,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::animates skeletons with one shared Compose clock and honors reduced motion"
-      ],
-      "weaker": "Placeholder3 0.6 scale asserted; box/circle heights and non-selectability not asserted."
+        "native_themes_media::native themes and media::animates skeletons with one shared Compose clock and honors reduced motion",
+        "native_parity_weaker_values::native parity weaker values::skeleton forms are inert placeholders with a sixty percent final paragraph line"
+      ]
     },
     {
       "id": "themes-P1-81",
@@ -31315,9 +31397,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps badges and status shapes reactive without creating focus targets"
-      ],
-      "weaker": "Selectable=false asserted; default 12px dot not asserted, and `name` is accepted but silently ignored (no AccessibleLabel); api.md does not list name."
+        "native_themes_media::native themes and media::keeps badges and status shapes reactive without creating focus targets",
+        "native_parity_weaker_values::native parity weaker values::status indicator is a compact twelve pixel dot with a readable name and no focus stop"
+      ]
     },
     {
       "id": "themes-P1-110",
@@ -31330,9 +31412,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps badges and status shapes reactive without creating focus targets",
-        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing"
-      ],
-      "weaker": "dot/dash/ring asserted at 16/80x12; square (UICorner 0) and the 10/13 px sweep not asserted."
+        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
+        "native_parity_weaker_values::native parity weaker values::status indicator forms stay distinguishable at ten thirteen and sixteen pixels"
+      ]
     },
     {
       "id": "themes-P1-111",
@@ -31406,9 +31488,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions"
-      ],
-      "weaker": "Only {count=1, max=-1} is asserted; bad form/status, negative/fractional/huge count, count with ring/dash are not."
+        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
+        "native_parity_weaker_values::native parity weaker values::status indicator refuses invalid construction"
+      ]
     },
     {
       "id": "themes-P1-116",
@@ -33454,9 +33536,10 @@
       "candidateCases": [
         "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
         "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction",
-        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes"
-      ],
-      "weaker": "Whole-image vs sliced classification is now implicit (barCap/barCenter use fixed offset size, asserted for barCenter width 36)."
+        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
+        "native_parity_weaker_values::native parity weaker values::value display and toggle slots stretch their plates and keep fixed ornaments whole",
+        "native_parity_weaker_values::native parity weaker values::value controls declare their slots and fill geometry stays the percent"
+      ]
     },
     {
       "id": "themes-P4-25",
@@ -34364,9 +34447,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_weaker_values::native parity weaker values::toggle on art keys on the value tag while the row keeps its ordinary paint"
       ],
-      "weaker": "Value-driven art swap for track and knob is asserted; the facet-toggle-on tag and the absence of facet-selected on the toggle are not."
+      "weaker": "The facet-toggle-on tag, the value-keyed track and knob art and the StyleSheet rules that cancel row-selection paint on .facet-toggle-row are asserted. Still missing: a package whose control skin has a selected variant paints the whole switch or checkbox row with that selected art when the value is on (UI.Toggle passes selected = value to UI.Button, which skins control with it). Not fixed: it needs a Button-internal option and a maintainer decision."
     },
     {
       "id": "themes-P5-30",
@@ -34475,9 +34559,10 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
-      ],
-      "weaker": "Stepper is skinned as one stepperPlate on its root rather than on each affordance."
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_weaker_values::native parity weaker values::value controls declare their slots and fill geometry stays the percent",
+        "native_parity_weaker_values::native parity weaker values::value display and toggle slots stretch their plates and keep fixed ornaments whole"
+      ]
     },
     {
       "id": "themes-P5-38",
@@ -34701,9 +34786,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency"
+        "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency",
+        "native_parity_weaker_pointer::adaptive environment strength::follows GuiService transparency and motion preferences from attach and live without wiring"
       ],
-      "weaker": "GuiService path is tested for the Alert scrim; createStyleSheet's default GuiService subscription is only live-verified.",
       "nativeEvidence": "parity_blockers resolvedLiveRisks 'Actual native PreferredTransparency hot-swap' (f1cc5e2c, Studio HD720, 2026-09-23)."
     },
     {
