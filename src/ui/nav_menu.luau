@@ -1073,12 +1073,13 @@ return function(
 				end,
 			})
 		)
-		local p = ctx.props(spec, pickerKeys, {
+		local defaults: Types.FrameNativeProps = {
 			Name = "Picker",
 			BackgroundTransparency = if style == "segmented" then nil else 1,
 			Size = D2.new(1, 0, 0, 0),
 			AutomaticSize = E.AutomaticSize.Y,
-		})
+		}
+		local p = if spec.label == nil then ctx.props(spec, pickerKeys, defaults) else defaults
 		for _, child in children do
 			table.insert(p, child)
 		end
@@ -1086,7 +1087,40 @@ return function(
 		if style == "segmented" then
 			picker:AddTag("facet-segmented")
 		end
-		return picker
+		if spec.label == nil then
+			return picker
+		end
+		picker.Name = "Options"
+		local label = ctx.text({
+			Name = "Label",
+			Text = function(use: Core.Use)
+				return read(spec.label, use) or ""
+			end,
+			Size = D2.new(if vertical then 1 else 0, 0, 0, 0),
+			AutomaticSize = if vertical then E.AutomaticSize.Y else E.AutomaticSize.XY,
+			TextWrapped = vertical,
+			TextXAlignment = E.TextXAlignment.Left,
+		})
+		local outer = ctx.props(spec, pickerKeys, {
+			Name = "Picker",
+			BackgroundTransparency = 1,
+			Size = D2.new(1, 0, 0, 0),
+			AutomaticSize = E.AutomaticSize.Y,
+		})
+		if vertical then
+			return ctx.column({ label, picker }, outer)
+		end
+		runtime.mount(function()
+			return Host.UIFlexItem({ FlexMode = E.UIFlexMode.Grow })
+		end, label)
+		picker.Size = D2.new(0, 0, 0, 0)
+		picker.AutomaticSize = E.AutomaticSize.XY
+		local row = ctx.row({ label, picker }, outer)
+		local layout = assert(row:FindFirstChildWhichIsA("UIListLayout"))
+		layout.VerticalAlignment = E.VerticalAlignment.Center
+		layout.Padding = D.new(0, 16)
+		layout.Wraps = true
+		return row
 	end)
 
 	UI.SplitButton = ctx.construct(function<V>(spec: Nav.SplitButtonSpec<V>): Frame

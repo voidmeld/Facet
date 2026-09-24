@@ -971,14 +971,22 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 			},
 		})
+		local pictured = Compose.cell(false)
 		runtime.mount(function()
 			return ctx.text({
 				Name = "Initials",
+				Visible = function(use: Compose.Use)
+					return not use(pictured)
+				end,
 				Size = D2.fromScale(1, 1),
 				Text = function(use: Compose.Use)
 					return initials(use(facts).name)
 				end,
+				TextSize = function(use: Compose.Use)
+					return math.max(8, math.floor(diameter(use) * 0.4 + 0.5))
+				end,
 				TextXAlignment = E.TextXAlignment.Center,
+				TextYAlignment = E.TextYAlignment.Center,
 			})
 		end, root)
 		if spec.image or spec.userId or spec.resource then
@@ -987,7 +995,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					imageProperties = { Host.UICorner({ CornerRadius = D.new(1, 0) }) },
 					Name = "Portrait",
 					loader = spec.loader,
-					onStatus = spec.onStatus,
+					onStatus = function(state: Media.ImageState, failure: unknown)
+						pictured:set(state == "ready")
+						if spec.onStatus then
+							spec.onStatus(state, failure)
+						end
+					end,
 					resource = spec.resource,
 					Size = D2.fromScale(1, 1),
 					image = function(use: Compose.Use)
@@ -1165,7 +1178,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				)
 			end)
 		)
-		return Host.Frame(native)
+		local group = Host.Frame(native)
+		if spec.layout ~= "spread" then
+			ctx.styled(group, "avatar-stack")
+		end
+		return group
 	end)
 
 	UI.Stage = ctx.construct(function(spec: Media.StageProps): ViewportFrame

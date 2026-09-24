@@ -24,49 +24,7 @@ return {
 			end)
 			return report()
 		end
-		local function row(name, children)
-			local p = {
-				Name = name,
-				BackgroundTransparency = 1,
-				Size = D2.new(1, 0, 0, 0),
-				AutomaticSize = E.AutomaticSize.Y,
-				Host.UIListLayout({
-					FillDirection = E.FillDirection.Horizontal,
-					Wraps = true,
-					Padding = D.new(0, 8),
-					SortOrder = E.SortOrder.LayoutOrder,
-				}),
-			}
-			for _, child in children do
-				table.insert(p, child)
-			end
-			return Host.Frame(p)
-		end
 		local function section()
-			local choices = {}
-			for _, state in { "online", "away", "busy", "offline" } do
-				table.insert(
-					choices,
-					UI.Button({
-						label = state,
-						onActivate = function()
-							presence:set(state)
-						end,
-					})
-				)
-			end
-			local sizes = {}
-			for _, rung in { "compact", "regular", "large" } do
-				table.insert(
-					sizes,
-					UI.Button({
-						label = rung,
-						onActivate = function()
-							size:set(rung)
-						end,
-					})
-				)
-			end
 			return Host.Frame "AvatarRecipe" {
 				BackgroundTransparency = 1,
 				Size = D2.new(1, 0, 0, 0),
@@ -74,10 +32,18 @@ return {
 				Host.UIListLayout({ Padding = D.new(0, 16), SortOrder = E.SortOrder.LayoutOrder }),
 				UI.Label({ text = "Player identity", textRole = "title" }),
 				UI.Label({
-
 					text = "Pictures fall back to initials. Presence keeps its meaning when the mark is hidden.",
 				}),
-				row("Faces", {
+				Host.Frame "Faces" {
+					BackgroundTransparency = 1,
+					Size = D2.new(1, 0, 0, 0),
+					AutomaticSize = E.AutomaticSize.Y,
+					Host.UIListLayout({
+						FillDirection = E.FillDirection.Horizontal,
+						VerticalAlignment = E.VerticalAlignment.Center,
+						Padding = D.new(0, 12),
+						SortOrder = E.SortOrder.LayoutOrder,
+					}),
 					UI.Avatar "Portrait" {
 						name = "Ada Quill",
 						presence = presence,
@@ -106,34 +72,46 @@ return {
 					},
 					UI.Avatar "Initials" { name = "Émile Noël", backplate = true, controlSize = size },
 					UI.Avatar "Icon" { name = "Bo Marchetti", form = "icon", controlSize = size },
-				}),
-				row("Requests", {
-					UI.Button "Pending" {
-						label = "Loading",
-						onActivate = function()
-							request("pending")
-						end,
+				},
+				UI.Picker "Picture" {
+					label = "Picture",
+					selected = mode,
+					onChange = function()
+						attempts:update(function(count)
+							return count + 1
+						end)
+					end,
+					options = {
+						{ value = "pending", label = "Loading" },
+						{ value = "ready", label = "Loaded" },
+						{ value = "failed", label = "Failed" },
 					},
-					UI.Button "Ready" {
-						label = "Picture",
-						onActivate = function()
-							request("ready")
-						end,
+				},
+				UI.Picker "Presence" {
+					label = "Presence",
+					selected = presence,
+					options = {
+						{ value = "online", label = "Online" },
+						{ value = "away", label = "Away" },
+						{ value = "busy", label = "Busy" },
+						{ value = "offline", label = "Offline" },
 					},
-					UI.Button "Fail" {
-						label = "Initials",
-						onActivate = function()
-							request("failed")
-						end,
+				},
+				UI.Picker "Size" {
+					label = "Size",
+					selected = size,
+					options = {
+						{ value = "compact", label = "Compact" },
+						{ value = "regular", label = "Regular" },
+						{ value = "large", label = "Large" },
 					},
-				}),
-				row("Presence", choices),
-				row("Sizes", sizes),
+				},
 				UI.Label({
 
 					text = function(use)
 						return "Selected " .. tostring(use(activations)) .. " times"
 					end,
+					textRole = "caption",
 				}),
 			}
 		end

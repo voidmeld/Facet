@@ -76,6 +76,45 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("shows a labelled segmented picker beside its label and a labelled list above it", function()
+		local selected = Compose.cell("one")
+		local world = setup(function(UI, Host)
+			return Host.Frame({
+				UI.Picker "Segments" {
+					label = "Mode",
+					LayoutOrder = 3,
+					selected = selected,
+					style = "segmented",
+					options = { { value = "one", label = "One" }, { value = "two", label = "Two" } },
+				},
+				UI.Picker "List" {
+					label = "Group",
+					selected = selected,
+					style = "inline",
+					options = { { value = "one", label = "One" }, { value = "two", label = "Two" } },
+				},
+			})
+		end)
+		local segments = find(world.screen, "Segments")
+		t.expect(segments.LayoutOrder).toBe(3)
+		t.expect(segments:FindFirstChild("Label").Text).toBe("Mode")
+		local options = segments:FindFirstChild("Options")
+		t.expect(options:HasTag("facet-segmented")).toBe(true)
+		t.expect(segments:FindFirstChild("Label"):FindFirstChildWhichIsA("UIFlexItem").FlexMode)
+			.toBe(world.engine.types.Enum.UIFlexMode.Grow)
+		t.expect(segments:FindFirstChildWhichIsA("UIListLayout").Wraps).toBe(true)
+		t.expect(options.AutomaticSize).toBe(world.engine.types.Enum.AutomaticSize.XY)
+		t.expect(segments:FindFirstChildWhichIsA("UIListLayout").FillDirection)
+			.toBe(world.engine.types.Enum.FillDirection.Horizontal)
+		local list = find(world.screen, "List")
+		t.expect(list:FindFirstChild("Label").Text).toBe("Group")
+		t.expect(list:FindFirstChildWhichIsA("UIListLayout").FillDirection)
+			.toBe(world.engine.types.Enum.FillDirection.Vertical)
+		find(segments, "two").Activated.fire()
+		t.expect(selected:peek()).toBe("two")
+		world.stop()
+	end)
+
 	t.it("retains model values and updates picker font bindings", function()
 		local selected, textSize = Compose.cell("one"), Compose.cell(16)
 		local world = setup(function(UI)

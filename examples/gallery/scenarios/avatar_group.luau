@@ -98,7 +98,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Faces keep their identity when reordered. Choose the group using the count.",
+					Text = "Faces keep their identity when reordered. Select the count to open the whole group.",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -161,56 +161,23 @@ return {
 						onActivate = source,
 					}),
 				},
-				Host.Frame "LayoutActions" {
-					BackgroundTransparency = 1,
-					Size = UDim2.new(0, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.XY,
-					Host.UIListLayout({
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 8),
-						Wraps = true,
-					}),
-					UI.Button({
-						LayoutOrder = 1,
-						Name = "Stacked",
-						label = "Stacked",
-						onActivate = function()
-							setVariant("stacked")
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 2,
-						Name = "Spread",
-						label = "Spread",
-						onActivate = function()
-							setVariant("spread")
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 3,
-						Name = "Ellipsis",
-						label = "Ellipsis",
-						onActivate = function()
-							setVariant("ellipsis")
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 4,
-						Name = "Compact",
-						label = "Compact",
-						onActivate = function()
-							setSize("compact")
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 5,
-						Name = "Large",
-						label = "Large",
-						onActivate = function()
-							setSize("large")
-						end,
-					}),
+				UI.Picker "Layout" {
+					label = "Layout",
+					selected = variant,
+					options = {
+						{ value = "stacked", label = "Stacked" },
+						{ value = "spread", label = "Spread" },
+						{ value = "ellipsis", label = "Ellipsis" },
+					},
+				},
+				UI.Picker "Size" {
+					label = "Size",
+					selected = size,
+					options = {
+						{ value = "compact", label = "Compact" },
+						{ value = "regular", label = "Regular" },
+						{ value = "large", label = "Large" },
+					},
 				},
 				UI.Label "Activations" {
 					BackgroundTransparency = 1,
@@ -220,6 +187,7 @@ return {
 					Text = function(use)
 						return `Selected the group {use(activations)} times`
 					end,
+					textRole = "caption",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,

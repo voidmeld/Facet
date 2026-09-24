@@ -237,13 +237,20 @@ Picker requires a writable `selected` and `options`. Each option has `value` and
 array or a readable.
 
 The styles are `automatic`, `segmented`, `inline`, `radioGroup`,
-`navigationLink` and `menu`. The `automatic` style follows the native
-PreferredInput:
+`navigationLink` and `menu`. The `automatic` style follows the options, the
+measured width and the native PreferredInput:
 
 - If you supply `query`, it uses the navigation-link presentation.
-- For keyboard and mouse, and for touch, it uses a menu.
-- For other input, it uses `segmented` for four options or fewer, and `inline`
-  for larger sets.
+- It uses `segmented` for four options or fewer when no option has a
+  description and the picker is at least 360 pixels wide.
+- Otherwise, for keyboard and mouse, and for touch, it uses a menu.
+- For other input, it uses `inline` for six options or fewer, and a menu for
+  larger sets.
+
+A `label` shows on the leading edge of a horizontal segmented row, with the
+control at its natural width on the trailing edge. The label shows above a vertical
+segmented, inline or radio group control. A menu shows the label on the leading
+edge of the row and the value on the trailing edge.
 
 `onChanging(next, previous)` can return `false` to veto a change. The control
 writes `selected`, and then calls `onChange(next)`. An optional writable `query`
@@ -514,7 +521,7 @@ animation. If the owner is removed, an unfinished departure is cancelled.
 | `Skeleton` | A loading placeholder with a configurable form and line count. |
 | `AsyncImage` | An image or source, an optional resource or loader, a placeholder, a failure label and a status callback. `imageProperties` forwards native properties and children to the inner ImageLabel. |
 | `Avatar` | `name`; image, userId or resource; loader and onStatus; presence online, away, busy or offline; presence label and mark; diameter or controlSize; standard or icon form; optional activation. |
-| `AvatarGroup` | `items` with id, name, image, userId and presence, and an optional `resource` shared-resource acquire function. max (4); stacked or spread layout; count or ellipsis overflow; onOverflow; diameter or controlSize. |
+| `AvatarGroup` | `items` with id, name, image, userId and presence, and an optional `resource` shared-resource acquire function. max (4); stacked or spread layout; count or ellipsis overflow; onOverflow; diameter or controlSize. A stacked group has the `facet-avatar-stack` tag, and the theme draws a surface ring around each face. |
 | `Stage` | A native ViewportFrame. A `camera` CFrame or a borrowed Camera, `fieldOfView`, and `content(runtime, world)` for 3D content that Compose owns. |
 
 The AsyncImage loader receives `(source, resolve, reject)`. It can return a

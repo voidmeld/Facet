@@ -35,28 +35,17 @@ return {
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
-						Host.UIPadding({
-							PaddingTop = UDim.new(0, 8),
-							PaddingBottom = UDim.new(0, 8),
-							PaddingLeft = UDim.new(0, 8),
-							PaddingRight = UDim.new(0, 8),
+						Host.UIListLayout({
+							FillDirection = Enum.FillDirection.Vertical,
+							SortOrder = Enum.SortOrder.LayoutOrder,
+							Padding = UDim.new(0, 24),
 						}),
-						Host.Frame "Recipes" {
-							BackgroundTransparency = 1,
-							Size = UDim2.new(1, 0, 0, 0),
-							AutomaticSize = Enum.AutomaticSize.Y,
-							Host.UIListLayout({
-								FillDirection = Enum.FillDirection.Vertical,
-								SortOrder = Enum.SortOrder.LayoutOrder,
-								Padding = UDim.new(0, 24),
-							}),
-							UI.Button "Reset" {
-								label = "Reset identity",
-								onActivate = reset,
-							},
-							avatar.section(),
-							group.section(),
+						UI.Button "Reset" {
+							label = "Reset identity",
+							onActivate = reset,
 						},
+						avatar.section(),
+						group.section(),
 					},
 				}
 			end,
