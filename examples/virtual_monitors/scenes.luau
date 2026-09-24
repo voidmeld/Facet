@@ -629,25 +629,28 @@ function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, activ
 			end
 		end
 		local head = model.Head
+		local anchor = head:FindFirstChild("HatAttachment")
+		local crownBase = if anchor and anchor:IsA("Attachment") then anchor.CFrame else CFrame.new(0, 0.6, 0)
+		local fit = math.clamp(head.Size.X / 1.2, 0.55, 1.3)
 		runtime.mountFragment(function()
 			local pieces = {}
 			for _, spec in
 				{
-					{ "Brim", Vector3.new(2.1, 0.13, 1.9), 0.58, Color3.fromRGB(203, 178, 126) },
-					{ "Crown", Vector3.new(1.25, 0.55, 1.1), 0.88, Color3.fromRGB(218, 195, 145) },
-					{ "Band", Vector3.new(1.28, 0.14, 1.14), 0.66 },
+					{ "Brim", Vector3.new(2.1, 0.13, 1.9), -0.16, Color3.fromRGB(203, 178, 126) },
+					{ "Crown", Vector3.new(1.25, 0.55, 1.1), 0.12, Color3.fromRGB(218, 195, 145) },
+					{ "Band", Vector3.new(1.28, 0.14, 1.14), -0.08 },
 				}
 			do
 				local fixed = spec[4]
 				local part = Host.Part({
 					Name = "Hat" .. spec[1],
-					Size = spec[2],
+					Size = spec[2] * fit,
 					Color = if fixed
 						then fixed
 						else function(use)
 							return colors[use(palette)]
 						end,
-					CFrame = head.CFrame * CFrame.new(0, spec[3], 0),
+					CFrame = head.CFrame * crownBase * CFrame.new(0, spec[3] * fit, 0),
 					CanCollide = false,
 					Massless = true,
 					Transparency = function(use)
@@ -660,7 +663,7 @@ function scenes.avatar(runtime, target, angle, palette, hat, motionPolicy, activ
 					Host.Weld({
 						Part0 = Compose.static(head),
 						Part1 = Compose.static(part),
-						C0 = CFrame.new(0, spec[3], 0),
+						C0 = crownBase * CFrame.new(0, spec[3] * fit, 0),
 					})
 				)
 			end
