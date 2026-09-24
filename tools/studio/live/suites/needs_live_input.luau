@@ -16,6 +16,17 @@ local function watchSelection(value: any)
 	end)
 end
 
+local function t_visible(node: Instance): boolean
+	local current: Instance? = node
+	while current and current:IsA("GuiObject") do
+		if not current.Visible then
+			return false
+		end
+		current = current.Parent
+	end
+	return true
+end
+
 local function selectedName(): string
 	local selected = GuiService.SelectedObject
 	return if selected then selected.Name else "nil"
@@ -278,6 +289,292 @@ end, {
 			label = label and label.TextBounds,
 		})
 		t.check("tray width followed the text size", width ~= value.before, { before = value.before, after = width })
+	end,
+})
+
+local function within(node: Instance?, ancestor: Instance?): boolean
+	return node ~= nil and ancestor ~= nil and (node == ancestor or node:IsDescendantOf(ancestor))
+end
+
+local function modalFixture(t: any, withSheet: boolean, actions: { any })
+	local value = { visited = {} }
+	local stage = t.mount(function(UI, Host, Compose)
+		value.sheet = Compose.cell(withSheet)
+		value.alert = Compose.cell(not withSheet)
+		return Host.Frame "Base" {
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8) }),
+			UI.Button "Background" { label = "Background", LayoutOrder = 1 },
+			UI.Button "Background2" { label = "Background two", LayoutOrder = 2 },
+			UI.Sheet({
+				isPresented = value.sheet,
+				detent = Compose.cell("medium"),
+				title = "Loadout",
+				content = function()
+					return Host.Frame "SheetList" {
+						Size = UDim2.new(1, 0, 0, 0),
+						AutomaticSize = Enum.AutomaticSize.Y,
+						BackgroundTransparency = 1,
+						Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8) }),
+						UI.Button "First" { label = "First", LayoutOrder = 1 },
+						UI.Button "Second" { label = "Second", LayoutOrder = 2 },
+						UI.Button "Third" { label = "Third", LayoutOrder = 3 },
+					}
+				end,
+			}),
+			UI.Alert({ isPresented = value.alert, title = "Leave the match?", actions = actions }),
+		}
+	end, { frames = 14 })
+	value.stage = stage
+	value.gui = stage:FindFirstAncestorWhichIsA("LayerCollector")
+	watchSelection(value)
+	return value
+end
+
+local function panelOf(value: any): Instance?
+	for _, name in { "AlertPanel", "SheetPanel" } do
+		for _, node in value.gui:GetDescendants() do
+			if node.Name == name and node:IsA("GuiObject") and t_visible(node) then
+				return node
+			end
+		end
+	end
+	return nil
+end
+
+add("sheet-traps-and-orders-selection", { "apps-160", "apps-181" }, function(t)
+	local value = modalFixture(t, true, { { id = "ok", label = "OK" } })
+	GuiService.SelectedObject = t.find(value.stage, "Background")
+	t.settle(10)
+	value.panel = panelOf(value)
+	t.note("selection after present", selectedName())
+	table.clear(value.visited)
+	return value
+end, {
+	afterDown = function(t, value)
+		t.note("Down visits", table.clone(value.visited))
+		local order = {}
+		for _, name in value.visited do
+			if name == "First" or name == "Second" or name == "Third" then
+				table.insert(order, name)
+			end
+		end
+		t.check(
+			"Down visits First, Second, Third in order",
+			table.concat(order, ",") == "First,Second,Third",
+			value.visited
+		)
+		t.check("Down stops at Third", selectedName() == "Third", selectedName())
+		table.clear(value.visited)
+	end,
+	afterAll = function(t, value)
+		local outside = {}
+		for _, name in value.visited do
+			if name == "Background" or name == "Background2" then
+				table.insert(outside, name)
+			end
+		end
+		t.note("four-direction visits", table.clone(value.visited))
+		t.check("selection never leaves the sheet", #outside == 0 and within(GuiService.SelectedObject, value.panel), {
+			outside = outside,
+			now = selectedName(),
+		})
+		value.connection:Disconnect()
+		GuiService.SelectedObject = nil
+	end,
+})
+
+add("alert-selection-stays-inside", { "mech2-104", "navigation-1-14", "mech1-120" }, function(t)
+	local value = modalFixture(t, true, {
+		{ id = "stay", label = "Stay", role = "cancel" },
+		{ id = "save", label = "Save and leave" },
+		{ id = "leave", label = "Leave without saving", role = "destructive" },
+	})
+	GuiService.SelectedObject = t.find(value.stage, "Background")
+	t.settle(6)
+	value.alert:set(true)
+	t.settle(10)
+	value.sheet:set(false)
+	t.settle(10)
+	value.panel = panelOf(value)
+	t.check(
+		"the alert is on top after the covered sheet leaves",
+		value.panel ~= nil and value.panel.Name == "AlertPanel",
+		value.panel and value.panel.Name
+	)
+	t.check("selection starts in the alert", within(GuiService.SelectedObject, value.panel), selectedName())
+	t.note("initial alert selection", selectedName())
+	table.clear(value.visited)
+	return value
+end, {
+	afterDown = function(t, value)
+		t.note("Down visits", table.clone(value.visited))
+		t.check("Down moves to another alert action", #value.visited >= 1, value.visited)
+		t.check("two Downs stay inside the alert", within(GuiService.SelectedObject, value.panel), selectedName())
+		table.clear(value.visited)
+	end,
+	afterUp = function(t, value)
+		t.note("Up visits", table.clone(value.visited))
+		t.check("Up stays inside the alert", within(GuiService.SelectedObject, value.panel), selectedName())
+		value.connection:Disconnect()
+		GuiService.SelectedObject = nil
+	end,
+})
+
+add("confirm-dialog-left-right", { "apps2-44" }, function(t)
+	local value = {}
+	local stage = t.mount(function(UI, Host, Compose, env)
+		local ctx = t.context(UI, Host, Compose, env)
+		ctx.load = function() end
+		local folder = game:GetService("ReplicatedStorage"):WaitForChild("FacetExamples")
+		value.built = (require :: any)(folder:WaitForChild("04_confirm_dialog")).build(ctx)
+		return if type(value.built) == "function" then value.built() else value.built.screen()
+	end, { frames = 14 })
+	value.stage = stage
+	value.gui = stage:FindFirstAncestorWhichIsA("LayerCollector")
+	watchSelection(value)
+	t.note("delete button", t.find(stage, "Delete") and t.find(stage, "Delete"):GetFullName())
+	return value
+end, {
+	afterOpen = function(t, value)
+		local cancel = nil
+		for _, node in value.gui:GetDescendants() do
+			if node.Name == "Cancel" and node:IsA("GuiButton") and t_visible(node) then
+				cancel = node
+			end
+		end
+		t.check("the dialog shows Cancel", cancel ~= nil)
+		GuiService.SelectedObject = cancel
+		value.cancel = cancel
+		table.clear(value.visited)
+	end,
+	afterRight = function(t, value)
+		t.check("Right selects Confirm", selectedName() == "Confirm", value.visited)
+	end,
+	afterLeft = function(t, value)
+		t.check("Left selects Cancel", selectedName() == "Cancel", value.visited)
+		value.connection:Disconnect()
+		GuiService.SelectedObject = nil
+	end,
+})
+
+add("return-and-space-activate-once", { "apps-162" }, function(t)
+	local value = { count = 0 }
+	local stage = t.mount(function(UI, _, Compose)
+		value.enabled = Compose.cell(true)
+		return UI.Button "Counter" {
+			label = "Count",
+			enabled = value.enabled,
+			onActivate = function()
+				value.count += 1
+			end,
+		}
+	end, { frames = 10 })
+	value.button = t.find(stage, "Counter")
+	GuiService.SelectedObject = value.button
+	return value
+end, {
+	afterReturn = function(t, value)
+		t.check("Return activates once", value.count == 1, value.count)
+	end,
+	afterSpace = function(t, value)
+		t.check("Space activates once more", value.count == 2, value.count)
+		value.enabled:set(false)
+		t.settle(4)
+		t.check("a disabled Button is not selectable", value.button.Selectable == false, value.button.Selectable)
+		GuiService.SelectedObject = value.button
+	end,
+	afterDisabled = function(t, value)
+		t.check("a disabled Button ignores Return and Space", value.count == 2, value.count)
+		GuiService.SelectedObject = nil
+	end,
+})
+
+add("shift-return-opens-row-menu", { "collections-84" }, function(t)
+	local value = { count = 0 }
+	local stage = t.mount(function(UI)
+		return UI.RowActions "Row" {
+			content = UI.Button "Content" {
+				label = "Message",
+				Size = UDim2.fromScale(1, 1),
+				onActivate = function()
+					value.count += 1
+				end,
+			},
+			trailing = { { id = "delete", label = "Delete", role = "destructive", onActivate = function() end } },
+			Size = UDim2.fromOffset(360, 56),
+		}
+	end, { frames = 10 })
+	value.stage = stage
+	GuiService.SelectedObject = t.find(stage, "Content")
+	return value
+end, {
+	afterShiftReturn = function(t, value)
+		local menu = nil
+		for _, node in value.stage.Parent:GetDescendants() do
+			if node.Name == "MenuPanel" and node:IsA("GuiObject") and t_visible(node) then
+				menu = node
+			end
+		end
+		t.check("Shift+Return opens the row actions menu", menu ~= nil)
+		t.check("Shift+Return does not activate the content", value.count == 0, value.count)
+	end,
+	afterReturn = function(t, value)
+		t.check("Return activates the content once", value.count == 1, value.count)
+		GuiService.SelectedObject = nil
+	end,
+})
+
+add("skinned-part-hover-state", { "themes-P4-51" }, function(t)
+	local value = {}
+	local stage = t.mount(function(UI, Host, Compose)
+		return Host.Frame "Column" {
+			Size = UDim2.fromOffset(360, 300),
+			BackgroundTransparency = 1,
+			Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 12) }),
+			UI.Toggle "Toggle" { value = Compose.cell(false), label = "On", LayoutOrder = 1 },
+			UI.Stepper "Stepper" { value = Compose.cell(2), min = 0, max = 5, LayoutOrder = 2 },
+			UI.Slider "Slider" { value = Compose.cell(0.5), LayoutOrder = 3 },
+		}
+	end, { frames = 10 })
+	value.stage = stage
+	value.parts = {
+		Indicator = t.find(t.find(stage, "Toggle"), "Indicator"),
+		Stepper = t.find(stage, "Stepper"),
+		Thumb = t.find(t.find(stage, "Slider"), "Thumb"),
+	}
+	local paths = {}
+	for name, node in value.parts do
+		paths[name] = node and node:GetFullName()
+	end
+	t.note("parts", paths)
+	return value
+end, {
+	hoverIndicator = function(t, value)
+		local node = value.parts.Indicator
+		t.note("Indicator state on hover", node and tostring(node.GuiState))
+		t.check(
+			"Indicator enters Hover",
+			node ~= nil and node.GuiState == Enum.GuiState.Hover,
+			node and tostring(node.GuiState)
+		)
+	end,
+	hoverStepper = function(t, value)
+		local node = value.parts.Stepper
+		t.check(
+			"Stepper root enters Hover",
+			node ~= nil and node.GuiState == Enum.GuiState.Hover,
+			node and tostring(node.GuiState)
+		)
+	end,
+	hoverThumb = function(t, value)
+		local node = value.parts.Thumb
+		t.check(
+			"Slider Thumb enters Hover",
+			node ~= nil and node.GuiState == Enum.GuiState.Hover,
+			node and tostring(node.GuiState)
+		)
 	end,
 })
 
