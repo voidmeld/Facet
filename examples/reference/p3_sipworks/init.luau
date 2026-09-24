@@ -84,7 +84,10 @@ function Sipworks.build(ctx)
 	end))
 	local heartbeat = ctx.heartbeat or (if game then game:GetService("RunService").Heartbeat else nil)
 	if heartbeat then
-		Compose.cleanup(heartbeat:Connect(clock.advance))
+		local beat = heartbeat:Connect(clock.advance)
+		Compose.cleanup(function()
+			beat:Disconnect()
+		end)
 	end
 	Compose.cleanup(function()
 		clock.reset()

@@ -44,7 +44,10 @@ function Cartwheel.build(ctx)
 	end
 	local heartbeat = ctx.heartbeat or (if game then game:GetService("RunService").Heartbeat else nil)
 	if heartbeat then
-		Compose.cleanup(heartbeat:Connect(advance))
+		local beat = heartbeat:Connect(advance)
+		Compose.cleanup(function()
+			beat:Disconnect()
+		end)
 	end
 	Compose.cleanup(clock.dispose)
 	Compose.cleanup(commands.dispose)
@@ -58,7 +61,10 @@ function Cartwheel.build(ctx)
 		return commands.submit({
 			id = verb .. ":" .. id,
 			decide = function()
-				return if verb == "start" then orders.canStart(previous.status) else orders.canFinish(previous.status)
+				if verb == "start" then
+					return orders.canStart(previous.status)
+				end
+				return orders.canFinish(previous.status)
 			end,
 			confirm = function()
 				if verb == "start" then
@@ -122,7 +128,8 @@ function Cartwheel.build(ctx)
 				brewCommand(brew.id, if orders.statusOf(brew.id) == "ready" then "finish" else "start")
 			end, function(use)
 				local status = use(current).status
-				return status == "new" or status == "ready"
+				return status == "new" and use(commands.status("start:" .. brew.id)) ~= "pending"
+					or status == "ready" and use(commands.status("finish:" .. brew.id)) ~= "pending"
 			end),
 		})
 	end
@@ -522,6 +529,7 @@ function Cartwheel.build(ctx)
 						end, function(use)
 							use(orders.brews)
 							return orders.statusOf(brew.id) == "new"
+								and use(commands.status("start:" .. brew.id)) ~= "pending"
 						end)
 					)
 					table.insert(
@@ -531,6 +539,7 @@ function Cartwheel.build(ctx)
 						end, function(use)
 							use(orders.brews)
 							return orders.statusOf(brew.id) == "ready"
+								and use(commands.status("finish:" .. brew.id)) ~= "pending"
 						end)
 					)
 					return view.page("Brew", parts)
