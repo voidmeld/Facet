@@ -18,7 +18,7 @@ where.
   884 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 9 cases remain. Only a live Studio check
   can close them. See [Gap list](#gap-list).
-- 893 of the 3,367 covered cases have a weaker
+- 949 of the 3,426 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -65,9 +65,9 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 1158 | 2,294 | 3,178 |
-| b | Retired. The Roblox Engine or Compose owns the mechanism | 306 | 1,581 | 1,581 |
-| c | Retired. The feature or code was deleted and is not promised | 823 | 6,079 | 6,080 |
+| a | Covered by a candidate case | 1174 | 2,294 | 3,426 |
+| b | Retired. The Roblox Engine or Compose owns the mechanism | 302 | 1,581 | 1,440 |
+| c | Retired. The feature or code was deleted and is not promised | 811 | 6,079 | 5,973 |
 | d | Gap. A promise remains and no candidate case verifies it | 3 | 894 | 9 |
 
 Class c is the largest class. Most of it tested the deleted solver,
@@ -85,8 +85,8 @@ last column names the candidate specs that the group cites most.
 | Reactive core | 63 | 23 | 0 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 316 | 142 | 6 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
 | Layout and geometry | 1,326 | 280 | 211 | 218 | 827 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 497 | 63 | 27 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 532 | 103 | 3 | 257 | 172 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Text measurement and fit | 497 | 95 | 59 | 232 | 170 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Focus and selection | 532 | 109 | 7 | 257 | 166 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 13 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
 | Pointer, touch and drag | 368 | 63 | 0 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
@@ -102,7 +102,7 @@ last column names the candidate specs that the group cites most.
 | Presented surfaces | 287 | 124 | 33 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 214 | 159 | 6 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 1 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
-| Row actions | 264 | 149 | 13 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
+| Row actions | 264 | 162 | 25 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 166 | 46 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 32 | 3 | 51 | 336 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 89 | 0 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
@@ -111,7 +111,7 @@ last column names the candidate specs that the group cites most.
 | Reference apps | 327 | 152 | 2 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 6 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
-| Error handling and refusals | 220 | 72 | 0 | 2 | 146 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
+| Error handling and refusals | 220 | 80 | 8 | 2 | 138 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
 
@@ -818,6 +818,25 @@ assertion. A contract that gets no new case is not in this table. Its
 | `native_parity_weaker_pointer` | Adaptive environment | `apps2-134`, `apps2-257`, `mech1-88`, `mech1-121`, `navigation-1-63`, `navigation-3-73`, `themes-P5-51` | 14 | `apps2-191` | 3 |
 | `native_parity_weaker_pointer` | Pointer, touch and drag | `apps2-15`, `apps2-204`, `apps2-205`, `apps2-206`, `apps2-209`, `apps2-215`, `collections-70`, `collections-112`, `collections-177`, `inputs-117`, `inputs-157`, `mech1-42`, `mech2-107`, `navigation-2-28`, `navigation-4-39` | 48 | - | 0 |
 | `native_parity_weaker_surfaces` | Presented surfaces | `apps2-226`, `apps2-255`, `apps2-270`, `inputs-12`, `inputs-90`, `mech3-89`, `navigation-1-11`, `navigation-1-23`, `navigation-1-50`, `navigation-1-59`, `navigation-2-02`, `navigation-2-30`, `navigation-2-65`, `navigation-2-69`, `navigation-2-70`, `navigation-3-08`, `navigation-4-37`, `navigation-4-47`, `navigation-5-53`, `navigation-5-55` | 48 | `apps2-44`, `apps2-247`, `mech1-120`, `mech2-104`, `mech3-87`, `navigation-1-14` | 33 |
+
+### Restored main features
+
+The owner restored five retired features in Facet. The cases in
+`native_parity_restore` move these contracts from class c to class a. Each
+contract has `restoredBy` set to `parity/restore`.
+
+| Feature | Contracts | Main cases | Still weaker |
+|---|---|---:|---|
+| `UI.ErrorBoundary` on `Compose.boundary` | `mech1-115` | 8 | The presenter critical screen is not restored. |
+| Table and list multi-select keys | `collections-150`, `collections-198` | 6 | A plain arrow moves the focus and does not select. |
+| RowActions tray closes on an outside tap | `collections-78`, `collections-90`, `collections-285` | 13 | A press on the content of the open row keeps the tray open. |
+| Label `textSize = "fit"` | `mech3-83` | 18 | The engine picks the size through `TextScaled`. The headless engine does not scale text. |
+| Label `truncate = "middle"` | `mech2-46` | 14 | The headless engine measures with a fixed glyph width. |
+
+Facet Neutral's `Light` palette is newer than the baseline, so it has no
+baseline contract. `native_parity_restore` checks both palettes against the
+contrast gate. The theme strength specs check both palettes where they checked
+one before.
 
 ### Final gap tests
 

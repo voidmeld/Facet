@@ -196,14 +196,16 @@
     },
     "virtual_list_row_actions": {
       "specs": [
-        "native_collections"
+        "native_collections",
+        "native_parity_restore"
       ],
       "cases": [
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_collections::Compose native collections::uses the shared native menu for all actions and restores focus after cancellation",
-        "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys"
+        "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
+        "native_parity_restore::native parity restore: RowActions outside tap::closes the open row when another row is pressed and keeps it open for a press inside it"
       ],
       "behaviors": [
         "Native action reveal, destructive lifecycle, edit actions, context menu/back/focus behavior; collection render is the explicit row-composition seam."
@@ -259,7 +261,8 @@
     },
     "row_actions_input": {
       "specs": [
-        "native_collections"
+        "native_collections",
+        "native_parity_restore"
       ],
       "cases": [
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
@@ -267,7 +270,9 @@
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_collections::Compose native collections::uses the shared native menu for all actions and restores focus after cancellation",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
-        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route"
+        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap",
+        "native_parity_restore::native parity restore: RowActions outside tap::lets a commit in flight finish once when an outside tap arrives"
       ],
       "behaviors": [
         "Pointer/touch detector lifecycle, controlled edge policy, native focus-scoped destructive actions and context menu trap/Back restoration.",
@@ -362,7 +367,8 @@
     },
     "table": {
       "specs": [
-        "native_collections"
+        "native_collections",
+        "native_parity_restore"
       ],
       "cases": [
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
@@ -374,7 +380,10 @@
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
         "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_restore::native parity restore: Table multi-select keys::replaces a multi selection on a plain mouse click",
+        "native_parity_restore::native parity restore: Table multi-select keys::toggles rows in and out of a multi selection on a Ctrl-click and a Cmd-click",
+        "native_parity_restore::native parity restore: Table multi-select keys::extends a contiguous range from the anchor on a Shift-click and re-ranges from the same anchor"
       ],
       "behaviors": [
         "Stable cell state under sort/resize, controlled model veto, range selection, multi-row reorder, per-row policies, block mode and priority-collapse disclosure.",
@@ -432,14 +441,17 @@
     },
     "table_input": {
       "specs": [
-        "native_collections"
+        "native_collections",
+        "native_parity_restore"
       ],
       "cases": [
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
         "native_collections::Compose native collections::uses the shared native menu for all actions and restores focus after cancellation",
-        "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state"
+        "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
+        "native_parity_restore::native parity restore: Table multi-select keys::extends the selection from the anchor with Shift and an arrow, and moves focus with it",
+        "native_parity_restore::native parity restore: Table multi-select keys::honors held modifiers on a keyboard Return"
       ],
       "behaviors": [
         "Native column drag/keyboard resize, selected-block reorder, keyboard cancellation, disabled/selectable/movable rules and collapsed-column disclosure.",
