@@ -883,6 +883,191 @@ not deliver engine input.
 | apps-163 | input-actions | 5 | Exactly one Activate per press across the InputAction and native Activated paths | One physical Return press on a selected Button reaches `onActivate` once. |
 | navigation-1-69 | layout-geometry | 1 | Nothing on the callout page crosses a lateral edge at swept sizes | Nothing on the callout page crosses a lateral edge at 390, 768, 1280 and 1920 pixels. |
 
+## Main cases after the baseline
+
+Some cases were added on `main` after the baseline. Each family records them here and in `postBaseline` of the data file.
+
+### Overlays
+
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover Dialog, Popover, Snackbar, Notice, NavBar, the Sheet and Callout additions, the structured Button `help`, the anchored placement and the retired text disclosure plates. The family has 174 contracts and 199 main cases (a: 170, b: 1, c: 28). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_dialog`, `native_popover`, `native_sheet_parts`, `native_snackbar`, `native_notice_navbar`, `native_callout_help`, `native_overlays_gallery`, `overlay_placement` and `sheet_release`.
+
+| Contract | Main spec | Main cases | Class | Candidate cases | Note |
+|---|---|---:|---|---|---|
+| post-overlays-001 | `dialog` | 1 | a | `an accepted fact presents the panel with pinned title, body and actions` |  |
+| post-overlays-002 | `dialog` | 1 | a | `the close button proposes: refused keeps the same surface and focus, accepted reports close` |  |
+| post-overlays-003 | `dialog` | 1 | a | `Cancel runs an eligible cancel action first; without one it proposes cancel` |  |
+| post-overlays-004 | `dialog` | 1 | a | `an action that accepts false during its callback closes with reason action` |  |
+| post-overlays-005 | `dialog` | 1 | a | `an action never closes by itself, and a throwing one leaves the bookkeeping sound` |  |
+| post-overlays-006 | `dialog` | 1 | a | `a throwing proposal is raised and changes nothing` |  |
+| post-overlays-007 | `dialog` | 1 | a | `the backdrop proposes outside; with no callback and no close it only swallows` |  |
+| post-overlays-008 | `dialog` | 1 | a | `Return fires the default action; a disabled or busy one cannot fire by any route` |  |
+| post-overlays-009 | `dialog` | 1 | a | `title-only, body-only, hero-only, action-label-only and actions-only all present` |  |
+| post-overlays-010 | `dialog` | 1 | a | `the spec is closed and malformed compositions are refused by name` |  |
+| post-overlays-011 | `dialog` | 1 | a | `a long body fits the room: pinned header, label and actions stay on screen while it scrolls` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-012 | `dialog` | 1 | a | `a tiny room unpins every region into one scroller: the last action is reachable` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-013 | `dialog` | 1 | a | `a phone dialog hugs its content and rows two actions that fit` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-014 | `dialog` | 1 | a | `the keyboard's occlusion takes its room from the budget` | The on-screen keyboard is modelled by UserInputService.OnScreenKeyboardVisible and OnScreenKeyboardSize; a live device check confirms the occlusion. |
+| post-overlays-015 | `dialog` | 1 | a | `automatic actions stack for three; an explicit row that cannot fit falls to the safe stack` | Label widths come from TextBounds set by the test, not from measured text. |
+| post-overlays-016 | `dialog` | 1 | a | `the width presets resolve to theme ceilings inside the safe room` |  |
+| post-overlays-017 | `dialog` | 1 | a | `a bound title may start empty and fill in later, in the same presentation` |  |
+| post-overlays-018 | `dialog` | 1 | a | `the ring reaches the body, Down scrolls it to the end, and then moves on to the actions` | The scroll actions are Facet InputActions enabled while the body is selected. The hand-off of the selection at the end is native gamepad navigation and needs a live check. |
+| post-overlays-019 | `dialog` | 1 | a | `a body that fits offers no stop, and contentSelectable = false never does` |  |
+| post-overlays-020 | `dialog` | 1 | a | `interactive content keeps its own stops inside the body` |  |
+| post-overlays-021 | `dialog` | 1 | a | `owner disposal releases physically and reports cancel once; reopen cycles return to baseline` |  |
+| post-overlays-022 | `popover` | 1 | a | `a trigger press proposes, and an accepted fact presents an anchored panel` |  |
+| post-overlays-023 | `popover` | 1 | a | `a refused proposal presents nothing, and a refused close keeps the same surface and focus` |  |
+| post-overlays-024 | `popover` | 1 | a | `Cancel, an outside tap and a press on the trigger each close with their own reason, once` | A press on the trigger of an open popover lands on the modal catcher; the test fires the catcher over the trigger. |
+| post-overlays-025 | `popover` | 1 | a | `without onPresentedChange nothing interactive opens or closes it; the fact still does` |  |
+| post-overlays-026 | `popover` | 1 | a | `pointer: a click on the trigger opens it and a click outside closes it` |  |
+| post-overlays-027 | `popover` | 1 | a | `keyboard: Return on the focused trigger opens it into the content, and closing returns focus` |  |
+| post-overlays-028 | `popover` | 1 | a | `gamepad: ButtonA on the focused trigger opens it, and ButtonB proposes the close` | Gamepad ButtonA activation of a selected button is native; the test fires Activated. |
+| post-overlays-029 | `popover` | 1 | a | `a node source follows its node; removing it releases at once and reports anchorLost once` | The source is a native node instead of a path. Main followed a path through node replacement; the native form follows one Instance. |
+| post-overlays-030 | `popover` | 1 | a | `a caller who refuses the anchorLost proposal keeps its fact, and nothing reopens` |  |
+| post-overlays-031 | `popover` | 1 | a | `a source that has not mounted yet waits instead of being lost` |  |
+| post-overlays-032 | `popover` | 1 | a | `a rect source never draws a tail; crossOffset and edge reach the placement` |  |
+| post-overlays-033 | `popover` | 1 | a | `maxWidth and maxHeight bound the whole panel inside the live safe box, and the body scrolls` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-034 | `popover` | 1 | a | `a source that never mounts waits without an error` | Path addressing is retired: the source is a native node. The test shows a never-mounted node waits without an error; it does not capture the warning. |
+| post-overlays-035 | `popover` | 1 | a | `a compact touch screen presents it as a sheet; compact = popover suppresses that` | Compact is PreferredInput Touch on a layer narrower than 600 pixels. |
+| post-overlays-036 | `popover` | 1 | a | `a sheet dismissed by something the popover did not drive still proposes and reports` |  |
+| post-overlays-037 | `popover` | 1 | a | `the sheet's Close asks first: refused keeps it, accepted closes with cancel` |  |
+| post-overlays-038 | `popover` | 1 | a | `a live class change switches the route silently, with one content owner` |  |
+| post-overlays-039 | `popover` | 1 | a | `a refused drag on the compact sheet goes back to the accepted detent` |  |
+| post-overlays-040 | `popover` | 1 | a | `a throwing onPresentedChange changes nothing, and a throwing onDismiss still closes once` |  |
+| post-overlays-041 | `popover` | 1 | a | `a caller that re-opens inside its own close callback keeps one live surface` |  |
+| post-overlays-042 | `popover` | 1 | a | `open/close/branch cycles return the native tree to its baseline` |  |
+| post-overlays-043 | `popover` | 1 | a | `opens the about and source popovers from its steps, shows the rich tour, and resets`; `the locked popover and the terms dialog refuse their close until the screen allows it` |  |
+| post-overlays-044 | `popover` | 1 | a | `owner disposal releases physically and reports cancel once; two worlds stay apart` |  |
+| post-overlays-045 | `popover` | 1 | a | `the spec is closed and the contract is refused by name` |  |
+| post-overlays-046 | `snackbar` | 1 | a | `a registration presents nothing and reserves nothing while its fact is false` | There is no separate host strip: each Snackbar presents its own row. The test shows an unpresented registration shows nothing and reserves nothing. |
+| post-overlays-047 | `snackbar` | 1 | a | `shows a message when the caller's fact turns true, and close proposes` |  |
+| post-overlays-048 | `snackbar` | 6 | a | `the six compositions pick their parts and widths` | One case walks the six compositions. Text widths come from TextBounds set by the test. |
+| post-overlays-049 | `snackbar` | 1 | a | `a plain row hugs a longer message up to the strip's width` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-050 | `snackbar` | 1 | a | `long copy wraps and the action moves below it` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-051 | `snackbar` | 1 | a | `an action runs once and leaves the row mounted; closing inside it reports action` |  |
+| post-overlays-052 | `snackbar` | 1 | a | `a refused close keeps the same row and reports nothing` |  |
+| post-overlays-053 | `snackbar`, `toast_schedule` | 2 | a | `a timeout asks once at max(duration, 2.5 s) of readable time; a refusal makes it persistent` |  |
+| post-overlays-054 | `snackbar`, `toast_schedule` | 2 | a | `an accepted timeout retires with reason timeout; nil duration never expires` |  |
+| post-overlays-055 | `snackbar`, `toast_schedule` | 2 | a | `hover and focus pause the dwell; queued time never counts` |  |
+| post-overlays-056 | `snackbar`, `toast_schedule` | 2 | a | `equal priority waits in order; a higher one supersedes after the floor, once`; `a refused supersession keeps the contender queued and asks only once` |  |
+| post-overlays-057 | `snackbar` | 1 | a | `an accepted supersession reports superseded` |  |
+| post-overlays-058 | `snackbar` | 1 | a | `the caller's false while queued removes it and reports cancel once` |  |
+| post-overlays-059 | `snackbar`, `toast_schedule` | 2 | a | `the tenth admission is refused at construction, and capacity recovers` |  |
+| post-overlays-060 | `snackbar` | 1 | a | `owner teardown never asks and reports cancel once, like Dialog and Popover` | Application disposal and owner disposal both report cancel in the native form; there is no separate application. |
+| post-overlays-061 | `snackbar` | 1 | a | `two worlds are independent` |  |
+| post-overlays-062 | `snackbar` | 1 | a | `a visible row reserves its bottom rectangle, and releases it after it has slid out` | The reservation is the FacetInsetBottom attribute on the layer, not presenter.reserveHud. |
+| post-overlays-063 | `snackbar` | 1 | a | `a modal blocks the dwell until it closes` |  |
+| post-overlays-064 | `snackbar` | 1 | a | `refuses a malformed spec before registering` |  |
+| post-overlays-065 | `snackbar` | 1 | a | `arrival never steals focus; Cancel on a focused row returns focus to the content even when refused` |  |
+| post-overlays-066 | `snackbar` | 1 | a | `accepted removal of the focused row puts focus back on the content` |  |
+| post-overlays-067 | `snackbar` | 1 | c | - | There is no host strip or focus graph scope. Native selection moves between rows and content. |
+| post-overlays-068 | `snackbar` | 1 | c | - | The presenter responder model is retired. A row has no modal catcher; the close case shows no catcher remains. |
+| post-overlays-069 | `snackbar` | 1 | a | `the strip docks bottom-centre above base screens, and modals and callouts paint above it` |  |
+| post-overlays-070 | `snackbar` | 1 | a | `an art theme's frame carve holds the icon, copy and action inside the plate` | The padding follows the panel chrome contentInsets; a live check confirms the art frame. |
+| post-overlays-071 | `snackbar` | 1 | a | `the strip docks bottom-centre above base screens, and modals and callouts paint above it` | The test checks ZIndex order. A live check confirms the painted order. |
+| post-overlays-072 | `snackbar` | 1 | a | `a pointer press on Close leaves no click-eating catcher behind` |  |
+| post-overlays-073 | `snackbar` | 1 | a | `a visible row reserves its bottom rectangle, and releases it after it has slid out` |  |
+| post-overlays-074 | `snackbar` | 1 | a | `a throwing caller callback is raised, and the row stays consistent` |  |
+| post-overlays-075 | `snackbar` | 1 | a | `a construction that raises leaves nothing admitted behind it` |  |
+| post-overlays-076 | `snackbar` | 1 | a | `the showcase buttons present through the same service; a burst is capped, never dropped silently` |  |
+| post-overlays-077 | `toast_schedule` | 1 | a | `callbacks may show and hide other rows during a retirement without a stale entry` |  |
+| post-overlays-078 | `toast_schedule` | 1 | c | - | The toast scheduler is example-owned. The snackbar keeps its records inside the control; there is no published identity. |
+| post-overlays-079 | `toast_schedule` | 1 | c | - | The uncontrolled toast scheduler is retired from the library and lives in the sponsor_toast example. |
+| post-overlays-080 | `notice` | 1 | a | `paints the severity icon, title and message, and the close reports the press only` |  |
+| post-overlays-081 | `notice` | 1 | a | `icon = false hides only the artwork, and an explicit source paints that source` |  |
+| post-overlays-082 | `notice` | 1 | a | `the link and actions sit beside the copy when there is room and move below it when there is not` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-083 | `notice` | 1 | a | `a link wears no plate, and on an emphasis fill the link and default action are ordinary controls` | The test checks tags; a live check confirms the paint. |
+| post-overlays-084 | `notice` | 1 | a | `arrival never moves focus, and every control is a pad stop in the page's own order` |  |
+| post-overlays-085 | `notice` | 1 | a | `keyboard and gamepad reach the action and press it; a pointer or finger taps it` |  |
+| post-overlays-086 | `notice` | 1 | a | `malformed specs are refused by name` |  |
+| post-overlays-087 | `notice` | 1 | a | `content moves down by the notice's real height and returns when it goes` | The reservation is the FacetInsetTop attribute on the layer. Content reads it; there is no presenter reservation list. |
+| post-overlays-088 | `notice` | 1 | a | `two stacked notices reserve the deepest edge, and two worlds never collide` |  |
+| post-overlays-089 | `notice` | 1 | a | `a taller message grows the reservation live` |  |
+| post-overlays-090 | `notice` | 1 | a | `the banner pins to the tab's top and its content moves out of the way, then back` |  |
+| post-overlays-091 | `nav_bar` | 1 | a | `Back fires by pointer, touch, keyboard and gamepad` |  |
+| post-overlays-092 | `nav_bar` | 1 | a | `Back, leading, a filling center and trailing share one row when there is room` |  |
+| post-overlays-093 | `nav_bar` | 1 | a | `a narrow bar moves the trailing content to a second row, without rebuilding the center` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-094 | `nav_bar` | 1 | a | `the default center is the one-line title, and every slot subset mounts` | Main disclosed the truncated title; the native title truncates with TextTruncate.AtEnd. |
+| post-overlays-095 | `nav_bar` | 1 | c | - | The lowercase navBar builder is retired with the blueprint layer. UI.NavBar is the only form. |
+| post-overlays-096 | `nav_bar` | 1 | a | `UI.NavBar refuses a trailing array and a non-GuiObject slot` |  |
+| post-overlays-097 | `callout` | 1 | a | `a function isPresented is evaluated and followed, not treated as a request` |  |
+| post-overlays-098 | `callout` | 1 | a | `a function seen or featureUsed rules the callout out, and a later true retires it once` |  |
+| post-overlays-099 | `callout` | 1 | a | `a retirement inside onShow retires once and takes the plate down` | The native callout has no dismiss API; the test retires it through featureUsed inside onShow. |
+| post-overlays-100 | `callout` | 1 | a | `disposal inside onShow releases the queue slot` |  |
+| post-overlays-101 | `callout` | 1 | a | `an ordinary throw in onShow still shows the plate and keeps the slot accounting` | The failure goes to the onError factory option instead of being raised. |
+| post-overlays-102 | `callout` | 1 | a | `disposing one world's callout never touches another world's` |  |
+| post-overlays-103 | `callout` | 1 | a | `a callout rebuilt by a branch cycle is a new control with one plate` |  |
+| post-overlays-104 | `callout` | 1 | a | `the full composition paints every part, and one or two actions replace the bottom dismiss` |  |
+| post-overlays-105 | `callout` | 1 | a | `an action retires its own generation once, and never a newer one it presented` | There is no rearm API; a new generation is a new control, as in the showcase tour. |
+| post-overlays-106 | `callout` | 1 | a | `a throwing action still retires the presentation it belonged to, exactly once` |  |
+| post-overlays-107 | `callout` | 1 | a | `a disabled action cannot fire` |  |
+| post-overlays-108 | `callout` | 1 | a | `closeButton adds a top close and keeps the legacy bottom dismiss when there are no actions` |  |
+| post-overlays-109 | `callout` | 1 | a | `the legacy content-only plate is unchanged: content then the dismiss button, nothing else` |  |
+| post-overlays-110 | `callout` | 1 | a | `title-only, media-only, steps-only and actions-only compositions need no content` |  |
+| post-overlays-111 | `callout` | 1 | a | `an empty composition and malformed parts are refused by name` |  |
+| post-overlays-112 | `help` | 1 | a | `a title, a body and a display-only shortcut paint in one plate` |  |
+| post-overlays-113 | `help` | 1 | a | `edge and align place the plate` |  |
+| post-overlays-114 | `help` | 1 | a | `the string form paints exactly as before: no title node` |  |
+| post-overlays-115 | `help` | 1 | a | `malformed tables are refused by name at construction` |  |
+| post-overlays-116 | `help` | 1 | c | - | The text_audit help routes are retired with the presenter declarations. |
+| post-overlays-117 | `help` | 1 | c | - | presenter.helpDeclarations is retired with the presenter. |
+| post-overlays-118 | `help` | 1 | a | `a bound help value repaints the live plate in place` | A bound help value repaints in place; the native form has no path identity. |
+| post-overlays-119 | `help` | 1 | a | `safe insets that grow under a live plate keep it inside the new safe box` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-120 | `sheet` | 1 | a | `a function-bound title renders as its type promises` |  |
+| post-overlays-121 | `sheet` | 1 | a | `closeButton=false removes Close; Size and interactive dismissal remain` |  |
+| post-overlays-122 | `sheet` | 1 | a | `explicit placements pin the panel to the bottom or the center` | There is no viewing-distance fact; automatic is the bottom edge. |
+| post-overlays-123 | `sheet` | 1 | a | `refuses malformed placement, edge, width and closeButton` |  |
+| post-overlays-124 | `sheet` | 1 | a | `side placement docks to its physical edge, detents stay vertical` |  |
+| post-overlays-125 | `sheet` | 1 | a | `side sheets enter and leave toward their own edge` |  |
+| post-overlays-126 | `sheet` | 1 | a | `the Size control reads player words, never a detent id` | The Size words are the grabber's AccessibleLabel. |
+| post-overlays-127 | `sheet` | 1 | a | `width presets reuse the dialog widths, bounded by safe room` |  |
+| post-overlays-128 | `sheet_gesture` | 1 | a | `a fast flick projects past the nearest detent; a slow drag does not` |  |
+| post-overlays-129 | `sheet_gesture` | 1 | a | `a flick settles through motion; reduced motion snaps` | The settle uses a tween; the release velocity chooses the detent but does not seed the motion. |
+| post-overlays-130 | `sheet_gesture` | 1 | a | `a hold after motion does not fling` |  |
+| post-overlays-131 | `sheet_gesture` | 1 | b | - | The engine UIDragDetector ends a drag when its input goes away; the sheet then releases the session through DragEnd. |
+| post-overlays-132 | `sheet_gesture` | 1 | a | `an unrelated input change carries the drag` |  |
+| post-overlays-133 | `sheet_gesture` | 1 | a | `an external detent change during a drag wins and drops the stale session` |  |
+| post-overlays-134 | `sheet_gesture` | 1 | a | `the panel's native detector acquires only past the pointer slop` |  |
+| post-overlays-135 | `sheet_gesture` | 1 | a | `a drag on the panel drives the sheet; a second stream cannot take it over` | The panel stream is a native UIDragDetector, not the TouchPan gesture. |
+| post-overlays-136 | `sheet_gesture` | 1 | a | `default scrollPolicy never hands a body pan to the sheet; atLargestDetent yields below the tallest` |  |
+| post-overlays-137 | `sheet_gesture` | 1 | a | `default scrollPolicy never hands a body pan to the sheet; atLargestDetent yields below the tallest` | Below the tallest detent the body stops scrolling. The downward pan from the top at the tallest detent is not handed to the sheet natively; it needs a live check. |
+| post-overlays-138 | `sheet_gesture` | 1 | a | `resistance holds a dismissal-disabled sheet near its lowest detent` |  |
+| post-overlays-139 | `sheet_gesture` | 1 | a | `disposal mid-drag releases the session and returns to baseline` |  |
+| post-overlays-140 | `sheet_parts` | 1 | a | `default parts: pinned title and utilities, one body scroller (the panel no longer scrolls)` |  |
+| post-overlays-141 | `sheet_parts` | 1 | a | `contentInset none drops only the body padding` |  |
+| post-overlays-142 | `sheet_parts` | 1 | a | `a header replaces the title; header=false removes it; utilities stay` |  |
+| post-overlays-143 | `sheet_parts` | 1 | a | `pinned actions stay reachable over a long body; Cancel runs the cancel action` |  |
+| post-overlays-144 | `sheet_parts` | 1 | a | `a room too small for the pinned regions unpins them into one scroller` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-145 | `sheet_parts` | 1 | a | `a sticky image hero stays pinned; header=false puts Close over it` |  |
+| post-overlays-146 | `sheet_parts` | 1 | a | `a scrolling content hero reserves the utility strip; utilities stay pinned` |  |
+| post-overlays-147 | `sheet_parts` | 1 | a | `a non-sticky hero spans the panel width without the body inset` |  |
+| post-overlays-148 | `sheet_parts` | 1 | a | `the keyboard takes its room from the one safe rectangle` |  |
+| post-overlays-149 | `sheet_parts` | 1 | a | `refuses malformed header, hero, actions and inset before mounting` |  |
+| post-overlays-150 | `sheet_parts` | 1 | a | `hug fits the whole body plus the pinned regions, and follows live copy both ways` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-151 | `sheet_parts` | 1 | a | `hug clamps to the safe room and keeps the minimum floor` |  |
+| post-overlays-152 | `sheet_parts` | 1 | a | `coinciding heights keep the declared id; Size cycles distinct ids; ties keep the current` |  |
+| post-overlays-153 | `sheet_parts` | 1 | a | `an invalid late detent keeps the last geometry and a valid one recovers` |  |
+| post-overlays-154 | `sheet_parts` | 1 | a | `refuses a malformed hug entry` |  |
+| post-overlays-155 | `sheet_parts` | 1 | a | `action callbacks that throw, close or dispose leave no stale surface` |  |
+| post-overlays-156 | `sheet_parts` | 1 | a | `a failing content build does not leave a surface behind` |  |
+| post-overlays-157 | `sheet_release` | 1 | a | `projects the release by the height velocity` |  |
+| post-overlays-158 | `sheet_release` | 1 | a | `dismisses only where the sheet actually is` |  |
+| post-overlays-159 | `sheet_release` | 1 | a | `a tie keeps the current id, then the authored order` |  |
+| post-overlays-160 | `sheet_release` | 1 | a | `resistance is 1:1 inside, bounded outside, with no jump at the edge` |  |
+| post-overlays-161 | `anchored_surface` | 1 | a | `every edge and align pair moves by exactly the signed offset, and absent equals 0` |  |
+| post-overlays-162 | `anchored_surface` | 1 | a | `a flip changes the edge only: the alignment and the offset do not flip` |  |
+| post-overlays-163 | `anchored_surface` | 1 | a | `a non-finite or non-number offset is refused by name`; `the spec is closed and the contract is refused by name` |  |
+| post-overlays-164 | `anchored_surface` | 1 | a | `the spec is closed and the contract is refused by name` |  |
+| post-overlays-165 | `anchored_surface` | 1 | a | `a surface that fits neither above nor below hangs beside its source, never over it` |  |
+| post-overlays-166 | `anchored_surface` | 1 | a | `maxWidth and maxHeight bound the whole panel inside the live safe box, and the body scrolls` | The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout. |
+| post-overlays-167 | `anchored_surface` | 1 | a | `growing safe insets pull a surface inside the new box`; `maxWidth and maxHeight bound the whole panel inside the live safe box, and the body scrolls` |  |
+| post-overlays-168 | `anchored_surface` | 1 | c | - | presentAnchored is retired with the presenter. UI.Popover uses the placement directly. |
+| post-overlays-169 | `anchored_surface` | 1 | a | `the safe clamp still wins over the offset, and reports the shift it took` |  |
+| post-overlays-170 | `text_disclosure` | 2 | c | - | UI.Text disclose plates are retired (see mech3-71). |
+| post-overlays-171 | `text_disclosure` | 1 | c | - | UI.Text disclose plates and ViewThatFits are retired. |
+| post-overlays-172 | `text_disclosure` | 2 | c | - | UI.Text disclose plates are retired. |
+| post-overlays-173 | `text_disclosure` | 1 | c | - | The presenter is retired. |
+| post-overlays-174 | `text_disclosure_seam` | 14 | c | - | The presenter module and its disclosure seam are retired. |
+
 ## Use the data
 
 - `totals` has the class counts before and after the new tests.

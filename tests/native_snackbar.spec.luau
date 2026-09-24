@@ -201,6 +201,40 @@ t.describe("native Snackbar: presentation", function()
 	end)
 end)
 
+t.describe("native Snackbar: an art theme's panel carve", function()
+	t.it("an art theme's frame carve holds the icon, copy and action inside the plate", function()
+		local themes = require("../src/ui/themes")(Compose)
+		local package = themes.neutralPackage()
+		package.chrome = package.chrome or {}
+		package.chrome.panel = { kind = "native", contentInsets = { left = 20, right = 24, top = 12, bottom = 14 } }
+		local c = caller()
+		c.shown:set(true)
+		local gate = Compose.cell(true)
+		local w = overlay.new(function(UI, Host)
+			return Host.Frame({
+				Compose.show(gate, function()
+					return UI.Snackbar "S1" {
+						isPresented = c.shown,
+						message = "Offline",
+						icon = "status.warning",
+						closeButton = false,
+						onPresentedChange = c.onPresentedChange,
+					}
+				end),
+			})
+		end, { theme = package, reducedMotion = true })
+		local row = w.find("Snack")
+		local padding = row:FindFirstChildWhichIsA("UIPadding")
+		t.expect(padding.PaddingLeft.Offset).toBe(20)
+		t.expect(padding.PaddingRight.Offset).toBe(24)
+		t.expect(padding.PaddingTop.Offset).toBe(12)
+		t.expect(padding.PaddingBottom.Offset).toBe(14)
+		overlay.find(row, "MessageMeasure").TextBounds = Vector2.new(100, 18)
+		t.expect(row.Size.X.Offset).toBe(100 + 20 + 24 + 20 + 8 + 2)
+		w.stop()
+	end)
+end)
+
 t.describe("native Snackbar: proposals and reasons", function()
 	t.it("an action runs once and leaves the row mounted; closing inside it reports action", function()
 		local c = caller()
