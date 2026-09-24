@@ -129,6 +129,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end
 		end
 		Compose.watch(function(use: ComposeTypes.Use)
+			if read(open, use) ~= nil and fired then
+				fired = false
+				committing:set(nil)
+			end
+		end)
+		Compose.watch(function(use: ComposeTypes.Use)
 			if use(departure.completed) and not fired then
 				local commit = committing:peek()
 				if commit then
@@ -251,7 +257,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return
 			end
 			local value = drag:peek()
-			if value ~= nil and axis == "horizontal" then
+			if value ~= nil and value ~= 0 and axis == "horizontal" and dimensions:peek().X > 0 then
 				local edge: RowEdge = if value > 0 then "leading" else "trailing"
 				local available = actions(edge)
 				local fullSwipe = if type(spec.fullSwipe) == "table"

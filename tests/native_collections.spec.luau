@@ -646,6 +646,70 @@ t.describe("Compose native collections", function()
 		runtime.dispose()
 	end)
 
+	t.it("never commits or opens a full swipe on an unmeasured row", function()
+		local engine, runtime, UI, target = setup()
+		local invoked, open = 0, Compose.cell(nil)
+		local stop, node = runtime.mount(function()
+			return UI.RowActions({
+				open = open,
+				content = button(UI, Compose.cell({ label = "Row" })),
+				trailing = {
+					{
+						id = "Archive",
+						label = "Archive",
+						onActivate = function()
+							invoked += 1
+						end,
+					},
+				},
+			})
+		end, target)
+		local detector = node:FindFirstChildWhichIsA("UIDragDetector")
+		detector.DragStart.fire(engine.types.Vector2.new(100, 0))
+		detector.DragContinue.fire(engine.types.Vector2.new(85, 0))
+		detector.DragEnd.fire()
+		t.expect(invoked).toBe(0)
+		t.expect(open:peek()).toBeNil()
+		stop()
+		runtime.dispose()
+	end)
+
+	t.it("restores a kept row after a destructive action so it can commit again", function()
+		local engine, runtime, UI, target = setup()
+		local invoked, open = 0, Compose.cell("trailing")
+		local stop, node = runtime.mount(function()
+			return UI.RowActions({
+				open = open,
+				reducedMotion = true,
+				content = button(UI, Compose.cell({ label = "Row" })),
+				trailing = {
+					{
+						id = "Delete",
+						label = "Delete",
+						role = "destructive",
+						onActivate = function()
+							invoked += 1
+						end,
+					},
+				},
+			})
+		end, target)
+		node.AbsoluteSize = engine.types.Vector2.new(300, 40)
+		local detector = node:FindFirstChildWhichIsA("UIDragDetector")
+		node:FindFirstChild("Delete", true).Activated.fire()
+		t.expect(invoked).toBe(1)
+		t.expect(node.Size.Y.Offset).toBe(0)
+		t.expect(detector.Enabled).toBe(false)
+		open:set("trailing")
+		t.expect(node.Size.Y.Offset).toBe(44)
+		t.expect(detector.Enabled).toBe(true)
+		t.expect(node:FindFirstChild("trailing").Visible).toBe(true)
+		node:FindFirstChild("Delete", true).Activated.fire()
+		t.expect(invoked).toBe(2)
+		stop()
+		runtime.dispose()
+	end)
+
 	t.it("respects edge full-swipe policy, edit affordances and focused destructive input", function()
 		local engine, runtime, UI, target, gui = setup()
 		local editing, open = Compose.cell(false), Compose.cell(nil)

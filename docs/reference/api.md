@@ -516,6 +516,10 @@ A shared `coordinator` cell lets only one row be open.
 Native swipe, context, and keyboard and gamepad actions reach the same
 commands. A destructive action runs exactly once, after its Compose departure
 animation. If the owner is removed, an unfinished departure is cancelled.
+The owner usually removes the row in its data. To keep the row, for example
+when the server refuses the delete, set `open` to an edge. The row then
+restores and accepts input again. A full swipe commits or opens a tray only
+after the row has a measured width.
 `reducedMotion`, `enabled` and `editing` stay explicit control options.
 
 ## Media and status
