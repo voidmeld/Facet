@@ -95,7 +95,7 @@ def generate(definitions, schema):
     insert_at = result.index('export type Attributes = { [string]: Value<AttributeValue?> }') + 1
     result[insert_at:insert_at] = shared_lines
     datatypes = 'UDim UDim2 Vector2 Vector3 Color3 CFrame Enum Font Rect ColorSequence ColorSequenceKeypoint NumberSequence NumberSequenceKeypoint NumberRange Path2DControlPoint FloatCurveKey TweenInfo'.split()
-    result += ['export type RobloxTypes = {', *[f'\t{name}: typeof({name}),' for name in datatypes], '}', '']
+    result += ['export type RobloxTypes = {', *[f'\t{name}: typeof({name}),' for name in datatypes], '\tBrickColor: typeof(BrickColor)?,', '}', '']
     observed = set('AbsoluteContentSize AbsolutePosition AbsoluteSize AbsoluteWindowSize CanvasPosition CurrentPage DisplayImage DisplayName Enabled FontFace GamepadEnabled GuiState Interactable KeyCode KeyboardEnabled MouseEnabled Parent Position PreferredBinding PreferredInput PreferredTransparency PrimaryModifier ReducedMotionEnabled SecondaryModifier SelectedObject Size Text TextBounds TextFits TextSize TextColor3 TextXAlignment TextYAlignment TextWrapped RichText TextScaled TextTruncate LineHeight TouchEnabled Visible'.split())
     observations = []
     observed_classes = set('GuiBase2d GuiObject GuiService UserInputService LayerCollector Instance InputAction InputBinding InputContext TextLabel TextBox TextButton ScrollingFrame UIGridStyleLayout UIPageLayout'.split())

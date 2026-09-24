@@ -123,6 +123,16 @@ local datePicker: GuiObject = UI.DateTimePicker({
 	end,
 	min = { year = 2026, month = 1, day = 1 },
 })
+local startPaint: Color3? = Color3.fromRGB(230, 57, 70)
+local paint: Facet.Cell<Color3?> = Compose.cell(startPaint)
+local colorProps: Facet.ColorPickerProps = {
+	label = "Kart paint",
+	value = paint,
+	onChange = function(next: Color3)
+		paint:set(next)
+	end,
+}
+local colorPicker: Frame = UI.ColorPicker(colorProps)
 local civilDay: Facet.CivilDate? = Facet.civilDate.parse("09/03/2026")
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
@@ -224,6 +234,7 @@ local mounted: { GuiObject } = {
 	card,
 	sealed,
 	datePicker,
+	colorPicker,
 	menu,
 	split,
 	picker,

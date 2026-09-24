@@ -114,6 +114,7 @@ controls(runtime).Callout : function
 controls(runtime).Card : function
 controls(runtime).Chip : function
 controls(runtime).CollapsibleView : function
+controls(runtime).ColorPicker : function
 controls(runtime).ComboBox : function
 controls(runtime).DateTimePicker : function
 controls(runtime).DisclosureGroup : function
@@ -173,6 +174,7 @@ type CivilLocale
 type CivilRange
 type CollapsibleViewSpec
 type CollectionSpec
+type ColorPickerProps
 type ComboBoxSpec
 type ComposeModule
 type ComposeRobloxModule

@@ -29,6 +29,7 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			Path2DControlPoint = Path2DControlPoint,
 			FloatCurveKey = FloatCurveKey,
 			TweenInfo = TweenInfo,
+			BrickColor = BrickColor,
 		}
 	assert(types.UDim2 and types.Enum, "Facet.controls requires Roblox datatypes")
 	local services: Shared.Services = table.clone(config.services or {})

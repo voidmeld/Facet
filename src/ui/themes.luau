@@ -767,6 +767,8 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-segmented-utility", { BackgroundTransparency = 1 })
 	rule(".facet-card-option::UIStroke", { Color = c("hairline"), Thickness = 1 })
 	rule(".facet-step-circle::UIStroke", { Color = c("contentSecondary"), Thickness = 1 })
+	rule(".facet-color-picker", { BackgroundTransparency = 1 })
+	rule(".facet-color-swatch::UIStroke", { Color = c("hairline"), Transparency = 0, Thickness = 1 })
 	for _, member in { ".facet-avatar", ".facet-button" } do
 		rule(".facet-avatar-stack > " .. member .. "::UIStroke", {
 			Color = c("surface"),

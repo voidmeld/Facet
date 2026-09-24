@@ -7,6 +7,7 @@ local Media = require("./media_types")
 local Dates = require("./date_time_picker_types")
 local Content = require("./content_types")
 local Layout = require("./layout_types")
+local Colors = require("./color_picker_types")
 
 export type Controls = {
 	Screen: typeof(((nil :: unknown) :: Layout.LayoutControls).Screen),
@@ -58,6 +59,7 @@ export type Controls = {
 	Vote: typeof(((nil :: unknown) :: Content.ContentControls).Vote),
 	Card: typeof(((nil :: unknown) :: Content.ContentControls).Card),
 	badged: typeof(((nil :: unknown) :: Content.ContentControls).badged),
+	ColorPicker: typeof(((nil :: unknown) :: Colors.ColorPickerControls).ColorPicker),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

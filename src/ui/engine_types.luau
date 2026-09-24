@@ -751,6 +751,7 @@ export type RobloxTypes = {
 	Path2DControlPoint: typeof(Path2DControlPoint),
 	FloatCurveKey: typeof(FloatCurveKey),
 	TweenInfo: typeof(TweenInfo),
+	BrickColor: typeof(BrickColor)?,
 }
 
 export type Observe =

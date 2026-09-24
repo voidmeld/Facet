@@ -21,6 +21,7 @@ return function(Compose: Types.ComposeModule, runtime: Types.Runtime, options: T
 	require("@self/vote")(ctx, UI)
 	require("@self/card")(ctx, UI)
 	require("@self/badge_seal")(ctx, UI)
+	require("@self/color_picker")(ctx, UI, surfaces)
 	table.freeze(UI)
 	return UI
 end
