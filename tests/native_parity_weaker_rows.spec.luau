@@ -1605,7 +1605,7 @@ t.describe("native parity weaker rows", function()
 		world.stop()
 	end)
 
-	t.it("apps2-265 grows the reply progress, swipes a message away and clears from Send's split menu", function()
+	t.it("apps2-265 grows the streamed reply, swipes a message away and clears from the conversation menu", function()
 		local engine: any = engineLib.new()
 		local runtime = Facet.Roblox.createRuntime(engine)
 		local target = engine.new("ScreenGui")
@@ -1626,25 +1626,28 @@ t.describe("native parity weaker rows", function()
 				reducedMotion = true,
 			})
 			local _, chat = runtime.mount(views.Chat, target)
-			local send = find(find(chat, "Send"), "Primary")
+			local send = find(chat, "Send")
 			model.chat.draft:set("What game should I play with friends?")
 			send.Activated.fire()
 			t.expect(model.chat.streaming:peek()).toBe(true)
-			local fill = find(find(chat, "ReplyProgress"), "Fill1")
-			local previous = fill.Size.X.Scale
+			find(chat, "Messages").AbsoluteWindowSize = engine.types.Vector2.new(850, 300)
+			local reply = find(find(chat, "Message_2"), "Message")
+			t.expect(find(find(chat, "Message_2"), "Thinking") ~= nil).toBe(true)
+			local previous = 0
 			local grew = 0
 			for _ = 1, 6 do
 				model.step(0.1, true)
-				local fraction = model.chat.streamedChars:peek() / math.max(1, model.chat.totalChars:peek())
-				t.expect(fill.Size.X.Scale).toBeCloseTo(fraction, 0.0001)
-				t.expect(fill.Size.X.Scale >= previous).toBe(true)
-				if fill.Size.X.Scale > previous then
+				local shown = utf8.len(reply.Text) or #reply.Text
+				t.expect(#reply.Text).toBe(model.chat.streamedChars:peek())
+				t.expect(shown >= previous).toBe(true)
+				if shown > previous then
 					grew += 1
 				end
-				previous = fill.Size.X.Scale
+				previous = shown
 			end
 			t.expect(grew > 1).toBe(true)
-			t.expect(previous < 1).toBe(true)
+			t.expect(model.chat.streamedChars:peek() < model.chat.totalChars:peek()).toBe(true)
+			t.expect(find(find(chat, "Message_2"), "Thinking")).toBe(nil)
 			send.Activated.fire()
 			t.expect(model.chat.streaming:peek()).toBe(false)
 			find(chat, "Messages").AbsoluteWindowSize = engine.types.Vector2.new(850, 300)
@@ -1657,9 +1660,9 @@ t.describe("native parity weaker rows", function()
 			detector.DragEnd.fire()
 			t.expect(#model.chat.messages:peek()).toBe(1)
 			t.expect(model.chat.messages:peek()[1].role).toBe("user")
-			find(find(find(chat, "Send"), "Alternatives"), "Trigger").Activated.fire()
+			find(chat, "ConversationMenu").Activated.fire()
 			local panel = find(target, "MenuPanel")
-			t.expect(find(panel, "Fresh") ~= nil).toBe(true)
+			t.expect(find(panel, "Suggest") ~= nil).toBe(true)
 			local clear = find(panel, "Clear")
 			t.expect(clear:GetAttribute("role")).toBe("destructive")
 			clear.Activated.fire()
