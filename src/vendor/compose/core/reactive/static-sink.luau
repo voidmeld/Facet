@@ -115,7 +115,9 @@ local function run(scheduled: Scheduled)
 	if self.state == CHECK then
 		local refresh = producer.refresh
 		if refresh then
+			self.retry = true
 			(refresh :: (Graph.Producer) -> ())(producer)
+			self.retry = false
 		end
 		if producer.version == edge[OBSERVED] then
 			self.state = CLEAN

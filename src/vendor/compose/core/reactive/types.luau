@@ -13,7 +13,8 @@ export type Cell<T> = Readable<T> & {
 	update: (self: Cell<T>, change: (previous: T) -> T) -> (),
 }
 
-export type Formula<T> = Readable<T> & {
+export type Formula<T> = {
+	peek: (self: Formula<T> | any) -> T,
 	dispose: (self: Formula<T>) -> (),
 }
 
