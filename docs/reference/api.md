@@ -372,9 +372,11 @@ sheet calls the factory without arguments. Its subtree fills the available body
 region. The body uses a native vertical ScrollingFrame. Thus content taller
 than the selected detent stays reachable, and the sheet chrome stays fixed.
 
-Native drag detection resizes the sheet between the declared detents.
-`interactiveDismissDisabled` blocks gesture dismissal. The explicit Close
-action stays available.
+Native drag detection resizes the sheet between the declared detents. The
+grabber is also a selectable `Resize` button that moves to the next detent, for
+touch taps, the mouse and the gamepad. The header shows the title and a `Done`
+action named `Close`. `interactiveDismissDisabled` blocks gesture dismissal.
+The Done action stays available.
 
 ### DisclosureGroup and CollapsibleView
 

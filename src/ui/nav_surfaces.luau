@@ -755,34 +755,55 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 					end,
 				})
-				local resizeOptions: { Nav.PickerOption<string> } = {}
-				for _, detent in detents do
-					table.insert(resizeOptions, { value = detent.id, label = detent.id })
+				local function cycle()
+					local index = 1
+					for position, detent in detents do
+						if detent.id == spec.detent:peek() then
+							index = position
+						end
+					end
+					spec.detent:set(detents[index % #detents + 1].id)
 				end
 				local panel = ctx.column({
 					Host.Frame "DragHandle" {
 						BackgroundTransparency = 1,
-						Size = D2.new(1, 0, 0, 24),
+						Size = D2.new(1, 0, 0, 20),
 						Visible = spec.dragIndicator ~= "hidden",
 						detector :: Instance,
+						Host.TextButton "Grabber" {
+							AnchorPoint = V2.new(0.5, 0.5),
+							Position = D2.fromScale(0.5, 0.5),
+							Size = D2.fromOffset(64, 20),
+							BackgroundTransparency = 1,
+							Text = "",
+							AutoButtonColor = false,
+							Selectable = #detents > 1,
+							Activated = cycle,
+							ctx.styled(
+								Host.Frame "Pill" {
+									AnchorPoint = V2.new(0.5, 0.5),
+									Position = D2.fromScale(0.5, 0.5),
+									Size = D2.fromOffset(36, 5),
+									BorderSizePixel = 0,
+									Host.UICorner({ CornerRadius = ctx.types.UDim.new(1, 0) }),
+								},
+								"grabber"
+							) :: Types.Child,
+						},
+					},
+					ctx.row({
 						ctx.styled(
-							Host.Frame "Grabber" {
-								AnchorPoint = V2.new(0.5, 0.5),
-								Position = D2.fromScale(0.5, 0.5),
-								Size = D2.fromOffset(36, 5),
-								BorderSizePixel = 0,
-								Host.UICorner({ CornerRadius = ctx.types.UDim.new(1, 0) }),
-							},
-							"grabber"
+							ctx.text({
+								Name = "Title",
+								Text = spec.title,
+								Size = D2.fromOffset(0, 0),
+								AutomaticSize = E.AutomaticSize.XY,
+								Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+							}),
+							"type-heading"
 						),
-					},
-					ctx.styled(ctx.text({ Name = "Title", Text = spec.title }), "type-heading"),
-					UI.Picker "Size" {
-						selected = spec.detent,
-						options = resizeOptions,
-						multiple = false :: false,
-						style = "segmented" :: "segmented",
-					},
+						UI.Button "Close" { label = "Done", appearance = "link", onActivate = close },
+					}, { Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }),
 					Host.ScrollingFrame "SheetContent" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
@@ -795,7 +816,6 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 						body(spec.content, nil),
 					},
-					UI.Button "Close" { label = "Close", onActivate = close, Size = D2.new(1, 0, 0, 44) },
 					ctx.padding(16, 12),
 					ctx.corner(),
 				}, {
@@ -812,6 +832,15 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							else D2.new(1, 0, 0, height)
 					end,
 				})
+				local header = panel:FindFirstChild("Header")
+				local headerLayout = if header then header:FindFirstChildWhichIsA("UIListLayout") else nil
+				if headerLayout then
+					headerLayout.VerticalAlignment = E.VerticalAlignment.Center
+				end
+				local grabber = panel:FindFirstChild("Grabber", true)
+				if grabber then
+					grabber:SetAttribute("AccessibleLabel", "Resize")
+				end
 				ctx.styled(panel, "sheet")
 				surfaces.skin(panel)
 				local overlay = surfaces.modal(

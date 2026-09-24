@@ -216,27 +216,23 @@ function screen.build(ctx: any)
 							screen.setTheme(ctx, name)
 						end,
 					}),
-					UI.Picker({
-						LayoutOrder = 2,
-						Name = "Mode",
-						label = "Appearance",
-						selected = ctx.themeMode,
-						options = function(use)
-							local choices = {}
-							for _, palette in use(ctx.theme).style.themes do
-								table.insert(choices, { value = palette.name, label = palette.name })
-							end
-							return choices
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 9,
-						Name = "Close",
-						label = "Done",
-						onActivate = function()
-							settingsOpen:set(false)
-						end,
-					}),
+					Compose.show(function(use)
+						return #use(ctx.theme).style.themes > 1
+					end, function()
+						return UI.Picker({
+							LayoutOrder = 2,
+							Name = "Mode",
+							label = "Appearance",
+							selected = ctx.themeMode,
+							options = function(use)
+								local choices = {}
+								for _, palette in use(ctx.theme).style.themes do
+									table.insert(choices, { value = palette.name, label = palette.name })
+								end
+								return choices
+							end,
+						})
+					end),
 					UI.Picker({
 						LayoutOrder = 3,
 						Name = "Motion",
@@ -252,6 +248,7 @@ function screen.build(ctx: any)
 						LayoutOrder = 4,
 						Name = "MotionNote",
 						Text = "Reduced removes decorative travel while progress keeps running. Roblox's reduced-motion preference remains in effect.",
+						textRole = "caption",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -261,6 +258,7 @@ function screen.build(ctx: any)
 						LayoutOrder = 5,
 						Name = "FollowRobloxMotion",
 						label = "Use Roblox motion preference",
+						appearance = "link",
 						onActivate = function()
 							ctx.motionPreference:set(nil)
 						end,
@@ -279,6 +277,7 @@ function screen.build(ctx: any)
 					UI.Label({
 						LayoutOrder = 7,
 						Text = "Distant TV previews larger controls at 150% scale. Automatic and Near use normal scale; Roblox text and accessibility preferences still apply.",
+						textRole = "caption",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -287,6 +286,7 @@ function screen.build(ctx: any)
 						LayoutOrder = 8,
 						Name = "NativePreview",
 						Text = "In Studio, use Device Emulator for screen size, orientation and touch, and Controller Emulator for gamepad. Roblox Settings controls text size and accessibility preferences.",
+						textRole = "caption",
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,

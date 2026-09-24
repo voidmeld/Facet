@@ -1096,11 +1096,11 @@ t.describe("native navigation controls", function()
 	end)
 
 	t.it("keeps sheet content in a native flex remainder and explicit close operable", function()
-		local presented = Compose.cell(true)
+		local presented, detent = Compose.cell(true), Compose.cell("medium")
 		local world = setup(function(UI, Host)
 			return UI.Sheet({
 				isPresented = presented,
-				detent = Compose.cell("medium"),
+				detent = detent,
 				title = "Details",
 				interactiveDismissDisabled = true,
 				content = function()
@@ -1114,6 +1114,15 @@ t.describe("native navigation controls", function()
 		t.expect(body.AutomaticCanvasSize).toBe(world.engine.types.Enum.AutomaticSize.Y)
 		t.expect(find(find(world.screen, "SheetContent"), "UIFlexItem").FlexMode)
 			.toBe(world.engine.types.Enum.UIFlexMode.Fill)
+		t.expect(find(world.screen, "Size")).toBe(nil)
+		t.expect(find(world.screen, "Close").Parent.Name).toBe("Header")
+		local grabber = find(world.screen, "Grabber")
+		t.expect(grabber:GetAttribute("AccessibleLabel")).toBe("Resize")
+		t.expect(grabber.Selectable).toBe(true)
+		grabber.Activated.fire()
+		t.expect(detent:peek()).toBe("large")
+		grabber.Activated.fire()
+		t.expect(detent:peek()).toBe("medium")
 		find(world.screen, "Close").Activated.fire()
 		t.expect(presented:peek()).toBe(false)
 		world.stop()
