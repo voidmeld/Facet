@@ -160,8 +160,8 @@ function screen.build(ctx: any)
 		table.insert(tabs, { id = demo.id, label = demo.title, content = branches[demo.id] })
 	end
 	local themes = {}
-	for name in ctx.packages do
-		table.insert(themes, { value = name, label = name })
+	for name, package in ctx.packages do
+		table.insert(themes, { value = name, label = package.identity and package.identity.displayName or name })
 	end
 	table.sort(themes, function(a, b)
 		return if a.value == "Neutral" then true elseif b.value == "Neutral" then false else a.label < b.label

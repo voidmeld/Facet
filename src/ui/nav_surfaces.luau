@@ -407,6 +407,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							)
 						)
 					end,
+					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
 					contentRoot,
 				}
 				local layout: GuiObject
@@ -819,6 +820,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						Size = D2.new(1, 0, 0, 0),
 						ClipsDescendants = true,
 						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+						Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
 						body(spec.content, nil),
 					},
 					ctx.padding(16, 12),
