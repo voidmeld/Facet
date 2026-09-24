@@ -126,9 +126,12 @@ return {
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					UI.Button "Select" {
-						label = function(use)
-							return `{use(current).name} · {use(current).price} credits`
-						end,
+						row = {
+							title = function(use)
+								return use(current).name
+							end,
+							value = `{current:peek().price} credits`,
+						},
 						onActivate = function()
 							selected:set(current:peek().id)
 						end,
