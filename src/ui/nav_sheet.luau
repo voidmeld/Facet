@@ -435,7 +435,6 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end)
 		local handle = Host.Frame({
 			Name = "DragHandle",
-			Selectable = false,
 			BackgroundTransparency = 1,
 			Size = D2.new(1, 0, 0, HANDLE),
 			Visible = indicator ~= "hidden",

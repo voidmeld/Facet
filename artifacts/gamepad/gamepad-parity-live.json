@@ -114,9 +114,9 @@
    "route": "A on Settings",
    "main": "entry on the first control",
    "prBefore": "entry on Grabber then a second stop on DragHandle",
-   "prAfter": "DragHandle is not selectable; Grabber remains the size control stop (main landed on its Size control too)",
-   "verdict": "extra stop removed",
-   "fix": "nav_sheet DragHandle Selectable false"
+   "prAfter": "unchanged: Grabber, then DragHandle. The UIDragDetector on DragHandle makes the engine select it for gamepad drag even with Selectable false.",
+   "verdict": "engine-owned stop (UIDragDetector gamepad drag); main also entered the sheet on its size control",
+   "fix": "none"
   },
   {
    "screen": "Virtual Monitors > Discover grid",
