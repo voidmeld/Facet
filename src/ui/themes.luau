@@ -589,6 +589,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	})
 	rule(".facet-accent >> .facet-button-caption", { TextColor3 = c("onAccent") })
 	rule(".facet-disabled >> .facet-button-caption", { TextTransparency = extra.disabledContentOpacity })
+	rule(".facet-disabled >> .facet-text", { TextTransparency = extra.disabledContentOpacity })
 	rule(".facet-skin-caption >> .facet-button-caption", { TextTransparency = 1 })
 	rule(".facet-skin-caption-text", {
 		TextTransparency = 0,
@@ -605,10 +606,12 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-role-destructive >> .facet-button-caption", { TextColor3 = c("onDanger") })
 	rule(".facet-role-cancel >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(".facet-role-onIndicator >> .facet-button-caption", { TextColor3 = c("onAccent") })
+	rule(".facet-role-destructive >> .facet-text", { TextColor3 = c("onDanger") })
 	local onSelected = c("onSelected") or c("content")
 	rule(".facet-selected", { BackgroundColor3 = c("controlSelected"), TextColor3 = onSelected })
 	rule(".facet-selected >> .facet-text", { TextColor3 = onSelected })
 	rule(".facet-disabled", { TextTransparency = extra.disabledContentOpacity })
+	rule(".facet-disabled >> .facet-icon", { ImageTransparency = extra.disabledContentOpacity })
 	rule(".facet-accent", { BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") })
 	rule(".facet-fill", { BackgroundColor3 = c("accent"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	rule(".facet-level-segment", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
@@ -617,6 +620,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-progress-ring-fill", { Color3 = c("accent") })
 	rule(".facet-path", { Color3 = c("accent") })
 	rule(".facet-icon", { ImageColor3 = c("content"), BackgroundTransparency = 1 })
+	rule(".facet-role-destructive >> .facet-icon", { ImageColor3 = c("onDanger") })
 	rule(".facet-selected >> .facet-icon", { ImageColor3 = onSelected })
 	rule(
 		".facet-divider",
@@ -717,6 +721,9 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-appearance-link:Press", { BackgroundTransparency = 1, TextTransparency = 0.3 })
 	rule(".facet-appearance-link >> .facet-button-caption", { TextColor3 = c("accent") })
 	rule(".facet-appearance-link >> .facet-icon", { ImageColor3 = c("accent") })
+	rule(".facet-appearance-link:Press >> .facet-button-caption", { TextTransparency = 0.3 })
+	rule(".facet-appearance-link:Press >> .facet-text", { TextTransparency = 0.3 })
+	rule(".facet-appearance-link:Press >> .facet-icon", { ImageTransparency = 0.3 })
 	rule(
 		".facet-appearance-link::UIPadding",
 		{ PaddingLeft = types.UDim.new(0, 0), PaddingRight = types.UDim.new(0, 0) }
@@ -740,12 +747,15 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-quiet-destructive", { TextColor3 = c("danger") })
 	rule(".facet-quiet-destructive:Hover", { TextColor3 = c("danger") })
 	rule(".facet-quiet-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
+	rule(".facet-quiet-destructive >> .facet-icon", { ImageColor3 = c("danger") })
 	rule(".facet-tab-item", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item:Hover", { BackgroundTransparency = 1, TextColor3 = c("content") })
 	rule(".facet-tab-item:Hover >> .facet-button-caption", { TextColor3 = c("content") })
 	rule(".facet-tab-current", { TextColor3 = c("content") })
 	rule(".facet-tab-current >> .facet-button-caption", { TextColor3 = c("content") })
+	rule(".facet-tab-item.facet-selected", { BackgroundTransparency = 0, TextColor3 = onSelected })
+	rule(".facet-tab-item.facet-selected >> .facet-button-caption", { TextColor3 = onSelected })
 	rule(
 		".facet-tab-filled",
 		{ BackgroundTransparency = 0, BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") }
@@ -788,14 +798,17 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-segment-current >> .facet-button-caption", { TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-menu-destructive >> .facet-text", { TextColor3 = c("danger") })
-	rule(".facet-quiet-destructive >> .facet-text", { TextColor3 = c("danger") })
 	rule(".facet-appearance-soft >> .facet-text", { TextColor3 = c("accent") })
 	rule(".facet-appearance-link >> .facet-text", { TextColor3 = c("accent") })
+	rule(".facet-quiet-destructive >> .facet-text", { TextColor3 = c("danger") })
 	rule(".facet-choice-current >> .facet-text", { TextColor3 = c("accent") })
 	rule(".facet-tab-filled >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-accent >> .facet-text", { TextColor3 = c("onAccent") })
+	rule(".facet-accent >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-skinned", { BackgroundTransparency = 1 })
+	rule(".facet-toggle-checkbox.facet-skinned::UIStroke", { Transparency = 1 })
+	rule(".facet-menu.facet-skinned::UIStroke", { Transparency = 1 })
 	for _, definition in (package.rules or {}) :: { ThemeTypes.Rule } do
 		rule(definition.selector, table.clone(definition.properties or definition.props or {}))
 	end
