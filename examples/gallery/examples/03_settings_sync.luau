@@ -53,11 +53,11 @@ function example.build(ctx: any)
 		status:set("idle")
 		history:set({ "Reset. Nothing sent yet." })
 	end
-	local function text(name, value, size)
+	local function text(name, value, role)
 		return UI.Label({
 			Name = name,
 			Text = value,
-			TextSize = size or 16,
+			textRole = role,
 			TextWrapped = true,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Size = UDim2.new(1, 0, 0, 0),
@@ -78,8 +78,12 @@ function example.build(ctx: any)
 					PaddingTop = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				text("Title", "Settings sync", 28),
-				text("Explanation", "Send a change, inspect the optimistic draft, then deliver the server reply."),
+				text("Title", "Settings sync", "title"),
+				text(
+					"Explanation",
+					"Send a change, inspect the optimistic draft, then deliver the server reply.",
+					"caption"
+				),
 				text("Draft", function(use)
 					local value = use(draft)
 					return `What you see now: music {if value.music then "on" else "off"}, volume {value.volume}`
@@ -90,6 +94,8 @@ function example.build(ctx: any)
 				end),
 				UI.Toggle "Music" {
 					label = "Music",
+					indicatorPosition = "trailing",
+					Size = UDim2.new(1, 0, 0, 44),
 					value = function(use)
 						return use(draft).music
 					end,
@@ -114,12 +120,12 @@ function example.build(ctx: any)
 						request(draft:peek().music, 99)
 					end,
 				},
-				UI.Button "Deliver" { label = "Deliver server reply", onActivate = deliver },
-				UI.Button "Reset" { label = "Reset demo", onActivate = reset },
-				text("Status", status),
+				UI.Button "Deliver" { label = "Deliver server reply", appearance = "emphasis", onActivate = deliver },
+				UI.Button "Reset" { label = "Reset demo", appearance = "link", onActivate = reset },
+				text("Status", status, "caption"),
 				text("History", function(use)
 					return table.concat(use(history), "\n")
-				end),
+				end, "caption"),
 			}
 		end,
 		request = request,

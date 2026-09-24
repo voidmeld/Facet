@@ -961,10 +961,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						local package = read(ctx.config.theme, use)
 						local skin = package and package.chrome and package.chrome.control
 						local insets: ThemeTypes.Insets = if skin then skin.contentInsets or {} else {}
-						local base = if side == "left" or side == "right"
-							then ctx.controlSize(spec.controlSize, "paddingX", use)
-							else 0
-						local offset = math.max(base, insets[side] or 0)
+						local offset = insets[side] or 0
 						if (trailing and side == "right") or (not trailing and side == "left") then
 							offset += reserve
 						end

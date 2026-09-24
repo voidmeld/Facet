@@ -661,8 +661,9 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		PaddingRight = types.UDim.new(0, 8),
 	})
 	rule(".facet-toggle-row", { BackgroundTransparency = 1 })
-	rule(".facet-toggle-row:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
-	rule(".facet-toggle-row:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
+	rule(".facet-toggle-row:Hover", { BackgroundTransparency = 1 })
+	rule(".facet-toggle-row:Press", { BackgroundTransparency = 1 })
+	rule(".facet-toggle-row::UIPadding", { PaddingLeft = types.UDim.new(0, 0), PaddingRight = types.UDim.new(0, 0) })
 	rule(".facet-toggle-indicator", { BackgroundColor3 = c("control"), BackgroundTransparency = 0 })
 	rule(".facet-toggle-on", { BackgroundColor3 = c("accent") })
 	rule(".facet-toggle-switch >> .facet-toggle-mark", { BackgroundColor3 = c("onAccent") })
