@@ -31,6 +31,20 @@ return {
 		local tagCoastal, tagForest, tagSnow = signal(true), signal(false), signal(false)
 		local comboValue = signal("road")
 		local comboText = signal("Road")
+		local driver = signal("d3")
+		local driverError = signal("")
+		local mode = signal("sprint")
+		local laps = signal("5")
+		local DRIVERS = {}
+		for i, name in { "Ada", "Bo", "Cy", "Dee", "Eli", "Fay", "Gus", "Hal", "Ivy", "Jo", "Kai", "Lu" } do
+			table.insert(DRIVERS, {
+				value = "d" .. i,
+				label = name,
+				avatar = { name = name },
+				badge = if i == 2 then 3 else nil,
+				sectionTitle = if i == 1 then "Crew" elseif i == 5 then "Rivals" else nil,
+			})
+		end
 		local tracks = {}
 		for i = 1, 250 do
 			table.insert(tracks, {
@@ -151,6 +165,55 @@ return {
 			tagSnow:set(false)
 			comboValue:set("road")
 			comboText:set("Road")
+			driver:set("d3")
+			driverError:set("")
+			mode:set("sprint")
+			laps:set("5")
+		end
+		local function driverField()
+			return UI.Picker "Driver" {
+				label = "Driver",
+				requiredMark = "required",
+				hint = "Who takes the wheel for this race.",
+				errorText = driverError,
+				style = "menu",
+				maxHeight = 220,
+				selected = driver,
+				options = DRIVERS,
+				enabled = enabled,
+			}
+		end
+		local function cards()
+			return UI.Picker "Mode" {
+				label = "Race mode",
+				style = "cards",
+				axis = "x",
+				required = false,
+				selected = mode,
+				options = {
+					{ value = "sprint", label = "Sprint", description = "Three short laps", meta = "3 laps" },
+					{ value = "endurance", label = "Endurance", description = "A long race", meta = "20 laps" },
+					{
+						value = "night",
+						label = "Night",
+						description = "Unlocks at level 10",
+						meta = "Soon",
+						enabled = false,
+					},
+				},
+				enabled = enabled,
+			}
+		end
+		local function lapStrip()
+			return UI.Picker "Laps" {
+				style = "segmented",
+				appearance = "stroke",
+				corners = "pill",
+				controlSize = "compact",
+				selected = laps,
+				options = { { value = "3", label = "3" }, { value = "5", label = "5" }, { value = "10", label = "10" } },
+				enabled = enabled,
+			}
 		end
 		local function heading(text)
 			return UI.Label({
@@ -211,6 +274,13 @@ return {
 				checkbox(),
 				caption("CapToggle", "Toggle · button presentation"),
 				toggle(),
+				heading("Pick a driver and a race"),
+				caption("CapDriver", "Picker · menu field (required, hint or error, avatars, sections, maxHeight)"),
+				driverField(),
+				caption("CapMode", "Picker · cards (choose again to clear)"),
+				cards(),
+				caption("CapLaps", "Picker · segmented, stroke, pill, compact"),
+				lapStrip(),
 				heading("Choose a race group"),
 				caption("CapRadio", "Picker · radioGroup"),
 				radio(),
@@ -266,6 +336,10 @@ return {
 				no_results = function()
 					query:set("unlisted")
 				end,
+				driverError = function()
+					driverError:set(if driverError:peek() == "" then "Pick a driver to continue." else "")
+					return { error = driverError:peek() }
+				end,
 				replace_options = function()
 					choices:set({
 						{ id = "open", value = "open", label = "Public races" },
@@ -282,6 +356,10 @@ return {
 					query = query:peek(),
 					tags = { coastal = tagCoastal:peek(), forest = tagForest:peek(), snow = tagSnow:peek() },
 					vehicle = comboValue:peek(),
+					driver = driver:peek(),
+					driverError = driverError:peek(),
+					mode = mode:peek(),
+					laps = laps:peek(),
 				}
 			end,
 

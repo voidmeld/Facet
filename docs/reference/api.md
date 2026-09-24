@@ -475,7 +475,8 @@ Picker requires a writable `selected` and `options`. Each option has `value` and
 array or a readable.
 
 The styles are `automatic`, `segmented`, `inline`, `radioGroup`,
-`navigationLink` and `menu`. The `automatic` style follows the options, the
+`navigationLink`, `menu` and `cards`. The `automatic` style never chooses
+`cards`. The `automatic` style follows the options, the
 measured width and the native PreferredInput:
 
 - If you supply `query`, it uses the navigation-link presentation.
@@ -494,6 +495,43 @@ edge of the row and the value on the trailing edge.
 writes `selected`, and then calls `onChange(next)`. An optional writable `query`
 filters the labels. The other options include `label`, `placeholder`, `axis`,
 `sizing`, `iconOnly`, `textSize`, `isPresented` and `enabled`.
+
+Picker is a field. These options apply:
+
+- `requiredMark`, `hint` and `errorText`: as on [TextInput](#field-chrome). The
+  message line shows under the picker in each style. An error adds the
+  `facet-invalid` tag to a menu trigger. The picker does not move.
+- `controlSize`: the height of the menu trigger, the segments and the rows.
+- `appearance`: for `menu` and `navigationLink`, `standard`, `contrast` (the
+  emphasis plate) or `utility`. For `segmented`, `filled` (the default plate),
+  `stroke` (the `facet-segmented-stroke` tag) or `utility` (no plate).
+  `automatic` takes all five words and maps them onto the style on screen.
+  `inline`, `radioGroup` and `cards` refuse `appearance`. A readable word that
+  is not in the family causes an error, and the last correct paint stays.
+- `corners`: `pill` or `square`, on the menu trigger or the segmented strip.
+- `maxHeight`: for `menu`, `navigationLink` and `automatic`, a finite number of
+  pixels above zero. It caps the open panel. The panel always shows one row.
+- `indicatorPosition`: for `radioGroup` only, `leading` (the default) or
+  `trailing`. It puts the radio mark on that edge of each row.
+
+A labelled `menu` picker shows its title above a trigger at the leading edge.
+A labelled `navigationLink` shows the title and the chosen value in one row
+button. A searchable list marks the chosen row with a check and paints no
+selection plate. Opening a menu puts the selection on the chosen row.
+
+The `cards` style shows each option as a card with the `facet-card-option`
+tag: the icon, the label, the description, `meta` and `badge`. The chosen card
+has the emphasis plate. With `axis = "x"`, the cards wrap onto more lines.
+With `required = false`, activating the chosen card again sets `selected` to
+`nil`.
+
+Options also take `meta` (secondary text), `sectionTitle` (a caption heading
+above the option in menus and in stacked rows), `avatar = { name, image?,
+userId? }` (an Avatar at the leading edge of a menu row, which adds no stop)
+and `indicator = { status, form?, count? }` (a StatusIndicator that follows
+the live option record). A menu row also shows `badge` as a `Badge` with a
+`Count`. Menu items take the same `badge`, `meta`, `avatar` and `sectionTitle`
+fields, and Menu takes `maxHeight`.
 
 ### ComboBox
 

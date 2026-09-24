@@ -10,6 +10,9 @@ local function scenario(name: string): any
 	local runtime = Facet.Roblox.createRuntime(engine)
 	local guiService = engine.new("GuiService")
 	local input = engine.new("UserInputService")
+	input.GetFocusedTextBox = function()
+		return nil
+	end
 	local ctx: any = {
 		Facet = Facet,
 		Compose = Compose,
@@ -31,7 +34,7 @@ local function scenario(name: string): any
 		),
 	}
 	local built: any
-	local target = engine.new("Folder")
+	local target = engine.new("ScreenGui")
 	local stop, node = runtime.mount(function()
 		built = require("../examples/gallery/scenarios/" .. name).build(ctx)
 		if built.dispose then
@@ -126,6 +129,37 @@ t.describe("native gallery pickers and fields", function()
 		expect(find(first, "Remove").Visible).toBe(true)
 		first.Activated.fire()
 		expect(s.built.report().tokenCount).toBe(2)
+		s.stop()
+	end)
+
+	t.it("the Choices tab shows the driver field, the race cards and the stroked lap strip", function()
+		local s = scenario("selection_controls")
+		local driver = find(s.node, "Driver")
+		expect(find(driver, "Label").Text).toBe("Driver *")
+		expect(find(driver, "Validation").Text).toBe("Who takes the wheel for this race.")
+		expect(s.built.steps.driverError().error).toBe("Pick a driver to continue.")
+		expect(find(driver, "Validation").Text).toBe("Pick a driver to continue.")
+		expect(find(driver, "MessageMark").Visible).toBe(true)
+		expect(find(driver, "Trigger").Text).toBe("Cy")
+		local mode = find(s.node, "Mode")
+		find(mode, "Card-sprint").Activated.fire()
+		expect(s.built.report().mode).toBeNil()
+		find(mode, "Card-endurance").Activated.fire()
+		expect(s.built.report().mode).toBe("endurance")
+		local laps = find(s.node, "Laps")
+		expect(laps:HasTag("facet-segmented-stroke")).toBe(true)
+		expect(find(laps, "Corners").CornerRadius.Scale).toBe(1)
+		find(laps, "10").Activated.fire()
+		expect(s.built.report().laps).toBe("10")
+		find(driver, "Trigger").Activated.fire()
+		local headings = {}
+		for _, node in s.target:GetDescendants() do
+			if node.Name == "SectionTitle" then
+				table.insert(headings, node.Text)
+			end
+		end
+		table.sort(headings)
+		expect(table.concat(headings, " ")).toBe("Crew Rivals")
 		s.stop()
 	end)
 end)

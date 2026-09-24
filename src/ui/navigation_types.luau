@@ -11,12 +11,22 @@ export type Placement = "automatic" | "topBar" | "sidebar" | "bottomBar" | "bott
 export type Transition = ComposeTypes.TweenOptions
 export type SourceTransition = { seconds: Value<number>?, ease: ComposeTypes.Easing?, source: Value<GuiObject?>? }
 export type MenuTrigger = "activate" | "secondary" | "longPress" | "keyboard" | "gamepad"
+export type OptionAvatar = { name: string, image: string?, userId: number? }
+export type OptionIndicator = {
+	status: Value<"neutral" | "info" | "success" | "warning" | "error" | "accent">?,
+	form: ("dot" | "ring" | "square" | "dash")?,
+	count: Value<number>?,
+}
 export type MenuItemBase = {
 	role: Value<"default" | "cancel" | "destructive" | "onIndicator">?,
 	id: string?,
 	label: Value<string>,
 	description: Value<string>?,
 	icon: Value<string>?,
+	badge: Value<string | number>?,
+	meta: Value<string>?,
+	avatar: OptionAvatar?,
+	sectionTitle: Value<string>?,
 	enabled: Value<boolean>?,
 	marked: Value<boolean>?,
 	dismiss: boolean?,
@@ -45,7 +55,7 @@ export type MenuAction<V = string> =
 		onChange: ((V) -> ())?,
 		onSelect: (() -> ())?,
 	})
-export type MenuItem<V = string> = { id: string?, divider: true } | MenuAction<V>
+export type MenuItem<V = string> = { id: string?, divider: true, title: Value<string>? } | MenuAction<V>
 export type MenuSpec<V = string> = Types.FrameProps & {
 	items: Value<{ MenuItem<V> }>,
 	query: ComposeTypes.Cell<string>?,
@@ -60,6 +70,7 @@ export type MenuSpec<V = string> = Types.FrameProps & {
 	onClose: (() -> ())?,
 	enabled: Value<boolean>?,
 	isPresented: ComposeTypes.Cell<boolean>?,
+	maxHeight: number?,
 }
 export type PickerOption<V = string> = {
 	id: string?,
@@ -68,9 +79,13 @@ export type PickerOption<V = string> = {
 	description: Value<string>?,
 	icon: Value<string>?,
 	badge: Value<string | number>?,
+	meta: Value<string>?,
+	avatar: OptionAvatar?,
+	sectionTitle: Value<string>?,
+	indicator: OptionIndicator?,
 	enabled: Value<boolean>?,
 }
-export type PickerStyle = "automatic" | "menu" | "navigationLink" | "segmented" | "inline" | "radioGroup"
+export type PickerStyle = "automatic" | "menu" | "navigationLink" | "segmented" | "inline" | "radioGroup" | "cards"
 export type PickerCommon<V> = Types.GuiObjectProps & {
 	Style: Value<Enum.FrameStyle>?,
 	options: Value<{ PickerOption<V> }>,
@@ -86,6 +101,14 @@ export type PickerCommon<V> = Types.GuiObjectProps & {
 	iconOnly: Value<boolean>?,
 	textSize: Value<number>?,
 	isPresented: ComposeTypes.Cell<boolean>?,
+	requiredMark: ("required" | "optional")?,
+	hint: Value<string>?,
+	errorText: Value<string>?,
+	controlSize: Value<Types.ControlSize>?,
+	appearance: Value<string>?,
+	corners: ("pill" | "square")?,
+	maxHeight: number?,
+	indicatorPosition: ("leading" | "trailing")?,
 }
 export type SinglePickerSpec<V = string> = PickerCommon<V> & {
 	multiple: false?,
