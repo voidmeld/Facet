@@ -17,11 +17,19 @@ local function find(node, name)
 	return nil
 end
 
-local function mount(name)
+local function mount(name, size)
 	local engine = engineLib.new()
 	local runtime = Facet.Roblox.createRuntime(engine)
 	local target, guiService = engine.new("Folder"), engine.new("GuiService")
-	local viewport = Compose.cell({ width = 1280, height = 720 })
+	local inputService = engine.new("UserInputService")
+	local keys = {}
+	inputService.GetFocusedTextBox = function()
+		return nil
+	end
+	inputService.IsKeyDown = function(_, code)
+		return keys[code.Name] == true
+	end
+	local viewport = Compose.cell(size or { width = 1280, height = 720 })
 	local ctx = {
 		Facet = Facet,
 		Compose = Compose,
@@ -35,20 +43,40 @@ local function mount(name)
 			types = engine.types,
 			viewport = viewport,
 			guiService = guiService,
-			services = { GuiService = guiService },
+			services = { GuiService = guiService, UserInputService = inputService },
 			inputParent = target,
 			reducedMotion = true,
 		}),
 	}
 	local built
+	local baseline = engine.census()
 	local stop, node = runtime.mount(function()
 		built = require("../examples/gallery/scenarios/" .. name).build(ctx)
 		return ctx.Host.ScreenGui({ built.screen() })
 	end, target)
-	return built, node, function()
-		stop()
-		runtime.dispose()
-	end, engine
+	return built,
+		node,
+		function()
+			stop()
+			runtime.dispose()
+		end,
+		engine,
+		{
+			gui = guiService,
+			keys = keys,
+			target = target,
+			baseline = baseline,
+			viewport = viewport,
+		}
+end
+
+local function action(root, name)
+	for _, child in root:GetChildren() do
+		if child:IsA("InputContext") and child.Name == "Facet" .. name and child.Enabled then
+			return child:FindFirstChild(name)
+		end
+	end
+	return nil
 end
 
 local function contains(node, value)
@@ -227,6 +255,27 @@ t.describe("native gallery collections", function()
 		end
 	end)
 
+	t.it("moves the collection toolbar beside the rows when the page is short and wide", function()
+		local _, node, stop, engine = mount("measured_extents")
+		local scroll = find(node, "ToolbarScroll")
+		local page = scroll.Parent
+		local layout = page:FindFirstChildWhichIsA("UIListLayout")
+		local collection = find(page, "Collection")
+		t.expect(layout.FillDirection).toBe(engine.types.Enum.FillDirection.Vertical)
+		page.AbsoluteSize = engine.types.Vector2.new(644, 213)
+		t.expect(layout.FillDirection).toBe(engine.types.Enum.FillDirection.Horizontal)
+		t.expect(math.abs(scroll.Size.X.Scale - 0.4) < 1e-6).toBe(true)
+		t.expect(scroll.Size.Y.Scale).toBe(1)
+		t.expect(scroll.AutomaticCanvasSize).toBe(engine.types.Enum.AutomaticSize.Y)
+		t.expect(collection.Size.Y.Scale).toBe(1)
+		page.AbsoluteSize = engine.types.Vector2.new(401, 560)
+		t.expect(layout.FillDirection).toBe(engine.types.Enum.FillDirection.Vertical)
+		t.expect(scroll.Size.X.Scale).toBe(1)
+		t.expect(scroll.AutomaticSize).toBe(engine.types.Enum.AutomaticSize.Y)
+		t.expect(collection.Size.X.Scale).toBe(1)
+		stop()
+	end)
+
 	t.it("renders three racing shelves with measured widths track art and native selection", function()
 		local built, node, stop, engine = mount("card_rail")
 		for _, name in { "Rail", "WeekendRail", "RecommendedRail" } do
@@ -247,6 +296,171 @@ t.describe("native gallery collections", function()
 		t.expect(built.report().rails.WeekendRail.itemExtent).toBe(360)
 		t.expect(contains(find(node, "Selected"), "Selected: Livery 001 · Rally")).toBe(true)
 		t.expect(built.report().shelves).toBe(3)
+		stop()
+	end)
+
+	t.it("opens the mail row menu with Shift+Return on a selected row and runs a chosen item", function()
+		local built, node, stop, engine, world = mount("row_actions")
+		local list = find(node, "Mail_list")
+		viewport(find(list, "Collection"), engine, 700, 240)
+		local row = find(list, "Row_m1")
+		row.AbsoluteSize = engine.types.Vector2.new(700, 112)
+		local content = find(row, "Item_m1")
+		world.gui.SelectedObject = content
+		t.expect(world.gui.SelectedObject).toBe(content)
+		t.expect(action(world.target, "RowActionsToggle")).toBeNil()
+		world.gui.SelectedObject = nil
+		world.keys.LeftShift = true
+		world.gui.SelectedObject = content
+		local toggle = action(world.target, "RowActionsToggle")
+		t.expect(toggle ~= nil).toBe(true)
+		t.expect(toggle:FindFirstChildWhichIsA("InputBinding").KeyCode).toBe(engine.types.Enum.KeyCode.Return)
+		t.expect(find(world.target, "MenuPanel")).toBeNil()
+		toggle.Pressed.fire()
+		local panel = find(world.target, "MenuPanel")
+		t.expect(panel ~= nil).toBe(true)
+		for _, id in { "leading:read", "trailing:delete", "trailing:flag" } do
+			t.expect(find(panel, id) ~= nil).toBe(true)
+		end
+		t.expect(contains(panel, "Mark read") and contains(panel, "Delete") and contains(panel, "Flag")).toBe(true)
+		t.expect(built.report().surfaces.list.read.m1).toBe(false)
+		t.expect(built.report().surfaces.list.count).toBe(6)
+		find(panel, "trailing:flag").Activated.fire()
+		t.expect(find(world.target, "MenuPanel")).toBeNil()
+		t.expect(built.report().surfaces.list.flagged.m1).toBe(true)
+		t.expect(built.report().surfaces.list.count).toBe(6)
+		stop()
+	end)
+
+	t.it("reaches the mail table edit minus by selection and swipes a table row open without reordering", function()
+		local built, node, stop, engine, world = mount("row_actions")
+		find(node, "table").Activated.fire()
+		local page = find(node, "Mail_table")
+		local tableNode, body = find(page, "Collection"), find(page, "Body")
+		tableNode.AbsoluteSize = engine.types.Vector2.new(800, 440)
+		viewport(body, engine, 800, 400)
+		t.expect(find(find(body, "m2"), "Row_m2"):FindFirstChild("Delete")).toBeNil()
+		find(page, "Edit").Activated.fire()
+		t.expect(built.report().surfaces.table.editing).toBe(true)
+		local minus = find(find(body, "m2"), "Row_m2"):FindFirstChild("Delete")
+		t.expect(minus ~= nil and minus:IsA("GuiButton")).toBe(true)
+		t.expect(contains(minus, "Delete")).toBe(true)
+		world.gui.SelectedObject = minus
+		t.expect(world.gui.SelectedObject).toBe(minus)
+		t.expect(table.find(engine.rejectedSelections, minus)).toBeNil()
+		local activate = action(world.target, "Activate")
+		t.expect(activate ~= nil).toBe(true)
+		activate.Pressed.fire()
+		t.expect(built.report().surfaces.table.count).toBe(5)
+		for _, item in built.report().surfaces.table.rows do
+			t.expect(item.id ~= "m2").toBe(true)
+		end
+		t.expect(find(body, "m2")).toBeNil()
+		find(page, "Edit").Activated.fire()
+		t.expect(built.report().surfaces.table.editing).toBe(false)
+		local order = {}
+		for index, item in built.report().surfaces.table.rows do
+			order[index] = item.id
+		end
+		local row = find(find(body, "m1"), "Row_m1")
+		t.expect(find(row, "trailing").Visible).toBe(false)
+		row.AbsoluteSize = engine.types.Vector2.new(800, 100)
+		local detector = row:FindFirstChildWhichIsA("UIDragDetector")
+		detector.DragStart.fire(engine.types.Vector2.new(700, 50))
+		detector.DragContinue.fire(engine.types.Vector2.new(520, 50))
+		detector.DragEnd.fire()
+		t.expect(find(row, "trailing").Visible).toBe(true)
+		t.expect(find(find(row, "trailing"), "delete") ~= nil).toBe(true)
+		t.expect(built.report().surfaces.table.moves).toBe(0)
+		t.expect(built.report().surfaces.table.count).toBe(5)
+		for index, item in built.report().surfaces.table.rows do
+			t.expect(item.id).toBe(order[index])
+		end
+		t.expect(built.report().surfaces.table.read.m1).toBe(false)
+		stop()
+	end)
+
+	t.it("mounts the virtual mail surface alone and swipes deletes and opens row menus from each input", function()
+		local built, node, stop, engine, world = mount("row_actions")
+		t.expect(find(node, "Mail_list").Parent.Visible).toBe(true)
+		t.expect(find(node, "Mail_virtual")).toBeNil()
+		find(node, "virtual").Activated.fire()
+		t.expect(built.report().active).toBe("virtual")
+		local page = find(node, "Mail_virtual")
+		t.expect(page.Parent.Visible).toBe(true)
+		t.expect(find(node, "Mail_list").Parent.Visible).toBe(false)
+		t.expect(find(node, "Mail_table")).toBeNil()
+		local body = find(page, "Collection")
+		t.expect(body:IsA("ScrollingFrame")).toBe(true)
+		viewport(body, engine, 700, 480)
+		t.expect(built.report().surfaces.virtual.count).toBe(6)
+		local row = find(page, "Row_m1")
+		row.AbsoluteSize = engine.types.Vector2.new(700, 112)
+		local detector = row:FindFirstChildWhichIsA("UIDragDetector")
+		detector.DragStart.fire(engine.types.Vector2.new(650, 50))
+		detector.DragContinue.fire(engine.types.Vector2.new(520, 50))
+		detector.DragEnd.fire()
+		t.expect(find(row, "trailing").Visible).toBe(true)
+		t.expect(built.report().surfaces.virtual.count).toBe(6)
+		swipe(find(page, "Row_m4"), engine, 300, 10)
+		t.expect(built.report().surfaces.virtual.count).toBe(5)
+		t.expect(find(page, "Row_m4")).toBeNil()
+		local content = find(find(page, "Row_m3"), "Item_m3")
+		world.gui.SelectedObject = content
+		local delete = action(world.target, "RowActionsDelete")
+		t.expect(delete ~= nil).toBe(true)
+		delete.Pressed.fire()
+		t.expect(built.report().surfaces.virtual.count).toBe(4)
+		t.expect(find(page, "Row_m3")).toBeNil()
+		for _, item in built.report().surfaces.virtual.rows do
+			t.expect(item.id ~= "m3" and item.id ~= "m4").toBe(true)
+		end
+		local second = find(find(page, "Row_m2"), "Item_m2")
+		world.gui.SelectedObject = second
+		local reveal = action(world.target, "RowActionsReveal")
+		local keys = {}
+		for _, binding in reveal:GetChildren() do
+			table.insert(keys, binding.KeyCode.Name)
+		end
+		table.sort(keys)
+		t.expect(keys).toEqual({ "ButtonX", "Menu" })
+		reveal.Pressed.fire()
+		local panel = find(world.target, "MenuPanel")
+		t.expect(panel ~= nil).toBe(true)
+		t.expect(find(panel, "leading:read") ~= nil and find(panel, "trailing:flag") ~= nil).toBe(true)
+		t.expect(built.report().surfaces.virtual.count).toBe(4)
+		local held = find(page, "Row_m5")
+		held.AbsoluteSize = engine.types.Vector2.new(700, 112)
+		local heldDetector = held:FindFirstChildWhichIsA("UIDragDetector")
+		heldDetector.DragStart.fire(engine.types.Vector2.new(650, 50))
+		heldDetector.DragContinue.fire(engine.types.Vector2.new(560, 50))
+		stop()
+		t.expect(find(world.target, "MenuPanel")).toBeNil()
+		local after = engine.census()
+		t.expect(after.live).toBe(world.baseline.live)
+		t.expect(after.connections).toBe(world.baseline.connections)
+	end)
+
+	t.it("drops the mail heading on a short landscape and keeps the first row on every surface", function()
+		local tall, tallNode, stopTall = mount("row_actions", { width = 1280, height = 720 })
+		t.expect(find(find(tallNode, "Mail_list"), "Title").Visible).toBe(true)
+		t.expect(tall.report().surfaces.list.count).toBe(6)
+		stopTall()
+		local built, node, stop, engine, world = mount("row_actions", { width = 844, height = 390 })
+		for _, kind in { "list", "table", "virtual" } do
+			find(node, kind).Activated.fire()
+			local page = find(node, "Mail_" .. kind)
+			local title = find(find(page, "Toolbar"), "Title")
+			t.expect(title.Visible).toBe(false)
+			t.expect(find(page, "Collection"):FindFirstChildWhichIsA("UIFlexItem").FlexMode)
+				.toBe(engine.types.Enum.UIFlexMode.Fill)
+			local body = if kind == "table" then find(page, "Body") else find(page, "Collection")
+			viewport(body, engine, 844, 200)
+			t.expect(find(body, "Row_m1") ~= nil).toBe(true)
+			t.expect(built.report().surfaces[kind].status.first).toBe(1)
+		end
+		world.viewport:set({ width = 844, height = 720 })
+		t.expect(find(find(node, "Mail_virtual"), "Title").Visible).toBe(true)
 		stop()
 	end)
 end)

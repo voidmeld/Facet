@@ -27,7 +27,8 @@ local function defaultFormat(value: number): string
 	if value % 1 == 0 then
 		return string.format("%d", value)
 	end
-	return (string.format("%.2f", value):gsub("0+$", ""):gsub("%.$", ""))
+	local text = string.format("%.2f", value):gsub("0+$", ""):gsub("%.$", "")
+	return if text == "-0" then "0" else text
 end
 
 return function(spec: Options, read: Read): Model

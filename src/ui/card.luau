@@ -403,16 +403,16 @@ return function(
 				hovered:set(false)
 			end,
 			Attributes = {
-				FacetReveal = reveal,
-				FacetRevealed = revealed,
-				FacetEngaged = engaged,
-				FacetHovered = hovered,
-				FacetFocusWithin = focusWithin,
-				FacetPressing = pressing,
-				FacetBrowsing = browsing,
-				FacetEntered = entered,
-				FacetMenuOpen = menuOpen,
-				FacetBody = if spec.onActivate then "button" else "informational",
+				FacetReveal = checks.attribute(reveal),
+				FacetRevealed = checks.attribute(revealed),
+				FacetEngaged = checks.attribute(engaged),
+				FacetHovered = checks.attribute(hovered),
+				FacetFocusWithin = checks.attribute(focusWithin),
+				FacetPressing = checks.attribute(pressing),
+				FacetBrowsing = checks.attribute(browsing),
+				FacetEntered = checks.attribute(entered),
+				FacetMenuOpen = checks.attribute(menuOpen),
+				FacetBody = checks.attribute(if spec.onActivate then "button" else "informational"),
 			} :: Types.Attributes,
 			Host.UIListLayout({
 				FillDirection = E.FillDirection.Vertical,
@@ -440,7 +440,7 @@ return function(
 		end)
 		Compose.watch(function(use: ComposeTypes.Use)
 			local node = use(selected)
-			if entered:peek() and not use(menuOpen) and node ~= nil and not within(node, card) then
+			if entered:peek() and not menuOpen:peek() and node ~= nil and not within(node, card) then
 				entered:set(false)
 			end
 		end)

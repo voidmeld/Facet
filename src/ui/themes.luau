@@ -124,7 +124,12 @@ do
 		size = size,
 		font = {
 			family = "BuilderSans",
-			weight = if role == "strong" or role == "heading" or role == "title" then "Bold" else "Regular",
+			weight = if role == "heading"
+					or role == "title"
+					or role == "numeral"
+				then "Bold"
+				elseif role == "strong" then "SemiBold"
+				else "Regular",
 			style = "Normal",
 		},
 		lineHeight = 1.2,
@@ -242,6 +247,19 @@ function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.Them
 				errors,
 				{ field = "metrics.typography." .. role, message = "Type roles require a positive size" }
 			)
+		end
+	end
+	local space = (package.metrics :: { space: unknown }).space
+	if type(space) ~= "table" then
+		table.insert(errors, { field = "metrics.space", message = "Spacing steps must be a table of pixel sizes" })
+	else
+		for step, pixels in space :: { [unknown]: unknown } do
+			if type(step) ~= "string" or type(pixels) ~= "number" or pixels < 0 then
+				table.insert(errors, {
+					field = "metrics.space." .. tostring(step),
+					message = "Spacing steps require a pixel size of 0 or more",
+				})
+			end
 		end
 	end
 	local chrome: { [string]: ThemeTypes.SkinLayer } = package.chrome or {}
@@ -467,21 +485,21 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		return typefaces[key] :: Font
 	end
 	local rules: { NativeRule } = {}
-	local function rule(selector: string, properties: ThemeTypes.RuleProperties)
+	local occurrences: { [string]: number } = {}
+	local function add(selector: string, properties: ThemeTypes.RuleProperties)
+		local occurrence = (occurrences[selector] or 0) + 1
+		occurrences[selector] = occurrence
 		table.insert(rules, {
-			id = selector .. ":" .. tostring(#rules + 1),
+			id = selector .. ":" .. tostring(occurrence),
 			selector = selector,
 			properties = properties,
 			priority = #rules * 10,
 		})
+	end
+	local function rule(selector: string, properties: ThemeTypes.RuleProperties)
+		add(selector, properties)
 		if string.sub(selector, -11) == "::UIPadding" then
-			local real = string.sub(selector, 1, -12) .. " > UIPadding"
-			table.insert(rules, {
-				id = real .. ":" .. tostring(#rules + 1),
-				selector = real,
-				properties = properties,
-				priority = #rules * 10,
-			})
+			add(string.sub(selector, 1, -12) .. " > UIPadding", properties)
 		end
 	end
 	rule("ScrollingFrame", {
@@ -589,6 +607,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	})
 	rule(".facet-accent >> .facet-button-caption", { TextColor3 = c("onAccent") })
 	rule(".facet-disabled >> .facet-button-caption", { TextTransparency = extra.disabledContentOpacity })
+	rule(".facet-disabled >> .facet-text", { TextTransparency = extra.disabledContentOpacity })
 	rule(".facet-skin-caption >> .facet-button-caption", { TextTransparency = 1 })
 	rule(".facet-skin-caption-text", {
 		TextTransparency = 0,
@@ -605,10 +624,12 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-role-destructive >> .facet-button-caption", { TextColor3 = c("onDanger") })
 	rule(".facet-role-cancel >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(".facet-role-onIndicator >> .facet-button-caption", { TextColor3 = c("onAccent") })
+	rule(".facet-role-destructive >> .facet-text", { TextColor3 = c("onDanger") })
 	local onSelected = c("onSelected") or c("content")
 	rule(".facet-selected", { BackgroundColor3 = c("controlSelected"), TextColor3 = onSelected })
 	rule(".facet-selected >> .facet-text", { TextColor3 = onSelected })
 	rule(".facet-disabled", { TextTransparency = extra.disabledContentOpacity })
+	rule(".facet-disabled >> .facet-icon", { ImageTransparency = extra.disabledContentOpacity })
 	rule(".facet-accent", { BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") })
 	rule(".facet-fill", { BackgroundColor3 = c("accent"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	rule(".facet-level-segment", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
@@ -617,6 +638,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-progress-ring-fill", { Color3 = c("accent") })
 	rule(".facet-path", { Color3 = c("accent") })
 	rule(".facet-icon", { ImageColor3 = c("content"), BackgroundTransparency = 1 })
+	rule(".facet-role-destructive >> .facet-icon", { ImageColor3 = c("onDanger") })
 	rule(".facet-selected >> .facet-icon", { ImageColor3 = onSelected })
 	rule(
 		".facet-divider",
@@ -717,6 +739,9 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-appearance-link:Press", { BackgroundTransparency = 1, TextTransparency = 0.3 })
 	rule(".facet-appearance-link >> .facet-button-caption", { TextColor3 = c("accent") })
 	rule(".facet-appearance-link >> .facet-icon", { ImageColor3 = c("accent") })
+	rule(".facet-appearance-link:Press >> .facet-button-caption", { TextTransparency = 0.3 })
+	rule(".facet-appearance-link:Press >> .facet-text", { TextTransparency = 0.3 })
+	rule(".facet-appearance-link:Press >> .facet-icon", { ImageTransparency = 0.3 })
 	rule(
 		".facet-appearance-link::UIPadding",
 		{ PaddingLeft = types.UDim.new(0, 0), PaddingRight = types.UDim.new(0, 0) }
@@ -741,12 +766,15 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-quiet-destructive", { TextColor3 = c("danger") })
 	rule(".facet-quiet-destructive:Hover", { TextColor3 = c("danger") })
 	rule(".facet-quiet-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
+	rule(".facet-quiet-destructive >> .facet-icon", { ImageColor3 = c("danger") })
 	rule(".facet-tab-item", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item:Hover", { BackgroundTransparency = 1, TextColor3 = c("content") })
 	rule(".facet-tab-item:Hover >> .facet-button-caption", { TextColor3 = c("content") })
 	rule(".facet-tab-current", { TextColor3 = c("content") })
 	rule(".facet-tab-current >> .facet-button-caption", { TextColor3 = c("content") })
+	rule(".facet-tab-item.facet-selected", { BackgroundTransparency = 0, TextColor3 = onSelected })
+	rule(".facet-tab-item.facet-selected >> .facet-button-caption", { TextColor3 = onSelected })
 	rule(
 		".facet-tab-filled",
 		{ BackgroundTransparency = 0, BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") }
@@ -789,14 +817,17 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-segment-current >> .facet-button-caption", { TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-menu-destructive >> .facet-text", { TextColor3 = c("danger") })
-	rule(".facet-quiet-destructive >> .facet-text", { TextColor3 = c("danger") })
 	rule(".facet-appearance-soft >> .facet-text", { TextColor3 = c("accent") })
 	rule(".facet-appearance-link >> .facet-text", { TextColor3 = c("accent") })
+	rule(".facet-quiet-destructive >> .facet-text", { TextColor3 = c("danger") })
 	rule(".facet-choice-current >> .facet-text", { TextColor3 = c("accent") })
 	rule(".facet-tab-filled >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-accent >> .facet-text", { TextColor3 = c("onAccent") })
+	rule(".facet-accent >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-skinned", { BackgroundTransparency = 1 })
+	rule(".facet-toggle-checkbox.facet-skinned::UIStroke", { Transparency = 1 })
+	rule(".facet-menu.facet-skinned::UIStroke", { Transparency = 1 })
 	for _, definition in (package.rules or {}) :: { ThemeTypes.Rule } do
 		rule(definition.selector, table.clone(definition.properties or definition.props or {}))
 	end
@@ -970,6 +1001,7 @@ local function createStyleSheet(
 	local currentTiming: TweenInfo? = nil
 	type MountedRule = {
 		node: StyleRule,
+		priority: number,
 		properties: ThemeTypes.RuleProperties?,
 		transitions: { [string]: TweenInfo }?,
 		timing: TweenInfo?,
@@ -1016,6 +1048,10 @@ local function createStyleSheet(
 		return same :: boolean
 	end
 	local function apply(record: MountedRule, definition: NativeRule, timing: TweenInfo)
+		if record.priority ~= definition.priority then
+			record.node.Priority = definition.priority
+			record.priority = definition.priority
+		end
 		local properties = definition.properties
 		local propertiesChanged = record.properties == nil
 			or (record.properties ~= properties and not sameRuleProperties(record.properties, properties))
@@ -1047,7 +1083,7 @@ local function createStyleSheet(
 					Selector = initial.selector,
 					Priority = initial.priority,
 				})
-				local record: MountedRule = { node = node }
+				local record: MountedRule = { node = node, priority = initial.priority }
 				mounted[id] = record
 				apply(record, initial, currentTiming :: TweenInfo)
 				Compose.cleanup(function()

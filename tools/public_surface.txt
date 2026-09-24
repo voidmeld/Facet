@@ -92,6 +92,8 @@ controls(runtime).Chip : function
 controls(runtime).CollapsibleView : function
 controls(runtime).ComboBox : function
 controls(runtime).DisclosureGroup : function
+controls(runtime).Grid : function
+controls(runtime).HStack : function
 controls(runtime).Label : function
 controls(runtime).LevelPicker : function
 controls(runtime).Menu : function
@@ -103,6 +105,8 @@ controls(runtime).ProgressView : function
 controls(runtime).RadialMenu : function
 controls(runtime).Rating : function
 controls(runtime).RowActions : function
+controls(runtime).Screen : function
+controls(runtime).ScrollView : function
 controls(runtime).Sheet : function
 controls(runtime).ShortcutHint : function
 controls(runtime).Skeleton : function
@@ -116,9 +120,12 @@ controls(runtime).TabView : function
 controls(runtime).Table : function
 controls(runtime).TextInput : function
 controls(runtime).Toggle : function
+controls(runtime).VStack : function
 controls(runtime).VirtualGrid : function
 controls(runtime).VirtualList : function
 controls(runtime).Vote : function
+controls(runtime).ZStack : function
+controls(runtime).fill : function
 type AlertAction
 type AlertSpec
 type AsyncImageProps
@@ -140,7 +147,9 @@ type ComposeRobloxModule
 type ControlOptions
 type Controls
 type DisclosureGroupSpec
+type Extent
 type Facet
+type GridProps
 type IdentityCollectionSpec
 type IdentityTableSpec
 type ImageResource
@@ -154,6 +163,7 @@ type NavigationDestination
 type NavigationEntry
 type NavigationStackSpec
 type Owner
+type Padding
 type PageViewSpec
 type PaginationSpec
 type PickerOption
@@ -166,11 +176,15 @@ type Readable
 type RowAction
 type RowActionsSpec
 type Runtime
+type ScreenProps
+type ScrollViewProps
 type SheetSpec
 type ShortcutHintProps
 type SkeletonProps
 type SliderProps
+type Space
 type SplitButtonSpec
+type StackProps
 type StageProps
 type StatusIndicatorProps
 type Step
@@ -185,3 +199,4 @@ type ThemePackage
 type ToggleProps
 type Use
 type VoteSpec
+type ZStackProps

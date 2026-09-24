@@ -497,12 +497,12 @@ return function(
 			Size = D2.fromScale(1, 0),
 			AutomaticSize = E.AutomaticSize.Y,
 			Attributes = {
-				FacetCurrent = function(use: ComposeTypes.Use)
+				FacetCurrent = checks.attribute(function(use: ComposeTypes.Use)
 					return use(model).current
-				end,
-				FacetSummary = summary,
-				FacetForm = form,
-				FacetListOpen = listOpen,
+				end),
+				FacetSummary = checks.attribute(summary),
+				FacetForm = checks.attribute(form),
+				FacetListOpen = checks.attribute(listOpen),
 			} :: Types.Attributes,
 			strip :: Types.Child,
 			compact :: Types.Child,

@@ -17,6 +17,7 @@ return function(
 	surfaces: Nav.Surfaces
 ): ()
 	local Host, Compose, runtime, read = ctx.Host, ctx.Compose, ctx.runtime, ctx.read
+	local POPOVER: Nav.MotionTiming = { enter = 0.15, exit = 0.1 }
 	local E, D2, V2, D = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2, ctx.types.UDim
 	local function writable(cell: { set: unknown }, name: string)
 		assert(type(cell) == "table" and type(cell.set) == "function", name .. " requires a writable Compose cell")
@@ -77,7 +78,14 @@ return function(
 		end
 		return result
 	end
-	local function menuPanel<V>(spec: Nav.MenuSpec<V>, close: () -> (), anchor: GuiObject, nonmodal: boolean?): Frame
+	local function menuPanel<V>(
+		spec: Nav.MenuSpec<V>,
+		close: () -> (),
+		anchor: GuiObject,
+		nonmodal: boolean?,
+		phase: Nav.PresencePhase?
+	): Frame
+		local shown = if phase then surfaces.appearance(phase, POPOVER) else nil
 		local path = Compose.cell({} :: { string })
 		local pendingFocus: string?
 		local rootItems = Compose.formula(function(use: ComposeTypes.Use)
@@ -264,8 +272,27 @@ return function(
 			CanvasSize = D2.fromOffset(0, 0),
 			ScrollingDirection = E.ScrollingDirection.Y,
 			ScrollBarThickness = 4,
-			rows,
+			if shown
+				then Host.CanvasGroup "MenuGroup" {
+					BackgroundTransparency = 1,
+					Size = D2.new(1, 0, 0, 0),
+					AutomaticSize = E.AutomaticSize.Y,
+					GroupTransparency = function(use: ComposeTypes.Use)
+						return 1 - shown(use)
+					end,
+					rows,
+				}
+				else rows,
 		}
+		if shown then
+			surfaces.attach(panel, {
+				Host.UIGradient "PresentationFade" {
+					Transparency = function(use: ComposeTypes.Use)
+						return ctx.types.NumberSequence.new(1 - shown(use))
+					end,
+				},
+			})
+		end
 		ctx.styled(panel, "menu")
 		surfaces.skin(panel)
 		local position = ctx.observe(anchor, "AbsolutePosition")
@@ -277,9 +304,17 @@ return function(
 				ZIndex = 100,
 				panel,
 			}
-			else surfaces.modal(function()
-				return panel
-			end, back, { backgroundTransparency = 1, onOutside = close })
+			else surfaces.modal(
+				function()
+					return panel
+				end,
+				back,
+				{
+					backgroundTransparency = 1,
+					onOutside = close,
+					exiting = if phase then phase.exiting else nil,
+				}
+			)
 		if nonmodal then
 			ctx.modalPortal(modal, anchor)
 			runtime.decorate(panel, { ZIndex = 101 })
@@ -297,27 +332,40 @@ return function(
 			return (use(extent).X > 0 and use(extent).X < math.max(600, (#use(path) + 1) * 288 + 16))
 				or use(preferred) == E.PreferredInput.Touch
 		end)
+		local function place(use: ComposeTypes.Use): (Vector2, Vector2)
+			local at, bounds, offer, panelSize, offset =
+				use(position), use(size), use(extent), use(measured), use(origin)
+			if use(asSheet) then
+				return V2.new(12, math.max(12, offer.Y - panelSize.Y - 12)), V2.new(panelSize.X / 2, panelSize.Y)
+			end
+			local left, top = at.X - offset.X + #use(path) * 288, at.Y - offset.Y + bounds.Y + 4
+			local above = false
+			if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
+				top = at.Y - offset.Y - panelSize.Y - 4
+				above = true
+			end
+			if offer.X > 0 then
+				left = math.clamp(left, 8, math.max(8, offer.X - panelSize.X - 8))
+			end
+			local center = math.clamp(at.X - offset.X + bounds.X / 2 - left, 0, panelSize.X)
+			return V2.new(left, math.max(8, top)), V2.new(center, if above then panelSize.Y else 0)
+		end
 		runtime.decorate(panel, {
 			Size = function(use: ComposeTypes.Use)
 				local height = math.min(use(rowSize).Y, math.max(44, use(extent).Y - 24))
 				return if use(asSheet) then D2.new(1, -24, 0, height) else D2.fromOffset(panelWidth(use), height)
 			end,
-			Position = function(use: ComposeTypes.Use)
-				local at, bounds, offer, panelSize, offset =
-					use(position), use(size), use(extent), use(measured), use(origin)
-				if use(asSheet) then
-					return D2.fromOffset(12, math.max(12, offer.Y - panelSize.Y - 12))
-				end
-				local left, top = at.X - offset.X + #use(path) * (panelWidth(use) + 8), at.Y - offset.Y + bounds.Y + 4
-				if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
-					top = at.Y - offset.Y - panelSize.Y - 4
-				end
-				if offer.X > 0 then
-					left = math.clamp(left, 8, math.max(8, offer.X - panelSize.X - 8))
-				end
-				return D2.fromOffset(left, math.max(8, top))
-			end,
 		})
+		if shown then
+			surfaces.popover(panel, shown, place)
+		else
+			runtime.decorate(panel, {
+				Position = function(use: ComposeTypes.Use)
+					local at = place(use)
+					return D2.fromOffset(at.X, at.Y)
+				end,
+			})
+		end
 		local gui = surfaces.service("GuiService")
 		local selected = if gui then ctx.observe(gui, "SelectedObject") else Compose.cell(nil)
 		local function selectedBranch(use: ComposeTypes.Use?): Nav.MenuAction<V>?
@@ -616,9 +664,9 @@ return function(
 			end, open, { priority = 1200 })
 		end
 		surfaces.attach(root, {
-			surfaces.overlay(root, opened, function()
-				return menuPanel(spec, close, assert(trigger))
-			end),
+			surfaces.overlay(root, opened, function(phase: Nav.PresencePhase?)
+				return menuPanel(spec, close, assert(trigger), nil, phase)
+			end, { motion = POPOVER }),
 		})
 		return root
 	end)
@@ -642,8 +690,24 @@ return function(
 		"textSize",
 		"isPresented",
 	}
+	local optionFields: { [string]: boolean } = {
+		id = true,
+		value = true,
+		label = true,
+		description = true,
+		icon = true,
+		badge = true,
+		enabled = true,
+	}
 	UI.Picker = ctx.construct("Picker", function<V>(spec: Nav.PickerSpec<V>): GuiObject
 		writable(spec.selected, "Picker.selected")
+		assert(spec.onChange == nil or type(spec.onChange) == "function", "Picker.onChange must be a function")
+		assert(spec.onChanging == nil or type(spec.onChanging) == "function", "Picker.onChanging must be a function")
+		assert(spec.required == nil or type(spec.required) == "boolean", "Picker.required must be a boolean")
+		assert(
+			spec.enabled == nil or type(read(spec.enabled)) == "boolean",
+			"Picker.enabled must be a boolean or a readable boolean"
+		)
 		assert(
 			type(spec.options) == "table" or type(spec.options) == "function",
 			"Facet UI.Picker: options must be an array of { value, label } entries, a Compose readable, or a function(use) that returns one"
@@ -709,9 +773,28 @@ return function(
 				)
 			end
 			for _, option in list do
+				for field in (option :: unknown) :: { [unknown]: unknown } do
+					assert(
+						type(field) == "string" and optionFields[field] == true,
+						`Unknown Picker option field {tostring(field)}`
+					)
+				end
 				assert(
 					option.description == nil or type(read(option.description, use)) == "string",
 					"Picker description must be text"
+				)
+				assert(
+					option.enabled == nil or type(read(option.enabled, use)) == "boolean",
+					"Picker option enabled must be a boolean"
+				)
+				assert(
+					option.icon == nil or type(read(option.icon, use)) == "string",
+					"Picker option icon must be an icon name"
+				)
+				local badge = read(option.badge, use)
+				assert(
+					badge == nil or type(badge) == "string" or type(badge) == "number",
+					"Picker option badge must be text or a number"
 				)
 				local key = option.id or option.value
 				assert(key ~= nil and not seen[key], "Picker options require unique values or ids")
@@ -927,10 +1010,12 @@ return function(
 		end
 		if style == "navigationLink" then
 			local opened = spec.isPresented or Compose.cell(false)
-			local trigger = UI.Button({
-				Name = spec.Name or "Picker",
-				enabled = spec.enabled,
-				label = spec.label or function(use: ComposeTypes.Use)
+			local native: Types.FrameNativeProps = ctx.props(spec, pickerKeys)
+			local triggerProps = (native :: unknown) :: Inputs.ButtonProps
+			triggerProps.Name = spec.Name or "Picker"
+			triggerProps.enabled = spec.enabled
+			triggerProps.label = spec.label
+				or function(use: ComposeTypes.Use)
 					for _, option in read(spec.options, use) do
 						if isSelected(option.value, use) then
 							local label: string = read(option.label, use)
@@ -938,11 +1023,11 @@ return function(
 						end
 					end
 					return read(spec.placeholder, use) or "Choose"
-				end,
-				onActivate = function()
-					opened:set(true)
-				end,
-			})
+				end
+			triggerProps.onActivate = function()
+				opened:set(true)
+			end
+			local trigger = UI.Button(triggerProps)
 			surfaces.attach(trigger, {
 				surfaces.overlay(trigger, opened, function()
 					local choices: Nav.PickerSpec<V>
@@ -1062,6 +1147,9 @@ return function(
 						end,
 						enabled = function(use: ComposeTypes.Use)
 							return read(spec.enabled, use) ~= false and read(use(source).enabled, use) ~= false
+						end,
+						haptic = function(use: ComposeTypes.Use)
+							return spec.multiple == true or not selected(use)
 						end,
 						onActivate = function()
 							select(source:peek().value)

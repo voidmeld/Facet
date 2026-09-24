@@ -3,6 +3,7 @@ local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 
 export type Values = {
+	attribute: (unknown) -> Types.Value<Types.AttributeValue?>,
 	note: (string) -> (),
 	list: () -> { string },
 	legal: <T>(string, Types.Value<T>, (unknown) -> boolean, string) -> ComposeTypes.Formula<T>,
@@ -38,6 +39,9 @@ return function(ctx: Types.Context, control: string): Values
 		end)
 	end
 	return {
+		attribute = function(value: unknown): Types.Value<Types.AttributeValue?>
+			return value :: Types.Value<Types.AttributeValue?>
+		end,
 		note = note,
 		list = function(): { string }
 			return table.clone(diagnostics)

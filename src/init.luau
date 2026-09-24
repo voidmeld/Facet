@@ -11,6 +11,7 @@ local CollectionTypes = require("@self/ui/collection_types")
 local MediaTypes = require("@self/ui/media_types")
 local ContentTypes = require("@self/ui/content_types")
 local ThemeTypes = require("@self/ui/theme_types")
+local LayoutTypes = require("@self/ui/layout_types")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
@@ -66,6 +67,14 @@ export type Step = ContentTypes.Step
 export type VoteSpec = ContentTypes.VoteSpec
 export type CardSpec = ContentTypes.CardSpec
 export type CardControls = ContentTypes.CardControls
+export type Space = LayoutTypes.Space
+export type Padding = LayoutTypes.Padding
+export type Extent = LayoutTypes.Extent
+export type StackProps = LayoutTypes.StackProps
+export type ScreenProps = LayoutTypes.ScreenProps
+export type ZStackProps = LayoutTypes.ZStackProps
+export type ScrollViewProps = LayoutTypes.ScrollViewProps
+export type GridProps = LayoutTypes.GridProps
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
@@ -87,7 +96,7 @@ export type Facet = {
 }
 
 local VERSION = "0.12.0"
-local COMPOSE_COMMIT = "974b7527709a4db61024cc8994cdce30adc49790"
+local COMPOSE_COMMIT = "cbab6e0f828b68faaf676ee718cb0036c20ed935"
 local USED = {
 	"boundary",
 	"cell",

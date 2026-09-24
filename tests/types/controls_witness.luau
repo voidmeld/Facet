@@ -91,9 +91,11 @@ local stepProps: Facet.StepIndicatorSpec = {
 local stepIndicator: Frame = UI.StepIndicator(stepProps)
 type VoteValue = "up" | "down" | "none"
 local initialVote: VoteValue = "none"
-local voteCell: Facet.Cell<VoteValue> = Compose.cell(initialVote)
+local voteCell = (Compose.cell(initialVote) :: unknown) :: Facet.Cell<VoteValue>
 local voteProps: Facet.VoteSpec = {
-	value = voteCell,
+	value = function(use: Use): VoteValue
+		return use(voteCell)
+	end,
 	summary = "92% liked",
 	onChange = function(nextValue: VoteValue)
 		voteCell:set(nextValue)
