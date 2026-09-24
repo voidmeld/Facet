@@ -74,7 +74,13 @@ return function<V, K>(
 		if first == nil or last == nil then
 			return false
 		end
-		local selected = table.clone(base)
+		local selected: CollectionTypes.Selection<K> = {}
+		local current = read(selection)
+		for key in base do
+			if current[key] then
+				selected[key] = true
+			end
+		end
 		local rows = read(source)
 		for index = math.min(first, last), math.max(first, last) do
 			local candidate = rows[index]
