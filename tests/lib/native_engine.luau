@@ -107,8 +107,10 @@ local function new(options: any?)
 				if signals.AncestryChanged then
 					signals.AncestryChanged.fire(node, properties.Parent)
 				end
-				for _, child in table.clone(children) do
-					child:_fireAncestry()
+				if children[1] ~= nil then
+					for _, child in table.clone(children) do
+						child:_fireAncestry()
+					end
 				end
 			end,
 			Clone = function()
@@ -311,8 +313,10 @@ local function new(options: any?)
 					signals.Destroying.fire()
 				end
 				node.Parent = nil
-				for _, child in table.clone(children) do
-					child:Destroy()
+				if children[1] ~= nil then
+					for _, child in table.clone(children) do
+						child:Destroy()
+					end
 				end
 				if not cached then
 					defaults:Destroy()
