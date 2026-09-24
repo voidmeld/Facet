@@ -456,7 +456,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			if leading then
 				table.insert(content, icon(leading, { Name = "LeadingIcon" }, iconState))
 			end
-			local label = row.title or spec.label or spec.name or ""
+			local label = row.title or spec.label or (if leading then nil else spec.name) or ""
 			local description = row.description or spec.subtitle or spec.hint
 			if not (spec.shape == "circle" and spec.icon) then
 				local function caption(name: string, text: Shared.Value<string>): TextLabel

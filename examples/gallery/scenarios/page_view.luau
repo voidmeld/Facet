@@ -59,13 +59,15 @@ return {
 							LayoutOrder = 2,
 							Name = "Preview",
 							BackgroundTransparency = 1,
-							Size = UDim2.new(1, 0, 0, 120),
-							Host.Frame "Backdrop" {
-								BackgroundTransparency = 1,
-								Size = UDim2.new(1, 0, 1, 0),
-							},
+							Size = UDim2.new(1, 0, 0, 160),
 							(function()
-								local path = Host.Path2D "Circuit" { Thickness = 4 }
+								local backdrop = Host.Frame "Backdrop" { Size = UDim2.new(1, 0, 1, 0) }
+								backdrop:AddTag("facet-panel")
+								return backdrop
+							end)(),
+							(function()
+								local path = Host.Path2D "Circuit" { Thickness = 4, ZIndex = 2 }
+								path:AddTag("facet-path")
 								local points = {
 									{ x = 0.15, y = 0.5 },
 									{ x = 0.35, y = 0.2 },
@@ -90,6 +92,7 @@ return {
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
 							Text = copy[key .. "Text"],
+							textRole = "caption",
 							TextWrapped = true,
 							TextYAlignment = Enum.TextYAlignment.Top,
 							TextXAlignment = Enum.TextXAlignment.Left,
@@ -97,8 +100,7 @@ return {
 						UI.Button({
 							LayoutOrder = 4,
 							Name = "Choose",
-							Size = UDim2.new(1, 0, 0, 0),
-							AutomaticSize = Enum.AutomaticSize.Y,
+							appearance = "emphasis",
 							label = "Choose " .. copy[key],
 							onActivate = function()
 								picked:set(copy[key])
@@ -146,6 +148,7 @@ return {
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
 						Text = copy.intro,
+						textRole = "caption",
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,

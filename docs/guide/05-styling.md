@@ -28,6 +28,10 @@ decoration belong in native rules.
 Explicit native Instance properties take precedence over stylesheet values.
 This is intentional. Do not use them for default theme paint.
 
+Screen content can use the same rules. Add the tag, and do not set the painted
+property. `facet-panel` paints a rounded panel surface, `facet-divider` paints
+a hairline, and `facet-path` paints a `Path2D` line in the accent color.
+
 Theme inputs can be Compose readables. The native rules and the control metrics
 respond to the same selected definition. Image skins use real image assets and
 native children. Icons are images, not substitute text glyphs.

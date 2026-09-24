@@ -591,6 +591,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-level-on", { BackgroundColor3 = c("accent") })
 	rule(".facet-progress-ring-track", { Color3 = c("control") })
 	rule(".facet-progress-ring-fill", { Color3 = c("accent") })
+	rule(".facet-path", { Color3 = c("accent") })
 	rule(".facet-icon", { ImageColor3 = c("content"), BackgroundTransparency = 1 })
 	rule(".facet-selected >> .facet-icon", { ImageColor3 = onSelected })
 	rule(
