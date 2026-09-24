@@ -856,6 +856,38 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("collapses a nested tab strip into one menu row when its region is short", function()
+		local outer, inner = Compose.cell("a"), Compose.cell("x")
+		local world = setup(function(UI, Host)
+			return UI.TabView {
+				selection = outer,
+				tabs = {
+					{
+						id = "a",
+						content = function()
+							return UI.TabView "Inner" {
+								selection = inner,
+								tabs = {
+									{ id = "x", label = "Swipe actions", content = Host.Frame "X" {} },
+									{ id = "y", label = "Permissions", content = Host.Frame "Y" {} },
+								},
+							}
+						end,
+					},
+				},
+			}
+		end)
+		local nested = find(world.screen, "Inner")
+		local strip = nested:FindFirstChild("Tabs")
+		nested.AbsoluteSize = world.engine.types.Vector2.new(705, 200)
+		t.expect(strip.Visible).toBe(false)
+		t.expect(find(nested, "TabsMenu") ~= nil).toBe(true)
+		nested.AbsoluteSize = world.engine.types.Vector2.new(705, 600)
+		t.expect(strip.Visible).toBe(true)
+		t.expect(find(nested, "TabsMenu")).toBe(nil)
+		world.stop()
+	end)
+
 	t.it("pauses repeating progress motion while its retained tab is hidden", function()
 		local selection = Compose.cell("one")
 		local world = setup(function(UI, Host)

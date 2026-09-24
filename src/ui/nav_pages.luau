@@ -170,6 +170,23 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return if size.Y > 0 and size.X / size.Y > 1.4 then "bottomBarCompact" else "bottomBar"
 		end
 		local placement = Compose.formula(resolvePlacement)
+		-- A nested strip in a short region spends height the page needs. Below COMPACT_HEIGHT it
+		-- collapses into one menu row that names the current tab; it expands again when room returns.
+		local COMPACT_HEIGHT = 480
+		local collapsed = Compose.formula(function(use: Core.Use): boolean
+			if spec.style == "collapsible" then
+				return true
+			end
+			if not nested or (spec.style ~= nil and spec.style ~= "automatic") then
+				return false
+			end
+			local explicit = read(spec.placement, use)
+			if explicit and explicit ~= "automatic" then
+				return false
+			end
+			local size = use(dimensions)
+			return size.Y > 0 and size.Y < COMPACT_HEIGHT
+		end)
 		local headHeight, footHeight, trailingWidth, aboveHeight =
 			Compose.cell(0), Compose.cell(0), Compose.cell(0), Compose.cell(0)
 		local visibleTabs = Compose.formula(function(use: Core.Use)
@@ -426,6 +443,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end)
 		local layers = Host.Frame "Content" {
 			BackgroundTransparency = 1,
+			-- A page taller than its region must not paint under the tab bar.
+			ClipsDescendants = true,
 			Position = function(use: Core.Use)
 				local place = use(placement)
 				return if place == "sidebar"
@@ -510,10 +529,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			}),
 		}
 		surfaces.attach(root, { bar, layers })
-		if spec.style == "collapsible" then
-			runtime.decorate(bar, { Visible = false })
-			surfaces.attach(root, {
-				UI.Menu "TabsMenu" {
+		runtime.decorate(bar, {
+			Visible = function(use: Core.Use)
+				return not use(collapsed)
+			end,
+		})
+		surfaces.attach(root, {
+			Compose.show(collapsed, function()
+				return UI.Menu "TabsMenu" {
 					Size = D2.new(1, 0, 0, 44),
 					label = function(use: Core.Use)
 						local tab = use(tabMap)[use(spec.selection)]
@@ -536,9 +559,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 						return items
 					end,
-				},
-			})
-		end
+				}
+			end),
+		})
 		local slots: { [string]: { [string]: boolean } } = {
 			head = { sidebar = true },
 			foot = { sidebar = true },
