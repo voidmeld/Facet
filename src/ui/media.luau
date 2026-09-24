@@ -137,9 +137,40 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 			}
 		)
-		local node = ctx.styled(ctx.styled(Host.TextLabel(native), "text"), "badge")
+		local node = ctx.styled(Host.TextLabel(native), "text")
+		local pill: GuiObject = node
+		if spec.icon then
+			node.Name = "Label"
+			node.BackgroundTransparency = 1
+			node.Size = D2.fromOffset(0, 0)
+			local icon = ctx.icon(spec.icon, {
+				Size = function(use: Compose.Use)
+					local pixels = math.floor(controlSize(spec.controlSize, "iconSize", use) * 0.7 + 0.5)
+					return D2.fromOffset(pixels, pixels)
+				end,
+			})
+			local leading = spec.iconPosition ~= "trailing"
+			icon.LayoutOrder = if leading then 1 else 2
+			node.LayoutOrder = if leading then 2 else 1
+			pill = Host.Frame({
+				Name = spec.Name or "Badge",
+				AutomaticSize = E.AutomaticSize.XY,
+				Size = function(use: Compose.Use)
+					return D2.fromOffset(0, controlSize(spec.controlSize, "iconSize", use) + 4)
+				end,
+				Host.UIListLayout({
+					FillDirection = E.FillDirection.Horizontal,
+					VerticalAlignment = E.VerticalAlignment.Center,
+					SortOrder = E.SortOrder.LayoutOrder,
+					Padding = D.new(0, 4),
+				}) :: Compose.Child,
+				icon :: Compose.Child,
+				node :: Compose.Child,
+			})
+		end
+		ctx.styled(pill, "badge")
 		if spec.status then
-			statusTag(node, spec.status)
+			statusTag(pill, spec.status)
 		end
 		local previousAppearance: string?
 		Compose.watch(function(use: Compose.Use)
@@ -149,10 +180,10 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				"Facet Badge invalid appearance"
 			)
 			if previousAppearance then
-				node:RemoveTag(previousAppearance)
+				pill:RemoveTag(previousAppearance)
 			end
 			previousAppearance = "facet-badge-" .. appearance
-			node:AddTag(previousAppearance :: string)
+			pill:AddTag(previousAppearance :: string)
 		end)
 		if spec.appearance then
 			runtime.mountFragment(function()
@@ -162,13 +193,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					end, function()
 						return UI.StatusIndicator "Status" {
 							status = spec.status,
-							diameter = 10,
-							Position = D2.new(0, 0, 0.5, 0),
+							diameter = 8,
+							LayoutOrder = -1,
+							Position = D2.new(0, -14, 0.5, 0),
 							AnchorPoint = V2.new(0, 0.5),
 						}
 					end),
 				}
-			end, node)
+			end, pill)
 		end
 		if spec.corners then
 			runtime.mount(function()
@@ -178,19 +210,9 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end
 				assert(type(radius) == "number", "Facet Badge invalid corners")
 				return ctx.corner(radius)
-			end, node)
+			end, pill)
 		end
-		if spec.icon then
-			local icon = ctx.icon(spec.icon)
-			return ctx.styled(
-				ctx.row(
-					if spec.iconPosition == "trailing" then { node, icon } else { icon, node },
-					{ Name = spec.Name or "Badge" }
-				),
-				"badge"
-			)
-		end
-		return node
+		return pill
 	end)
 
 	UI.StatusIndicator = ctx.construct(function(spec: Media.StatusIndicatorProps): TextLabel
@@ -216,10 +238,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			{
 				Size = function(use: Compose.Use)
 					return D2.fromOffset(
-						size(use),
+						if spec.count ~= nil then 0 else size(use),
 						if use(form) == "dash" then math.max(3, size(use) / 3) else size(use)
 					)
 				end,
+				AutomaticSize = if spec.count ~= nil then E.AutomaticSize.X else nil,
 				Text = function(use: Compose.Use)
 					local count = read(spec.count, use)
 					if count == nil then
@@ -255,26 +278,38 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					return use(form) == "ring"
 				end, function()
 					return ctx.styled(
-						Host.Frame "Center" {
-							Size = D2.new(1, -4, 1, -4),
-							Position = D2.fromOffset(2, 2),
-							BorderSizePixel = 0,
-							Host.UICorner({ CornerRadius = D.new(1, 0) }),
+						Host.UIStroke "Ring" {
+							ApplyStrokeMode = E.ApplyStrokeMode.Border,
+							BorderStrokePosition = E.BorderStrokePosition.Inner,
+							Thickness = function(use: Compose.Use)
+								return math.max(2, math.floor(size(use) / 6 + 0.5))
+							end,
 						},
-						"surface"
+						"status-ring"
 					)
 				end),
 			} :: Engine.TextLabelNativeProps
 		)
-		table.insert(
-			native,
-			Host.UIAspectRatioConstraint({
-				AspectRatio = function(use: Compose.Use)
-					return if use(form) == "dash" then 3 else 1
-				end,
-				AspectType = E.AspectType.FitWithinMaxSize,
-			})
-		)
+		if spec.count ~= nil then
+			table.insert(
+				native,
+				Host.UISizeConstraint({
+					MinSize = function(use: Compose.Use)
+						return V2.new(size(use), size(use))
+					end,
+				})
+			)
+		else
+			table.insert(
+				native,
+				Host.UIAspectRatioConstraint({
+					AspectRatio = function(use: Compose.Use)
+						return if use(form) == "dash" then 3 else 1
+					end,
+					AspectType = E.AspectType.FitWithinMaxSize,
+				})
+			)
+		end
 		if spec.cutout then
 			table.insert(
 				native,
@@ -290,6 +325,13 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end
 		local node = ctx.styled(ctx.styled(Host.TextLabel(native), "text"), "badge")
 		statusTag(node, spec.status)
+		Compose.watch(function(use: Compose.Use)
+			if use(form) == "ring" then
+				node:AddTag("facet-status-hollow")
+			elseif node:HasTag("facet-status-hollow") then
+				node:RemoveTag("facet-status-hollow")
+			end
+		end)
 		return node
 	end)
 

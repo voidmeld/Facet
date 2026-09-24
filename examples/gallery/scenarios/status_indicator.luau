@@ -3,9 +3,7 @@ return {
 	title = "Status marks",
 	ledgerRows = {},
 	build = function(ctx: any)
-		local UI, Compose = ctx.UI, ctx.Compose
-		local Host = ctx.Host
-		local Compose = ctx.Compose
+		local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
 		local nativeTypes = ctx.types or { UDim = UDim, UDim2 = UDim2, Vector2 = Vector2, Color3 = Color3, Enum = Enum }
 		local UDim, UDim2, Vector2, Color3, Enum =
 			nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Color3, nativeTypes.Enum
@@ -27,51 +25,31 @@ return {
 			Compose.cleanup(function()
 				rootPath, controller, record = nil, nil, nil
 			end)
-			local shapes, words = {}, {}
-			for _, word in { "dot", "ring", "square", "dash" } do
+			local shapes = {}
+			for index, word in { "dot", "ring", "square", "dash" } do
 				table.insert(
 					shapes,
-					Host.Frame({
-						Name = word,
+					Host.Frame(word)({
+						LayoutOrder = index,
 						BackgroundTransparency = 1,
 						Size = UDim2.new(0, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.XY,
 						Host.UIListLayout({
 							FillDirection = Enum.FillDirection.Horizontal,
+							VerticalAlignment = Enum.VerticalAlignment.Center,
 							SortOrder = Enum.SortOrder.LayoutOrder,
 							Padding = UDim.new(0, 8),
 						}),
-						UI.StatusIndicator({
+						UI.StatusIndicator "Mark" {
 							LayoutOrder = 1,
-							Name = "Mark",
 							form = word,
 							status = status,
 							name = word,
-						}),
-						UI.Label({
+						},
+						UI.Label "Name" {
 							LayoutOrder = 2,
-							Name = "Name",
-							BackgroundTransparency = 1,
-							BorderSizePixel = 0,
-							Size = UDim2.new(1, 0, 0, 0),
-							AutomaticSize = Enum.AutomaticSize.Y,
-							Text = word,
-							TextWrapped = true,
-							TextYAlignment = Enum.TextYAlignment.Top,
-							TextXAlignment = Enum.TextXAlignment.Left,
-						}),
-					})
-				)
-			end
-			for _, word in { "neutral", "info", "success", "warning", "error", "accent" } do
-				table.insert(
-					words,
-					UI.Button({
-						Name = word,
-						label = word,
-						onActivate = function()
-							choose(word)
-						end,
+							text = string.upper(string.sub(word, 1, 1)) .. string.sub(word, 2),
+						},
 					})
 				)
 			end
@@ -84,37 +62,15 @@ return {
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					Padding = UDim.new(0, 16),
 				}),
-				UI.Label({
-					LayoutOrder = 1,
-					Name = "Title",
+				UI.Label "Title" { text = "Status marks", textRole = "heading" },
+				UI.Label "Guide" {
+					text = "Shapes carry meaning alongside color. Counts stop growing at 99+.",
+					textRole = "secondary",
+				},
+				Host.Frame "Shapes" {
 					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Status marks",
-					textRole = "heading",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-					LayoutOrder = 2,
-					Name = "Guide",
-					BackgroundTransparency = 1,
-					BorderSizePixel = 0,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Shapes carry meaning alongside color. Counts stop growing at 99+.",
-					TextWrapped = true,
-					TextYAlignment = Enum.TextYAlignment.Top,
-					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				Host.Frame({
-					LayoutOrder = 3,
-					Name = "Shapes",
-					BackgroundTransparency = 1,
-					Size = UDim2.new(0, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.XY,
 					Host.UIListLayout({
 						FillDirection = Enum.FillDirection.Horizontal,
 						SortOrder = Enum.SortOrder.LayoutOrder,
@@ -122,88 +78,68 @@ return {
 						Wraps = true,
 					}),
 					table.unpack(shapes),
-				}),
-				Host.Frame({
-					LayoutOrder = 4,
-					Name = "Live",
+				},
+				UI.Picker "Status" {
+					label = "Status",
+					selected = status,
+					options = {
+						{ value = "neutral", label = "Neutral" },
+						{ value = "info", label = "Info" },
+						{ value = "success", label = "Success" },
+						{ value = "warning", label = "Warning" },
+						{ value = "error", label = "Error" },
+						{ value = "accent", label = "Accent" },
+					},
+				},
+				UI.Picker "Shape" {
+					label = "Shape",
+					selected = form,
+					options = {
+						{ value = "dot", label = "Dot" },
+						{ value = "ring", label = "Ring" },
+					},
+				},
+				Host.Frame "Live" {
 					BackgroundTransparency = 1,
-					Size = UDim2.new(0, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.XY,
+					Size = UDim2.new(1, 0, 0, 0),
+					AutomaticSize = Enum.AutomaticSize.Y,
 					Host.UIListLayout({
 						FillDirection = Enum.FillDirection.Horizontal,
+						VerticalAlignment = Enum.VerticalAlignment.Center,
 						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 16),
+						Padding = UDim.new(0, 12),
+						Wraps = true,
 					}),
-					UI.StatusIndicator({
-						LayoutOrder = 1,
-						Name = "Count",
+					UI.StatusIndicator "Count" {
 						count = count,
 						status = status,
 						name = "Unread",
 						ref = function(value)
 							record = value
 						end,
-					}),
-					UI.StatusIndicator({
-						LayoutOrder = 2,
-						Name = "Cutout",
+					},
+					UI.StatusIndicator "Cutout" {
 						form = form,
 						status = status,
 						cutout = true,
 						controlSize = "large",
-					}),
-				}),
-				Host.Frame({
-					LayoutOrder = 5,
-					Name = "Statuses",
-					BackgroundTransparency = 1,
-					Size = UDim2.new(0, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.XY,
-					Host.UIListLayout({
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 8),
-						Wraps = true,
-					}),
-					table.unpack(words),
-				}),
-				Host.Frame({
-					LayoutOrder = 6,
-					Name = "Commands",
-					BackgroundTransparency = 1,
-					Size = UDim2.new(0, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.XY,
-					Host.UIListLayout({
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 8),
-						Wraps = true,
-					}),
-					UI.Button({
-						LayoutOrder = 1,
-						Name = "More",
+					},
+					UI.Button "More" {
 						label = "Add 25",
+						icon = "increment",
+						appearance = "soft",
 						onActivate = function()
 							count:set(count:peek() + 25)
 						end,
-					}),
-					UI.Button({
-						LayoutOrder = 2,
-						Name = "Reset",
-						label = "Clear count",
+					},
+					UI.Button "Reset" {
+						label = "Clear",
+						appearance = "link",
 						onActivate = function()
 							count:set(0)
 						end,
-					}),
-					UI.Button({
-						LayoutOrder = 3,
-						Name = "Shape",
-						label = "Toggle ring",
-						onActivate = function()
-							form:set(if form:peek() == "dot" then "ring" else "dot")
-						end,
-					}),
-				}),
+					},
+				},
 			}
 			return root
 		end

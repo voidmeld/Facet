@@ -69,7 +69,8 @@ return {
 					Host.UIListLayout({
 						FillDirection = Enum.FillDirection.Horizontal,
 						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 16),
+						Padding = UDim.new(0, 12),
+						VerticalAlignment = Enum.VerticalAlignment.Center,
 						Wraps = true,
 					}),
 					UI.Badge({
@@ -109,51 +110,25 @@ return {
 						controlSize = rung,
 					}),
 				}),
-				Host.Frame({
+				UI.Picker "Status" {
 					LayoutOrder = 4,
-					Name = "Commands",
-					BackgroundTransparency = 1,
-					Size = UDim2.new(0, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.XY,
-					Host.UIListLayout({
-						FillDirection = Enum.FillDirection.Horizontal,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						Padding = UDim.new(0, 8),
-						Wraps = true,
-					}),
-					UI.Button({
-						LayoutOrder = 1,
-						Name = "Neutral",
-						label = "Neutral",
-						onActivate = function()
-							choose("neutral")
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 2,
-						Name = "Warning",
-						label = "Warning",
-						onActivate = function()
-							choose("warning")
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 3,
-						Name = "Error",
-						label = "Error",
-						onActivate = function()
-							choose("error")
-						end,
-					}),
-					UI.Button({
-						LayoutOrder = 4,
-						Name = "Size",
-						label = "Change size",
-						onActivate = function()
-							rung:set(if rung:peek() == "compact" then "large" else "compact")
-						end,
-					}),
-				}),
+					label = "Status",
+					selected = status,
+					options = {
+						{ value = "neutral", label = "Neutral" },
+						{ value = "warning", label = "Warning" },
+						{ value = "error", label = "Error" },
+					},
+				},
+				UI.Picker "Size" {
+					LayoutOrder = 5,
+					label = "Size",
+					selected = rung,
+					options = {
+						{ value = "compact", label = "Compact" },
+						{ value = "large", label = "Large" },
+					},
+				},
 			}
 			return root
 		end

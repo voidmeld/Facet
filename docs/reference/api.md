@@ -515,8 +515,8 @@ animation. If the owner is removed, an unfinished departure is cancelled.
 | Control | Main contract |
 |---|---|
 | `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. Returns a TextLabel. |
-| `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. |
-| `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max` and `diameter`. |
+| `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
+| `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max` and `diameter`. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
 | `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
 | `Skeleton` | A loading placeholder with a configurable form and line count. |
 | `AsyncImage` | An image or source, an optional resource or loader, a placeholder, a failure label and a status callback. `imageProperties` forwards native properties and children to the inner ImageLabel. |

@@ -557,8 +557,17 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 			elseif status == "warning" then "onWarning"
 			else "onSuccess"
 		rule(".facet-status-" .. status, { BackgroundColor3 = c(role), TextColor3 = c(partner) })
+		rule(".facet-status-" .. status .. " > .facet-status-ring", { Color = c(role) })
+		rule(".facet-status-" .. status .. " > .facet-text", { TextColor3 = c(partner) })
+		rule(".facet-status-" .. status .. " > .facet-icon", { ImageColor3 = c(partner) })
 	end
+	rule(".facet-status-hollow", { BackgroundTransparency = 1 })
 	rule(".facet-badge-utility", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
+	rule(".facet-badge-utility > .facet-text", { TextColor3 = c("contentSecondary") })
+	rule(".facet-badge-utility > .facet-icon", { ImageColor3 = c("contentSecondary") })
+	rule(".facet-badge-status", { BackgroundColor3 = c("control"), TextColor3 = c("content") })
+	rule(".facet-badge-status > .facet-text", { TextColor3 = c("content") })
+	rule(".facet-badge-status > .facet-icon", { ImageColor3 = c("content") })
 	rule(".facet-badge-status::UIPadding", { PaddingLeft = types.UDim.new(0, 20) })
 	rule(".facet-cutout", { Color = c("surface") })
 	for role, gradient in (extra.chromeGradient or {}) :: { [string]: ThemeTypes.Gradient } do
