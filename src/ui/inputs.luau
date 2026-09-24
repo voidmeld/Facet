@@ -732,7 +732,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		else
 			updateState()
 		end
-		if spec.repeatDelay or spec.repeatInterval or spec.onPointerDown or spec.onPointerUp then
+		if spec.repeatDelay or spec.repeatInterval or spec.onPointerDown or spec.onPointerUp or spec.onPointerCancel then
 			runtime.connect(node, "InputBegan", function(input)
 				local kind = input.UserInputType.Name
 				if

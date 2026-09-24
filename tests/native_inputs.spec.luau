@@ -460,6 +460,27 @@ t.describe("native input controls", function()
 		t.expect(activated).toBe(2)
 		t.expect(engine.heartbeat.count()).toBe(0)
 	end)
+	t.it("reports a pointer cancel when onPointerCancel is the only pointer option", function()
+		local cancels = 0
+		local node, stop, engine = world(function(UI)
+			return UI.Button "Hold" {
+				label = "Hold",
+				onPointerCancel = function()
+					cancels += 1
+				end,
+			}
+		end)
+		node.InputBegan.fire({
+			UserInputType = engine.types.Enum.UserInputType.MouseButton1,
+			KeyCode = engine.types.Enum.KeyCode.Unknown,
+		})
+		node.MouseLeave.fire()
+		t.expect(cancels).toBe(1)
+		node.MouseLeave.fire()
+		t.expect(cancels).toBe(1)
+		stop()
+	end)
+
 	t.it("follows GuiService.ReducedMotionEnabled for pop, validation pulse and busy dots", function()
 		local gui
 		local busy, value, number = Compose.cell(false), Compose.cell("2"), Compose.cell(2)

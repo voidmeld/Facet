@@ -157,6 +157,8 @@ Presentation options:
   or subtitle buttons.
 
 The pointer callbacks are `onPointerDown`, `onPointerUp` and `onPointerCancel`.
+Each callback works alone. `onPointerCancel` runs when a held pointer leaves
+the button.
 
 ### Toggle
 
