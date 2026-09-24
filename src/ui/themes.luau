@@ -26,6 +26,19 @@ local function copy<T>(value: T): T
 	return (out :: unknown) :: T
 end
 
+local skinStates = { default = true, hover = true, pressed = true, selected = true, disabled = true }
+local function stateMap(value: unknown): boolean
+	if type(value) ~= "table" or next(value :: { [unknown]: unknown }) == nil then
+		return false
+	end
+	for key in value :: { [unknown]: unknown } do
+		if not skinStates[key :: string] then
+			return false
+		end
+	end
+	return true
+end
+
 local function merge<T>(base: T, overrides: unknown): T
 	local out = (copy(base) :: unknown) :: { [unknown]: unknown }
 	for key, value in (overrides or {}) :: { [unknown]: unknown } do
@@ -33,6 +46,7 @@ local function merge<T>(base: T, overrides: unknown): T
 			out[key] = if type(value) == "table"
 					and type(out[key]) == "table"
 					and #(value :: { unknown }) == 0
+					and not stateMap(value)
 				then merge(out[key], value)
 				else copy(value)
 		end
@@ -542,7 +556,6 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		PaddingTop = types.UDim.new(0, 0),
 		PaddingBottom = types.UDim.new(0, 0),
 	})
-	rule(".facet-skinned", { BackgroundTransparency = 1 })
 	rule(".facet-button-captioned", { TextTransparency = 1 })
 	rule(".facet-button-caption", {
 		TextTransparency = 0,
@@ -752,6 +765,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-tab-filled >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-accent >> .facet-text", { TextColor3 = c("onAccent") })
+	rule(".facet-skinned", { BackgroundTransparency = 1 })
 	for _, definition in (package.rules or {}) :: { ThemeTypes.Rule } do
 		rule(definition.selector, table.clone(definition.properties or definition.props or {}))
 	end
@@ -1251,7 +1265,7 @@ function themes.skin(
 						bottomLeft = layer.bottomLeft,
 						bottomRight = layer.bottomRight,
 					} :: { [string]: ThemeTypes.AssetSource? })[corner]
-					if asset then
+					if asset or layer.asset then
 						image(
 							layer,
 							name .. corner,

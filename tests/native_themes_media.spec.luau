@@ -198,7 +198,8 @@ t.describe("native themes and media", function()
 		local stop, node = runtime.mount(function()
 			return themes.skin(runtime, package, "control", { types = engine.types, state = state })
 		end, engine.new("Folder"))
-		t.expect(#node:GetChildren()).toBe(3)
+		t.expect(#node:GetChildren()).toBe(5)
+		t.expect(node:FindFirstChild("control2bottomRight").Image).toBe("rbxassetid://3")
 		local image = node:FindFirstChild("control1")
 		t.expect(image.Image).toBe("rbxassetid://1")
 		t.expect(image.ScaleType).toBe(engine.types.Enum.ScaleType.Slice)
@@ -490,6 +491,46 @@ t.describe("native themes and media", function()
 		t.expect(indicator:HasTag("facet-status-hollow")).toBe(false)
 		stop()
 		runtime:dispose()
+	end)
+
+	t.it("lets the skinned tag outrank every built-in control fill", function()
+		local engine, runtime = setup()
+		local stop, sheet = runtime.mount(function()
+			return themes.createStyleSheet(runtime, themes.neutralPackage(), { types = engine.types })
+		end, engine.new("Folder"))
+		local skinned, highest = nil, 0
+		for _, rule in sheet:GetChildren() do
+			if rule.Selector == ".facet-skinned" then
+				skinned = rule.Priority
+			elseif
+				string.match(rule.Selector, "^%.facet%-[%w%-]+$")
+				and rule:GetProperties().BackgroundTransparency ~= nil
+			then
+				highest = math.max(highest, rule.Priority)
+			end
+		end
+		t.expect(skinned > highest).toBe(true)
+		stop()
+		runtime:dispose()
+	end)
+
+	t.it("replaces a skin state map when a derived package overrides it", function()
+		local basis = themes.neutralPackage()
+		basis.assets = {
+			a = { content = "rbxassetid://1" },
+			b = { content = "rbxassetid://2" },
+			c = { content = "rbxassetid://3" },
+		}
+		basis.chrome.control = { kind = "fill", asset = { default = "a", pressed = "b" } }
+		local base = themes.define(basis)
+		local derived = themes.define({
+			base = base,
+			identity = { id = "derived" },
+			chrome = { control = { asset = { default = "c" } } },
+		})
+		t.expect(derived.chrome.control.asset.default).toBe("c")
+		t.expect(derived.chrome.control.asset.pressed).toBe(nil)
+		t.expect(derived.chrome.control.kind).toBe("fill")
 	end)
 
 	t.it("rejects malformed type roles, unknown shadow presets and unreadable selected labels", function()
