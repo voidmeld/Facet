@@ -549,6 +549,10 @@ same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
 - `define(definition)` derives from `base` (neutral by default) and returns
   `package?, report`. Check `report.ok` before use. An accepted theme package is
   recursively frozen. Callbacks, cycles and malformed definitions are rejected.
+  A type role needs a positive size, and a chrome shadow name must be a
+  package shadow or a preset (`raised` or `overlay`). Each palette pair needs a
+  contrast of at least 4.5:1, which includes `onSelected` (or `content`) on
+  `controlSelected`.
   Color channels and semantic contrast pairs are validated.
 - `checkCoverage(package, needs)` returns `{ ok, covered, missing }`.
 - `resolveIcon(package, name, state?)` resolves real image content.

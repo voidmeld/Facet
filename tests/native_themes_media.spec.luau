@@ -84,6 +84,8 @@ t.describe("native themes and media", function()
 		light.colors = table.clone(light.colors)
 		light.colors.surface = { r = 0.9, g = 0.9, b = 0.9 }
 		light.colors.content = { r = 0.1, g = 0.1, b = 0.1 }
+		light.extra = table.clone(light.extra or {})
+		light.extra.onSelected = { r = 1, g = 1, b = 1 }
 		table.insert(package.style.themes, light)
 		package = themes.define(package)
 		local selection, reduced, explicit = Compose.cell("Dark"), Compose.cell(false), Compose.cell(nil)
@@ -488,6 +490,23 @@ t.describe("native themes and media", function()
 		t.expect(indicator:HasTag("facet-status-hollow")).toBe(false)
 		stop()
 		runtime:dispose()
+	end)
+
+	t.it("rejects malformed type roles, unknown shadow presets and unreadable selected labels", function()
+		local typed = themes.neutralPackage()
+		local roles = (typed.metrics.typography :: unknown) :: { [string]: unknown }
+		roles.body = 5
+		t.expect((select(2, themes.define(typed))).ok).toBe(false)
+		local shadowed = themes.neutralPackage()
+		shadowed.chrome = { control = { kind = "native", shadow = "floating" } }
+		t.expect((select(2, themes.define(shadowed))).ok).toBe(false)
+		local selected = themes.neutralPackage()
+		selected.style.themes[1].extra = table.clone(selected.style.themes[1].extra or {})
+		selected.style.themes[1].extra.controlSelected = { r = 0.9, g = 0.9, b = 0.92 }
+		t.expect((select(2, themes.define(selected))).ok).toBe(false)
+		local valid = themes.neutralPackage()
+		valid.chrome = { control = { kind = "native", shadow = "raised" } }
+		t.expect((select(2, themes.define(valid))).ok).toBe(true)
 	end)
 
 	t.it("rejects unreadable semantic color pairs and reports contributed theme coverage", function()

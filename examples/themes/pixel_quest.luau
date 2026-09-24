@@ -158,6 +158,7 @@ local QUEST = {
 		controlPressed = rgb(107, 67, 38),
 
 		controlSelected = rgb(163, 148, 71),
+		onSelected = INK,
 		contentSecondary = TAN,
 		hairline = INK,
 		hairlineOpacity = 0.2,

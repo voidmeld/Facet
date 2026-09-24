@@ -144,6 +144,11 @@ local function frozen<T>(value: T): T
 	return (table.freeze(value) :: unknown) :: T
 end
 
+local shadowPresets: { [string]: ThemeTypes.Shadow } = {
+	raised = { blurRadius = { offset = 14 }, transparency = 0.35, offset = { y = { offset = 3 } } },
+	overlay = { blurRadius = { offset = 24 }, transparency = 0.45, offset = { y = { offset = 8 } } },
+}
+
 function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.ThemePackage?, ThemeTypes.ThemeReport)
 	local errors: { ThemeTypes.ThemeIssue } = {}
 	local seen: { [unknown]: boolean } = {}
@@ -186,6 +191,31 @@ function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.Them
 	end
 	if type(package.style) ~= "table" or type(package.style.themes) ~= "table" or #package.style.themes == 0 then
 		table.insert(errors, { field = "style.themes", message = "A theme package needs at least one palette" })
+	end
+	if #errors > 0 then
+		return nil, { ok = false, errors = errors, missing = {}, contrast = {} }
+	end
+	local typography = (package.metrics.typography :: unknown) :: { [string]: unknown }
+	for _, role in themes.TYPE_ROLES do
+		local entry = typography[role]
+		local size = if type(entry) == "table" then (entry :: { size: unknown }).size else nil
+		if entry ~= nil and (type(size) ~= "number" or size <= 0) then
+			table.insert(
+				errors,
+				{ field = "metrics.typography." .. role, message = "Type roles require a positive size" }
+			)
+		end
+	end
+	local chrome: { [string]: ThemeTypes.SkinLayer } = package.chrome or {}
+	local shadows: { [string]: ThemeTypes.Shadow } = package.style.shadows or {}
+	for slot, recipe in chrome do
+		local shadow = recipe.shadow
+		if type(shadow) == "string" and shadows[shadow] == nil and shadowPresets[shadow] == nil then
+			table.insert(
+				errors,
+				{ field = "chrome." .. slot .. ".shadow", message = "Unknown shadow preset " .. shadow }
+			)
+		end
 	end
 	if #errors > 0 then
 		return nil, { ok = false, errors = errors, missing = {}, contrast = {} }
@@ -250,6 +280,22 @@ function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.Them
 					table.insert(
 						errors,
 						{ field = "style." .. palette.name, message = pair[1] .. " contrast is below 4.5:1" }
+					)
+				end
+			end
+			local extra = (
+				merge(neutral.style.themes[1].extra or {}, palette.extra or {}) :: unknown
+			) :: { [string]: ThemeTypes.RGB? }
+			local selectedFill = extra.controlSelected
+			local selectedLabel = extra.onSelected or colors.content
+			if type(selectedFill) == "table" and type(selectedLabel) == "table" then
+				local first, second = luminance(selectedLabel), luminance(selectedFill)
+				local ratio = (math.max(first, second) + 0.05) / (math.min(first, second) + 0.05)
+				table.insert(contrast, { pair = "onSelected/controlSelected", ratio = ratio, ok = ratio >= 4.5 })
+				if ratio < 4.5 then
+					table.insert(
+						errors,
+						{ field = "style." .. palette.name, message = "onSelected contrast is below 4.5:1" }
 					)
 				end
 			end
@@ -1030,11 +1076,6 @@ type MountedImage = {
 	properties: ImageLayer,
 	caption: Compose.Cell<ImageLayer>?,
 	visible: boolean,
-}
-
-local shadowPresets: { [string]: ThemeTypes.Shadow } = {
-	raised = { blurRadius = { offset = 14 }, transparency = 0.35, offset = { y = { offset = 3 } } },
-	overlay = { blurRadius = { offset = 24 }, transparency = 0.45, offset = { y = { offset = 8 } } },
 }
 
 function themes.skin(
