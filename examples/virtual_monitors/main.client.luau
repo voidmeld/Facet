@@ -110,22 +110,74 @@ local lifetime = Compose.createRootOwner(function()
 			})
 			parts[name] = panel
 			table.insert(children, panel)
-			table.insert(
-				children,
-				Host.Part({
-					Name = name .. "Enclosure",
-					Anchored = true,
-					CanCollide = false,
-					Size = Vector3.new(10.96, 10.8 * screens.CANVAS.h / screens.CANVAS.w + 0.16, 0.2),
-					CFrame = function(use)
-						local progress = if use(reducedMotion) then use(entrance) else use(arrival)
-						return frame * CFrame.new(0, -2 * (1 - progress), 0.14 + 1.5 * (1 - progress))
-					end,
-					Color = Color3.fromRGB(35, 38, 47),
-					Material = Enum.Material.Metal,
-				})
-			)
-
+			local screenHeight = 10.8 * screens.CANVAS.h / screens.CANVAS.w
+			local function arrived(offset)
+				return function(use)
+					local progress = if use(reducedMotion) then use(entrance) else use(arrival)
+					return frame * CFrame.new(0, -2 * (1 - progress), 1.5 * (1 - progress)) * offset
+				end
+			end
+			for _, piece in
+				{
+					{
+						"Bezel",
+						Vector3.new(11.04, screenHeight + 0.24, 0.1),
+						CFrame.new(0, 0, 0.1),
+						Color3.fromRGB(14, 14, 17),
+						Enum.Material.Glass,
+					},
+					{
+						"Housing",
+						Vector3.new(11.04, screenHeight + 0.24, 0.22),
+						CFrame.new(0, 0, 0.26),
+						Color3.fromRGB(58, 60, 66),
+						Enum.Material.Metal,
+					},
+					{
+						"Back",
+						Vector3.new(7.2, screenHeight * 0.62, 0.34),
+						CFrame.new(0, -0.3, 0.52),
+						Color3.fromRGB(52, 54, 60),
+						Enum.Material.Metal,
+					},
+				}
+			do
+				table.insert(
+					children,
+					Host.Part({
+						Name = name .. piece[1],
+						Anchored = true,
+						CanCollide = false,
+						Size = piece[2],
+						CFrame = arrived(piece[3]),
+						Color = piece[4],
+						Material = piece[5],
+					})
+				)
+			end
+			for _, piece in
+				{
+					{
+						"Neck",
+						Vector3.new(1.1, 6.6, 0.18),
+						CFrame.new(0, -3.7, 0.86) * CFrame.Angles(math.rad(-4), 0, 0),
+					},
+					{ "Foot", Vector3.new(3.6, 0.14, 2.8), CFrame.new(0, -6.93, 1.3) },
+				}
+			do
+				table.insert(
+					children,
+					Host.Part({
+						Name = name .. "Stand" .. piece[1],
+						Anchored = true,
+						CanCollide = false,
+						Size = piece[2],
+						CFrame = frame * piece[3],
+						Color = Color3.fromRGB(170, 172, 178),
+						Material = Enum.Material.Metal,
+					})
+				)
+			end
 			table.insert(
 				children,
 				Host.Part({
@@ -169,26 +221,6 @@ local lifetime = Compose.createRootOwner(function()
 				Material = Enum.Material.Plaster,
 			}
 		)
-		for _, side in { -1, 1 } do
-			table.insert(
-				children,
-				Host.Part "AccentLight" {
-					Anchored = true,
-					CanCollide = false,
-					Size = Vector3.new(0.06, 24, 0.06),
-					CFrame = CFrame.new(side * 20, 8, 9),
-					Color = Color3.fromRGB(148, 128, 232),
-					Material = Enum.Material.Neon,
-					Host.PointLight({
-						Color = Color3.fromRGB(140, 119, 227),
-						Brightness = function(use)
-							return if use(dark) then 2 else 0.6
-						end,
-						Range = 32,
-					}),
-				}
-			)
-		end
 		return Host.Model(children)
 	end, workspace)
 
