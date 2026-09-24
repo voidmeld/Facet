@@ -395,7 +395,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end)
 			table.insert(bodyProps, button)
 		end
-		local rowProps: Types.FrameNativeProps = {
+		local rowProps: Types.CanvasGroupNativeProps = {
 			Name = "Snack",
 			BackgroundTransparency = 0,
 			BorderSizePixel = 0,
@@ -453,7 +453,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				}
 			)
 		end
-		local row = ctx.styled(Host.Frame(rowProps), "snackbar")
+		local row = ctx.styled(Host.CanvasGroup(rowProps), "snackbar")
 		ctx.styled(row, "panel")
 		surfaces.skin(row, "panel")
 		local gone = Compose.cell(0)
@@ -461,7 +461,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local shown = Compose.cell(false)
 		local slide = runtime.tween(function(use: ComposeTypes.Use)
 			return if phase and use(phase.exiting) then 0 elseif use(shown) then 1 else 0
-		end, { seconds = 0.2 })
+		end, { seconds = 0.2, ease = Compose.easing.outCubic })
 		local function amount(use: ComposeTypes.Use): number
 			if read(ctx.config.reducedMotion, use) == true or use(reduced) then
 				return if phase and use(phase.exiting) then 0 else 1
@@ -473,6 +473,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			Position = function(use: ComposeTypes.Use)
 				local travel = (1 - amount(use)) * (use(measured).Y + 16)
 				return D2.new(0.5, 0, 1, -16 + travel + use(gone))
+			end,
+			GroupTransparency = function(use: ComposeTypes.Use)
+				return 1 - amount(use)
+			end,
+			Interactable = function(use: ComposeTypes.Use)
+				return not (phase and use(phase.exiting))
 			end,
 		})
 		local state = ctx.observe(row, "GuiState")

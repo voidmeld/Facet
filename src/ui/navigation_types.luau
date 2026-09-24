@@ -341,7 +341,7 @@ export type Surfaces = {
 	overlay: (GuiObject, Value<boolean>, (PresencePhase?) -> Instance, OverlayOptions?) -> Types.Child,
 	appearance: (PresencePhase?, MotionTiming) -> Appearance,
 	popover: (GuiObject, Appearance, (ComposeTypes.Use) -> (Vector2, Vector2)) -> (),
-	sheetModal: ((SheetSpec, SheetRequest) -> Frame)?,
+	sheetModal: ((SheetSpec, SheetRequest, PresencePhase?) -> Frame)?,
 }
 export type PickerConstructor = (<V>(PickerSpec<V>) -> GuiObject) & ((string) -> <V>(PickerSpec<V>) -> GuiObject)
 export type MenuConstructor = (<V>(MenuSpec<V>) -> Frame) & ((string) -> <V>(MenuSpec<V>) -> Frame)

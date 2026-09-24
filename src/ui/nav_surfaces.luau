@@ -6,6 +6,7 @@ local Inputs = require("./input_types")
 local ComposeTypes = require("../vendor/compose/core")
 local parts = require("./overlay_parts")
 local Overlay = require("./overlay_types")
+local reducedMotion = require("./motion")
 
 type Controls = {
 	DisclosureGroup: Types.Constructor<Nav.DisclosureGroupSpec, Frame>,
@@ -25,6 +26,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local callouts = Compose.cell({} :: { CalloutRegistration })
 	local POPOVER: Nav.MotionTiming = { enter = 0.15, exit = 0.1 }
 	local DIALOG: Nav.MotionTiming = { enter = 0.2, exit = 0.15 }
+	local REVEAL: Nav.MotionTiming = { enter = 0.25, exit = 0.2 }
 	local nextCallout = 0
 	local function body<P, R>(content: R | ((P) -> R), payload: P): R
 		return if type(content) == "function" then content(payload) else content
@@ -90,10 +92,38 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end,
 		}
 
+		local reduce = reducedMotion(ctx)
+		local travel = runtime.tween(function(use: ComposeTypes.Use): number
+			return if use(spec.expanded) then 1 else 0
+		end, {
+			seconds = function(_: ComposeTypes.Use): number
+				return if spec.expanded:peek() then REVEAL.enter else REVEAL.exit
+			end,
+			ease = Compose.easing.outCubic,
+		})
+		local function progress(use: ComposeTypes.Use?): number
+			if reduce(use) then
+				return if read(spec.expanded, use) then 1 else 0
+			end
+			return read(travel, use)
+		end
+		local closed = Compose.formula(function(use: ComposeTypes.Use): boolean
+			return progress(use) <= 0
+		end)
+		local caret = header:FindFirstChild(if side == "leading" then "LeadingIcon" else "TrailingIcon", true)
+		if caret and caret:IsA("GuiObject") then
+			runtime.decorate(caret, {
+				Rotation = function(use: ComposeTypes.Use)
+					local amount = progress(use)
+					return if use(spec.expanded) then -90 * (1 - amount) else 90 * amount
+				end,
+			})
+		end
+
 		local root = ctx.column(
 			{
 				header,
-				Compose.show(spec.expanded, function()
+				Compose.presence(spec.expanded, function(phase: Nav.PresencePhase)
 					local node: Instance = body(spec.content, nil)
 					if spec.appearance == "divided" then
 						node = ctx.column({
@@ -104,16 +134,51 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							node,
 						})
 					end
-					if node:IsA("GuiObject") then
-						runtime.decorate(node, { LayoutOrder = 2 })
-					end
-					Compose.cleanup(function()
-						if gui and surfaces.within(gui.SelectedObject, node) and header.Parent then
+					local fade = Host.CanvasGroup "RevealFade" {
+						BackgroundTransparency = 1,
+						Size = D2.new(1, 0, 0, 0),
+						AutomaticSize = E.AutomaticSize.Y,
+						GroupTransparency = function(use: ComposeTypes.Use)
+							return 1 - progress(use)
+						end,
+						node,
+					}
+					local natural = ctx.observe(fade, "AbsoluteSize")
+					local reveal = Host.Frame "Reveal" {
+						BackgroundTransparency = 1,
+						ClipsDescendants = true,
+						LayoutOrder = 2,
+						Interactable = function(use: ComposeTypes.Use)
+							return not use(phase.exiting)
+						end,
+						AutomaticSize = function(use: ComposeTypes.Use)
+							return if progress(use) >= 1 then E.AutomaticSize.Y else E.AutomaticSize.None
+						end,
+						Size = function(use: ComposeTypes.Use)
+							local amount = progress(use)
+							return if amount >= 1
+								then D2.new(1, 0, 0, 0)
+								else D2.new(1, 0, 0, math.floor(use(natural).Y * amount + 0.5))
+						end,
+						fade,
+					}
+					local function handBack()
+						if gui and surfaces.within(gui.SelectedObject, reveal) and header.Parent then
 							gui.SelectedObject = header
 						end
+					end
+					Compose.watch(function(use: ComposeTypes.Use)
+						if use(phase.exiting) then
+							handBack()
+						end
 					end)
-					return node
-				end),
+					Compose.cleanup(handBack)
+					return reveal
+				end, {
+					exit = function()
+						return { completed = closed }
+					end,
+				}),
 			},
 			ctx.props(spec, {
 				"label",
@@ -164,13 +229,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local input = surfaces.service("UserInputService")
 		local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
 		surfaces.attach(root, {
-			surfaces.overlay(root, spec.expanded, function()
+			surfaces.overlay(root, spec.expanded, function(phase: Nav.PresencePhase?)
 				local function close()
 					spec.expanded:set(false)
 				end
-				return surfaces.modal(function()
-					return surfaces.centered(
-						surfaces.skin(ctx.styled(
+				local shown = surfaces.appearance(phase, DIALOG)
+				return surfaces.modal(
+					function()
+						local sheet = surfaces.skin(ctx.styled(
 							ctx.column({
 								ctx.text({ Text = spec.label }),
 								body(spec.content, nil),
@@ -185,15 +251,35 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							}, {
 								Name = "Expanded",
 								BackgroundTransparency = 0,
-								Size = D2.new(1, -32, 0, 0),
+								Size = D2.new(1, 0, 0, 0),
 								AutomaticSize = E.AutomaticSize.Y,
 							}),
 							"panel"
-						)),
-						640
-					)
-				end, close, { initialFocus = spec.initialFocus })
-			end),
+						))
+						return surfaces.centered(
+							Host.CanvasGroup "ExpandedPresentation" {
+								BackgroundTransparency = 1,
+								GroupTransparency = function(use: ComposeTypes.Use)
+									return 1 - shown(use)
+								end,
+								sheet :: Instance,
+								Host.UIScale "PresentationScale" {
+									Scale = function(use: ComposeTypes.Use)
+										return 0.94 + 0.06 * shown(use)
+									end,
+								} :: Instance,
+							},
+							640
+						)
+					end,
+					close,
+					{
+						initialFocus = spec.initialFocus,
+						exiting = if phase then phase.exiting else nil,
+						appearance = shown,
+					}
+				)
+			end, { motion = DIALOG }),
 		})
 		return root
 	end)

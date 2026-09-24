@@ -462,6 +462,7 @@ t.describe("native Popover: the compact sheet and the live route switch", functi
 		w.input.PreferredInput = w.Enum.PreferredInput.Touch
 		w.screen.AbsoluteSize = Vector2.new(390, 800)
 		open:set(true)
+		local rest = w.find("SheetPanel").Size.Y.Offset
 		local drag = w.find("UIDragDetector")
 		drag.DragStart.fire(w.Vector2.new(0, 0))
 		drag.DragContinue.fire(w.Vector2.new(0, 500))
@@ -469,7 +470,7 @@ t.describe("native Popover: the compact sheet and the live route switch", functi
 		drag.DragEnd.fire()
 		t.expect(log.changes[#log.changes]).toBe(false)
 		t.expect(w.find("SheetPanel") ~= nil).toBe(true)
-		t.expect(w.find("SheetPanel").Size.Y.Offset).toBe(360)
+		t.expect(w.find("SheetPanel").Size.Y.Offset).toBe(rest)
 		w.stop()
 	end)
 end)

@@ -197,6 +197,7 @@ t.describe("native Notice: affixed placement reserves space a real consumer avoi
 		local inset = consumer(w)
 		local banner = w.find("Banner")
 		t.expect(banner.Size.X.Scale).toBe(1)
+		w.advance(0.3, 18)
 		t.expect(banner.AutomaticSize).toBe(w.Enum.AutomaticSize.Y)
 		banner.AbsolutePosition = Vector2.new(0, 0)
 		banner.AbsoluteSize = Vector2.new(800, 52)

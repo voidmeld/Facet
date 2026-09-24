@@ -310,6 +310,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				end,
 			}),
 			UI.Popover "StatusPopover" {
+				title = "Status",
 				source = { node = profile },
 				isPresented = statusOpen,
 				onPresentedChange = function(value)

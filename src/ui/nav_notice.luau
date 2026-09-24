@@ -6,6 +6,7 @@ local Inputs = require("./input_types")
 local ComposeTypes = require("../vendor/compose/core")
 local parts = require("./overlay_parts")
 local reservations = require("./reservations")
+local reducedMotion = require("./motion")
 
 type Controls = {
 	Notice: Types.Constructor<Overlay.NoticeSpec, Frame>,
@@ -42,6 +43,8 @@ local SEVERITIES = table.freeze({
 	warning = "status.warning",
 	error = "status.error",
 })
+
+local REVEAL = table.freeze({ enter = 0.25, exit = 0.2 })
 
 local ICON_TAGS = table.freeze({
 	info = "facet-icon-info",
@@ -103,6 +106,23 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 		local actions: { Overlay.Action } = spec.actions or {}
 		parts.checkActions(ctx, where, spec.actions, 2, { "Link", "Close" })
+		local reduce = reducedMotion(ctx)
+		local present = Compose.cell(false)
+		local leaving = Compose.cell(false)
+		local travel = runtime.tween(function(use: ComposeTypes.Use): number
+			return if use(present) then 1 else 0
+		end, {
+			seconds = function(_: ComposeTypes.Use): number
+				return if present:peek() then REVEAL.enter else REVEAL.exit
+			end,
+			ease = Compose.easing.outCubic,
+		})
+		local function progress(use: ComposeTypes.Use?): number
+			if reduce(use) then
+				return if read(present, use) then 1 else 0
+			end
+			return read(travel, use)
+		end
 		local emphasis = appearance == "emphasis"
 		local status = "facet-status-" .. severity
 		local offered = Compose.cell(0)
@@ -243,7 +263,49 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			table.insert(rowChildren, mark)
 		end
-		table.insert(rowChildren, Host.Frame(bodyProps))
+		local body = Host.Frame(bodyProps)
+		table.insert(rowChildren, body)
+		local gui = surfaces.service("GuiService")
+		local frames = runtime.host.frames
+		local noticeOwner = assert(Compose.currentOwner())
+		local root: Frame
+		local stopWaiting: (() -> ())? = nil
+		local function stopWatching()
+			local stop = stopWaiting
+			stopWaiting = nil
+			if stop then
+				stop()
+			end
+		end
+		Compose.cleanup(stopWatching)
+		local function collapse(report: () -> ())
+			if leaving:peek() then
+				return
+			end
+			local function finish()
+				leaving:set(false)
+				report()
+				if not noticeOwner.isDisposed() then
+					present:set(true)
+				end
+			end
+			if frames == nil or reduce() or progress() <= 0 then
+				finish()
+				return
+			end
+			leaving:set(true)
+			if gui and surfaces.within(gui.SelectedObject, root) then
+				gui.SelectedObject = nil
+			end
+			present:set(false)
+			stopWaiting = frames.onFrame(function()
+				if progress() > 0 and not reduce() then
+					return
+				end
+				stopWatching()
+				finish()
+			end)
+		end
 		if spec.onDismiss then
 			local dismiss = spec.onDismiss
 			table.insert(
@@ -256,7 +318,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					AutomaticSize = E.AutomaticSize.None,
 					LayoutOrder = 3,
 					onActivate = function()
-						dismiss()
+						collapse(dismiss)
 					end,
 				}
 			)
@@ -269,9 +331,42 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			BorderSizePixel = 0,
 			ZIndex = if placement == "affixed" then 50 else nil,
 		}
-		local root = Host.Frame(ctx.props(spec, NOTICE_KEYS, defaults))
+		local native = (ctx.props(spec, NOTICE_KEYS, defaults) :: unknown) :: { [unknown]: unknown }
+		local restSize, restAutomatic, restClip, restInteractable =
+			native.Size, native.AutomaticSize, native.ClipsDescendants, native.Interactable
+		local inset = ctx.padding(8, 8)
+		local bodyExtent = ctx.observe(body, "AbsoluteSize")
+		local function settled(use: ComposeTypes.Use): boolean
+			return progress(use) >= 1
+		end
+		native.AutomaticSize = function(use: ComposeTypes.Use): unknown
+			return if settled(use) then read(restAutomatic, use) else E.AutomaticSize.None
+		end
+		native.Size = function(use: ComposeTypes.Use): unknown
+			local rest = read(restSize, use)
+			if settled(use) then
+				return rest
+			end
+			local width = if typeof(rest) == "UDim2" then (rest :: UDim2).X else UD.new(1, 0)
+			local tallest = use(bodyExtent).Y
+			for _, child in rowChildren do
+				if typeof(child) == "Instance" and child ~= body and (child :: Instance):IsA("GuiObject") then
+					tallest = math.max(tallest, (child :: GuiObject).Size.Y.Offset)
+				end
+			end
+			local height = tallest + inset.PaddingTop.Offset + inset.PaddingBottom.Offset
+			return D2.new(width.Scale, width.Offset, 0, math.floor(height * progress(use) + 0.5))
+		end
+		native.ClipsDescendants = function(use: ComposeTypes.Use): unknown
+			return if settled(use) then read(restClip, use) == true else true
+		end
+		native.Interactable = function(use: ComposeTypes.Use): unknown
+			return not use(leaving) and read(restInteractable, use) ~= false
+		end
+		root = Host.Frame((native :: unknown) :: Types.FrameNativeProps)
+		present:set(true)
 		surfaces.attach(root, {
-			ctx.padding(8, 8),
+			inset,
 			ctx.corner(),
 			Host.UIListLayout({
 				FillDirection = E.FillDirection.Horizontal,

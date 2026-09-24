@@ -24,8 +24,10 @@ local KEYS = {
 	"maxWidth",
 	"maxHeight",
 	"compact",
+	"title",
 }
 local POPOVER = table.freeze({ enter = 0.15, exit = 0.1 })
+local SHEET_EXIT = 0.2
 local MARGIN = 8
 local TAIL = 10
 local PADDING = 8
@@ -99,6 +101,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 		if spec.tail ~= nil and type(spec.tail) ~= "boolean" then
 			error(`Facet {where}: tail must be true or false`, 0)
+		end
+		if spec.title ~= nil and not parts.bound(ctx, spec.title, "string") then
+			error(`Facet {where}: title must be a string or a bound string`, 0)
 		end
 		local compact = spec.compact or "sheet"
 		if compact ~= "sheet" and compact ~= "popover" then
@@ -221,6 +226,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			local width = use(layerSize).X
 			local kind = if preferred then use(preferred) else nil
 			return if kind == E.PreferredInput.Touch and width > 0 and width < 600 then "sheet" else "popover"
+		end)
+		local motion: Nav.MotionTiming = { enter = POPOVER.enter, exit = POPOVER.exit }
+		Compose.watch(function(use: ComposeTypes.Use)
+			motion.exit = if use(route) == "sheet" then SHEET_EXIT else POPOVER.exit
 		end)
 		Compose.watch(function(use: ComposeTypes.Use)
 			if read(spec.isPresented, use) ~= true then
@@ -385,16 +394,17 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			modal:SetAttribute("FacetRoute", "popover")
 			return modal
 		end
-		local function sheeted(): Frame
+		local function sheeted(phase: Nav.PresencePhase?): Frame
 			local build = assert(surfaces.sheetModal, "Facet UI.Popover requires the Sheet surface")
 			local modal = build({
 				isPresented = Compose.cell(true),
-				detent = Compose.cell("medium"),
-				title = "",
+				detent = Compose.cell("hug"),
+				detents = { "hug" :: Nav.SheetDetent },
+				title = spec.title,
 				content = spec.content,
 			}, function(reason: string): boolean
 				return propose(false, if reason == "outside" then "outside" else "cancel")
-			end)
+			end, phase)
 			modal:SetAttribute("FacetRoute", "sheet")
 			return modal
 		end
@@ -439,7 +449,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							return { use(route) }
 						end,
 						render = function(item: ComposeTypes.Readable<string>): Instance
-							local modal = if item:peek() == "sheet" then sheeted() else anchored(phase)
+							local modal = if item:peek() == "sheet" then sheeted(phase) else anchored(phase)
 							local restore = pending
 							pending = nil
 							if restore and gui then
@@ -465,7 +475,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end,
 					}),
 				})
-			end, { motion = POPOVER }),
+			end, { motion = motion }),
 		})
 		Compose.cleanup(function()
 			disposed = true
