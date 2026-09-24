@@ -90,6 +90,7 @@ controls(runtime).Callout : function
 controls(runtime).Chip : function
 controls(runtime).CollapsibleView : function
 controls(runtime).ComboBox : function
+controls(runtime).Dialog : function
 controls(runtime).DisclosureGroup : function
 controls(runtime).Label : function
 controls(runtime).LevelPicker : function
@@ -133,6 +134,7 @@ type ComposeModule
 type ComposeRobloxModule
 type ControlOptions
 type Controls
+type DialogSpec
 type DisclosureGroupSpec
 type Facet
 type IdentityCollectionSpec
@@ -147,6 +149,9 @@ type MenuSpec
 type NavigationDestination
 type NavigationEntry
 type NavigationStackSpec
+type OverlayAction
+type OverlayHero
+type OverlayMedia
 type Owner
 type PageViewSpec
 type PickerOption

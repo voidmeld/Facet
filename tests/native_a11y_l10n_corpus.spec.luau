@@ -386,6 +386,20 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			actions = { { id = "ok", label = "OK" }, { id = "cancel", label = "Cancel", role = "cancel" } },
 		}
 	end,
+	Dialog = function(Host)
+		local open = Compose.cell(true)
+		return {
+			title = "Confirm",
+			isPresented = open,
+			onPresentedChange = function(nextValue: boolean)
+				open:set(nextValue)
+			end,
+			content = function()
+				return Host.TextLabel({ Text = "Body" })
+			end,
+			actions = { { id = "ok", label = "OK", onActivate = function() end } },
+		}
+	end,
 	Sheet = function(Host)
 		return {
 			title = "Sheet",

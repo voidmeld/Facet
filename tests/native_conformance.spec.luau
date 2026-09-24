@@ -106,6 +106,9 @@ local fixtures = {
 	Alert = function()
 		return { title = "Confirm", isPresented = Compose.cell(false), actions = { { id = "ok", label = "OK" } } }
 	end,
+	Dialog = function()
+		return { title = "Confirm", isPresented = Compose.cell(false), closeButton = false }
+	end,
 	Sheet = function(Host)
 		return {
 			detent = Compose.cell("medium"),

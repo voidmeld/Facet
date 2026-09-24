@@ -398,5 +398,6 @@ return function(ctx: Types.Context): Nav.Surfaces
 		selecting = selecting,
 		overlay = overlay,
 		available = available,
+		sheetModal = nil,
 	}
 end

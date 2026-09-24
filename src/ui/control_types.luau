@@ -4,6 +4,7 @@ local Inputs = require("./input_types")
 local Navigation = require("./navigation_types")
 local Collections = require("./collection_types")
 local Media = require("./media_types")
+local Overlay = require("./overlay_types")
 
 export type Controls = {
 	Button: typeof(((nil :: unknown) :: Inputs.InputControls).Button),
@@ -41,6 +42,7 @@ export type Controls = {
 	Avatar: typeof(((nil :: unknown) :: Media.MediaControls).Avatar),
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
+	Dialog: typeof(((nil :: unknown) :: Overlay.OverlayControls).Dialog),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

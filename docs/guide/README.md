@@ -48,7 +48,7 @@ to select a control. Then read the exact contract of that control in the
 | Choice and accepted custom text | `UI.Picker`, `UI.ComboBox` |
 | Named destinations, drill-down and sequential pages | `UI.TabView`, `UI.NavigationStack`, `UI.PageView` |
 | Contextual radial actions | `UI.RadialMenu` |
-| Brief decisions and substantial presented content | `UI.Alert`, `UI.Sheet` |
+| Brief decisions and substantial presented content | `UI.Alert`, `UI.Dialog`, `UI.Sheet` |
 | Inline disclosure and larger content presentation | `UI.DisclosureGroup`, `UI.CollapsibleView` |
 | Contextual teaching | `UI.Callout` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |

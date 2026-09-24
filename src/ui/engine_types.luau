@@ -688,6 +688,7 @@ export type Observe =
 	& ((InputContext, "Enabled") -> Compose.Cell<boolean>)
 	& ((Instance, "Parent") -> Compose.Cell<Instance?>)
 	& ((LayerCollector, "Enabled") -> Compose.Cell<boolean>)
+	& ((ScrollingFrame, "AbsoluteCanvasSize") -> Compose.Cell<Vector2>)
 	& ((ScrollingFrame, "AbsoluteWindowSize") -> Compose.Cell<Vector2>)
 	& ((ScrollingFrame, "CanvasPosition") -> Compose.Cell<Vector2>)
 	& ((TextBox, "FontFace") -> Compose.Cell<Font>)
@@ -734,6 +735,8 @@ export type Observe =
 	& ((UserInputService, "GamepadEnabled") -> Compose.Cell<boolean>)
 	& ((UserInputService, "KeyboardEnabled") -> Compose.Cell<boolean>)
 	& ((UserInputService, "MouseEnabled") -> Compose.Cell<boolean>)
+	& ((UserInputService, "OnScreenKeyboardSize") -> Compose.Cell<Vector2>)
+	& ((UserInputService, "OnScreenKeyboardVisible") -> Compose.Cell<boolean>)
 	& ((UserInputService, "PreferredInput") -> Compose.Cell<Enum.PreferredInput>)
 	& ((UserInputService, "TouchEnabled") -> Compose.Cell<boolean>)
 

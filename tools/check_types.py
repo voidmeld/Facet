@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / "artifacts/verify/types"
 LOCK = ROOT / "tools/typecheck/roblox.lock.json"
 WITNESS = ROOT / "tests/types/controls_witness.luau"
-FLAGS = []
+FLAGS = ["LuauTarjanChildLimit=40000"]
 DIAGNOSTIC = re.compile(r"^(.+?\.lua(?:u)?)(?: \[[^\]]*\])?\((\d+),(\d+)\): (\w+): (.*)$", re.M)
 CONSUMER = ROOT / "examples/consumer"
 
@@ -157,7 +157,7 @@ def main():
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument("--source-only", action="store_true", help="Check owned source without public witnesses")
     args = parser.parse_args()
-    FLAGS[:] = args.flag
+    FLAGS[:] = [*FLAGS, *args.flag]
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     if not shutil.which("luau-lsp"):
         raise RuntimeError("Pinned luau-lsp is missing; run rokit install")

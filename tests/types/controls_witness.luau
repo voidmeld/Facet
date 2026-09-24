@@ -67,6 +67,18 @@ local avatarProps: Facet.AvatarProps = { name = "Alder", presence = "online" :: 
 local avatar: GuiObject = UI.Avatar(avatarProps)
 local avatars: GuiObject = UI.AvatarGroup({ items = { { id = "a", name = "Alder" } } })
 local stage: ViewportFrame = UI.Stage({ fieldOfView = 60 })
+local dialogOpen = Compose.cell(false)
+local dialogProps: Facet.DialogSpec = {
+	isPresented = dialogOpen,
+	onPresentedChange = function(nextValue: boolean)
+		dialogOpen:set(nextValue)
+	end,
+	title = text,
+	content = content,
+	actions = { { id = "Leave", label = "Leave", role = "destructive" :: "destructive", onActivate = nothing } },
+	width = "narrow" :: "narrow",
+}
+local dialog: Frame = UI.Dialog(dialogProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -161,6 +173,7 @@ local mounted: { GuiObject } = {
 	avatar,
 	avatars,
 	stage,
+	dialog,
 	menu,
 	split,
 	picker,

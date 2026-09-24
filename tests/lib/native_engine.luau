@@ -83,6 +83,7 @@ local function new(options: any?)
 			AbsoluteContentSize = Roblox.Vector2.zero,
 			AbsolutePosition = Roblox.Vector2.zero,
 			AbsoluteWindowSize = Roblox.Vector2.zero,
+			AbsoluteCanvasSize = Roblox.Vector2.zero,
 			CanvasPosition = Roblox.Vector2.zero,
 		}
 		if className == "UIShadow" then
