@@ -51,6 +51,7 @@ to select a control. Then read the exact contract of that control in the
 | Brief decisions and substantial presented content | `UI.Alert`, `UI.Dialog`, `UI.Sheet` |
 | Inline disclosure and larger content presentation | `UI.DisclosureGroup`, `UI.CollapsibleView` |
 | Contextual teaching | `UI.Callout` |
+| Anchored content for one control | `UI.Popover` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
 | Sorting, selection, resizing and row reorder | `UI.Table` |
 | Row swipe and context actions | `UI.RowActions` |

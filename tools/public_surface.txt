@@ -98,6 +98,7 @@ controls(runtime).Menu : function
 controls(runtime).NavigationStack : function
 controls(runtime).PageView : function
 controls(runtime).Picker : function
+controls(runtime).Popover : function
 controls(runtime).ProgressView : function
 controls(runtime).RadialMenu : function
 controls(runtime).Rating : function
@@ -156,6 +157,7 @@ type Owner
 type PageViewSpec
 type PickerOption
 type PickerSpec
+type PopoverSpec
 type ProgressViewProps
 type RadialItem
 type RadialMenuSpec

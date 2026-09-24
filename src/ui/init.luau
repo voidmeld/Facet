@@ -10,6 +10,7 @@ return function(Compose: Types.ComposeModule, runtime: Types.Runtime, options: T
 	require("@self/nav_surfaces")(ctx, UI, surfaces)
 	require("@self/nav_sheet")(ctx, UI, surfaces)
 	require("@self/nav_dialog")(ctx, UI, surfaces)
+	require("@self/nav_popover")(ctx, UI, surfaces)
 	require("@self/nav_pages")(ctx, UI, surfaces)
 	require("@self/nav_radial")(ctx, UI, surfaces)
 	require("@self/collections")(ctx, UI)

@@ -56,7 +56,7 @@ export type DialogConstructor = ((DialogSpec) -> Frame) & ((string) -> (DialogSp
 
 export type PopoverDismissReason = "cancel" | "outside" | "trigger" | "anchorLost"
 export type PopoverSource = { node: GuiObject } | { rect: Rect }
-export type PopoverSpec = Types.GuiObjectProps & {
+export type PopoverSpec = Types.FrameProps & {
 	isPresented: Value<boolean>,
 	onPresentedChange: ((boolean) -> ())?,
 	onDismiss: ((PopoverDismissReason) -> ())?,

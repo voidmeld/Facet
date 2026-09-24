@@ -79,6 +79,17 @@ local dialogProps: Facet.DialogSpec = {
 	width = "narrow" :: "narrow",
 }
 local dialog: Frame = UI.Dialog(dialogProps)
+local popoverOpen = Compose.cell(false)
+local popoverProps: Facet.PopoverSpec = {
+	isPresented = popoverOpen,
+	onPresentedChange = function(nextValue: boolean)
+		popoverOpen:set(nextValue)
+	end,
+	source = { rect = { x = 0, y = 0, w = 40, h = 40 } },
+	edge = "trailing" :: "trailing",
+	content = content,
+}
+local popover: GuiObject = UI.Popover(popoverProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -174,6 +185,7 @@ local mounted: { GuiObject } = {
 	avatars,
 	stage,
 	dialog,
+	popover,
 	menu,
 	split,
 	picker,

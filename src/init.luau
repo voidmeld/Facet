@@ -64,6 +64,7 @@ export type OverlayAction = OverlayTypes.Action
 export type OverlayMedia = OverlayTypes.Media
 export type OverlayHero = OverlayTypes.Hero
 export type DialogSpec = OverlayTypes.DialogSpec
+export type PopoverSpec = OverlayTypes.PopoverSpec
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage

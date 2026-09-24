@@ -109,6 +109,15 @@ local fixtures = {
 	Dialog = function()
 		return { title = "Confirm", isPresented = Compose.cell(false), closeButton = false }
 	end,
+	Popover = function(Host)
+		return {
+			isPresented = Compose.cell(false),
+			source = { rect = { x = 0, y = 0, w = 10, h = 10 } },
+			content = function()
+				return Host.Frame({})
+			end,
+		}
+	end,
 	Sheet = function(Host)
 		return {
 			detent = Compose.cell("medium"),

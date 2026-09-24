@@ -43,6 +43,7 @@ export type Controls = {
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
 	Dialog: typeof(((nil :: unknown) :: Overlay.OverlayControls).Dialog),
+	Popover: typeof(((nil :: unknown) :: Overlay.OverlayControls).Popover),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

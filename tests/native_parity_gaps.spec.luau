@@ -116,6 +116,15 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		Dialog = function()
 			return { isPresented = Compose.cell(false), closeButton = false, title = "Title" }
 		end,
+		Popover = function()
+			return {
+				isPresented = Compose.cell(false),
+				source = { rect = { x = 0, y = 0, w = 10, h = 10 } },
+				content = function()
+					return Host.Frame({})
+				end,
+			}
+		end,
 		AsyncImage = function()
 			return { image = "rbxassetid://1" }
 		end,
@@ -266,7 +275,7 @@ t.describe("native parity gaps", function()
 			table.insert(names, name :: string)
 		end
 		table.sort(names)
-		t.expect(#names).toBe(36)
+		t.expect(#names).toBe(37)
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()
