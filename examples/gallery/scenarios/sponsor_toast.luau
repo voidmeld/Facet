@@ -353,8 +353,11 @@ return {
 								LayoutOrder = function(use)
 									return use(placement).index
 								end,
+								AnchorPoint = V2.new(0.5, 0),
 								Position = function(use)
-									return D2.fromOffset(
+									return D2.new(
+										0.5,
+										0,
 										0,
 										if ctx.reducedMotion and use(ctx.reducedMotion)
 											then use(layout).positions[id] or 0
@@ -387,6 +390,7 @@ return {
 								}),
 								Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 4) }),
 								UI.Label "Title" {
+									textRole = "strong",
 									Text = function(use)
 										return use(current).title
 									end,
@@ -395,6 +399,7 @@ return {
 									AutomaticSize = E.AutomaticSize.Y,
 								},
 								UI.Label "Detail" {
+									role = "secondary",
 									Text = function(use)
 										return use(current).detail
 									end,
@@ -416,7 +421,7 @@ return {
 								next[id] = nil
 								heights:set(next)
 							end)
-							card:AddTag("facet-surface")
+							card:AddTag("facet-panel")
 							return card
 						end,
 					}),
