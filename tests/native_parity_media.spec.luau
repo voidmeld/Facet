@@ -2147,4 +2147,108 @@ t.describe("native parity media", function()
 			w.stop()
 		end)
 	end)
+
+	t.describe("icon coverage", function()
+		local fs = require("@lune/fs")
+
+		local function requested(): { [string]: string }
+			local found: { [string]: string } = {}
+			for _, file in fs.readDir("src/ui") do
+				if string.sub(file, -5) == ".luau" then
+					local source = fs.readFile("src/ui/" .. file)
+					for _, pattern in
+						{
+							'icon%(%s*"([%w%.:_]+)"',
+							'icon%s*=%s*"([%w%.:_]+)"',
+							'icon or "([%w%.:_]+)"',
+							'stepButton%(%s*"%a+",%s*"([%w%.:_]+)"',
+						}
+					do
+						for name in string.gmatch(source, pattern) do
+							found[name] = file
+						end
+					end
+				end
+			end
+			return found
+		end
+
+		local function resolvesToArt(package: any, name: string): boolean
+			local content = themes.resolveIcon(package, name)
+			return type(content) == "string" and string.match(content, "^rbxasset") ~= nil
+		end
+
+		t.it("declares standard art for every icon name a control requests", function()
+			local names = requested()
+			local count = 0
+			for name, file in names do
+				count += 1
+				t.expect(`{file}: {name}: {icons.ART[name] ~= nil}`).toBe(`{file}: {name}: true`)
+			end
+			for _, name in
+				{
+					"checkmark",
+					"chevron.leading",
+					"chevron.trailing",
+					"chevron.down",
+					"status.warning",
+					"increment",
+					"decrement",
+				}
+			do
+				t.expect(names[name] ~= nil).toBe(true)
+			end
+			t.expect(count >= 7).toBe(true)
+			local broken = themes.neutralPackage()
+			broken.icons = { close = "missing-asset" }
+			t.expect(resolvesToArt(broken, "close")).toBe(false)
+			t.expect(resolvesToArt(themes.neutralPackage(), "close")).toBe(true)
+		end)
+
+		t.it("resolves every framework icon to art in every shipped theme package", function()
+			local packages = { themes.neutralPackage() }
+			for _, definition in SHIPPED do
+				table.insert(packages, (assert(themes.define(definition.build(themes)))))
+			end
+			t.expect(#packages).toBe(9)
+			local names = 0
+			for _ in icons.ART do
+				names += 1
+			end
+			t.expect(names >= 30).toBe(true)
+			for _, package in packages do
+				for name in icons.ART do
+					t.expect(`{package.identity.id}: {name}: {resolvesToArt(package, name)}`)
+						.toBe(`{package.identity.id}: {name}: true`)
+				end
+				for name in requested() do
+					t.expect(resolvesToArt(package, name)).toBe(true)
+				end
+			end
+		end)
+
+		t.it("shows the package increment and decrement art on stepper buttons instead of glyphs", function()
+			local pixel = assert(themes.define(require("../examples/themes/pixel_quest").build(themes)))
+			for _, case in { { package = themes.neutralPackage(), own = false }, { package = pixel, own = true } } do
+				local engine, runtime, UI = make({ theme = case.package })
+				local stop, root = mount(engine, runtime, function()
+					return UI.Stepper({ value = Compose.cell(2), min = 0, max = 5 })
+				end)
+				for name, icon in { Increase = "increment", Decrease = "decrement" } do
+					local button = assert(root:FindFirstChild(name, true))
+					local image = assert(button:FindFirstChildWhichIsA("ImageLabel", true))
+					t.expect(image.Image).toBe(themes.resolveIcon(case.package, icon))
+					t.expect(image.Image == icons.ART[icon].contentId).toBe(not case.own)
+					for _, node in button:GetDescendants() do
+						if node:IsA("TextLabel") then
+							t.expect(node.Text).toBe("")
+						end
+					end
+					t.expect(button.Text).toBe("")
+				end
+				stop()
+				runtime:dispose()
+			end
+		end)
+	end)
 end)
