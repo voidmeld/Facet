@@ -254,8 +254,14 @@ function perf_runner.runScene(scene: any, profile: any, opts: any?): any
 	local registrations: any = blind("Compose owns registrations; no private runtime census")
 	local instances: any = blind("scene exposes no native engine boundary")
 	local adapterHandlers: any = blind("native engine connection allocation requires engine capture")
+	local liveConnections: any = registrations
 	if state.engine and state.target then
 		instances = #state.target:GetDescendants()
+		local connections = state.engine.heartbeat.count() + state.target:connectionCount()
+		for _, node in state.target:GetDescendants() do
+			connections += node:connectionCount()
+		end
+		liveConnections = connections
 	end
 
 	local async = { dropped = 0, stale = 0, completed = 0 }
@@ -354,7 +360,7 @@ function perf_runner.runScene(scene: any, profile: any, opts: any?): any
 		allocRateKbPerSec = if wallSeconds > 0 then allocGrowthKb / wallSeconds else 0,
 		heapSlopeKbPerIter = slope(heapSeries),
 		liveRegistry = { registrations = registrations },
-		liveConnections = registrations,
+		liveConnections = liveConnections,
 		async = async,
 		extras = extras,
 
