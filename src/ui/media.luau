@@ -554,7 +554,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end
 			else
 				local thickness = function(use: Compose.Use)
-					return read(spec.thickness, use) or metric("controls.progress.circularThickness", use)
+					return read(spec.thickness, use)
+						or math.max(
+							metric("controls.progress.circularThickness", use),
+							math.round(diameter(use) * 0.08)
+						)
 				end
 				for _, isTrack in { true, false } do
 					local path = ctx.styled(
