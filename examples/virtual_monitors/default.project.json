@@ -80,6 +80,11 @@
       "$properties": {
         "ScreenOrientation": "Sensor"
       }
+    },
+    "VoiceChatService": {
+      "$properties": {
+        "EnableDefaultVoice": false
+      }
     }
   }
 }
