@@ -589,7 +589,9 @@ return function(ctx: Types.Context, UI: Controls): ()
 			local node = findSelectable(assert(mounted[key]), focusedPath, 1)
 			if node then
 				restoring = true
-				gui.SelectedObject = node
+				pcall(function()
+					gui.SelectedObject = node
+				end)
 				restoring = false
 			end
 		end

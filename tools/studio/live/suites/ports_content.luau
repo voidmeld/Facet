@@ -692,6 +692,14 @@ add("steps-number-marker-is-a-circle", { "post-step-05" }, function(t)
 				circles += 1
 				t.near(`{id} circle is round`, circle.AbsoluteSize.X, circle.AbsoluteSize.Y, 0.5)
 				local bounds = number.TextBounds
+				t.note(`{id} cue declared`, {
+					size = tostring(cue.Size),
+					textSize = number.TextSize,
+					styled = number:GetStyled("TextSize"),
+					bounds = bounds,
+					circle = circle.AbsoluteSize,
+					parent = cue.Parent and cue.Parent.AbsoluteSize,
+				})
 				t.check(`{id} circle holds its number with room`, side.X >= math.max(bounds.X, bounds.Y) + 7.5, {
 					side = side,
 					bounds = bounds,
@@ -1483,7 +1491,11 @@ local INNER = { "basics", "writing", "leaves", "choices", "pickers" }
 add("category-bar-fits-phone-words", { "post-showcase-01", "post-showcase-04" }, function(t)
 	local caption = t.themes[1].package.metrics.typography.caption.size
 	t.note("caption size", caption)
-	local viewport = t.device({ device = "iphone_14", orientation = Enum.ScreenOrientation.Portrait })
+	local viewport = t.device({
+		device = "iphone_14",
+		input = Enum.PreferredInput.Touch,
+		orientation = Enum.ScreenOrientation.Portrait,
+	})
 	for _ = 1, 60 do
 		if UserInputService.PreferredInput == Enum.PreferredInput.Touch then
 			break

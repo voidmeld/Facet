@@ -410,7 +410,9 @@ sets `UIListLayout.Wraps`. The shared props type is `StackProps`.
 `UI.ZStack(spec) -> Frame` puts its children on top of each other. It has no
 layout object. A later child gets a higher `ZIndex`. A child that sets its own
 `ZIndex` keeps it. `alignH` and `alignV` (`start`, `center` or `end`) set the
-`AnchorPoint` and the scale `Position` of each child. Options: `padding`,
+`AnchorPoint` and the scale `Position` of each child. On an axis that hugs
+its content, the stack aligns each child by offset against the largest child on
+that axis, so the stack keeps its size. Options: `padding`,
 `alignH`, `alignV`, `width` and `height`.
 
 ### ScrollView
@@ -545,7 +547,10 @@ options apply.
 A switch or checkbox Toggle paints no plate and takes no `control` art from a
 theme package. A settings row (a Toggle with `row`, `hint` or `icon`) has the
 `facet-toggle-settings` tag. Its horizontal padding is the padding of a
-Button, so its content lines up with Button rows in each theme.
+Button, so its content lines up with Button rows in each theme. The row shows
+`icon` or `row.icon` first. A Toggle with `row` puts its switch last unless
+`indicatorPosition` is `leading`, so its label starts where the label of a
+Button row starts.
 
 The checked mark of a switch and a checkbox uses the `selection` color of the
 palette, and its knob or tick uses `onSelection`. Without them, it uses
@@ -991,7 +996,10 @@ The Slider default is continuous values.
 
 By default, Slider shows an inline track and a value readout, with an optional
 label. Its default native `AutomaticSize.Y` keeps the authored width and fits
-the control height. `row` gives a stacked title, description and track.
+the control height. `row` gives a stacked title, description and track. A
+Slider row has the `facet-slider-settings` tag and the horizontal padding of a
+Button. It shows `row.icon` before the stack, so the Slider row lines up with
+Button and Toggle rows.
 
 Slider also supports `onCommit(value)`, `tapToPosition` (default true),
 `thumbImage`, `trackImage` and `row`. Dragging uses native drag detection.
@@ -1368,7 +1376,9 @@ Each page is a compact Button in a slot that is at least the target size
 The label keeps the width of the widest label that the count can make, so the
 arrows do not move when the page gains a digit. Page nodes are keyed by page
 number. When the selected page leaves the window, or a selected arrow becomes
-disabled at an edge, the selection moves to the current page. `rtl` reverses
+disabled at an edge, the selection moves to the current page. When the row has
+no live page or arrow, for example when the count drops to zero, the selection
+moves to the nearest selectable object outside the row. `rtl` reverses
 the row once. The root is a Frame that fills its width. `AutomaticSize` on X
 causes an error, because the window narrows to the width that it gets.
 
@@ -1917,9 +1927,10 @@ choose. For rows of text, use VirtualList or Table.
   not lift and shows no shadow: a tap on the body, the primary action or More
   gives only the press paint of that control. The lift is for pointer hover,
   selection and a held mouse press. The scale is paint only: the artwork height
-  uses the width without the lift, so the card size does not change. Keep
-  gutters of at least the scaled growth around each card. Reduced motion keeps
-  only the shadow.
+  uses the width without the lift, so the card size does not change. Outside a
+  layout, the card offsets its `Position` by half of the growth, so it grows
+  evenly around its centre. Keep gutters of at least half the scaled growth
+  around each card. Reduced motion keeps only the shadow.
   When a `browseTarget` exists, the card puts a `UIScale` named `CardLift` with
   the same scale on it, so the selection ring grows with the card.
 

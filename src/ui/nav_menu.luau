@@ -665,15 +665,73 @@ return function(
 				centered = level
 				return
 			end
-			local window, canvas = use(measured).Y, use(rowSize).Y
+			use(measured)
+			use(rowSize)
 			local row = rows:FindFirstChild(chosen)
-			if row == nil or not row:IsA("GuiObject") or window <= 0 or canvas <= 0 then
+			if row == nil or not row:IsA("GuiObject") then
 				return
 			end
-			local offset = row.AbsolutePosition.Y - rows.AbsolutePosition.Y
-			local target = math.clamp(offset + row.AbsoluteSize.Y / 2 - window / 2, 0, math.max(0, canvas - window))
-			panel.CanvasPosition = V2.new(panel.CanvasPosition.X, target)
+			local function target(): number?
+				local window, canvas = panel.AbsoluteSize.Y, rows.AbsoluteSize.Y
+				if window <= 0 or canvas <= 0 or row.Parent ~= rows then
+					return nil
+				end
+				local gap = if rowLayout then rowLayout.Padding.Offset else 0
+				local top = rows.AbsolutePosition.Y - panel.AbsolutePosition.Y + panel.CanvasPosition.Y
+				canvas = math.max(canvas + top, panel.AbsoluteCanvasSize.Y)
+				local inset = rows:FindFirstChildWhichIsA("UIPadding")
+				if inset then
+					local ok, styled = pcall(function(): UDim
+						return inset:GetStyled("PaddingTop")
+					end)
+					top += if ok then styled.Offset else inset.PaddingTop.Offset
+				end
+				local offset = top
+				for _, sibling in rows:GetChildren() do
+					if
+						sibling ~= row
+						and sibling:IsA("GuiObject")
+						and sibling.Visible
+						and sibling.LayoutOrder < (row :: GuiObject).LayoutOrder
+					then
+						offset += sibling.AbsoluteSize.Y + gap
+					end
+				end
+				return math.clamp(
+					offset + (row :: GuiObject).AbsoluteSize.Y / 2 - window / 2,
+					0,
+					math.max(0, canvas - window)
+				)
+			end
+			local first = target()
+			if first == nil then
+				return
+			end
+			panel.CanvasPosition = V2.new(panel.CanvasPosition.X, first)
 			centered = level
+			local services = ctx.config.services
+			local frames = services and services.RunService
+			if frames then
+				local remaining = 2
+				local connection: RBXScriptConnection? = nil
+				connection = frames.Heartbeat:Connect(function()
+					remaining -= 1
+					local fresh = target()
+					if fresh and panel.CanvasPosition.Y ~= fresh then
+						panel.CanvasPosition = V2.new(panel.CanvasPosition.X, fresh)
+					end
+					if remaining <= 0 and connection then
+						connection:Disconnect()
+						connection = nil
+					end
+				end)
+				Compose.cleanup(function()
+					if connection then
+						connection:Disconnect()
+						connection = nil
+					end
+				end)
+			end
 		end)
 		surfaces.attach(modal, {
 			Compose.keyed({

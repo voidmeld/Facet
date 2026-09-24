@@ -1117,7 +1117,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				or spec.icon ~= nil
 				or spec.trailingIcon ~= nil
 				or spec.image ~= nil
-			local trailing = spec.indicatorPosition == "trailing"
+			local trailing = spec.indicatorPosition == "trailing" or (spec.indicatorPosition == nil and spec.row ~= nil)
 			local reserve = (if presentation == "switch" then 38 else 24) + 8
 			local mark = ctx.styled(
 				Host.Frame "Mark" {
@@ -1201,12 +1201,35 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 				p.textSize = nil
 				local label: GuiObject = title
-				if row.description or spec.hint then
+				local described = row.description ~= nil or spec.hint ~= nil
+				if described then
 					label = ctx.column({ label, ctx.text({ Text = row.description or spec.hint }) })
+				end
+				local leading = spec.icon or row.icon
+				p.icon = nil
+				if spec.row then
+					runtime.mount(function()
+						return Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill })
+					end, label)
+				end
+				local columns: { GuiObject } = if trailing then { label, indicator } else { indicator, label }
+				if leading then
+					table.insert(columns, 1, ctx.icon(leading, { Name = "LeadingIcon" }))
 				end
 				table.insert(
 					p,
-					ctx.row(if spec.indicatorPosition == "trailing" then { label, indicator } else { indicator, label })
+					ctx.row(
+						columns,
+						if spec.row
+							then {
+								Name = "Content",
+								Size = D2.fromScale(1, 0),
+								AutomaticSize = E.AutomaticSize.Y,
+								AnchorPoint = if described then V2.zero else V2.new(0, 0.5),
+								Position = if described then D2.fromScale(0, 0) else D2.fromScale(0, 0.5),
+							}
+							else nil
+					)
 				)
 			else
 				p.Text = spec.Text or spec.label or ""
