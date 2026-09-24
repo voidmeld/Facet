@@ -87,7 +87,7 @@ t.describe("native themes and media", function()
 		light.colors.content = { r = 0.1, g = 0.1, b = 0.1 }
 		light.extra = table.clone(light.extra or {})
 		light.extra.onSelected = { r = 1, g = 1, b = 1 }
-		package.style.themes[2] = light
+		table.insert(package.style.themes, light)
 		package = themes.define(package)
 		local selection, reduced, explicit = Compose.cell("Dark"), Compose.cell(false), Compose.cell(nil)
 		local stop, sheet = runtime.mount(function()
