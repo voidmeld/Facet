@@ -92,10 +92,11 @@ function custom_control.check(package: any): any
 	return { ok = #missing == 0, covered = covered, missing = missing }
 end
 
-function custom_control.resolve(snapshot: any, package: any?, themeName: string?): any
+function custom_control.resolve(package: any?, themeName: string?): any
 	local sizeNeed = needByName("demo:gauge")
 	local tintNeed = needByName("demo:gaugeTint")
-	local size = (snapshot.controlSizes or {})["demo:gauge"]
+	local metrics = if package ~= nil then package.metrics or {} else {}
+	local size = (metrics.controlSizes or {})["demo:gauge"]
 	local usedSizeFallback = type(size) ~= "table" or type(size.height) ~= "number"
 	local tint: any = nil
 	if package ~= nil then
@@ -116,20 +117,24 @@ function custom_control.resolve(snapshot: any, package: any?, themeName: string?
 	}
 end
 
-function custom_control.blueprint(UI: any, resolved: any, id: string?): any
+function custom_control.blueprint(UI: any, core: any, resolved: any, id: string?): any
+	local Host = core.Host
+	local types = core.types or { UDim = UDim, UDim2 = UDim2, Enum = Enum }
+	local UDim, UDim2, Enum = types.UDim, types.UDim2, types.Enum
 	local name = id or "Gauge"
-	return UI.VStack({
-		id = name,
-		gap = "xs",
-		width = UI.fill(),
-
-		UI.Text({ id = name .. "Label", text = "Custom gauge (demo:gauge)", textSize = "caption" }),
-		UI.Box({
-			id = name .. "Track",
-			surface = "control",
-			width = UI.fill(),
-			height = { type = "fixed", px = resolved.height },
-		}),
+	local track = Host.Frame(name .. "Track")({
+		LayoutOrder = 2,
+		Size = UDim2.new(1, 0, 0, resolved.height),
+		Host.UICorner({}),
+	})
+	track:AddTag("facet-control")
+	return Host.Frame(name)({
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) }),
+		UI.Label(name .. "Label")({ text = "Custom gauge (demo:gauge)", textRole = "caption", LayoutOrder = 1 }),
+		track,
 	})
 end
 
