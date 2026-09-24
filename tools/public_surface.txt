@@ -69,7 +69,31 @@ Roblox : table
   Roblox.usableViewportSize : function
 VERSION : string
 bind : function
+civilDate : table(frozen)
+  civilDate.ENGLISH : table(frozen)
+  civilDate.addDays : function
+  civilDate.addMonths : function
+  civilDate.clampRange : function
+  civilDate.compare : function
+  civilDate.dateOf : function
+  civilDate.daysIn : function
+  civilDate.format : function
+  civilDate.formatTime : function
+  civilDate.fromDays : function
+  civilDate.fromUnix : function
+  civilDate.isLeap : function
+  civilDate.monthGrid : function
+  civilDate.parse : function
+  civilDate.problem : function
+  civilDate.same : function
+  civilDate.systemClock : function
+  civilDate.toDays : function
+  civilDate.toUnix : function
+  civilDate.weekday : function
+  civilDate.within : function
 controls : function
+recipes : table(frozen)
+  recipes.arithmetic : table(frozen)
 themes : table
   themes.REQUIRED_TYPE_ROLES : table(frozen)
   themes.SCHEMA : string
@@ -126,6 +150,10 @@ type ButtonProps
 type CalloutSpec
 type Cell
 type ChipProps
+type CivilDate
+type CivilDateModule
+type CivilLocale
+type CivilRange
 type CollapsibleViewSpec
 type CollectionSpec
 type ComboBoxSpec

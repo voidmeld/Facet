@@ -19,6 +19,7 @@
 - The getting-started guide shows how to test a screen headlessly with the fake native engine. Guides and tutorial examples use `text` for `UI.Label`.
 - `Facet.bind(Compose, Roblox)` returns a Facet table whose controls and themes use the Compose instance that you give. A game that already uses Compose keeps one reactive graph. The controls in `src/ui` use the pinned copy only for types. `Facet.COMPOSE_COMMIT` names the tested Compose commit. `bind` names a missing Compose function. A control names itself when a runtime or a readable from a different Compose instance reaches it. Before this change, such a control failed with a Compose owner error, or did not update.
 - The public-surface snapshot lists the `RadialItem` and `RadialMenuSpec` types.
+- `Facet.civilDate` is the civil date calendar from `main`: arithmetic, the numeric words of a locale and fixed-offset instants. `Facet.recipes.arithmetic.parse` is the bounded arithmetic parser from `main` for a number field. The `Facet` type gives `civilDate` the type `any`, because the old Luau solver cannot check the whole `Facet` type with the civil date function types. The `CivilDateModule` type gives typed use.
 
 ## Pre-0.12.0 development history
 

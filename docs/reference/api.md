@@ -14,12 +14,15 @@ and styling. This reference describes the `0.12.0` surface.
 | `controls(runtime, options?)` | Returns the control constructor table for that native runtime. |
 | `themes` | Theme package definitions, native StyleSheet compilation, icons and skins. |
 | `COMPOSE_COMMIT` | The full Compose commit of the pinned copy. The Facet tests use this commit. |
+| `civilDate` | Calendar arithmetic, words and fixed-offset instants for civil dates. See [Civil dates](#civil-dates). |
+| `recipes` | Opt-in helpers. `recipes.arithmetic.parse` is a bounded arithmetic parser for a number field. See [Recipes](#recipes). |
 | `bind(Compose, Roblox)` | Returns a Facet table whose `controls` and `themes` use the Compose core module and the Compose Roblox module that you give. See [Your own Compose](#your-own-compose). |
 
 ### Types
 
 The exported Luau types include `Facet`, `ComposeModule`, `ComposeRobloxModule`,
-`Controls`, `ControlOptions`, `ThemePackage`,
+`Controls`, `ControlOptions`, `ThemePackage`, `CivilDate`, `CivilRange`,
+`CivilLocale`, `CivilDateModule`,
 and the `Props` and `Spec` contracts of each control. `Cell<T>`, `Readable<T>`,
 `Runtime`, `Owner` and `Use` are the Compose types. Collection, menu and picker
 contracts keep the item and value types through callbacks. Native properties use
@@ -684,6 +687,56 @@ native styling intentionally. Give the same theme package readable to
 `createStyleSheet(runtime, package)`. Mount the resulting sheet and a native
 StyleLink in the target tree. See [custom themes](../guide/09-custom-themes.md)
 and [skins](../guide/10-rich-skinning.md).
+
+## Civil dates
+
+`Facet.civilDate` is the calendar that `UI.DateTimePicker` keeps its values in.
+A `CivilDate` is `{ year, month, day, hour?, minute? }` in no time zone. A
+`CivilRange` is `{ start?, finish? }`.
+
+- Arithmetic: `isLeap(year)`, `daysIn(year, month)`, `toDays(d)` and
+  `fromDays(n)` (days from 1970-01-01), `dateOf(d)` (the date without its
+  time), `addDays(d, n)`, `addMonths(d, n)`, `compare(a, b)` (by date),
+  `same(a, b)` (every field), `weekday(d)` (1 is Sunday),
+  `monthGrid(year, month, weekStart)` (six weeks of dates),
+  `within(d, min?, max?)`, `clampRange(range, min?, max?)` and
+  `problem(d, withTime?)`. `addMonths` clamps the day: January 31 plus one
+  month is the last day of February. `clampRange` returns `nil` when the range
+  is fully outside the bounds. `problem` returns why a value is not a date, or
+  `nil`.
+- Words: `format(d, locale?)`, `formatTime(d, hourCycle)` and
+  `parse(text, locale?, withTime?)`. They use the numeric order of the locale.
+  `parse` returns two values, `(date?, why?)`. Test the date before you use it.
+  A year has four digits. On a 12-hour clock, an hour from 1 to 12 needs AM or
+  PM. `ENGLISH` is the default locale: `months`, `weekdays` (Sunday first),
+  `order` (`mdy`, `dmy` or `ymd`), `separator` and `hourCycle`.
+- Instants: `fromUnix(seconds, offsetMinutes)` and
+  `toUnix(date, offsetMinutes)` always name their offset. There is no zone
+  database. Convert a zone with daylight time to a fixed offset yourself.
+  `systemClock(offsetMinutes?)` returns the default clock: the local date and
+  time of the player, or the engine clock at the offset that you name.
+
+The `Facet` type gives `civilDate` the type `any`. The old Luau solver cannot
+check the whole `Facet` type when it also holds the civil date function types.
+For typed use, write `local civil: Facet.CivilDateModule = Facet.civilDate`.
+
+```luau
+local civil = Facet.civilDate
+local start = { year = 2026, month = 2, day = 27 }
+print(civil.format(civil.addDays(start, 3))) -- "03/02/2026"
+local date, why = civil.parse("02/30/2026")
+if date == nil then
+    print(why)
+end
+```
+
+## Recipes
+
+`Facet.recipes.arithmetic.parse(text)` returns a finite number or `nil` for
+any value. Give it to a number field as `parse`. It accepts `+`, `-`, `*`, `/`,
+parentheses, the typographic signs `×`, `÷` and `−`, and blanks. It refuses a
+division by zero, an exponent, a hex number, more than 256 characters and more
+than 32 levels of nesting. It never compiles the text.
 
 ## Native targets and boundaries
 
