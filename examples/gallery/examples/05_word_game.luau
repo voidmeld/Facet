@@ -154,7 +154,7 @@ end
 
 function example.build(ctx: any)
 	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
-	local UDim, UDim2, Vector2, Enum = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
+	local UDim2, Vector2, Enum = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 
 	local rowsSig = Compose.cell(emptyRows())
 	local activeSig = Compose.cell(1)
@@ -289,32 +289,29 @@ function example.build(ctx: any)
 	end
 
 	local function WordGame()
-		local tiles: { any } = { columns = COLS, gap = "xs", rowGap = "xs", itemSizing = "uniform" }
+		local board: { any } = { columns = COLS, gap = "xs", cellHeight = 48, width = COLS * 52 - 4 }
 		for r = 1, ROWS do
 			for c = 1, COLS do
 				local rr, cc = r, c
 				local state = Compose.formula(function(use)
 					return tileState(use(rowsSig), use(activeSig), rr, cc)
 				end)
-				local letter = Compose.formula(function(use)
-					return use(rowsSig)[rr].letters:sub(cc, cc)
-				end)
-				local mark = Compose.formula(function(use)
-					return TILE_MARK[use(state)]
-				end)
 				tileStateOf[`{rr}:{cc}`] = state
 				local fill = Host.Frame "fill" {
 					Size = UDim2.fromScale(1, 1),
 					Host.UICorner({}),
 					UI.Label "ch" {
-						text = letter,
+						text = function(use)
+							return use(rowsSig)[rr].letters:sub(cc, cc)
+						end,
 						TextSize = 24,
 						Size = UDim2.new(1, 0, 1, -12),
 						TextXAlignment = Enum.TextXAlignment.Center,
-						TextYAlignment = Enum.TextYAlignment.Center,
 					},
 					UI.Label "mark" {
-						text = mark,
+						text = function(use)
+							return TILE_MARK[use(state)]
+						end,
 						TextSize = 12,
 						Position = UDim2.new(0, 0, 1, -14),
 						Size = UDim2.new(1, 0, 0, 14),
@@ -325,119 +322,56 @@ function example.build(ctx: any)
 				statusTag(fill, state)
 				local outline = Host.UIStroke "ActiveRow" {
 					Thickness = 2,
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 					Enabled = function(use)
 						return use(playingSig) and use(activeSig) == rr
 					end,
 				}
 				outline:AddTag("facet-status-ring")
-				local tile = Host.Frame({
-					Name = `tile{r}_{c}`,
-					BackgroundTransparency = 1,
-					Size = UDim2.fromOffset(44, 44),
-					fill,
-					outline,
-				})
+				local tile = UI.ZStack(`tile{r}_{c}`) { width = "fill", height = "fill", fill, outline }
 				tile:AddTag("facet-status-accent")
-				table.insert(tiles, tile)
+				table.insert(board, tile)
 			end
 		end
-		local board = Host.Frame "board" {
-			Size = UDim2.fromOffset(COLS * 48 + (COLS - 1) * 4, 0),
-			BackgroundTransparency = 1,
-			AutomaticSize = Enum.AutomaticSize.Y,
-			Host.UIGridLayout({
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				CellSize = UDim2.fromOffset(48, 48),
-				CellPadding = UDim2.fromOffset(4, 4),
-				FillDirectionMaxCells = tiles.columns or 4,
-			}),
-			table.unpack(tiles),
-		}
-		local keyboardRows: { any } = {}
+		local keyboard: { any } =
+			{ width = "fill", gap = "s", Host.UISizeConstraint({ MaxSize = Vector2.new(472, math.huge) }) }
 		for ri, keys in KEYBOARD do
-			local rowId = "kbrow" .. ri
 			local units = #keys
-			local buttons: { any } = {}
-			for ki, key in keys do
-				local thisKey = key
+			local row: { any } = { width = "fill", gap = "xs" }
+			for _, key in keys do
 				local isCommand = key == "Enter" or key == "Back"
-				local labelOf: any
-				local state: any
-				if isCommand then
-					labelOf = if key == "Enter" then "Enter" else "Delete"
-				else
-					state = Compose.formula(function(use)
-						return use(keysSig)[thisKey] or "unknown"
-					end)
-					labelOf = Compose.formula(function(use)
-						local s = use(state)
-						local m = KEY_MARK[s]
-						return if m ~= nil then thisKey .. m else thisKey
-					end)
-				end
-				buttons[ki] = UI.Button({
-					Name = "key_" .. key,
+				local state = Compose.formula(function(use)
+					return if isCommand then nil else use(keysSig)[key] or "unknown"
+				end)
+				local button = UI.Button("key_" .. key) {
+					if ri == 3 and not isCommand then UI.fill() else nil,
 					Size = if ri == 3
 						then UDim2.fromOffset(0, 44)
-						else UDim2.new(1 / units, -math.ceil(4 * (#keys - 1) / units), 0, 44),
+						else UDim2.new(1 / units, -math.ceil(4 * (units - 1) / units), 0, 44),
 					AutomaticSize = if isCommand then Enum.AutomaticSize.X else Enum.AutomaticSize.None,
-					TextWrapped = false,
-					Host.UIFlexItem({
-						FlexMode = if ri == 3 and not isCommand then Enum.UIFlexMode.Fill else Enum.UIFlexMode.None,
-					}),
-					LayoutOrder = ki,
-					label = labelOf,
-
-					enabled = playingSig,
 					TextSize = if isCommand then 14 else 16,
+					enabled = playingSig,
+					label = if key == "Enter"
+						then "Enter"
+						elseif key == "Back" then "Delete"
+						else function(use)
+							return key .. (KEY_MARK[use(state)] or "")
+						end,
 					onActivate = function()
-						if thisKey == "Enter" then
+						if key == "Enter" then
 							submit()
-						elseif thisKey == "Back" then
+						elseif key == "Back" then
 							backspace()
 						else
-							typeLetter(thisKey)
+							typeLetter(key)
 						end
 					end,
-					Host.UIPadding({
-						PaddingTop = UDim.new(0, 0),
-						PaddingBottom = UDim.new(0, 0),
-						PaddingLeft = UDim.new(0, 0),
-						PaddingRight = UDim.new(0, 0),
-					}),
-				})
-				if state ~= nil then
-					statusTag(buttons[ki], state)
-				end
-				keyPathByLetter[key] = `/Wordle/page/col/kb/{rowId}/key_{key}`
+				}
+				statusTag(button, state)
+				table.insert(row, button)
+				keyPathByLetter[key] = `/Wordle/page/kb/kbrow{ri}/key_{key}`
 			end
-			keyboardRows[ri] = Host.Frame({
-				Name = rowId,
-				Size = UDim2.new(1, 0, 0, 44),
-				BackgroundTransparency = 1,
-				AutomaticSize = Enum.AutomaticSize.None,
-				Host.UIListLayout({
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					FillDirection = Enum.FillDirection.Horizontal,
-					HorizontalFlex = if ri == 3 then Enum.UIFlexAlignment.Fill else Enum.UIFlexAlignment.None,
-					Padding = UDim.new(0, 4),
-				}),
-				table.unpack(buttons),
-			})
+			table.insert(keyboard, UI.HStack("kbrow" .. ri)(row))
 		end
-		local keyboard = Host.Frame "kb" {
-			Size = UDim2.new(1, 0, 0, 0),
-			Host.UISizeConstraint({ MaxSize = Vector2.new(472, math.huge) }),
-			BackgroundTransparency = 1,
-			AutomaticSize = Enum.AutomaticSize.Y,
-			Host.UIListLayout({
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				FillDirection = Enum.FillDirection.Vertical,
-				Padding = UDim.new(0, 8),
-			}),
-			table.unpack(keyboardRows),
-		}
 		statusSig = Compose.formula(function(use)
 			local notice = use(noticeSig)
 			if notice ~= "" then
@@ -445,77 +379,25 @@ function example.build(ctx: any)
 			end
 			return `Guess the five-letter word — row {math.min(use(activeSig), ROWS)} of {ROWS}.`
 		end)
-		return Host.Frame "Wordle" {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 1, 0),
-			Host.UIPadding({
-				PaddingTop = UDim.new(0, 16),
-				PaddingBottom = UDim.new(0, 16),
-				PaddingLeft = UDim.new(0, 16),
-				PaddingRight = UDim.new(0, 16),
-			}),
-			Host.ScrollingFrame "page" {
-				BackgroundTransparency = 1,
-				Size = function(use)
-					return UDim2.new(1, 0, 1, 0)
+		return UI.ScrollView "page" {
+			gap = "s",
+			align = "center",
+			UI.Label "Title" { text = "Facet Wordle", textRole = "title" },
+			UI.Label "Status" {
+				text = statusSig,
+				Size = UDim2.fromScale(1, 0),
+				AutomaticSize = Enum.AutomaticSize.Y,
+				TextWrapped = true,
+				TextXAlignment = Enum.TextXAlignment.Center,
+			},
+			UI.Grid "board"(board),
+			UI.Label "Legend" { text = "v correct   ~ present   x absent", textRole = "caption" },
+			UI.VStack "kb"(keyboard),
+			UI.Button "Restart" {
+				label = "New game",
+				onActivate = function()
+					restart()
 				end,
-				AutomaticCanvasSize = Enum.AutomaticSize.Y,
-				CanvasSize = UDim2.new(),
-				ScrollBarThickness = 6,
-				Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder }),
-				Host.Frame "col" {
-					BackgroundTransparency = 1,
-					Size = function(use)
-						return UDim2.new(1, 0, 0, 0)
-					end,
-					AutomaticSize = Enum.AutomaticSize.Y,
-					Host.UIListLayout({
-						FillDirection = Enum.FillDirection.Vertical,
-						SortOrder = Enum.SortOrder.LayoutOrder,
-						HorizontalAlignment = Enum.HorizontalAlignment.Center,
-						Padding = UDim.new(0, 8),
-					}),
-					UI.Label "Title" {
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						Size = UDim2.new(1, 0, 0, 0),
-						AutomaticSize = Enum.AutomaticSize.Y,
-						text = "Facet Wordle",
-						textRole = "title",
-						TextWrapped = true,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Center,
-					},
-					UI.Label "Status" {
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						Size = UDim2.new(1, 0, 0, 0),
-						AutomaticSize = Enum.AutomaticSize.Y,
-						text = statusSig,
-						TextXAlignment = Enum.TextXAlignment.Center,
-						TextWrapped = true,
-						TextYAlignment = Enum.TextYAlignment.Top,
-					},
-					board,
-					UI.Label "Legend" {
-						BackgroundTransparency = 1,
-						BorderSizePixel = 0,
-						Size = UDim2.new(1, 0, 0, 0),
-						AutomaticSize = Enum.AutomaticSize.Y,
-						text = "v correct   ~ present   x absent",
-						textRole = "caption",
-						TextWrapped = true,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Center,
-					},
-					keyboard,
-					UI.Button "Restart" {
-						label = "New game",
-						onActivate = function()
-							restart()
-						end,
-					},
-				},
 			},
 		}
 	end
@@ -561,9 +443,7 @@ function example.build(ctx: any)
 	return {
 		title = example.title,
 		screen = function()
-			return Host.Frame "WordGame" {
-				Size = UDim2.fromScale(1, 1),
-				BackgroundTransparency = 1,
+			return UI.Screen "Wordle" {
 				WordGame(),
 				UI.Alert "WordleResult" {
 					isPresented = resultOpen,
@@ -627,7 +507,7 @@ function example.build(ctx: any)
 			return keyPathByLetter[letter]
 		end,
 		tilePath = function(r: number, c: number): string
-			return `/Wordle/page/col/board/tile{r}_{c}`
+			return `/Wordle/page/board/tile{r}_{c}`
 		end,
 		dispose = function()
 			closeResults()
