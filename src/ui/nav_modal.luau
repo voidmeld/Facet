@@ -29,7 +29,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		local source = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "PreferredTransparency") else nil
 		return function(use: Core.Use): number
 			local value = if source then use(source) else 1
-			return if type(value) == "number" then math.clamp(value, 0, 1) else 1
+			return if type(value) == "number" and value == value then math.clamp(value, 0, 1) else 1
 		end
 	end
 	local function within(node: Instance?, ancestor: Instance): boolean
@@ -106,11 +106,14 @@ return function(ctx: Types.Context): Nav.Surfaces
 			Host.TextButton "DismissOutside" {
 				Size = D2.fromScale(1, 1),
 				Text = "",
-				BackgroundTransparency = function(use: Core.Use)
-					local authored = ctx.read(spec.backgroundTransparency, use)
-					return (if type(authored) == "number" then authored else 0.35) * preferred(use)
-				end,
-				BackgroundColor3 = ctx.types.Color3.new(0, 0, 0),
+				BackgroundTransparency = if spec.backgroundTransparency == nil
+					then nil
+					else function(use: Core.Use)
+						local authored = ctx.read(spec.backgroundTransparency, use)
+						local value = if type(authored) == "number" then math.clamp(authored, 0, 1) else 1
+						return if value >= 1 then 1 else value * preferred(use)
+					end,
+				BackgroundColor3 = if spec.backgroundTransparency == nil then nil else ctx.types.Color3.new(0, 0, 0),
 				AutoButtonColor = false,
 				Selectable = false,
 				ZIndex = spec.ZIndex or 100,
@@ -141,6 +144,10 @@ return function(ctx: Types.Context): Nav.Surfaces
 			panel,
 		}
 		root = Host.Frame(props)
+		local catcher = root:FindFirstChild("DismissOutside")
+		if spec.backgroundTransparency == nil and catcher then
+			catcher:AddTag("facet-scrim")
+		end
 		local modals = table.clone(ctx.modalScopes:peek())
 		table.insert(modals, root)
 		ctx.modalScopes:set(modals)

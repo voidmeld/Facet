@@ -903,11 +903,26 @@ t.describe("native navigation controls", function()
 			})
 		end)
 		local scrim = find(world.screen, "DismissOutside")
-		t.expect(scrim.BackgroundTransparency).toBe(0.35)
-		world.gui.PreferredTransparency = 0.5
-		t.expect(scrim.BackgroundTransparency).toBe(0.175)
+		t.expect(scrim:HasTag("facet-scrim")).toBe(true)
+		world.stop()
+	end)
+
+	t.it("keeps a transparent menu catcher transparent at every background preference", function()
+		local opened = Compose.cell(false)
+		local world = setup(function(UI)
+			return UI.Menu({
+				isPresented = opened,
+				items = { { id = "Run", label = "Run", onSelect = function() end } },
+			})
+		end)
+		opened:set(true)
+		local catcher = find(world.screen, "DismissOutside")
+		t.expect(catcher:HasTag("facet-scrim")).toBe(false)
+		t.expect(catcher.BackgroundTransparency).toBe(1)
 		world.gui.PreferredTransparency = 0
-		t.expect(scrim.BackgroundTransparency).toBe(0)
+		t.expect(catcher.BackgroundTransparency).toBe(1)
+		world.gui.PreferredTransparency = 0.5
+		t.expect(catcher.BackgroundTransparency).toBe(1)
 		world.stop()
 	end)
 

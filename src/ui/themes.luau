@@ -539,7 +539,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		{ BackgroundColor3 = c("hairline"), BackgroundTransparency = extra.hairlineOpacity, BorderSizePixel = 0 }
 	)
 	rule(".facet-scrim", {
-		BackgroundColor3 = c("surface"),
+		BackgroundColor3 = types.Color3.new(0, 0, 0),
 		BackgroundTransparency = 1 - (extra.scrimOpacity or 0.45),
 		BorderSizePixel = 0,
 	})
@@ -790,7 +790,7 @@ function themes.createStyleSheet(
 	end
 	local function preferenceFor(use: Compose.Use): number
 		local value = read(preferredTransparency, use)
-		return if type(value) == "number" then math.clamp(value, 0, 1) else 1
+		return if type(value) == "number" and value == value then math.clamp(value, 0, 1) else 1
 	end
 	local defaultTimings: { [number]: TweenInfo } = {}
 	local function timingFor(package: ThemeTypes.ThemePackage, use: Compose.Use): TweenInfo
