@@ -17,7 +17,7 @@
     "motion": {
       "mainCases": 581,
       "a": 144,
-      "aWeaker": 80,
+      "aWeaker": 4,
       "b": 33,
       "c": 404,
       "d": 0,
@@ -31,7 +31,7 @@
     "error-handling": {
       "mainCases": 220,
       "a": 72,
-      "aWeaker": 16,
+      "aWeaker": 0,
       "b": 2,
       "c": 146,
       "d": 0,
@@ -73,7 +73,7 @@
     "performance": {
       "mainCases": 792,
       "a": 84,
-      "aWeaker": 34,
+      "aWeaker": 6,
       "b": 4,
       "c": 704,
       "d": 0,
@@ -101,7 +101,7 @@
     "icons-media": {
       "mainCases": 251,
       "a": 116,
-      "aWeaker": 66,
+      "aWeaker": 0,
       "b": 37,
       "c": 98,
       "d": 0,
@@ -143,7 +143,7 @@
     "public-surface-api": {
       "mainCases": 366,
       "a": 89,
-      "aWeaker": 59,
+      "aWeaker": 0,
       "b": 0,
       "c": 277,
       "d": 0,
@@ -185,7 +185,7 @@
     "reactive-core": {
       "mainCases": 63,
       "a": 23,
-      "aWeaker": 16,
+      "aWeaker": 0,
       "b": 4,
       "c": 36,
       "d": 0,
@@ -228,7 +228,7 @@
     "lifetime-ownership": {
       "mainCases": 316,
       "a": 142,
-      "aWeaker": 103,
+      "aWeaker": 6,
       "b": 6,
       "c": 168,
       "d": 0,
@@ -299,7 +299,7 @@
     "theme-packages": {
       "mainCases": 379,
       "a": 146,
-      "aWeaker": 68,
+      "aWeaker": 0,
       "b": 0,
       "c": 233,
       "d": 0,
@@ -355,7 +355,7 @@
     "paint-theming": {
       "mainCases": 709,
       "a": 199,
-      "aWeaker": 71,
+      "aWeaker": 6,
       "b": 70,
       "c": 440,
       "d": 0,
@@ -398,7 +398,7 @@
     "text-measure-fit": {
       "mainCases": 497,
       "a": 63,
-      "aWeaker": 38,
+      "aWeaker": 18,
       "b": 232,
       "c": 202,
       "d": 0,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1215
+    "coveredButWeaker": 704
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2070,9 +2070,10 @@
       "candidateCases": [
         "native_games::examples/07 native Match3 parity::keeps tile identity while a valid swap travels between endpoints",
         "native_games::examples/07 native Match3 parity::fades retiring tiles then drops survivors and introduces new tiles above the board",
-        "native_games::examples/07 native Match3 parity::reverts a refused swap and keeps the board and move budget unchanged"
-      ],
-      "weaker": "Input unlock after the last cascade is inferred from phase 'idle', not by a refused/accepted tap."
+        "native_games::examples/07 native Match3 parity::reverts a refused swap and keeps the board and move budget unchanged",
+        "native_parity_strength_motion::match3 cascade order and input lock::removes before gravity before refill, refuses taps while settling and unlocks after the last cascade",
+        "native_parity_strength_motion::match3 cascade order and input lock::never reuses a tile id across refills"
+      ]
     },
     {
       "id": "apps2-08",
@@ -2131,9 +2132,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery::native gallery::runs a match-three drag and releases its native frame subscription",
-        "native_games::examples/07 native Match3 parity::keeps tile identity while a valid swap travels between endpoints"
-      ],
-      "weaker": "Dispose mid-cascade is covered (tickHookActive false, heartbeat count 0); reset mid-cascade (Reset button during a cascade leaves no retiring tile and drops the hook) is not tested."
+        "native_games::examples/07 native Match3 parity::keeps tile identity while a valid swap travels between endpoints",
+        "native_parity_strength_lifetime::lifetime parity strength::resets the match-three machine mid-cascade without a retiring tile or frame hook"
+      ]
     },
     {
       "id": "apps2-12",
@@ -2317,9 +2318,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game — the state machine::tears down to a registry baseline after dispose"
-      ],
-      "weaker": "Main compared the reactive owner size (core.owner.size()) to baseline; candidate compares only the count of Instances under the target, so a leaked Compose owner/formula would pass."
+        "native_games::examples/05 word game — the state machine::tears down to a registry baseline after dispose",
+        "native_parity_strength_lifetime::lifetime parity strength::returns every game to its instance connection and owner baseline after play"
+      ]
     },
     {
       "id": "apps2-24",
@@ -2928,9 +2929,10 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
-        "native_gallery::native gallery::mounts motion_layout/labels"
+        "native_gallery::native gallery::mounts motion_layout/labels",
+        "native_parity_strength_textperf::compact text before truncation::the text degrade demo declares a compact sort label and binds each width stop"
       ],
-      "weaker": "Verified at Button level, not on the text_degrade rows at each width stop; the 'only the last stop files a finding' part is gone with the solver."
+      "weaker": "The demo now declares the compact sort label, and the test checks each width stop and the swap. Only a live Studio run can show that no label is cut before it shortens at each stop, because Roblox layout sets the widths."
     },
     {
       "id": "apps2-64",
@@ -2994,9 +2996,10 @@
       "candidateCases": [
         "native_games::examples/05 word game — the state machine::tears down to a registry baseline after dispose",
         "native_games::examples/06 crossword — robustness::tears down to a registry baseline after dispose",
-        "native_games::examples/07 native Match3 parity::keeps tile identity while a valid swap travels between endpoints"
-      ],
-      "weaker": "Instance-count/heartbeat-connection baseline instead of reactive owner size."
+        "native_games::examples/07 native Match3 parity::keeps tile identity while a valid swap travels between endpoints",
+        "native_parity_strength_lifetime::lifetime parity strength::returns every game to its instance connection and owner baseline after play",
+        "native_parity_strength_lifetime::lifetime parity strength::resets the match-three machine mid-cascade without a retiring tile or frame hook"
+      ]
     },
     {
       "id": "apps2-68",
@@ -3128,9 +3131,12 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_registration::native registration and package contract::registers every authored control and documents every public constructor"
-      ],
-      "weaker": "No negative controls (a missing file or undocumented export is not simulated), and documented-but-unexported ghosts are not checked."
+        "native_registration::native registration and package contract::registers every authored control and documents every public constructor",
+        "native_parity_strength_surface::public surface registration::the live registration, exports and api.md control entries agree in every direction",
+        "native_parity_strength_surface::public surface registration::reports a registered control file with no export or documentation",
+        "native_parity_strength_surface::public surface registration::reports an undocumented export and a documented control that is not exported",
+        "native_parity_strength_surface::public surface registration::the public entry point table matches the frozen Facet exports exactly"
+      ]
     },
     {
       "id": "apps2-77",
@@ -3233,9 +3239,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted"
+        "native_parity_apps::Gallery shell::stamps a demo that cannot build and does not report it mounted",
+        "native_parity_strength_surface::contained failures::warns once with the demo id when a gallery demo cannot build"
       ],
-      "weaker": "The test checks the stamped failure and the reported error. It does not capture the warn output.",
       "apiPromise": "examples/gallery/client/screen.luau:95-125 pcall around demo build, warn '[Facet Gallery] ...', errorMessage, DemoFailure label and dispatch().error",
       "gap": {
         "description": "Only the success path is tested (errorMessage nil for every demo).",
@@ -3348,9 +3354,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_gallery_shell::native gallery shell parity::keeps gallery motion preview synchronized with native accessibility preferences"
-      ],
-      "weaker": "The test drives ctx.motionPreference directly; the Motion picker's two options and the absence of On/Off wording are not asserted."
+        "native_gallery_shell::native gallery shell parity::keeps gallery motion preview synchronized with native accessibility preferences",
+        "native_parity_strength_motion::gallery motion setting::offers Full and Reduced, never on or off wording, and follows the native preference"
+      ]
     },
     {
       "id": "apps2-92",
@@ -3898,9 +3904,9 @@
         "native_outpost_terminal::native outpost terminal::keeps draft separate until the matching server verdict and ignores stale replies",
         "native_outpost_terminal::native outpost terminal::recovers rejected or failed sends and cancels an unanswered request before reengagement",
         "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears",
-        "native_outpost_terminal::native outpost terminal::mounts a real SurfaceGui on the caller runtime and owns cleanup"
-      ],
-      "weaker": "Main walked all eight exit reasons; candidate exercises out-of-range, cancel and adornee-lost."
+        "native_outpost_terminal::native outpost terminal::mounts a real SurfaceGui on the caller runtime and owns cleanup",
+        "native_parity_strength_lifetime::lifetime parity strength::lands every outpost exit reason in one exited state and stays usable after exits"
+      ]
     },
     {
       "id": "apps2-130",
@@ -4019,9 +4025,9 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_perf_lab::native performance lab::drives all four native feedback arms and constructs nothing while disabled"
-      ],
-      "weaker": "Main also asserted a dense scroll with feedback ON moves no counter (event-driven) and that the status line says 'off'; candidate checks built/requests/presses per arm and zero construction while disabled."
+        "native_perf_lab::native performance lab::drives all four native feedback arms and constructs nothing while disabled",
+        "native_parity_strength_textperf::performance lab evidence::feedback is off by default, event driven, and says so in its status line"
+      ]
     },
     {
       "id": "apps2-138",
@@ -4116,9 +4122,10 @@
       "class": "a",
       "candidateCases": [
         "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection",
-        "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations"
-      ],
-      "weaker": "'selecting a scenario RESTORES the settings it does not declare' and 'the full resize pass leaves the workload MOUNTED' are not asserted."
+        "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations",
+        "native_parity_strength_textperf::performance lab evidence::selecting a workload restores the settings it does not declare",
+        "native_parity_strength_textperf::performance lab evidence::a full resize pass leaves the workload mounted"
+      ]
     },
     {
       "id": "apps2-145",
@@ -4131,9 +4138,10 @@
       "class": "a",
       "candidateCases": [
         "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations",
-        "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection"
-      ],
-      "weaker": "Main asserted one failing workload does not end Run all, the closing dump instruction text, and that reset PROVES the workload unmounted; candidate checks capture count, queue cleared, ramp rows and selected=idle-base..."
+        "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection",
+        "native_parity_strength_textperf::performance lab evidence::run all continues past a failing workload and ends with the dump instruction",
+        "native_parity_strength_textperf::performance lab evidence::stop halts run all between workloads and reset unmounts the workload"
+      ]
     },
     {
       "id": "apps2-146",
@@ -4259,9 +4267,9 @@
       "class": "a",
       "candidateCases": [
         "native_perf::native benchmark workload contract::runs and tears down controlled workload dense-motion",
-        "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations"
-      ],
-      "weaker": "Main asserted four arms seeding the same record count, a paint arm plus off-path control, and no leftover record; candidate only runs/tears down dense-motion and includes motion-flight in the sweep count."
+        "native_perf_lab::native performance lab::sweeps every workload and stops a ramp between iterations",
+        "native_parity_strength_motion::performance lab motion flight::profiles a live animation flight apart from the idle control and releases it on the next selection"
+      ]
     },
     {
       "id": "apps2-156",
@@ -4348,9 +4356,10 @@
         "native_perf_runner::perf runner — budget enforcement (§16.1)::passes an in-budget scene (and ignores non-reference devices)",
         "native_perf_runner::perf runner — shape determinism (§15.2)::records the same field set and phase set across two runs",
         "native_perf_runner::perf runner — shape determinism (§15.2)::run() covers the full scene×profile matrix with a stable key set",
-        "native_perf_runner::perf runner settle boundary::settles after each warmup and sample before the next event"
+        "native_perf_runner::perf runner settle boundary::settles after each warmup and sample before the next event",
+        "native_parity_strength_textperf::performance lab evidence::the perf runner counts live native connections for an engine scene"
       ],
-      "weaker": "Schema case: main required liveRegistry.registrations >= 1 and a numeric liveConnections; candidate records both as measured=false (no live instance/connection counters)."
+      "weaker": "liveRegistry.registrations is still measured = false. Compose owns reactive registrations, and it has no public census that the runner can read."
     },
     {
       "id": "apps2-162",
@@ -4373,9 +4382,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preloads the Compose owned ImageLabel after its source binding settles"
-      ],
-      "weaker": "Candidate preloads the retained ImageLabel instead of a temporary per-key Instance, so the destroy-after-preload half no longer applies."
+        "native_themes_media::native themes and media::preloads the Compose owned ImageLabel after its source binding settles",
+        "native_parity_strength_icons::async image states::preloads the retained ImageLabel itself and creates no temporary preload instance"
+      ]
     },
     {
       "id": "apps2-164",
@@ -4469,9 +4478,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::switches the entire gallery catalogue through one native root"
-      ],
-      "weaker": "Only the gallery root teardown asserts the target is empty; the playlist-specific tests stop without asserting."
+        "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes the playlist surface cleanly after sorting filtering reordering and selecting"
+      ]
     },
     {
       "id": "apps2-171",
@@ -4741,9 +4750,12 @@
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-9 Compose exit presence releases native ownership after animation",
         "native_radial_controls::native radial interaction policies::NRAD-15 branch replacement retains fading geometry and reclaims interrupted presence",
-        "native_radial_controls::native radial interaction policies::NRAD-8 nested expansion preserves parents and completion back returns"
+        "native_radial_controls::native radial interaction policies::NRAD-8 nested expansion preserves parents and completion back returns",
+        "native_parity_strength_motion::radial retirement motion::reopening mid-exit continues from the painted opacity and keeps every node",
+        "native_parity_strength_motion::radial retirement motion::a retiring branch keeps its geometry, leaves the focus order and then releases",
+        "native_parity_strength_motion::presented surface motion::a departing tab layer and a retiring radial slot stop taking input while they fade"
       ],
-      "weaker": "No check of wedge stroke thinning during retirement, of opacity continuity when reopening mid-exit, or that a retiring button refuses focus (NRAD-9/15 assert Interactable=false on the retiring parent instead)."
+      "weaker": "Engine refusal of selection on a non-interactable retiring button needs the real engine. Stroke thinning during retirement is retired: api.md does not promise it."
     },
     {
       "id": "apps2-187",
@@ -4912,9 +4924,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_radial_controls::native radial interaction policies::NRAD-11 native image skins retain upright labels"
-      ],
-      "weaker": "Per-item buttonSurface=\"native\" override is not tested."
+        "native_radial_controls::native radial interaction policies::NRAD-11 native image skins retain upright labels",
+        "native_parity_strength_paint::native paint strength: button content::keeps the radial button plate by default and omits it for every item when the surface is none"
+      ]
     },
     {
       "id": "apps2-198",
@@ -5169,9 +5181,9 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-7 state items stay open and completion precedes callbacks",
-        "native_radial_controls::native radial interaction policies::NRAD-10 reduced motion closes immediately and releases listeners"
-      ],
-      "weaker": "NRAD-7 checks completion precedes callback; disposal from inside onSelect and a second tap afterward are not tested."
+        "native_radial_controls::native radial interaction policies::NRAD-10 reduced motion closes immediately and releases listeners",
+        "native_parity_strength_lifetime::lifetime parity strength::fires a radial callback that disposes its own menu exactly once"
+      ]
     },
     {
       "id": "apps2-214",
@@ -5220,9 +5232,9 @@
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-9 Compose exit presence releases native ownership after animation",
         "native_radial_controls::native radial interaction policies::NRAD-10 reduced motion closes immediately and releases listeners",
-        "native_radial_controls::native radial interaction policies::NRAD-15 branch replacement retains fading geometry and reclaims interrupted presence"
-      ],
-      "weaker": "No keyed-swap of an open menu; registries replaced by Instance isDestroyed and listener counts."
+        "native_radial_controls::native radial interaction policies::NRAD-15 branch replacement retains fading geometry and reclaims interrupted presence",
+        "native_parity_strength_lifetime::lifetime parity strength::leaves nothing of an open radial menu swapped or dismissed mid-animation"
+      ]
     },
     {
       "id": "apps2-217",
@@ -5235,9 +5247,9 @@
       "class": "a",
       "candidateCases": [
         "native_radial_controls::native radial interaction policies::NRAD-10 reduced motion closes immediately and releases listeners",
-        "native_radial_controls::native radial interaction policies::NRAD-15 branch replacement retains fading geometry and reclaims interrupted presence"
-      ],
-      "weaker": "No long label with icon under a native theme."
+        "native_radial_controls::native radial interaction policies::NRAD-15 branch replacement retains fading geometry and reclaims interrupted presence",
+        "native_parity_strength_motion::radial retirement motion::reduced motion opens a whole usable ring with a long iconed label under a native theme"
+      ]
     },
     {
       "id": "apps2-218",
@@ -5570,9 +5582,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_parity::restored native gallery parity::bounds toast priority queues protects reading supersedes in place and reverses dismissal"
-      ],
-      "weaker": "One close() with heartbeat connection count 0; no 20-cycle loop and no owner-count baseline."
+        "native_gallery_parity::restored native gallery parity::bounds toast priority queues protects reading supersedes in place and reverses dismissal",
+        "native_parity_strength_lifetime::lifetime parity strength::returns the toast lab to one baseline through twenty cycles in one runtime"
+      ]
     },
     {
       "id": "apps2-241",
@@ -7981,9 +7993,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_registration::native registration and package contract::registers every authored control and documents every public constructor"
-      ],
-      "weaker": "Implicit only: lune requires ../src with no game/Players; no explicit assertion that no client service is touched at require time."
+        "native_registration::native registration and package contract::registers every authored control and documents every public constructor",
+        "native_parity_strength_surface::public surface registration::requiring the entry point touches no Roblox service or global"
+      ]
     },
     {
       "id": "apps-119",
@@ -7995,9 +8007,11 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime"
-      ],
-      "weaker": "Single Button binding; 'fresh state' only inferred from a second ref call."
+        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime",
+        "native_parity_strength_surface::component lifetime::mounts a component once, updates only its bindings and releases its cleanup and nodes",
+        "native_parity_strength_surface::component lifetime::show builds its branch on demand and releases it when the condition clears",
+        "native_parity_strength_surface::component lifetime::a remount builds fresh component state"
+      ]
     },
     {
       "id": "apps-120",
@@ -8009,9 +8023,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal"
-      ],
-      "weaker": "Uses an explicit child owner inside a mount rather than a nested mounted component."
+        "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
+        "native_parity_strength_surface::component lifetime::a watch in a nested component stops when that component unmounts and the surface stays",
+        "native_parity_strength_surface::component lifetime::a watch stopped by hand stays stopped, a second stop is safe and the surface still closes"
+      ]
     },
     {
       "id": "apps-121",
@@ -8073,9 +8088,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime"
-      ],
-      "weaker": "Phase-1 Facet.new API is gone (asserted nil); slice is Compose runtime + UI.Button."
+        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime",
+        "native_parity_strength_surface::public surface registration::loads headless and drives a public slice that mounts, binds, activates and tears down"
+      ]
     },
     {
       "id": "apps-126",
@@ -8162,9 +8177,10 @@
       "candidateCases": [
         "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
         "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice",
-        "native_stress::native stress invariants::detects detached instance and service connection leaks in the census"
+        "native_stress::native stress invariants::detects detached instance and service connection leaks in the census",
+        "native_parity_strength_lifetime::lifetime parity strength::returns the performance lab to its floor through repeated mount ramp laps"
       ],
-      "weaker": "Ramp laps up to the declared ceiling are not reproduced."
+      "weaker": "The ramp laps use a short ladder of 40, 80 and 120 rows. The declared ceiling rungs (10000 and 40000 rows) take more than a minute headless, so the suite does not run them."
     },
     {
       "id": "apps-132",
@@ -8254,9 +8270,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice"
-      ],
-      "weaker": "Alert cycles, not an open Menu/Picker popup."
+        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
+        "native_parity_strength_lifetime::lifetime parity strength::returns counters to baseline when an open popup is dismissed or disposed"
+      ]
     },
     {
       "id": "apps-139",
@@ -8284,8 +8300,7 @@
         "native_conformance::native constructor conformance::Button preserves caller properties refs events and cleanup in both constructor forms",
         "native_conformance::native constructor conformance::VirtualList preserves caller properties refs events and cleanup in both constructor forms",
         "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime"
-      ],
-      "weaker": "ref now receives the native root Instance (api.md 'Constructor contract'), not a frozen record; conformance asserts reference==node but not the call count (count asserted only for Button in native_public_surface, Togg..."
+      ]
     },
     {
       "id": "apps-141",
@@ -9245,9 +9260,9 @@
       "class": "a",
       "candidateCases": [
         "native_hud::native HUD::uses native body bounds after chrome layout and disconnects on disposal",
-        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes"
-      ],
-      "weaker": "Target children==0 and one AbsoluteSize signal disconnected; no full census."
+        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
+        "native_parity_strength_lifetime::lifetime parity strength::leaves no instance connection or owner after the HUD rotation and URL bar sequence"
+      ]
     },
     {
       "id": "apps-213",
@@ -9730,9 +9745,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes"
-      ],
-      "weaker": "TextSize 28/40/16 swing on one field/button/list; theme swap changes a metric only; order-independence and 'born at Largest' equality not asserted."
+        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes",
+        "native_parity_strength_textperf::preferred text size and disclosure::a text size swing in any order matches a surface born at that size"
+      ]
     },
     {
       "id": "apps-248",
@@ -9815,9 +9830,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values"
-      ],
-      "weaker": "Table values only."
+        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
+        "native_parity_strength_textperf::preferred text size and disclosure::segmented pickers, tabs and menu triggers keep the full label available"
+      ]
     },
     {
       "id": "apps-255",
@@ -9940,9 +9955,12 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::expands a source rectangle into full screen and reverses the same Compose-owned snapshot"
-      ],
-      "weaker": "Snapshot Interactable/Selectable false asserted for the full-screen handoff only."
+        "native_navigation::native navigation controls::expands a source rectangle into full screen and reverses the same Compose-owned snapshot",
+        "native_parity_strength_motion::presented surface motion::a dismissed alert returns selection and refuses input the moment its fade begins",
+        "native_parity_strength_motion::presented surface motion::a departing tab layer and a retiring radial slot stop taking input while they fade",
+        "native_parity_strength_motion::radial retirement motion::a retiring branch keeps its geometry, leaves the focus order and then releases",
+        "native_parity_strength_motion::tab content transition::crossfades only the content layers and never the strip"
+      ]
     },
     {
       "id": "apps-264",
@@ -10372,9 +10390,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
-        "native_conformance::native constructor conformance::RowActions preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Conformance checks the census after one mount. It does not repeat branch removal many times."
+        "native_conformance::native constructor conformance::RowActions preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::releases RowActions observers through twenty engaged branch removals"
+      ]
     },
     {
       "id": "collections-32",
@@ -10571,9 +10589,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
-        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "The capability-loss cancel and the dispose census are asserted in separate tests."
+        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::cancels Table reorder on capability loss and disposes to the registry baseline"
+      ]
     },
     {
       "id": "collections-47",
@@ -10586,9 +10604,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input",
-        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values"
-      ],
-      "weaker": "NC19 asserts a touch floor of 44, TextBounds growth and the header following it. With a pinned itemSize (which replaces the whole floor formula), no test checks that the row rises to one line of text."
+        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
+        "native_parity_strength_textperf::preferred text size and disclosure::a pinned table row still rises to fit one line of text"
+      ]
     },
     {
       "id": "collections-48",
@@ -11235,9 +11253,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags"
-      ],
-      "weaker": "Only a live 12 px drag is asserted. A programmatic open under spring motion is not."
+        "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
+        "native_parity_strength_motion::row action reveal motion::a programmatic open uncovers the tray behind the row and never ahead of it"
+      ]
     },
     {
       "id": "collections-93",
@@ -11260,9 +11278,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values"
-      ],
-      "weaker": "Only the trailing edge with editing checks the Content position. Leading is not asserted."
+        "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
+        "native_parity_strength_motion::row action reveal motion::a leading reveal translates the row content and keeps its width",
+        "native_parity_strength_motion::row action reveal motion::a reduced-motion open lands the full band on the same frame"
+      ]
     },
     {
       "id": "collections-95",
@@ -13214,9 +13233,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows"
-      ],
-      "weaker": "List-based."
+        "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows",
+        "native_parity_strength_textperf::fine-grained cost at any collection size::one visible change, one off-window change and a burst cost the same at 200, 2000 and 20000 rows"
+      ]
     },
     {
       "id": "collections-230",
@@ -14176,9 +14195,9 @@
       "class": "a",
       "candidateCases": [
         "native_conformance::native constructor conformance::RowActions preserves caller properties refs events and cleanup in both constructor forms",
-        "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice"
-      ],
-      "weaker": "The census is not taken after an engage/disengage cycle inside a list row."
+        "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice",
+        "native_parity_strength_lifetime::lifetime parity strength::returns a list row to its closed shape after every RowActions engagement"
+      ]
     },
     {
       "id": "collections-295",
@@ -14484,9 +14503,9 @@
       "class": "a",
       "candidateCases": [
         "native_conformance::native constructor conformance::Button preserves caller properties refs events and cleanup in both constructor forms",
-        "native_conformance::native constructor conformance::TextInput preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Per-control mount/dispose census only; no combined Table+TextInput interaction before teardown."
+        "native_conformance::native constructor conformance::TextInput preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::returns a Table and TextInput screen to baseline after interaction and a mid-edit dispose"
+      ]
     },
     {
       "id": "inputs-11",
@@ -14643,9 +14662,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::deduplicates shortcut/default bindings and yields shortcuts during native text editing",
-        "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves"
-      ],
-      "weaker": "Asserts Pressed connections are 0 after stop; ordering 'before the control is disposed' is not checked."
+        "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves",
+        "native_parity_strength_lifetime::lifetime parity strength::releases a dismissed surface's button keys and held repeat before another surface binds them"
+      ]
     },
     {
       "id": "inputs-22",
@@ -14821,9 +14840,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs",
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Shipped packages pass themes.define (which validates onDanger/danger); no per-package danger pair assertion."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_themepkg::shipped theme contrast::pairs every shipped danger plate with a readable onDanger in the report and the destructive rules"
+      ]
     },
     {
       "id": "inputs-34",
@@ -15009,9 +15028,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::allocates mirrored captions only while a reactive native theme has control artwork",
-        "native_inputs::native input controls::isolates artwork and mirrored captions from native automatic sizing while following real padding"
-      ],
-      "weaker": "Artwork tests use rectangular buttons."
+        "native_inputs::native input controls::isolates artwork and mirrored captions from native automatic sizing while following real padding",
+        "native_parity_strength_themepkg::theme layer values and states::dresses a circle Button from the ordinary control slot with zero padding"
+      ]
     },
     {
       "id": "inputs-48",
@@ -15231,9 +15250,11 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width",
+        "native_parity_strength_textperf::compact text before truncation::follows reactive full and compact labels and measures the full label only"
       ],
-      "weaker": "One size pair; single-line (TextWrapped=false on the node) and phrase-instead-of-wrap are not asserted on the node."
+      "weaker": "The measure node is single-line, but the button node gets its wrap and truncation from the StyleSheet. Only a live check can show that the visible caption stays on one line and does not wrap."
     },
     {
       "id": "inputs-64",
@@ -15908,9 +15929,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::paints live level assets and tint while allowing an omitted tint to return to native styles"
-      ],
-      "weaker": "Only image segments and tint.filled are asserted; tint.empty and glyph/bar tint are not."
+        "native_inputs::native input controls::paints live level assets and tint while allowing an omitted tint to return to native styles",
+        "native_parity_strength_paint::native paint strength: value and status paint::paints each level half with its own tint and returns an omitted half to the theme"
+      ]
     },
     {
       "id": "inputs-112",
@@ -16586,9 +16607,11 @@
       "candidateCases": [
         "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion",
         "native_inputs::native input controls::shows numeric validation text with interruptible reduced-motion-aware feedback",
-        "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules"
-      ],
-      "weaker": "Controls only honour the factory reducedMotion option (see gap on player preference)."
+        "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules",
+        "native_parity_strength_motion::reduced motion preference::the player preference stops control motion live and the sheet transitions agree",
+        "native_parity_strength_motion::reduced motion preference::a surface mounted while the preference is on is reduced from its first press",
+        "native_parity_strength_motion::control motion policy and lifetime::a live reduced-motion switch lands decorative motion on its terminus while progress keeps stepping"
+      ]
     },
     {
       "id": "inputs-162",
@@ -16995,9 +17018,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation",
-        "native_conformance::native constructor conformance::TextInput preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Mid-edit dispose census not asserted."
+        "native_conformance::native constructor conformance::TextInput preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::edits TextInput without remounting and disposes mid-edit to the registry baseline"
+      ]
     },
     {
       "id": "inputs-191",
@@ -17054,9 +17077,13 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::shows numeric validation text with interruptible reduced-motion-aware feedback",
-        "native_inputs::native input controls::reflects external invalid state and rejects malformed invalid and numeric declarations"
-      ],
-      "weaker": "Feedback is a UIScale pulse rather than a sideways shake; restart-mid-motion is not explicitly asserted."
+        "native_inputs::native input controls::reflects external invalid state and rejects malformed invalid and numeric declarations",
+        "native_parity_strength_motion::invalid entry feedback::pulses on a rising edge without moving the field and returns to rest",
+        "native_parity_strength_motion::invalid entry feedback::a second edge mid-pulse restarts the pulse instead of racing it",
+        "native_parity_strength_motion::invalid entry feedback::keeps the message and never pulses under reduced motion, and a live switch settles a pulse",
+        "native_parity_strength_motion::invalid entry feedback::disposing mid-pulse leaves nothing armed",
+        "native_parity_strength_motion::invalid entry feedback::refuses an invalid declaration that is not a readable boolean"
+      ]
     },
     {
       "id": "inputs-196",
@@ -17575,9 +17602,10 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width",
+        "native_parity_strength_textperf::compact text before truncation::an author-pinned label without a compact form is never replaced"
       ],
-      "weaker": "Only Button compactLabel: one full-vs-compact swap at two widths; no nested-ladder or author-pinned-label cases.",
       "apiPromise": "Button compactLabel: 'The button uses it when a plain text button cannot fit its full label.'"
     },
     {
@@ -17851,9 +17879,9 @@
         "native_inputs::native input controls::keeps mixed checkbox geometry live and validates presentation-specific options",
         "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls",
         "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
-        "native_themes_media::native themes and media::rejects incompatible meter options before creating native nodes"
-      ],
-      "weaker": "Refusal tested for selected controls/options only (TextInput invalid/number, Toggle mixed+switch, value bounds, Badge/AvatarGroup/ProgressView); probes show Picker.selected, TabView.selection, Sheet detent, Button cor..."
+        "native_themes_media::native themes and media::rejects incompatible meter options before creating native nodes",
+        "native_parity_strength_surface::declaration refusals::refuses unknown options, missing required options and closed sets with a named error"
+      ]
     },
     {
       "id": "mech1-28",
@@ -17877,9 +17905,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
-        "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes"
-      ],
-      "weaker": "Only Badge label set to a number after mount and Button role; no general closed-enum-on-later-set check across controls."
+        "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes",
+        "native_parity_strength_surface::declaration refusals::a bound closed option refuses a later illegal value"
+      ]
     },
     {
       "id": "mech1-30",
@@ -17915,8 +17943,7 @@
       "candidateCases": [
         "native_conformance::native constructor conformance::requires a conformance fixture for every public control with no stale fixtures",
         "native_registration::native registration and package contract::registers every authored control and documents every public constructor"
-      ],
-      "weaker": "Grip/hit-floor registration is gone with the primitives."
+      ]
     },
     {
       "id": "mech1-33",
@@ -17939,9 +17966,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "tools/check_types.py with tests/types/*_witness.luau (not a lune case)"
+        "tools/check_types.py with tests/types/*_witness.luau (not a lune case)",
+        "native_parity_strength_surface::public surface registration::every registered control has a typed constructor field, an exported spec type and a witness"
       ],
-      "weaker": "Evidence is the type-check tool's positive/compile-fail witnesses, not a spec in the test runner.",
       "apiPromise": "api.md Types: exported Props and Spec contracts; 'Run python3 tools/check_types.py'."
     },
     {
@@ -18269,9 +18296,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::isolates artwork and mirrored captions from native automatic sizing while following real padding",
-        "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native"
-      ],
-      "weaker": "Native tests check art follows real UIPadding for Button/Toggle skins; no measured tray-plate regression pixel case."
+        "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
+        "native_parity_strength_paint::native paint strength: skins::keeps full-bleed art on the plate's own box when the padding changes after mount"
+      ]
     },
     {
       "id": "mech1-64",
@@ -18349,9 +18376,9 @@
       "class": "a",
       "candidateCases": [
         "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
-        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice"
-      ],
-      "weaker": "Throwing-cleanup containment not asserted."
+        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes owner trees once, contains a throwing cleanup, and survives repeated disposal"
+      ]
     },
     {
       "id": "mech1-70",
@@ -18536,9 +18563,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::rejects incompatible meter options before creating native nodes",
         "native_inputs::native input controls::keeps mixed checkbox geometry live and validates presentation-specific options",
-        "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls"
-      ],
-      "weaker": "Partial-node release (engine.made unchanged) asserted only for ProgressView."
+        "native_inputs::native input controls::shares finite bound arithmetic, live steps and formatter fallback across value controls",
+        "native_parity_strength_surface::declaration refusals::a refused declaration releases every partially built native node and connection"
+      ]
     },
     {
       "id": "mech1-82",
@@ -18566,8 +18593,7 @@
       "candidateCases": [
         "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows",
         "native_public_surface::native public surface::gates native actions through retained ancestors and detaches observations"
-      ],
-      "weaker": "Tint inheritance not asserted."
+      ]
     },
     {
       "id": "mech1-84",
@@ -18668,9 +18694,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Focus-indicator contrast not asserted."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_paint::native paint strength: theme sheets::keeps every token pair readable and the accent indicator visible on its surface",
+        "native_parity_strength_paint::native paint strength: theme sheets::reports contrast with the written-out WCAG formula for every shipped pair"
+      ]
     },
     {
       "id": "mech1-92",
@@ -18711,9 +18738,9 @@
         "native_stress::native stress invariants::detects detached instance and service connection leaks in the census",
         "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
         "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice",
-        "native_conformance::native constructor conformance::Button preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Main pinned 16 named connection fields on recycled instances; candidate asserts census-level instance/connection baselines through modal and pooled-row cycles, not per-field rewiring."
+        "native_conformance::native constructor conformance::Button preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::rewires reused row containers to the current item without stale connections"
+      ]
     },
     {
       "id": "mech1-95",
@@ -19029,9 +19056,10 @@
       "class": "a",
       "candidateCases": [
         "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
-        "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal"
-      ],
-      "weaker": "Dispose-from-observer not asserted."
+        "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes a mount from inside an observer without a fault in either order",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes owner trees once, contains a throwing cleanup, and survives repeated disposal"
+      ]
     },
     {
       "id": "mech1-120",
@@ -19097,9 +19125,9 @@
         "native_perf_principles::native performance invariants::one bound value writes one native property at100800and3200rows",
         "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
         "native_perf_principles::native performance invariants::idle heartbeat and identical state perform no native writes",
-        "native_perf_principles::native performance invariants::toggle changes its row without mounting another node"
-      ],
-      "weaker": "Scales 100/800/3200 rows (main 200/2000/20000); off-screen-row write and 50-write burst not asserted."
+        "native_perf_principles::native performance invariants::toggle changes its row without mounting another node",
+        "native_parity_strength_textperf::fine-grained cost at any collection size::one visible change, one off-window change and a burst cost the same at 200, 2000 and 20000 rows"
+      ]
     },
     {
       "id": "mech1-125",
@@ -19410,9 +19438,10 @@
       "class": "a",
       "candidateCases": [
         "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
-        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice"
-      ],
-      "weaker": "Compose owner semantics tested only through one watch tree; no runtime:dispose twice assertion"
+        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
+        "native_parity_strength_lifetime::lifetime parity strength::stops mounted watches and child cleanups with the mount and tolerates repeated disposal",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes owner trees once, contains a throwing cleanup, and survives repeated disposal"
+      ]
     },
     {
       "id": "mech2-12",
@@ -19425,9 +19454,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
-        "native_radial_controls::native radial interaction policies::NRAD-9 Compose exit presence releases native ownership after animation"
-      ],
-      "weaker": "per-control departure cancellation only; no whole-runtime shutdown with several pending exits"
+        "native_radial_controls::native radial interaction policies::NRAD-9 Compose exit presence releases native ownership after animation",
+        "native_parity_strength_lifetime::lifetime parity strength::releases several pending exits at once when the runtime shuts down"
+      ]
     },
     {
       "id": "mech2-13",
@@ -20044,9 +20073,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion"
-      ],
-      "weaker": "Facet clock/tween API deleted; candidate checks per-control snap under reducedMotion only. Settle-event parity and informational (quantized, keeps running) values are not a Facet feature anymore (gallery-level only: n..."
+        "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion",
+        "native_parity_strength_motion::control motion policy and lifetime::a live reduced-motion switch lands decorative motion on its terminus while progress keeps stepping",
+        "native_parity_strength_motion::reduced motion preference::the player preference stops control motion live and the sheet transitions agree"
+      ]
     },
     {
       "id": "mech2-64",
@@ -20083,9 +20113,12 @@
         "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion",
         "native_navigation::native navigation controls::retargets native sheet motion and honors live reduced motion without losing content",
         "native_radial_controls::native radial interaction policies::NRAD-10 reduced motion closes immediately and releases listeners",
-        "native_themes_media::native themes and media::cancels pending damage trails for reduced motion and releases their clock"
-      ],
-      "weaker": "Facet clock/tween API deleted; candidate checks per-control snap under reducedMotion only. Settle-event parity and informational (quantized, keeps running) values are not a Facet feature anymore (gallery-level only: n..."
+        "native_themes_media::native themes and media::cancels pending damage trails for reduced motion and releases their clock",
+        "native_parity_strength_motion::control motion policy and lifetime::a live reduced-motion switch lands decorative motion on its terminus while progress keeps stepping",
+        "native_parity_strength_motion::indeterminate progress lifetime::an indeterminate view under reduced motion still runs its cycle and says Loading",
+        "native_parity_strength_motion::circular progress motion::keeps the reduced-motion ring travelling in a few visible poses each second",
+        "native_parity_strength_motion::spinner paint::writes the spinner on full-motion frames and quantizes a mid-run switch without restarting"
+      ]
     },
     {
       "id": "mech2-67",
@@ -20098,9 +20131,10 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion",
-        "native_themes_media::native themes and media::animates skeletons with one shared Compose clock and honors reduced motion"
-      ],
-      "weaker": "asserts heartbeat subscription count 0 after stop; no 50-cycle baseline"
+        "native_themes_media::native themes and media::animates skeletons with one shared Compose clock and honors reduced motion",
+        "native_parity_strength_motion::control motion policy and lifetime::fifty animated mount, flight and unmount cycles return the census to its baseline",
+        "native_parity_strength_motion::indeterminate progress lifetime::an indeterminate bar keeps travelling in its third second and stops dead with its owner"
+      ]
     },
     {
       "id": "mech2-68",
@@ -20173,9 +20207,11 @@
         "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion",
         "native_navigation::native navigation controls::retargets native sheet motion and honors live reduced motion without losing content",
         "native_radial_controls::native radial interaction policies::NRAD-10 reduced motion closes immediately and releases listeners",
-        "native_themes_media::native themes and media::cancels pending damage trails for reduced motion and releases their clock"
-      ],
-      "weaker": "Facet clock/tween API deleted; candidate checks per-control snap under reducedMotion only. Settle-event parity and informational (quantized, keeps running) values are not a Facet feature anymore (gallery-level only: n..."
+        "native_themes_media::native themes and media::cancels pending damage trails for reduced motion and releases their clock",
+        "native_parity_strength_motion::control motion policy and lifetime::a live reduced-motion switch lands decorative motion on its terminus while progress keeps stepping",
+        "native_parity_strength_motion::row action reveal motion::a reduced-motion open lands the full band on the same frame",
+        "native_parity_strength_motion::presented surface motion::presents and removes an alert immediately without a transition"
+      ]
     },
     {
       "id": "mech2-74",
@@ -20187,9 +20223,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion"
-      ],
-      "weaker": "single control; no churn baseline or disposed-clock refusal"
+        "native_inputs::native input controls::restarts Compose pop feedback and obeys live reduced motion",
+        "native_parity_strength_motion::control motion policy and lifetime::fifty animated mount, flight and unmount cycles return the census to its baseline",
+        "native_parity_strength_motion::control motion policy and lifetime::motion refuses to start outside an owner and a disposed owner cannot restart its clock"
+      ]
     },
     {
       "id": "mech2-75",
@@ -20259,9 +20296,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules"
-      ],
-      "weaker": "GuiService fallback when reducedMotion is omitted and the 0.2 default when metrics.motion.normal is omitted are not asserted here"
+        "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules",
+        "native_parity_strength_paint::native paint strength: theme sheets::falls back to GuiService for reduced motion and to a 0.2 second paint transition"
+      ]
     },
     {
       "id": "mech2-81",
@@ -20643,9 +20680,11 @@
       "class": "a",
       "candidateCases": [
         "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
-        "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings"
-      ],
-      "weaker": "no self-disposal-during-run case"
+        "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings",
+        "native_parity_strength_surface::reactive recovery::an effect that disposes itself during its run is not subscribed again",
+        "native_parity_strength_surface::reactive recovery::an effect whose owner disposes during the run is not subscribed again",
+        "native_parity_strength_surface::reactive recovery::transaction reads stay fresh and unrelated writes replay no effect"
+      ]
     },
     {
       "id": "mech2-113",
@@ -20826,9 +20865,11 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Candidate checks one unreadable content/surface pair; 'authority conflicts are loud errors' has no candidate equivalent and contrast report contents are not asserted"
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_themepkg::theme contrast gate::reports every semantic pair of an accepted package with its measured ratio",
+        "native_parity_strength_themepkg::theme contrast gate::refuses each unreadable pair at define time and names the pair, palette and ratio",
+        "native_parity_strength_themepkg::theme contrast gate::refuses a definition with no identity or no palette and names the field"
+      ]
     },
     {
       "id": "mech3-13",
@@ -20841,9 +20882,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::reflows Button and circle sizes from live theme metrics and control rungs",
-        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets"
-      ],
-      "weaker": "Per-side authored padding and minimal-write (steady theme costs zero padding writes) are not asserted"
+        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets",
+        "native_parity_strength_paint::native paint strength: theme sheets::writes per-side button insets to the padding rules and costs no writes when nothing changes"
+      ]
     },
     {
       "id": "mech3-14",
@@ -20916,9 +20957,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime"
-      ],
-      "weaker": "Compose.show toggling destroys and remounts; no case swaps one branch for a different node at the same position"
+        "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime",
+        "native_parity_strength_lifetime::lifetime parity strength::sweeps the old subtree when a branch puts a different node at the same position"
+      ]
     },
     {
       "id": "mech3-20",
@@ -21142,9 +21183,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::shares caller resources directly through Compose and releases the final reference"
-      ],
-      "weaker": "Compose.createSharedResource release on last reference; in-flight cancel and give-up ledger drop on dispose not asserted (newResourceProvider deleted)"
+        "native_themes_media::native themes and media::shares caller resources directly through Compose and releases the final reference",
+        "native_parity_strength_icons::async image states::releases a shared resource on its last reference, cancels in-flight work and ignores late results",
+        "native_parity_strength_icons::async image states::renders a shared completion, dims the image and restores it, and releases with the owner"
+      ]
     },
     {
       "id": "mech3-38",
@@ -21281,9 +21323,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
-      ],
-      "weaker": "Only Button.compactLabel; one width transition; no sibling/priority interaction"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width",
+        "native_parity_strength_textperf::compact text before truncation::follows reactive full and compact labels and measures the full label only"
+      ]
     },
     {
       "id": "mech3-49",
@@ -21429,9 +21472,9 @@
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
         "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes",
-        "native_inputs::native input controls::marks filled bar levels with a tag and keeps the shortest bar visible"
-      ],
-      "weaker": "facet-selected, role, busy/disabled and level-on removal covered; no case adds a game-owned tag and asserts Facet leaves it (structurally true: src only adds/removes named facet-* tags); surface-tag swap concept deleted"
+        "native_inputs::native input controls::marks filled bar levels with a tag and keeps the shortest bar visible",
+        "native_parity_strength_paint::native paint strength: button content::leaves game-owned tags in place while control state tags come and go"
+      ]
     },
     {
       "id": "mech3-61",
@@ -21511,9 +21554,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption"
-      ],
-      "weaker": "Button only; no 'spares a sibling' ordering or minMax floor"
+        "native_inputs::native input controls::chooses compact button text from native measurements and restores the full caption",
+        "native_parity_strength_textperf::compact text before truncation::keeps the full label while it fits and swaps to the compact form at every narrower width"
+      ]
     },
     {
       "id": "mech3-68",
@@ -21891,9 +21934,13 @@
         "native_navigation::native navigation controls::expands a source rectangle into full screen and reverses the same Compose-owned snapshot",
         "native_navigation::native navigation controls::makes full-screen source transitions immediate under native reduced motion",
         "native_gallery_parity::restored native gallery parity::runs shared color size rotation fade order and detail changes while charge remains informational",
-        "native_gallery_parity::restored native gallery parity::keeps cooldown curve race and panel duration independent with real easing and readable endpoints"
-      ],
-      "weaker": "Alert source transition interruption and reduced motion only; no general layout-change animation API exists"
+        "native_gallery_parity::restored native gallery parity::keeps cooldown curve race and panel duration independent with real easing and readable endpoints",
+        "native_parity_strength_motion::presented surface motion::a sheet reversed mid-flight holds its painted height and returns, and reduced motion settles it",
+        "native_parity_strength_motion::control motion policy and lifetime::a row reveal reversed mid-flight continues from its painted offset",
+        "native_parity_strength_motion::control motion policy and lifetime::an alert reopened mid-exit continues from its painted opacity",
+        "native_parity_strength_motion::radial retirement motion::reopening mid-exit continues from the painted opacity and keeps every node",
+        "native_parity_strength_motion::control motion policy and lifetime::a live reduced-motion switch lands decorative motion on its terminus while progress keeps stepping"
+      ]
     },
     {
       "id": "mech3-99",
@@ -22087,9 +22134,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_conformance::native constructor conformance::Button preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Conformance census proves Button leaks no instances/connections on disposal, but the fixture is not an image button and does not remove it through a Compose.show branch."
+        "native_conformance::native constructor conformance::Button preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::releases evicted image buttons and their hover observers with the branch"
+      ]
     },
     {
       "id": "navigation-1-08",
@@ -22232,7 +22279,7 @@
       "candidateCases": [
         "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements"
       ],
-      "weaker": "One narrow measurement only. No theme packages, no largest preferred text, no viewport sweep."
+      "weaker": "No headless oracle solves native layout at the largest text size. A live Studio sweep across themes and viewports must check that the card and its actions stay inside the screen."
     },
     {
       "id": "navigation-1-18",
@@ -22460,9 +22507,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::contains failed alert factories and accepts a later valid presentation"
-      ],
-      "weaker": "Only the content-factory failure through item is tested. A title-factory failure and an initially bound isPresented=true failure are not, and neither is onError/FacetError reporting."
+        "native_navigation::native navigation controls::contains failed alert factories and accepts a later valid presentation",
+        "native_parity_strength_surface::contained failures::contains a failing alert title, reports it once and presents a later valid item",
+        "native_parity_strength_surface::contained failures::contains an initially presented failing alert without stranding its binding"
+      ]
     },
     {
       "id": "navigation-1-32",
@@ -22475,9 +22523,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::clears bound alert errors and turns native page animation off for reduced motion",
-        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork"
-      ],
-      "weaker": "The default 'Something went wrong' title and error message text are not asserted."
+        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork",
+        "native_parity_strength_surface::contained failures::shows default error copy with critical artwork and clears the error on Back"
+      ]
     },
     {
       "id": "navigation-1-33",
@@ -22490,9 +22538,10 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::animates alerts from native sources and reclaims interrupted Compose presence",
-        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork"
-      ],
-      "weaker": "Exit is not faster than enter (the same 0.2 s tween), so the asymmetry is lost."
+        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork",
+        "native_parity_strength_motion::presented surface motion::fades an alert in from transparent, fades it out over the declared time and then removes it",
+        "native_parity_strength_motion::presented surface motion::presents and removes an alert immediately without a transition"
+      ]
     },
     {
       "id": "navigation-1-34",
@@ -24233,9 +24282,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::retains covered navigation destinations and disposes popped pages",
-        "native_conformance::native constructor conformance::NavigationStack preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Disposal is checked only at rest, never during a transition."
+        "native_conformance::native constructor conformance::NavigationStack preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::releases every NavigationStack page when disposal lands mid-transition"
+      ]
     },
     {
       "id": "navigation-3-06",
@@ -24287,9 +24336,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::retargets native sheet motion and honors live reduced motion without losing content"
-      ],
-      "weaker": "No mid-flight reversal (large then back to medium) holding the painted height."
+        "native_navigation::native navigation controls::retargets native sheet motion and honors live reduced motion without losing content",
+        "native_parity_strength_motion::presented surface motion::a sheet reversed mid-flight holds its painted height and returns, and reduced motion settles it"
+      ]
     },
     {
       "id": "navigation-3-10",
@@ -24337,9 +24386,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back"
-      ],
-      "weaker": "Does not assert FacetError clears (nil) after the next valid path write."
+        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back",
+        "native_parity_strength_surface::contained failures::quarantines an invalid path, keeps the page and clears the error on the next valid path"
+      ]
     },
     {
       "id": "navigation-3-14",
@@ -24427,9 +24476,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back"
-      ],
-      "weaker": "Does not assert the error stays recorded (FacetError) after Back."
+        "native_navigation::native navigation controls::quarantines invalid paths and contains destination faults while preserving Back",
+        "native_parity_strength_surface::contained failures::a destination fault releases partial content, records the failure and keeps Back"
+      ]
     },
     {
       "id": "navigation-3-19",
@@ -24535,9 +24584,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_conformance::native constructor conformance::NavigationStack preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Census leak check only; path writes after disposal are not exercised."
+        "native_conformance::native constructor conformance::NavigationStack preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::remounts one NavigationStack without accumulating observers and ignores path writes after disposal"
+      ]
     },
     {
       "id": "navigation-3-26",
@@ -25059,9 +25108,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_conformance::native constructor conformance::Picker preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Without icons, axis y or indicator."
+        "native_conformance::native constructor conformance::Picker preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes icon-only vertical indicated segmented pickers to the registry baseline after switching"
+      ]
     },
     {
       "id": "navigation-3-63",
@@ -25158,9 +25207,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::retains model values and updates picker font bindings"
-      ],
-      "weaker": "One option; default-when-absent not asserted."
+        "native_navigation::native navigation controls::retains model values and updates picker font bindings",
+        "native_parity_strength_textperf::preferred text size and disclosure::picker textSize reaches every segment reactively and is left to the theme when absent"
+      ]
     },
     {
       "id": "navigation-3-70",
@@ -25546,9 +25595,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label"
-      ],
-      "weaker": "Identity is implied (same trigger instance relabels) rather than asserted via a build counter."
+        "native_navigation::native navigation controls::bounds menu picker triggers to authored widths without losing their full label",
+        "native_parity_strength_surface::reactive recovery::a menu picker keeps its trigger across selection and makes no trigger node"
+      ]
     },
     {
       "id": "navigation-4-07",
@@ -25571,9 +25620,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_conformance::native constructor conformance::Picker preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Conformance census checks native instances/connections after mount+dispose only; no open/select interaction before disposal."
+        "native_conformance::native constructor conformance::Picker preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::returns a menu picker to baseline after open select reopen and cancel"
+      ]
     },
     {
       "id": "navigation-4-09",
@@ -25845,9 +25894,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options"
-      ],
-      "weaker": "Option identity is asserted across axis/badge changes, not across a selection change."
+        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
+        "native_parity_strength_surface::reactive recovery::a picker selection change keeps its options and makes no native node"
+      ]
     },
     {
       "id": "navigation-4-29",
@@ -25859,9 +25908,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_conformance::native constructor conformance::Picker preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "Conformance census does not set an indicator or switch selection before disposal."
+        "native_conformance::native constructor conformance::Picker preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes icon-only vertical indicated segmented pickers to the registry baseline after switching"
+      ]
     },
     {
       "id": "navigation-4-30",
@@ -25914,9 +25963,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors"
-      ],
-      "weaker": "Code sets selected=false for underline, but the test does not assert the option lacks selected paint."
+        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors",
+        "native_parity_strength_paint::native paint strength: button content::replaces the selected plate with the chosen indicator instead of painting both"
+      ]
     },
     {
       "id": "navigation-4-34",
@@ -26165,9 +26214,9 @@
       "class": "a",
       "candidateCases": [
         "native_conformance::native constructor conformance::Sheet preserves caller properties refs events and cleanup in both constructor forms",
-        "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal"
-      ],
-      "weaker": "Census is taken with isPresented=false; close-then-reopen of the same Sheet is not tested."
+        "native_navigation::native navigation controls::forgives near-miss backdrop taps and closes only the top native modal",
+        "native_parity_strength_lifetime::lifetime parity strength::reopens a bound Sheet with fresh content and disposes it to baseline"
+      ]
     },
     {
       "id": "navigation-4-50",
@@ -26764,9 +26813,9 @@
       "class": "a",
       "candidateCases": [
         "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders",
-        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility"
-      ],
-      "weaker": "CAND retains visited pages by default, so survival is shown for retained content (clicks survive A->B->A) rather than across a disposal."
+        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility",
+        "native_parity_strength_lifetime::lifetime parity strength::keeps model state outside a top-retention TabView across page disposal"
+      ]
     },
     {
       "id": "navigation-5-20",
@@ -26853,9 +26902,11 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab"
-      ],
-      "weaker": "Asserts CanvasGroup + GroupTransparency + Interactable=false on the departing layer; does not assert the strip carries no transition."
+        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab",
+        "native_parity_strength_motion::tab content transition::crossfades only the content layers and never the strip",
+        "native_parity_strength_motion::presented surface motion::a departing tab layer and a retiring radial slot stop taking input while they fade",
+        "native_parity_strength_motion::tab content transition::keeps a departing layer mounted until its fade ends when only the top page is retained"
+      ]
     },
     {
       "id": "navigation-5-25",
@@ -26942,9 +26993,9 @@
       "class": "a",
       "candidateCases": [
         "native_conformance::native constructor conformance::TabView preserves caller properties refs events and cleanup in both constructor forms",
-        "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders"
-      ],
-      "weaker": "Conformance fixture is a one-tab TabView with no badge/sidebar/accessory; census neutrality not asserted after switches."
+        "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders",
+        "native_parity_strength_lifetime::lifetime parity strength::keeps a badged sidebar TabView registry-neutral through twenty switches and disposal"
+      ]
     },
     {
       "id": "navigation-5-30",
@@ -27197,9 +27248,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup"
-      ],
-      "weaker": "Only asserts retired==built after world.stop(); disposal at the moment of re-home is not asserted."
+        "native_navigation::native navigation controls::rehomes tab accessories with native measured space and owner cleanup",
+        "native_parity_strength_lifetime::lifetime parity strength::disposes a tab accessory at the moment it is re-homed"
+      ]
     },
     {
       "id": "navigation-5-45",
@@ -27261,9 +27312,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab"
-      ],
-      "weaker": "Spelling is now { seconds, ease } tween options rather than { enter = 'fade' }."
+        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab",
+        "native_parity_strength_motion::tab content transition::crossfades only the content layers and never the strip",
+        "native_parity_strength_motion::tab content transition::switches without a fade when the transition is absent or false and refuses other spellings"
+      ]
     },
     {
       "id": "navigation-5-49",
@@ -27388,9 +27440,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::scales translucent theme surfaces by the player's background transparency preference"
-      ],
-      "weaker": "Neutral package only (main swept every shipped package). The .facet-scrim rule is not applied to any node in CAND (see bug), so this checks a rule that paints nothing."
+        "native_themes_media::native themes and media::scales translucent theme surfaces by the player's background transparency preference",
+        "native_parity_strength_themepkg::theme sheet paint::paints a translucent scrim from every shipped palette onto a presented modal"
+      ]
     },
     {
       "id": "navigation-5-57",
@@ -27416,9 +27468,10 @@
         "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants",
         "native_themes_media::native themes and media::uses authored selected contrast for native buttons and their mirrored captions",
         "native_inputs::native input controls::allocates mirrored captions only while a reactive native theme has control artwork",
-        "native_parity_gaps::native parity gaps::tags a disabled button for the theme disabled rule and lets a package retune it"
-      ],
-      "weaker": "Role/appearance-specific caption and icon colors (.facet-role-*/.facet-appearance-* >> .facet-button-caption/.facet-icon) and the disabled caption transparency rule (.facet-disabled >> .facet-button-caption) are never..."
+        "native_parity_gaps::native parity gaps::tags a disabled button for the theme disabled rule and lets a package retune it",
+        "native_parity_strength_paint::native paint strength: button content::paints rich button titles and icons with the plate text color for every role and appearance",
+        "native_parity_strength_paint::native paint strength: button content::keeps a hidden plaque caption hidden while its button is disabled"
+      ]
     },
     {
       "id": "paint-02",
@@ -27550,9 +27603,9 @@
       "class": "a",
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
-        "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes"
-      ],
-      "weaker": "Asserts facet-role-* and facet-accent on Toggle/Button; soft/utility/link appearance tags and \"standard mints none\" are not asserted."
+        "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes",
+        "native_parity_strength_paint::native paint strength: button content::mints exactly one tag per authored appearance word and none for standard or a size"
+      ]
     },
     {
       "id": "paint-10",
@@ -27717,9 +27770,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
-        "native_themes_media::native themes and media::keeps native theme rules reactive without writing instance paint"
-      ],
-      "weaker": "Icon position (leading/trailing) and gap are not asserted."
+        "native_themes_media::native themes and media::keeps native theme rules reactive without writing instance paint",
+        "native_parity_strength_icons::icon layout::places a Label icon leading or trailing beside its title with the themed art size and gap"
+      ]
     },
     {
       "id": "paint-22",
@@ -27743,9 +27796,9 @@
       "class": "a",
       "candidateCases": [
         "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings",
-        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes"
-      ],
-      "weaker": "Only function(use)/readable-in-row titles are exercised; a bare cell title is not."
+        "native_text_preference::native text preference updates::keeps editing focus row identity and scroll position across text and theme changes",
+        "native_parity_strength_surface::reactive recovery::a Label follows a bare title cell and a function title"
+      ]
     },
     {
       "id": "paint-24",
@@ -27869,9 +27922,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error"
-      ],
-      "weaker": "Covers duplicate option values and unknown style only; empty options (now accepted), read-only selected and non-writable expanded refusals are not asserted."
+        "native_parity_gaps::native parity gaps::refuses malformed documented options with a named error",
+        "native_parity_strength_surface::declaration refusals::refuses unknown options, missing required options and closed sets with a named error"
+      ]
     },
     {
       "id": "paint-32",
@@ -27934,9 +27987,12 @@
       "candidateCases": [
         "native_themes_media::native themes and media::keeps indeterminate progress stepping and trails determinate decreases",
         "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors",
-        "native_navigation::native navigation controls::pauses repeating progress motion while its retained tab is hidden"
-      ],
-      "weaker": "A determinate view without trail is never checked for zero frame subscriptions; a never-presented indeterminate bar is not mounted."
+        "native_navigation::native navigation controls::pauses repeating progress motion while its retained tab is hidden",
+        "native_parity_strength_motion::indeterminate progress lifetime::an indeterminate bar keeps travelling in its third second and stops dead with its owner",
+        "native_parity_strength_motion::indeterminate progress lifetime::an indeterminate view built under an owner and never presented stops with that owner",
+        "native_parity_strength_motion::indeterminate progress lifetime::unmounting and disposing the runtime are safe in either order",
+        "native_parity_strength_motion::indeterminate progress lifetime::a plain determinate bar starts no cycle under either motion policy"
+      ]
     },
     {
       "id": "paint-37",
@@ -27980,9 +28036,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps indeterminate progress stepping and trails determinate decreases"
-      ],
-      "weaker": "Only Segment1 transparency change is asserted; 8 fixed-size dots, travelling brightest dot and spinnerDotSize metric are unasserted (main: 5 dots)."
+        "native_themes_media::native themes and media::keeps indeterminate progress stepping and trails determinate decreases",
+        "native_parity_strength_motion::spinner paint::draws eight fixed square dots at the theme dot size and no bar",
+        "native_parity_strength_motion::spinner paint::moves the brightest dot around the ring while every dot stays visible"
+      ]
     },
     {
       "id": "paint-40",
@@ -28145,9 +28202,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::replaces native hint art when the preferred asset changes representation"
-      ],
-      "weaker": "Glyph size (iconSize+8) across a live theme swap is not asserted."
+        "native_inputs::native input controls::replaces native hint art when the preferred asset changes representation",
+        "native_parity_strength_icons::icon layout::keeps a preferred hint glyph square at the theme icon size across a live theme swap"
+      ]
     },
     {
       "id": "paint-51",
@@ -28409,9 +28466,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants"
-      ],
-      "weaker": "A Button GuiState driving its control skin state is not asserted (only a state cell and icon variants)."
+        "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants",
+        "native_parity_strength_paint::native paint strength: skins::drives the control skin art from the button's own interaction state"
+      ]
     },
     {
       "id": "paint-71",
@@ -28573,9 +28630,13 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive"
-      ],
-      "weaker": "Exact bezier handle length and intermediate sweeps are not asserted; private nav_path_shapes is not unit-tested (radial_geometry covers radial use)."
+        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive",
+        "native_parity_strength_motion::arc shape math::closes a full ring with nine points on the radius",
+        "native_parity_strength_motion::arc shape math::uses screen angles where zero is up, ninety is right and y grows down",
+        "native_parity_strength_motion::arc shape math::points tangents forward with the exact cubic handle length and mirrors them",
+        "native_parity_strength_motion::arc shape math::ends a larger sweep farther along the circle and refuses more than one hundred points",
+        "native_parity_strength_motion::circular progress motion::ends a quarter value at three o'clock and closes the ring at the full value"
+      ]
     },
     {
       "id": "paint-83",
@@ -28609,9 +28670,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive"
-      ],
-      "weaker": "Ten-foot scaling retired."
+        "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive",
+        "native_parity_strength_paint::native paint strength: value and status paint::sizes ring strokes, bar tracks and spinner dots from theme metrics unless authored"
+      ]
     },
     {
       "id": "paint-86",
@@ -28796,9 +28857,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::lets the skinned tag outrank every built-in control fill"
-      ],
-      "weaker": "Only .facet-skinned vs fills is asserted; :Hover/:Press and role rules after their bases are not."
+        "native_themes_media::native themes and media::lets the skinned tag outrank every built-in control fill",
+        "native_parity_strength_paint::native paint strength: theme sheets::orders every state rule after its base and disabled after selection in every shipped sheet"
+      ]
     },
     {
       "id": "paint-102",
@@ -28823,9 +28884,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules",
-        "native_themes_media::native themes and media::leaves unchanged native rules and running paint transitions untouched during theme updates"
-      ],
-      "weaker": "Semantics changed: every color/transparency property transitions, not only state rules."
+        "native_themes_media::native themes and media::leaves unchanged native rules and running paint transitions untouched during theme updates",
+        "native_parity_strength_motion::theme paint transitions::every shipped package transitions exactly its paint properties on one shared timing"
+      ]
     },
     {
       "id": "paint-104",
@@ -28998,9 +29059,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::uses authored selected contrast for native buttons and their mirrored captions",
         "native_themes_media::native themes and media::rejects malformed type roles, unknown shadow presets and unreadable selected labels",
-        "native_themes_media::native themes and media::shares selected contrast across rich disclosure titles and chevrons"
-      ],
-      "weaker": "Auto-switching to a readable partner is retired: define rejects an unreadable onSelected instead (documented)."
+        "native_themes_media::native themes and media::shares selected contrast across rich disclosure titles and chevrons",
+        "native_parity_strength_paint::native paint strength: theme sheets::paints the authored selected label or the content color and rejects an unreadable one"
+      ]
     },
     {
       "id": "paint-116",
@@ -29074,9 +29135,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs",
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "onAccent/accent readability is implied by report.ok, not asserted per package."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_themepkg::shipped theme contrast::pairs every accent plate with onAccent where the ordinary content color is unreadable"
+      ]
     },
     {
       "id": "paint-121",
@@ -29112,9 +29173,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::uses native shadows with reactive theme parameters and Compose disposal",
         "native_themes_media::native themes and media::skips static empty skin graphs while retaining later reactive art and shadows",
-        "native_themes_media::native themes and media::rejects malformed type roles, unknown shadow presets and unreadable selected labels"
-      ],
-      "weaker": "'overlay' preset and package style.shadows names are not exercised."
+        "native_themes_media::native themes and media::rejects malformed type roles, unknown shadow presets and unreadable selected labels",
+        "native_parity_strength_paint::native paint strength: skins::resolves the overlay preset and package-named shadows on the native shadow"
+      ]
     },
     {
       "id": "paint-124",
@@ -29207,9 +29268,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_shell::native gallery shell parity::keeps API theme and palette choices consistent and rejects invalid demos"
-      ],
-      "weaker": "Gallery shell only."
+        "native_gallery_shell::native gallery shell parity::keeps API theme and palette choices consistent and rejects invalid demos",
+        "native_parity_strength_themepkg::gallery theme packages::swaps through every shipped package and reports each new identity and palette"
+      ]
     },
     {
       "id": "paint-131",
@@ -29270,9 +29331,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
-        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values"
-      ],
-      "weaker": "Screen continuity after a refused define is not asserted."
+        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values",
+        "native_parity_strength_themepkg::gallery theme packages::refuses a package that fails its gate and keeps the running screen, theme and input"
+      ]
     },
     {
       "id": "paint-136",
@@ -29559,9 +29620,9 @@
       "class": "a",
       "candidateCases": [
         "native_perf::native benchmark workload contract::retains default async placeholders while custom content follows loading ownership",
-        "native_themes_media::native themes and media::keeps async completions stale after a source change or disposal"
-      ],
-      "weaker": "Initial pending pose is not asserted directly; the placeholder-visible/image-hidden pose is asserted after a source change (PERF) and image hidden before resolve (STALE)."
+        "native_themes_media::native themes and media::keeps async completions stale after a source change or disposal",
+        "native_parity_strength_icons::async image states::shows the placeholder and hides the image while the first request is pending"
+      ]
     },
     {
       "id": "themes-P1-02",
@@ -29589,9 +29650,9 @@
       "class": "a",
       "candidateCases": [
         "native_stress::native stress invariants::rejects stale async completions and cancels exactly once through 200 seeded fault storms",
-        "native_perf::native benchmark workload contract::retains default async placeholders while custom content follows loading ownership"
-      ],
-      "weaker": "Candidate asserts the image is hidden on failure and that failureLabel text appears only when supplied; no case asserts that without failureLabel the placeholder stays visible and no TextLabel is mounted."
+        "native_perf::native benchmark workload contract::retains default async placeholders while custom content follows loading ownership",
+        "native_parity_strength_icons::async image states::keeps the placeholder and mounts no failure text when a failure has no failureLabel"
+      ]
     },
     {
       "id": "themes-P1-04",
@@ -29619,9 +29680,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::shares caller resources directly through Compose and releases the final reference",
         "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
-        "native_themes_media::native themes and media::keeps async completions stale after a source change or disposal"
-      ],
-      "weaker": "The `dimmed` half (main asserted tint blend 0.35) is untested; candidate maps dimmed to ImageTransparency 0.35 but no case sets dimmed."
+        "native_themes_media::native themes and media::keeps async completions stale after a source change or disposal",
+        "native_parity_strength_icons::async image states::renders a shared completion, dims the image and restores it, and releases with the owner"
+      ]
     },
     {
       "id": "themes-P1-06",
@@ -29648,9 +29709,10 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps indeterminate progress stepping and trails determinate decreases",
-        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors"
-      ],
-      "weaker": "Spinner is only tested with reducedMotion=true from mount; the full-motion spinner write and the mid-run switch to reduced motion are asserted only for the circular presentation (ROTATE)."
+        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors",
+        "native_parity_strength_motion::spinner paint::writes the spinner on full-motion frames and quantizes a mid-run switch without restarting",
+        "native_parity_strength_motion::spinner paint::moves the brightest dot around the ring while every dot stays visible"
+      ]
     },
     {
       "id": "themes-P1-08",
@@ -29783,9 +29845,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Only 'Émile Noël'->'ÉN' and 'Émile Changed'->'ÉC' are asserted; single word, 3+ words, Cyrillic, lowercase and whitespace-only ('' ) cases are lost."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_strength_icons::avatar faces::cuts UTF-8 first and last initials in authored case"
+      ]
     },
     {
       "id": "themes-P1-16",
@@ -29797,9 +29859,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Asserts Selectable=false, initials and AccessibleLabel; default regular diameter (44) is not asserted (compact 36 / large 56 are)."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_strength_icons::avatar faces::paints initials and passive semantics at the default regular diameter without a focus stop"
+      ]
     },
     {
       "id": "themes-P1-17",
@@ -29813,9 +29875,10 @@
       "candidateCases": [
         "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
         "native_themes_media::native themes and media::shares caller resources directly through Compose and releases the final reference",
-        "native_themes_media::native themes and media::keeps async completions stale after a source change or disposal"
-      ],
-      "weaker": "No Avatar case drives an image through loading->ready->failed; initials-return on failure, userId->rbxthumb URL, and repeated state flips are untested at Avatar level (only AsyncImage-level staleness and group-level s..."
+        "native_themes_media::native themes and media::keeps async completions stale after a source change or disposal",
+        "native_parity_strength_icons::avatar faces::keeps one diameter through pending, ready and failed images and returns to initials on failure",
+        "native_parity_strength_icons::avatar faces::survives repeated resource state flips with one retained lease and rejects stale completions"
+      ]
     },
     {
       "id": "themes-P1-18",
@@ -29827,9 +29890,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing"
-      ],
-      "weaker": "Sharing now requires the caller to pass one Compose shared resource; asserted via AvatarGroup (loaded=1, released=1), not two standalone Avatars."
+        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
+        "native_parity_strength_icons::avatar faces::shares one caller resource between two standalone faces and frees it with the last one"
+      ]
     },
     {
       "id": "themes-P1-19",
@@ -29857,9 +29920,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
-        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing"
-      ],
-      "weaker": "Only busy->facet-status-error and online label are asserted; the online=dot, away=dash, busy=square, offline=ring form mapping and reactive presenceLabel are not."
+        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
+        "native_parity_strength_icons::avatar faces::maps four presence states to four mark forms and follows a reactive presence label"
+      ]
     },
     {
       "id": "themes-P1-21",
@@ -29871,9 +29934,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing"
-      ],
-      "weaker": "Cutout inner stroke asserted on a standalone StatusIndicator, not on the Avatar 'Presence' child (cutout=true)."
+        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
+        "native_parity_strength_icons::avatar faces::draws the presence mark on the avatar with a shared inner cutout stroke in the corner"
+      ]
     },
     {
       "id": "themes-P1-22",
@@ -29917,9 +29980,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Valid rung change compact->large asserted (36->56, TextSize 14->22); invalid rung and nil->regular recovery untested."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_strength_icons::avatar faces::refuses an invalid bound rung without moving geometry and recovers through a valid rung and nil"
+      ]
     },
     {
       "id": "themes-P1-25",
@@ -30041,9 +30104,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "max=2 with '+1' asserted; default max 4, the default '<n> more players' AccessibleLabel and faces' Selectable=false in a group are not asserted."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_strength_icons::avatar groups::caps the caller order at four, reports the hidden count and keeps faces informational"
+      ]
     },
     {
       "id": "themes-P1-33",
@@ -30055,9 +30118,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions"
-      ],
-      "weaker": "Only duplicate ids and overflow='unexpected' are asserted; empty name, invalid presence, non-dense arrays, max 0/1.5/huge, layout 'grid', onOverflow=true, controlSize 'huge' and empty-group informational state are not."
+        "native_themes_media::native themes and media::rejects malformed media policy and retains valid reactive captions",
+        "native_parity_strength_icons::avatar groups::refuses bad members and malformed container policies and keeps an empty group informational"
+      ]
     },
     {
       "id": "themes-P1-34",
@@ -30094,9 +30157,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Initials update asserted; presenceMark difference between stacked and spread not asserted."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_strength_icons::avatar groups::updates current initials while a stacked group keeps presence semantic and a spread group paints it"
+      ]
     },
     {
       "id": "themes-P1-37",
@@ -30109,9 +30172,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Static overflowLabel with ellipsis asserted; reactive overflowLabel and the count form's localized label are not."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_strength_icons::avatar groups::localizes overflow semantics reactively for the count and ellipsis forms"
+      ]
     },
     {
       "id": "themes-P1-38",
@@ -30134,9 +30197,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Presence is not varied inside a group case; only name/order updates are asserted."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_strength_icons::avatar groups::keeps a bound nil presence valid through source replacement and a later presence"
+      ]
     },
     {
       "id": "themes-P1-40",
@@ -30210,9 +30273,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing"
-      ],
-      "weaker": "Automatic dedupe of repeated userId/image is gone; sharing only occurs when the caller supplies one Compose shared resource (asserted loaded=1)."
+        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
+        "native_parity_strength_icons::avatar groups::keeps distinct content identities and shares one request across repeated user ids",
+        "native_parity_strength_icons::avatar groups::builds the thumbnail address from a member user id"
+      ]
     },
     {
       "id": "themes-P1-45",
@@ -30246,9 +30310,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps badges and status shapes reactive without creating focus targets",
-        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing"
-      ],
-      "weaker": "Selectable=false and facet-badge tag asserted; the control/content paint the .facet-badge rule supplies is not asserted."
+        "native_themes_media::native themes and media::preserves accessible media names native constraints and caller resource sharing",
+        "native_parity_strength_paint::native paint strength: value and status paint::paints an unstatused badge as a control plate with content text and no focus stop"
+      ]
     },
     {
       "id": "themes-P1-47",
@@ -30531,9 +30595,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors"
-      ],
-      "weaker": "Head movement asserted; constant sweep not asserted, and candidate keeps a RingTrack under the indeterminate arc (main asserted no backing ring; api.md silent)."
+        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors",
+        "native_parity_strength_motion::circular progress motion::travels the indeterminate head while the sweep stays a fixed quarter turn"
+      ]
     },
     {
       "id": "themes-P1-66",
@@ -30560,9 +30624,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors"
-      ],
-      "weaker": "Sub-tick hold then move asserted; distinct pose count (3..8 per second) not asserted."
+        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors",
+        "native_parity_strength_motion::circular progress motion::keeps the reduced-motion ring travelling in a few visible poses each second"
+      ]
     },
     {
       "id": "themes-P1-68",
@@ -30654,9 +30718,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive",
-        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors"
-      ],
-      "weaker": "5 points at 180 deg, 9 at 360, 3 for the 90 deg indeterminate arc asserted; radius independence not."
+        "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors",
+        "native_parity_strength_textperf::decoration cost::a circular arc uses the same control points at every diameter"
+      ]
     },
     {
       "id": "themes-P1-73",
@@ -30736,9 +30800,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps indeterminate progress stepping and trails determinate decreases"
-      ],
-      "weaker": "record.dump().animating/phase removed; motion asserted by the spinner stepping."
+        "native_themes_media::native themes and media::keeps indeterminate progress stepping and trails determinate decreases",
+        "native_parity_strength_motion::indeterminate progress lifetime::an indeterminate view under reduced motion still runs its cycle and says Loading",
+        "native_parity_strength_motion::circular progress motion::keeps the reduced-motion ring travelling in a few visible poses each second"
+      ]
     },
     {
       "id": "themes-P1-78",
@@ -30772,9 +30837,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::holds damage trails then settles and snaps immediately on healing",
-        "native_themes_media::native themes and media::cancels pending damage trails for reduced motion and releases their clock"
-      ],
-      "weaker": "Asserted via heartbeat.count()==0 for a determinate trailed bar once settled; the plain determinate bar under reduced motion is not separately checked."
+        "native_themes_media::native themes and media::cancels pending damage trails for reduced motion and releases their clock",
+        "native_parity_strength_motion::indeterminate progress lifetime::a plain determinate bar starts no cycle under either motion policy"
+      ]
     },
     {
       "id": "themes-P1-80",
@@ -30839,9 +30904,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::animates skeletons with one shared Compose clock and honors reduced motion"
-      ],
-      "weaker": "Shared listener count and zero after runtime dispose asserted; cross-application isolation and release immediately when the last Skeleton unmounts (before dispose) are not."
+        "native_themes_media::native themes and media::animates skeletons with one shared Compose clock and honors reduced motion",
+        "native_parity_strength_motion::skeleton clock sharing::shares one clock inside an application, keeps applications apart and detaches with the last skeleton"
+      ]
     },
     {
       "id": "themes-P1-85",
@@ -31226,9 +31291,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps badges and status shapes reactive without creating focus targets",
-        "native_themes_media::native themes and media::clamps progress, counts badges and releases stage scenes with Compose"
-      ],
-      "weaker": "Tag and '99+' / pill min size asserted; the .facet-status-<s> BackgroundColor3/TextColor3 pairs are never read from a sheet, and a custom max is not asserted."
+        "native_themes_media::native themes and media::clamps progress, counts badges and releases stage scenes with Compose",
+        "native_parity_strength_paint::native paint strength: value and status paint::paints every status with its shared palette pair and caps the count at the authored max"
+      ]
     },
     {
       "id": "themes-P1-112",
@@ -31396,9 +31461,9 @@
       "class": "a",
       "candidateCases": [
         "native_stress::native stress invariants::rejects stale async completions and cancels exactly once through 200 seeded fault storms",
-        "native_perf::native benchmark workload contract::retains default async placeholders while custom content follows loading ownership"
-      ],
-      "weaker": "Placeholder visibility after failure without failureLabel is not asserted."
+        "native_perf::native benchmark workload contract::retains default async placeholders while custom content follows loading ownership",
+        "native_parity_strength_icons::async image states::keeps the placeholder and mounts no failure text when a failure has no failureLabel"
+      ]
     },
     {
       "id": "themes-P1-124",
@@ -31519,9 +31584,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
-        "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership"
-      ],
-      "weaker": "Main asserted that the compiled asset keeps width/height and that a size-less asset compiles. The candidate asserts ScaleType=Slice and SliceScale=2 on a real ImageLabel, and assets carry no width. The SliceCenter Rec..."
+        "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
+        "native_parity_strength_icons::sliced and bar art::compiles slice art with or without declared source sizes and paints the exact slice values"
+      ]
     },
     {
       "id": "themes-P2-05",
@@ -31545,9 +31610,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes"
-      ],
-      "weaker": "Main value-checked Image, ScaleType, SliceCenter, SliceScale, ImageColor3 and ImageTransparency on the rule. The candidate checks Image, ScaleType=Slice and SliceScale on the instance. The SliceCenter Rect values and ..."
+        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
+        "native_parity_strength_icons::sliced and bar art::paints a nine-slice skin with the package's own image values and no sheet tint"
+      ]
     },
     {
       "id": "themes-P2-07",
@@ -31657,9 +31722,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
-        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork"
-      ],
-      "weaker": "Classification became explicit ctx.skin(node, slot) calls. The candidate asserts field, toggleTrack, toggleKnob, stepperPlate, sliderTrack, sliderThumb, barFill and panel art. There is no Button 'control' slot asserti..."
+        "native_navigation::native navigation controls::keeps panel art outside native layout and exposes alert artwork",
+        "native_parity_strength_paint::native paint strength: skins::gives each control part the art of its own chrome slot and no other"
+      ]
     },
     {
       "id": "themes-P2-15",
@@ -31705,9 +31770,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::skips static empty skin graphs while retaining later reactive art and shadows",
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
-      ],
-      "weaker": "Main measured a census over the whole adaptive_controls fixture. The candidate asserts per skin: zero children and no watch or formula work for nil or native recipes, 3 images for fill plus two corners, and one slot i..."
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_strength_textperf::decoration cost::flat recipes add no decoration and a nine-slice recipe adds one image per skinned node"
+      ]
     },
     {
       "id": "themes-P2-18",
@@ -31732,9 +31797,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::bounds idle skin slots and disposes every retained native owner",
         "native_themes_media::native themes and media::retains bounded skin slots across frozen recipes while mutable art stays reactive",
-        "native_themes_media::native themes and media::leaves unchanged native rules and running paint transitions untouched during theme updates"
-      ],
-      "weaker": "The census counters are gone. The candidate asserts instance identity is kept across swaps and every retained ImageLabel is destroyed on stop, rather than counting creations and destructions."
+        "native_themes_media::native themes and media::leaves unchanged native rules and running paint transitions untouched during theme updates",
+        "native_parity_strength_lifetime::lifetime parity strength::keeps decorations through palette-only swaps and destroys every one it created"
+      ]
     },
     {
       "id": "themes-P2-20",
@@ -31798,9 +31863,10 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::scales translucent theme surfaces by the player's background transparency preference",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_strength_paint::native paint strength: skins::suppresses a skinned plate and its outline in every state and restores both when the art goes"
       ],
-      "weaker": "The candidate asserts the `.facet-skinned` rule's BackgroundTransparency=1 and that the field gets the facet-skinned tag. Corner and stroke suppression, ordering against hover and state rules, and removal of the tag w..."
+      "weaker": "The headless test resolves the stroke rules by priority. Only the real engine can show that the two ::UIStroke rules merge into one stroke that the skinned rule hides."
     },
     {
       "id": "themes-P2-23",
@@ -31904,9 +31970,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::uses native shadows with reactive theme parameters and Compose disposal",
-        "native_themes_media::native themes and media::skips static empty skin graphs while retaining later reactive art and shadows"
+        "native_themes_media::native themes and media::skips static empty skin graphs while retaining later reactive art and shadows",
+        "native_parity_strength_paint::native paint strength: skins::renders the declared shadow of every shipped package slot and none for flat packages"
       ],
-      "weaker": "No candidate case asserts the shadows declared by the shipped packages (fantasy_parchment raised, glossy_mobile raised, scifi_hud cyan).",
       "nativeMechanism": "UIShadow"
     },
     {
@@ -32089,9 +32155,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
         "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants",
-        "native_public_surface::native public surface::resolves named icons reactively without a second theme runtime"
-      ],
-      "weaker": "Nothing asserts that an undeclared state falls back to default, or asserts the compiled iconArt sibling."
+        "native_public_surface::native public surface::resolves named icons reactively without a second theme runtime",
+        "native_parity_strength_icons::semantic icons::resolves declared states and falls back to default art for an undeclared state"
+      ]
     },
     {
       "id": "themes-P2-41",
@@ -32146,9 +32212,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors"
-      ],
-      "weaker": "Mounting a Picker with icon='settings' proves only that LeadingIcon.Image is non-empty. The exact id rbxassetid://78513807849201 is not asserted."
+        "native_navigation::native navigation controls::preserves icon-only names, indicator choices and native target floors",
+        "native_parity_strength_icons::semantic icons::resolves the settings gear to the archived asset with and without a package"
+      ]
     },
     {
       "id": "themes-P2-45",
@@ -32161,9 +32227,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
-        "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants"
-      ],
-      "weaker": "Framework art is asserted only as matching '^rbxassetid://' for facet:search."
+        "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants",
+        "native_parity_strength_icons::semantic icons::returns the theme art per state or the exact framework art when the theme declares none"
+      ]
     },
     {
       "id": "themes-P2-46",
@@ -32238,9 +32304,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes"
-      ],
-      "weaker": "The candidate mounts facet:search under pixel_quest and checks only ResampleMode. It does not check that menu, flag and close resolve, or that close prefers the package's own art."
+        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
+        "native_parity_strength_icons::semantic icons::keeps the Pixel Quest package art and fills missing action icons from the framework"
+      ]
     },
     {
       "id": "themes-P2-50",
@@ -32253,9 +32319,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
-        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing"
-      ],
-      "weaker": "The standard id rbxassetid://85188541706347 and its equality across shipped themes are not asserted, and the ASCII floor was removed."
+        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
+        "native_parity_strength_icons::semantic icons::draws the standard magnifying glass across shipped themes and lets package art override it"
+      ]
     },
     {
       "id": "themes-P2-51",
@@ -32267,9 +32333,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing"
-      ],
-      "weaker": "Sizing moved to metrics.controlSizes.<rung>.iconSize, asserted at 28. metrics.iconSizes still exists in neutral and theme_types, but nothing reads it (dead data). Filling a partial declaration is not asserted."
+        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
+        "native_parity_strength_icons::semantic icons::sizes icons from the theme rung metric, with defaults and a filled partial declaration"
+      ]
     },
     {
       "id": "themes-P2-52",
@@ -32293,9 +32359,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::shares selected contrast across rich disclosure titles and chevrons",
-        "native_navigation::native navigation controls::renders disclosure appearances and collapsible summaries with native assets and close policy"
-      ],
-      "weaker": "The candidate asserts that the LeadingIcon exists and has the facet-icon tag. The chevron.trailing to chevron.down swap on expand and the resolved asset are not asserted."
+        "native_navigation::native navigation controls::renders disclosure appearances and collapsible summaries with native assets and close policy",
+        "native_parity_strength_icons::semantic icons::swaps the disclosure caret between trailing and down chevron art on the same icon"
+      ]
     },
     {
       "id": "themes-P2-54",
@@ -32387,9 +32453,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
-        "native_public_surface::native public surface::resolves named icons reactively without a second theme runtime"
-      ],
-      "weaker": "Icon destruction on stop is not asserted directly; generic Compose disposal is covered elsewhere. Active=false and ZIndex are not asserted."
+        "native_public_surface::native public surface::resolves named icons reactively without a second theme runtime",
+        "native_parity_strength_icons::semantic icons::resolves, sizes, tags and pixel-samples an icon element that dies with its owner"
+      ]
     },
     {
       "id": "themes-P2-61",
@@ -32477,9 +32543,9 @@
       "class": "a",
       "candidateCases": [
         "native_public_surface::native public surface::resolves named icons reactively without a second theme runtime",
-        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing"
-      ],
-      "weaker": "The tint-role and declaration-removal variants are not asserted, and neither is 'no churn on palette or map-order change' for icons."
+        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
+        "native_parity_strength_icons::semantic icons::re-renders mounted icons on content and declaration changes but not on palette or map order"
+      ]
     },
     {
       "id": "themes-P2-67",
@@ -32504,9 +32570,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::keeps native theme rules reactive without writing instance paint",
         "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules",
-        "native_themes_media::native themes and media::adds and removes native rules through Compose while shallow-frozen packages stay reactive"
+        "native_themes_media::native themes and media::adds and removes native rules through Compose while shallow-frozen packages stay reactive",
+        "native_parity_strength_themepkg::theme package install and swap::installs a package with one caller-owned sheet and StyleLink and removes every rule on teardown"
       ],
-      "weaker": "Main asserted exactly one StyleLink, one metric commit and restoration of the PRE-install link/snapshot on uninstall; CAND has no install step (caller parents sheet + StyleLink), so only 'stop() destroys every rule an...",
       "apiPromise": "api.md Themes: 'createStyleSheet(runtime, packageOrReadable?, options?) returns a native StyleSheet that Compose owns'; 05-styling 'Install the StyleSheet'."
     },
     {
@@ -32535,9 +32601,9 @@
         "native_inputs::native input controls::reflows Button and circle sizes from live theme metrics and control rungs",
         "native_themes_media::native themes and media::keeps circular progress endpoints bounded and theme metrics reactive",
         "native_themes_media::native themes and media::rotates a smooth native circular arc with reduced motion and themed stroke colors",
-        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets"
+        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets",
+        "native_parity_strength_themepkg::theme package install and swap::retargets control metrics and paint from one package readable without rebuilding"
       ],
-      "weaker": "No factory-rerun / create / remove counters: the text-preference case asserts descendant identity only across TextSize changes; after the package swap it asserts focus, typed text and CanvasPosition but NOT descendant...",
       "apiPromise": "09-custom-themes 'Apply and switch': give the same theme package readable to controls and StyleSheet; 05-styling 'The native rules and the control metrics respond to the same selected definition.'"
     },
     {
@@ -32605,9 +32671,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::leaves unchanged native rules and running paint transitions untouched during theme updates"
+        "native_themes_media::native themes and media::leaves unchanged native rules and running paint transitions untouched during theme updates",
+        "native_parity_strength_paint::native paint strength: theme sheets::rewrites only changed rules and keeps a designer edit on an untouched rule"
       ],
-      "weaker": "CAND asserts zero SetProperties/SetPropertyTransitions on an equal package and exactly one write on the changed rule; it does not simulate a designer hand-editing a StyleRule and then committing, and it exercises a co...",
       "apiPromise": "05-styling 'A palette change updates the existing rules.'"
     },
     {
@@ -32778,9 +32844,11 @@
       "candidateCases": [
         "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
         "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
-        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes"
+        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
+        "native_parity_strength_icons::pixel rendering::stamps Pixelated on every Pixel Quest skin layer in every state",
+        "native_parity_strength_icons::pixel rendering::stamps every layer of a pixel stack, state-swapped art and icons, and a standard package stamps none",
+        "native_parity_strength_icons::pixel rendering::keeps shipped standard packages on Default resampling across every skin state"
       ],
-      "weaker": "Main COUNTED the stamp on every image-bearing rule and every layer of a stack; CAND checks only layer control1 of a tile/edges/plaque stack (edges and plaque layers unchecked), never a state-swapped asset under render...",
       "apiPromise": "10-rich-skinning: 'Pixel artwork must declare its pixel rendering and resampling deliberately.'; 13-theme-catalog Pixel Quest 'deliberate resampling'."
     },
     {
@@ -32912,9 +32980,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values"
-      ],
-      "weaker": "CAND neutralPackage() intentionally returns a mutable copy (api.md), so 'frozen, shared, identity-stable' becomes 'define() output is recursively frozen and independent of the definition'; no test asserts two neutralP..."
+        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values",
+        "native_parity_strength_themepkg::theme package data::keeps accepted packages recursively frozen and independent of neutral copies"
+      ]
     },
     {
       "id": "themes-P3-32",
@@ -32937,9 +33005,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules"
-      ],
-      "weaker": "Selection by name and default are covered; rejection of an undeclared name is lost - paletteFor (themes.luau:323-331) silently uses style.themes[1]."
+        "native_themes_media::native themes and media::retargets native theme paint with shared timing and disables motion without replacing rules",
+        "native_parity_strength_themepkg::theme sheet paint::selects each declared palette by name and the default without one on a single sheet"
+      ]
     },
     {
       "id": "themes-P3-34",
@@ -32952,9 +33020,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
-        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets"
-      ],
-      "weaker": "Main checked the panel slot of a nineSlice recipe; CAND checks the control slot (button UIPadding rule and Toggle padding); the panel/field/badge ::UIPadding rules (themes.luau:469-479) are unasserted."
+        "native_inputs::native input controls::uses native Toggle text and reserved padding while retaining rich hints and live theme insets",
+        "native_parity_strength_themepkg::theme sheet paint::carries chrome contentInsets into panel, field, badge and button padding rules"
+      ]
     },
     {
       "id": "themes-P3-35",
@@ -33001,9 +33069,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
         "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
-        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes"
+        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
+        "native_parity_strength_themepkg::theme layer boxes::places full-bleed layers, four anchored corners, per-side rails and overhanging plaques"
       ],
-      "weaker": "Main pinned every box (corner anchors/size at all four corners, left/right rails stretching on the other axis, plaque overhang offset, plaque text rect minus insets). Candidate asserts only: 3 children for fill+2 corn...",
       "apiPromise": "docs/guide/10-rich-skinning.md: 'Use `layered` for a fill or frame, a tiled center, corners, edges or a plaque.'"
     },
     {
@@ -33101,9 +33169,9 @@
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
         "native_themes_media::native themes and media::bounds idle skin slots and disposes every retained native owner",
         "native_themes_media::native themes and media::retains bounded skin slots across frozen recipes while mutable art stays reactive",
-        "native_themes_media::native themes and media::uses native shadows with reactive theme parameters and Compose disposal"
-      ],
-      "weaker": "Candidate asserts image/shadow isDestroyed after stop and bounded retention; the PlaqueCaption label's destruction and the ctx.skin GuiState observer disconnect are not asserted separately (they are Compose children o..."
+        "native_themes_media::native themes and media::uses native shadows with reactive theme parameters and Compose disposal",
+        "native_parity_strength_lifetime::lifetime parity strength::drops the skin ladder lifted caption and state observers with the decorated node"
+      ]
     },
     {
       "id": "themes-P4-09",
@@ -33149,9 +33217,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::retains bounded skin slots across frozen recipes while mutable art stays reactive",
         "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
-        "native_themes_media::native themes and media::bounds idle skin slots and disposes every retained native owner"
-      ],
-      "weaker": "Main asserted a rebuild because tags keyed rules; candidate deliberately retains slots and retargets properties, and asserts identity retention plus correct Image/ScaleType/TileSize after recipe changes."
+        "native_themes_media::native themes and media::bounds idle skin slots and disposes every retained native owner",
+        "native_parity_strength_themepkg::theme layer boxes::retargets the mounted art to a changed ladder shape and hides the surplus"
+      ]
     },
     {
       "id": "themes-P4-12",
@@ -33176,9 +33244,10 @@
       "candidateCases": [
         "native_themes_media::native themes and media::scales translucent theme surfaces by the player's background transparency preference",
         "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
-        "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native"
-      ],
-      "weaker": "Candidate asserts the `.facet-skinned` rule sets BackgroundTransparency=1 and that the tag lands on a skinned TextInput. Removal of facet-skinned when the ladder goes (active layers -> 0) is implemented in themes.skin..."
+        "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
+        "native_parity_strength_paint::native paint strength: skins::drops the skinned tag from a field and a button when the package stops drawing their art",
+        "native_parity_strength_paint::native paint strength: skins::suppresses a skinned plate and its outline in every state and restores both when the art goes"
+      ]
     },
     {
       "id": "themes-P4-14",
@@ -33215,9 +33284,10 @@
       "candidateCases": [
         "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs",
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native"
-      ],
-      "weaker": "Candidate proves layered_test/fantasy_ornate compile (report.ok) and mount >30 rules; there is no inspectable layer plan any more, and define() accepts any recipe shape."
+        "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
+        "native_parity_strength_themepkg::reference art packages::renders Fantasy Ornate's full-vocabulary panel as one image per layer box",
+        "native_parity_strength_themepkg::reference art packages::Fantasy Ornate declares the whole layer vocabulary, per-state art and a complete bar family"
+      ]
     },
     {
       "id": "themes-P4-17",
@@ -33265,9 +33335,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
         "native_themes_media::native themes and media::scales translucent theme surfaces by the player's background transparency preference",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
-      ],
-      "weaker": "Values are asserted for the first layer and state swap; plate suppression via one `.facet-skinned` rule."
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_strength_themepkg::theme layer values and states::gives every layer its own package values and lets the skinned tag suppress the native plate"
+      ]
     },
     {
       "id": "themes-P4-21",
@@ -33428,9 +33498,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Candidate only breaks content/surface and asserts ok=false; it does not exercise danger/success/warning pairs nor assert that the error names the pair and ratio (report.contrast carries pair+ratio but is unasserted)."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_themepkg::theme contrast gate::refuses each unreadable pair at define time and names the pair, palette and ratio",
+        "native_parity_strength_themepkg::theme contrast gate::reports every semantic pair of an accepted package with its measured ratio"
+      ]
     },
     {
       "id": "themes-P4-33",
@@ -33478,9 +33549,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values"
-      ],
-      "weaker": "Nested depth is ~4 (rules[1].properties.Text), not the main's 15-level probe."
+        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values",
+        "native_parity_strength_surface::theme package boundaries::finds a callback nested fifteen levels deep and names its path",
+        "native_parity_strength_surface::theme package boundaries::refuses a non-table definition and a cycle with a report instead of an error"
+      ]
     },
     {
       "id": "themes-P4-36",
@@ -33524,9 +33596,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Candidate asserts ok false/true only; the missing entry's message/fix text is not asserted."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_themepkg::theme coverage::names each missing need with its message and fix and lists the covered ones"
+      ]
     },
     {
       "id": "themes-P4-39",
@@ -33562,9 +33634,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values"
-      ],
-      "weaker": "Depth ~4 in candidate vs 15 in main; scan is unbounded by construction."
+        "native_themes_media::native themes and media::keeps compiled theme data immutable and rejects callbacks or malformed values",
+        "native_parity_strength_surface::theme package boundaries::finds a callback nested fifteen levels deep and names its path"
+      ]
     },
     {
       "id": "themes-P4-42",
@@ -33685,9 +33757,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
-      ],
-      "weaker": "No canonical normalized map is produced any more; behavior asserted by state swaps on a fill layer and nineSlice slots."
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_strength_themepkg::theme layer values and states::selects state art with one grammar on a recipe and on a layer"
+      ]
     },
     {
       "id": "themes-P4-49",
@@ -33732,9 +33804,11 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_strength_paint::native paint strength: skins::maps hover and press on each skinned part to that part's state art",
+        "native_parity_strength_paint::native paint strength: skins::drives the control skin art from the button's own interaction state"
       ],
-      "weaker": "Main emitted GuiState-pseudo Image rules; CAND writes art from a Compose state readable. Candidate drives the state cell or Toggle selection directly; ctx.skin's GuiState->hover/pressed mapping for skins is unasserted."
+      "weaker": "Headless tests set GuiState on each part. It is not known if a plain Frame part gets Hover or Press from the engine when the pointer is over its control."
     },
     {
       "id": "themes-P4-52",
@@ -33758,9 +33832,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs",
-        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes"
-      ],
-      "weaker": "Compile success only; no byte-identical comparison."
+        "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
+        "native_parity_strength_themepkg::theme layer values and states::compiles a bare-string recipe unchanged and draws it like its default-only map"
+      ]
     },
     {
       "id": "themes-P5-01",
@@ -33772,9 +33846,10 @@
       "mainCases": 9,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs"
+        "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs",
+        "native_parity_strength_themepkg::reference theme packages::accepts every reference package frozen and carrying its module identity",
+        "native_parity_strength_themepkg::reference theme packages::compiles every reference package to the same complete rule set twice and paints each palette"
       ],
-      "weaker": "Candidate asserts only report.ok for 8 reference packages (+layered_test); fantasy_parchment_stub is not in the list; no check of identity.id == module.id, schema, or recursive freeze per package; the per-theme resolv...",
       "apiPromise": "api.md Themes: define(definition) returns package?, report; accepted package is recursively frozen."
     },
     {
@@ -33788,9 +33863,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs",
-        "native_themes_media::native themes and media::keeps native theme rules reactive without writing instance paint"
-      ],
-      "weaker": "Candidate checks >30 StyleRules per package; the stable sheet stamp, determinism across two compiles, defaultTheme and per-theme model count are gone (sheet_model deleted)."
+        "native_themes_media::native themes and media::keeps native theme rules reactive without writing instance paint",
+        "native_parity_strength_themepkg::reference theme packages::compiles every reference package to the same complete rule set twice and paints each palette"
+      ]
     },
     {
       "id": "themes-P5-03",
@@ -33921,9 +33996,10 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Candidate checks one number need missing then covered on neutral; lost: color and fields kinds against real packages, missing entries naming the package id (CAND message is 'Theme has no <name>' and does not name the ..."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_themepkg::theme coverage::checks namespaced control sizes, colors and numbers against the shipped packages",
+        "native_parity_strength_themepkg::theme coverage::names each missing need with its message and fix and lists the covered ones"
+      ]
     },
     {
       "id": "themes-P5-12",
@@ -33973,9 +34049,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves the shipped palette, typography and art packages as native inputs",
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Gate is define()'s onSuccess/success and onWarning/warning pair check reached via report.ok; the per-variant worst-ratio pin and Facet Neutral Light variant are not asserted."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_themepkg::shipped theme contrast::declares readable success and warning pairs of its own in every shipped variant"
+      ]
     },
     {
       "id": "themes-P5-15",
@@ -34008,9 +34084,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)"
-      ],
-      "weaker": "Enforced by the native_verify architecture producer, not a spec case; the testOnly==nil check (a fixture posing as a package) is lost."
+        "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)",
+        "native_parity_strength_surface::theme package boundaries::reference packages use only the public themes surface and are not test fixtures"
+      ]
     },
     {
       "id": "themes-P5-17",
@@ -34025,9 +34101,10 @@
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
         "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
         "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction",
-        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders"
-      ],
-      "weaker": "Mechanisms are covered on neutral-package fixtures only; nothing asserts fantasy_ornate itself declares every layer kind, 4-state control art including error, distinct start/end caps, or an art-drawable trackHeight >=..."
+        "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
+        "native_parity_strength_themepkg::reference art packages::Fantasy Ornate declares the whole layer vocabulary, per-state art and a complete bar family",
+        "native_parity_strength_themepkg::reference art packages::renders Fantasy Ornate's full-vocabulary panel as one image per layer box"
+      ]
     },
     {
       "id": "themes-P5-18",
@@ -34040,9 +34117,10 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
-        "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants"
-      ],
-      "weaker": "Default framework art and package overrides are checked on neutral; not on fantasy_ornate (6 mapped + 1 namespaced) or the glossy_touch/compact_pointer one-icon pair; the ASCII glyph floor is retired."
+        "native_themes_media::native themes and media::uses Button interaction state for semantic icon variants",
+        "native_parity_strength_icons::reference package art::resolves Fantasy Ornate's six mapped icons and one namespaced icon to its own art",
+        "native_parity_strength_icons::reference package art::gives the platform pair one authored icon each and the framework art for the rest"
+      ]
     },
     {
       "id": "themes-P5-19",
@@ -34055,9 +34133,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing"
-      ],
-      "weaker": "CAND accepts content or contentId without normalizing; no test that fantasy_ornate source uses content= only."
+        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
+        "native_parity_strength_icons::reference package art::authors Fantasy Ornate art as content and resolves both spellings to the same image content"
+      ]
     },
     {
       "id": "themes-P5-20",
@@ -34086,9 +34164,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::resets retained native image properties to valid defaults across theme recipes",
         "native_themes_media::native themes and media::keeps plaques edges tiling pixel resampling and chrome insets native",
-        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing"
-      ],
-      "weaker": "Pixelated resampling is asserted for icons across pixel_quest and for skins on fixtures; integer SliceScale on pixel_quest assets is not checked."
+        "native_themes_media::native themes and media::keeps native semantic icons reactive with pixel resampling and metric sizing",
+        "native_parity_strength_themepkg::reference art packages::Pixel Quest declares pixel rendering and draws every slot nearest-neighbour at integer slice scales"
+      ]
     },
     {
       "id": "themes-P5-22",
@@ -34122,9 +34200,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_paint::native parity paint::keeps the selected label readable on the selection fill and its sampled art in every shipped theme"
+        "native_parity_paint::native parity paint::keeps the selected label readable on the selection fill and its sampled art in every shipped theme",
+        "native_parity_strength_paint::native paint strength: theme sheets::keeps each selection art declaration close to its sampled plate and pins the readable label"
       ],
-      "weaker": "Main also bounded the distance between controlSelected and the sampled selection art; the candidate checks the label contrast against both and re-hashes the samples, but controlSelected is not required to match the art.",
       "apiPromise": "api.md: 'Color channels and semantic contrast pairs are validated.'; themes.luau paints .facet-selected TextColor3 = extra.onSelected or content over controlSelected.",
       "gap": {
         "description": "assets/themes/plate-samples.json and tools/sample_plates.py exist in CAND but no test re-hashes the PNGs or compares controlSelected / the selected label with the sampled art. The automatic content-vs-onAccent pick fo...",
@@ -34143,9 +34221,9 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction"
-      ],
-      "weaker": "Asserted: rtl anchor, Skin scale 1/percent, SkinBounds offset, start cap follows origin for rtl/btt, per-end end cap Image, centre Size. Lost: cap AnchorPoint centring, centre Position (0.5,0.5), absent direction defa..."
+        "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction",
+        "native_parity_strength_icons::sliced and bar art::centres end caps on the track edge, centres the centrepiece and defaults the fill to ltr"
+      ]
     },
     {
       "id": "themes-P5-25",
@@ -34181,9 +34259,9 @@
       "candidateCases": [
         "native_themes_media::native themes and media::applies rich native skin slots to editable fields toggles steppers and sliders",
         "native_themes_media::native themes and media::scales translucent theme surfaces by the player's background transparency preference",
-        "native_themes_media::native themes and media::skips static empty skin graphs while retaining later reactive art and shadows"
-      ],
-      "weaker": "Asserts the field's facet-skinned tag and that .facet-skinned has BackgroundTransparency 1; no toggle/slider/bar part is checked, and unskinned nodes are not checked to lack the tag."
+        "native_themes_media::native themes and media::skips static empty skin graphs while retaining later reactive art and shadows",
+        "native_parity_strength_paint::native paint strength: skins::marks only the value parts a package actually skins"
+      ]
     },
     {
       "id": "themes-P5-28",
@@ -34267,9 +34345,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction",
-        "native_themes_media::native themes and media::bounds idle skin slots and disposes every retained native owner"
-      ],
-      "weaker": "FillClip ClipsDescendants and cap parentage are not asserted; teardown is checked generically for skins, not for a ProgressView's bar assembly."
+        "native_themes_media::native themes and media::bounds idle skin slots and disposes every retained native owner",
+        "native_parity_strength_icons::sliced and bar art::clips the fill window, hangs caps on the track and tears the whole bar assembly down"
+      ]
     },
     {
       "id": "themes-P5-34",
@@ -34343,9 +34421,10 @@
       "candidateCases": [
         "native_themes_media::native themes and media::bounds idle skin slots and disposes every retained native owner",
         "native_themes_media::native themes and media::keeps theme skin layers and state asset swaps inside native Compose ownership",
-        "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction"
+        "native_themes_media::native themes and media::preserves full size progress art endcaps centers and fill direction",
+        "native_parity_strength_lifetime::lifetime parity strength::sizes bar skin art from unscaled pixels under a UIScale and tears the bar down"
       ],
-      "weaker": "The UIScale correction in native_decoration (AbsoluteSize / boundary factor) is exercised only at factor 1."
+      "weaker": "The headless engine sets the boundary AbsoluteSize by hand. A Studio check must show that a real UIScale ancestor scales the 1x1 boundary to the factor, so the fill art matches the track."
     },
     {
       "id": "themes-P5-39",
@@ -34434,9 +34513,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage"
-      ],
-      "weaker": "Only a rejection is asserted; no numeric agreement check (CAND uses the 0.04045 threshold)."
+        "native_themes_media::native themes and media::rejects unreadable semantic color pairs and reports contributed theme coverage",
+        "native_parity_strength_paint::native paint strength: theme sheets::reports contrast with the written-out WCAG formula for every shipped pair"
+      ]
     },
     {
       "id": "themes-P5-45",
@@ -34568,9 +34647,9 @@
       "class": "a",
       "candidateCases": [
         "native_themes_media::native themes and media::scales translucent theme surfaces by the player's background transparency preference",
-        "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency"
-      ],
-      "weaker": "nav_modal.preference and themes.preferenceFor are two separate implementations; tests show both multiply, not that they share one function."
+        "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency",
+        "native_parity_strength_paint::native paint strength: theme sheets::composes the sheet scrim and the full-screen backdrop from the same clamped preference"
+      ]
     }
   ],
   "bugs": [

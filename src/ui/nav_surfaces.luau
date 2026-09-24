@@ -57,7 +57,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	end
 
 	UI.DisclosureGroup = ctx.construct("DisclosureGroup", function(spec: Nav.DisclosureGroupSpec): Frame
-		assert(spec.expanded and spec.expanded.set, "DisclosureGroup.expanded requires a writable Compose cell")
+		assert(
+			type(spec.expanded) == "table" and spec.expanded.set,
+			"DisclosureGroup.expanded requires a writable Compose cell"
+		)
 		local gui = surfaces.service("GuiService")
 		local side = spec.chevronPosition or "leading"
 		assert(side == "leading" or side == "trailing", "Invalid DisclosureGroup.chevronPosition")
@@ -136,7 +139,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	end)
 
 	UI.CollapsibleView = ctx.construct("CollapsibleView", function(spec: Nav.CollapsibleViewSpec): TextButton
-		assert(spec.expanded and spec.expanded.set, "CollapsibleView.expanded requires a writable Compose cell")
+		assert(
+			type(spec.expanded) == "table" and spec.expanded.set,
+			"CollapsibleView.expanded requires a writable Compose cell"
+		)
 		local buttonSpec: Inputs.ButtonProps & {
 			content: Nav.Content?,
 			expanded: ComposeTypes.Cell<boolean>?,
@@ -148,6 +154,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		buttonSpec.expanded = nil
 		buttonSpec.initialFocus = nil
 		buttonSpec.dismissButton = nil
+		buttonSpec.ref = nil
 		buttonSpec.onActivate = function()
 			spec.expanded:set(not spec.expanded:peek())
 		end
@@ -695,7 +702,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	UI.Alert = ctx.construct("Alert", alert)
 
 	UI.Sheet = ctx.construct("Sheet", function(spec: Nav.SheetSpec): Frame
-		assert(spec.detent and spec.detent.set, "Sheet.detent requires a writable Compose cell")
+		assert(type(spec.detent) == "table" and spec.detent.set, "Sheet.detent requires a writable Compose cell")
+		assert(
+			type(spec.isPresented) == "table" and spec.isPresented.set,
+			"Sheet.isPresented requires a writable Compose cell"
+		)
 		type Detent = { id: string, fraction: number?, height: number? }
 		local detents: { Detent } = {}
 		local seenDetents: { [string]: boolean } = {}

@@ -18,7 +18,7 @@ where.
   884 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 9 cases remain. Only a live Studio check
   can close them. See [Gap list](#gap-list).
-- 1,290 of the 3,178 covered cases have a weaker
+- 704 of the 3,178 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -82,18 +82,18 @@ last column names the candidate specs that the group cites most.
 
 | Group | Main cases | a | Weaker | b | c | d | Candidate coverage |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Reactive core | 63 | 23 | 16 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
-| Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
+| Reactive core | 63 | 23 | 0 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
+| Lifetime and ownership | 316 | 142 | 6 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
 | Layout and geometry | 1,326 | 94 | 25 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 497 | 63 | 47 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Text measurement and fit | 497 | 63 | 27 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
 | Focus and selection | 532 | 103 | 49 | 257 | 172 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
 | Pointer, touch and drag | 368 | 63 | 48 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
-| Motion | 581 | 144 | 80 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 379 | 146 | 68 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
-| Icons and media | 251 | 116 | 66 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
+| Motion | 581 | 144 | 4 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
+| Paint and theming | 709 | 199 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
+| Theme packages | 379 | 146 | 0 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Icons and media | 251 | 116 | 0 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
 | Action controls | 394 | 96 | 57 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
 | Value controls | 249 | 221 | 128 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
 | Text input | 119 | 70 | 26 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
@@ -105,13 +105,13 @@ last column names the candidate specs that the group cites most.
 | Row actions | 264 | 149 | 13 | 0 | 112 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 166 | 46 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 32 | 17 | 51 | 336 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
-| Public surface | 366 | 89 | 59 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
+| Public surface | 366 | 89 | 0 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 498 | 51 | 0 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 425 | 246 | 51 | 113 | 66 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 152 | 2 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
-| Performance | 792 | 84 | 34 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
+| Performance | 792 | 84 | 6 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
-| Error handling and refusals | 220 | 72 | 16 | 2 | 146 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
+| Error handling and refusals | 220 | 72 | 0 | 2 | 146 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
 

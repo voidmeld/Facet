@@ -63,11 +63,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local opacity = runtime.tween(function(use: ComposeTypes.Use)
 			return if (immediate or use(mounted)) and use(state).top then 1 else 0
 		end, transition)
+		local function still(use: ComposeTypes.Use): boolean
+			return use(reduced) or read(ctx.config.reducedMotion, use) == true
+		end
 		properties.GroupTransparency = function(use: ComposeTypes.Use)
-			return if use(reduced) or read(ctx.config.reducedMotion, use) then 0 else 1 - use(opacity)
+			return if still(use) then 0 else 1 - use(opacity)
 		end
 		properties.Visible = function(use: ComposeTypes.Use)
-			return use(state).top or not use(reduced) and use(opacity) > 0
+			return use(state).top or not still(use) and use(opacity) > 0
 		end
 		properties.Interactable = function(use: ComposeTypes.Use)
 			return use(state).top
@@ -723,7 +726,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 
 	local function navigationStack<P>(spec: Nav.NavigationStackSpec<P>): Frame
 		assert(
-			spec.path and spec.path.set and spec.root and spec.destinations,
+			type(spec.path) == "table" and spec.path.set and spec.root and spec.destinations,
 			"NavigationStack requires path, root and destinations"
 		)
 		checkTransition(spec.transition)
