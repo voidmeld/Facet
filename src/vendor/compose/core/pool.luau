@@ -74,19 +74,13 @@ local function createPool<T>(options: Options<T>): Pool<T>
 		disposed = true
 		local errors: { string } = {}
 		for _, value in idle do
-			local ok, err = pcall(function(): unknown?
-				options.destroy(value)
-				return nil
-			end)
+			local ok, err: unknown = pcall(options.destroy, value)
 			if not ok then
 				errors[#errors + 1] = tostring(err)
 			end
 		end
 		for _, value in active do
-			local ok, err = pcall(function(): unknown?
-				options.destroy(value)
-				return nil
-			end)
+			local ok, err: unknown = pcall(options.destroy, value)
 			if not ok then
 				errors[#errors + 1] = tostring(err)
 			end
@@ -123,10 +117,7 @@ local function createPool<T>(options: Options<T>): Pool<T>
 				return
 			end
 			if options.reset ~= nil then
-				local ok, err = pcall(function(): unknown?
-					(options.reset :: (T) -> ())(value)
-					return nil
-				end)
+				local ok, err: unknown = pcall(options.reset :: (T) -> (), value)
 				if not ok then
 					options.destroy(value)
 					error(err, 0)

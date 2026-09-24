@@ -87,6 +87,10 @@ local function attachDependent(node: Node, dispose: () -> ()): () -> ()
 	end
 end
 
+local function hasDependents(node: Node): boolean
+	return dependents[node] ~= nil
+end
+
 local function releaseDependents(node: Node)
 	local list = dependents[node]
 	if list == nil then
@@ -202,6 +206,7 @@ return {
 	labelOf = labelOf,
 	isDestructible = isDestructible,
 	attachDependent = attachDependent,
+	hasDependents = hasDependents,
 	releaseDependents = releaseDependents,
 	forget = forget,
 	trackedCount = trackedCount,

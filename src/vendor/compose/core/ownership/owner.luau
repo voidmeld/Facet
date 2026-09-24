@@ -67,6 +67,7 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 	local count = 0
 	local disposed = false
 	local detachFromParent: Dispose? = nil
+	local draining: Entry? = nil
 
 	local function unlink(entry: Entry)
 		local previous = entry[PREVIOUS]
@@ -138,6 +139,17 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 		raiseAll(errors)
 	end
 
+	local function releaseDraining()
+		while draining ~= nil do
+			local entry = draining :: Entry
+			draining = entry[NEXT]
+			entry[PREVIOUS] = nil
+			entry[NEXT] = nil
+			entry[ATTACHED] = false
+			releaseEntry(entry)
+		end
+	end
+
 	local function disposeOwner()
 		if disposed then
 			return
@@ -154,33 +166,27 @@ local function createOwner(inherited: Reactor.Reactor?): Owner
 
 		disposed = true
 
-		local pending = head
+		draining = head
 		head = nil
 		count = 0
 
-		if pending == nil then
+		if draining == nil then
 			return
 		end
 
-		local errors: { string } = {}
-		local function releaseRest()
-			while pending ~= nil do
-				local entry = pending
-				pending = entry[NEXT]
-				entry[PREVIOUS] = nil
-				entry[NEXT] = nil
-				entry[ATTACHED] = false
-				releaseEntry(entry)
-			end
-		end
-
+		local errors: { string }? = nil
 		repeat
-			local ok, err: any = pcall(releaseRest)
+			local ok, err: any = pcall(releaseDraining)
 			if not ok then
-				table.insert(errors, tostring(err))
+				if errors == nil then
+					errors = {}
+				end
+				table.insert(errors :: { string }, tostring(err))
 			end
-		until pending == nil
-		raiseAll(errors)
+		until draining == nil
+		if errors ~= nil then
+			raiseAll(errors)
+		end
 	end
 
 	local owner: Owner

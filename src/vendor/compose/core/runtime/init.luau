@@ -81,6 +81,11 @@ local function createRuntime(host: Host.Host): Runtime
 	end
 
 	local function destroyOwnedNode(node: Node)
+		if not Nodes.hasDependents(node) then
+			render.destroyNode(node)
+			Nodes.forget(node)
+			return
+		end
 		local ok, err: any = pcall(Nodes.releaseDependents, node)
 		render.destroyNode(node)
 		Nodes.forget(node)
