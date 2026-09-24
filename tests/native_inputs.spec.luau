@@ -75,6 +75,33 @@ t.describe("native input controls", function()
 		stop()
 	end)
 
+	t.it("finishes an activation that removes its own Button without reading released state", function()
+		local shown = Compose.cell(true)
+		local presses = 0
+		local node, stop = world(function(UI, _engine, runtime)
+			return runtime.constructors.Frame({
+				Compose.show(shown, function()
+					local allowed = Compose.formula(function(use)
+						return use(shown)
+					end)
+					return UI.Button "Dismiss" {
+						label = "Dismiss",
+						enabled = allowed,
+						onActivate = function()
+							presses += 1
+							shown:set(false)
+						end,
+					}
+				end),
+			})
+		end)
+		local button = find(node, "Dismiss")
+		button.Activated.fire()
+		t.expect(presses).toBe(1)
+		t.expect(find(node, "Dismiss")).toBe(nil)
+		stop()
+	end)
+
 	t.it("uses native properties and events and releases them with its Compose owner", function()
 		local value, enabled = Compose.cell("Before"), Compose.cell(true)
 		local activated, nativeEvent = 0, 0

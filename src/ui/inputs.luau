@@ -370,6 +370,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			repeatDelay > 0 and repeatDelay < math.huge and repeatInterval > 0 and repeatInterval < math.huge,
 			"Facet.Button: repeat timings must be finite and positive"
 		)
+		local live = true
+		Compose.cleanup(function()
+			live = false
+		end)
 		local function activate(...)
 			if enabled(spec) and node and ctx.available(node) and spec.onActivate then
 				if popTimeline and popReduced and not held and not popReduced() then
@@ -378,7 +382,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 				spec.onActivate(...)
 			end
-			if enabled(spec) and node and ctx.available(node) then
+			if live and enabled(spec) and node and ctx.available(node) then
 				activation.notify(node, ...)
 			end
 		end
