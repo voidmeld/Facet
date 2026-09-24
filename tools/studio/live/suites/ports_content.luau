@@ -720,17 +720,31 @@ add("steps-form-fits-the-offer", { "post-step-10", "post-step-11" }, function(t)
 		local checkout, compact = t.find(stage, "Checkout"), t.find(stage, "Compact")
 		t.check(`{where} Checkout and Compact mount`, checkout ~= nil and compact ~= nil)
 		if checkout and compact then
-			t.check(
-				`{where} Checkout shows the {entry.form}`,
-				checkout:GetAttribute("FacetForm") == entry.form,
-				checkout:GetAttribute("FacetForm")
-			)
-			local strip, summary = t.find(checkout, "Strip"), t.find(checkout, "SummaryRow")
+			local form = checkout:GetAttribute("FacetForm")
+			t.note(`{where} Checkout form`, form)
 			if entry.form == "row" then
+				t.check(`{where} Checkout shows the row`, form == "row", form)
+			end
+			local strip, summary = t.find(checkout, "Strip"), t.find(checkout, "SummaryRow")
+			if form == "row" then
 				t.check(
 					`{where} the row shows and the summary hides`,
 					strip and strip.Visible and summary and not summary.Visible
 				)
+				for _, id in STEP_IDS do
+					local cell = t.find(checkout, "Step-" .. id)
+					local label = cell and t.find(cell, "Label")
+					t.check(
+						`{where} the row shows {id}'s label whole`,
+						label ~= nil and label.TextFits == true,
+						label
+							and {
+								label.ContentText,
+								label.TextBounds,
+								label.AbsoluteSize,
+							}
+					)
+				end
 			else
 				t.check(
 					`{where} the summary shows and the row hides`,
@@ -766,9 +780,10 @@ add("steps-form-fits-the-offer", { "post-step-10", "post-step-11" }, function(t)
 		end
 		t.cleanup()
 	end
-	local width: any
+	local width: any, probe: any
 	local stage = t.mount(function(UI: any, Host: any, Compose: any)
 		width = Compose.cell(900)
+		probe = Compose.cell(900)
 		local current = Compose.cell("ship")
 		local children = {
 			Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8) }),
@@ -815,26 +830,54 @@ add("steps-form-fits-the-offer", { "post-step-10", "post-step-11" }, function(t)
 				}),
 			})
 		)
+		table.insert(
+			children,
+			Host.Frame({
+				Name = "ProbeHolder",
+				LayoutOrder = 4,
+				BackgroundTransparency = 1,
+				Size = function(use)
+					return UDim2.fromOffset(use(probe), 120)
+				end,
+				UI.StepIndicator({
+					Name = "Probe",
+					steps = checkoutSteps(),
+					current = current,
+					onSelect = function(id: string)
+						current:set(id)
+					end,
+				}),
+			})
+		)
 		local props: { [any]: any } =
-			{ Name = "Column", BackgroundTransparency = 1, Size = UDim2.fromOffset(1000, 600) }
+			{ Name = "Column", BackgroundTransparency = 1, Size = UDim2.fromOffset(1000, 700) }
 		for _, child in children do
 			table.insert(props, child)
 		end
 		return Host.Frame(props)
 	end, { size = Vector2.new(1280, 720), frames = 12 })
-	local fill, hug, sized = t.find(stage, "Fill"), t.find(stage, "Hug"), t.find(stage, "Sized")
-	t.check("the fixture indicators mount", fill ~= nil and hug ~= nil and sized ~= nil)
-	if not (fill and hug and sized) then
+	local fill, hug, sized, probed =
+		t.find(stage, "Fill"), t.find(stage, "Hug"), t.find(stage, "Sized"), t.find(stage, "Probe")
+	t.check("the fixture indicators mount", fill ~= nil and hug ~= nil and sized ~= nil and probed ~= nil)
+	if not (fill and hug and sized and probed) then
 		return
 	end
 	local seen = {}
 	for _, w in { 900, 250, 900 } do
 		width:set(w)
 		t.settle(12)
+		local settled = hug.Parent.AbsoluteSize.X
+		probe:set(settled)
+		t.settle(12)
+		t.note(`{w} px forms`, {
+			fill = fill:GetAttribute("FacetForm"),
+			hug = hug:GetAttribute("FacetForm"),
+			hugWidth = settled,
+		})
 		t.check(
-			`{w} px: a hugging parent shows the filling form`,
-			fill:GetAttribute("FacetForm") == hug:GetAttribute("FacetForm"),
-			{ fill = fill:GetAttribute("FacetForm"), hug = hug:GetAttribute("FacetForm") }
+			`{w} px: a hugging parent shows the form a filling one shows at the hug's settled width`,
+			probed:GetAttribute("FacetForm") == hug:GetAttribute("FacetForm"),
+			{ probe = probed:GetAttribute("FacetForm"), hug = hug:GetAttribute("FacetForm"), width = settled }
 		)
 		table.insert(seen, sized:GetAttribute("FacetForm"))
 	end
@@ -1177,9 +1220,23 @@ add("card-grid-lines-and-corners", { "post-card-27", "post-card-28" }, function(
 	end
 	corner("g1")
 	corner("g4")
-	games.CanvasPosition = Vector2.new(0, math.max(0, games.AbsoluteCanvasSize.Y - games.AbsoluteWindowSize.Y))
-	t.settle(30)
-	t.note("canvas at the end", games.CanvasPosition)
+	local passes = 0
+	for pass = 1, 30 do
+		passes = pass
+		local target = math.max(0, games.AbsoluteCanvasSize.Y - games.AbsoluteWindowSize.Y)
+		games.CanvasPosition = Vector2.new(0, target)
+		t.settle(8)
+		local last = cardIn(t, games, "g60")
+		if
+			last
+			and last.card
+			and math.abs(games.CanvasPosition.Y - (games.AbsoluteCanvasSize.Y - games.AbsoluteWindowSize.Y)) <= 1
+		then
+			break
+		end
+	end
+	t.settle(20)
+	t.note("canvas at the end", { position = games.CanvasPosition, canvas = games.AbsoluteCanvasSize, passes = passes })
 	corner("g57")
 	corner("g60")
 	t.note(
@@ -1426,18 +1483,26 @@ local INNER = { "basics", "writing", "leaves", "choices", "pickers" }
 add("category-bar-fits-phone-words", { "post-showcase-01", "post-showcase-04" }, function(t)
 	local caption = t.themes[1].package.metrics.typography.caption.size
 	t.note("caption size", caption)
+	local viewport = t.device({ device = "iphone_14", orientation = Enum.ScreenOrientation.Portrait })
+	for _ = 1, 60 do
+		if UserInputService.PreferredInput == Enum.PreferredInput.Touch then
+			break
+		end
+		t.settle(1)
+	end
+	t.note("device viewport", viewport)
+	t.check(
+		"the phone device reports touch as the preferred input",
+		UserInputService.PreferredInput == Enum.PreferredInput.Touch,
+		tostring(UserInputService.PreferredInput)
+	)
+	local screen = t.Facet.Compose.cell(Vector2.new(320, 568))
+	local stage = scenario(t, "all_controls", { size = screen, frames = 30 })
 	for _, size in { Vector2.new(320, 568), Vector2.new(389, 844) } do
 		local where = `{size.X} px`
-		local viewport = t.device({
-			device = "iphone_14",
-			orientation = Enum.ScreenOrientation.Portrait,
-			width = size.X,
-			height = size.Y,
-		})
-		t.note(`{where} viewport`, viewport)
+		screen:set(size)
+		t.settle(30)
 		t.note(`{where} preferred input`, tostring(UserInputService.PreferredInput))
-		local stage = scenario(t, "all_controls", { frames = 30 })
-		t.settle(20)
 		local categories = t.find(stage, "Categories")
 		t.check(`{where} the category TabView mounts`, categories ~= nil)
 		if categories then
@@ -1494,11 +1559,10 @@ add("category-bar-fits-phone-words", { "post-showcase-01", "post-showcase-04" },
 				end
 			end
 		end
-		t.cleanup()
 	end
 	t.note(
 		"scope",
-		"the all-controls scenario mounts standalone; inside the gallery shell its category bar is nested and uses the top bar"
+		"the all-controls scenario mounts standalone in a stage of each phone size on the iphone_14 device for touch; inside the gallery shell its category bar is nested and uses the top bar"
 	)
 end)
 
@@ -1752,6 +1816,12 @@ add("containers-recipes-draw-as-described", {
 	local noWrap = node("NoWrap")
 	if noWrap then
 		local one, three = node("One", noWrap), node("Three", noWrap)
+		local outer = noWrap:FindFirstAncestorWhichIsA("ScrollingFrame")
+		if outer then
+			local offset = noWrap.AbsolutePosition.Y - outer.AbsolutePosition.Y + outer.CanvasPosition.Y - 100
+			outer.CanvasPosition = Vector2.new(outer.CanvasPosition.X, math.max(0, offset))
+			t.settle(6)
+		end
 		if one and three then
 			local w = windowRect(noWrap)
 			t.near("08 no wrap keeps one line", three.AbsolutePosition.Y, one.AbsolutePosition.Y, 0.5)

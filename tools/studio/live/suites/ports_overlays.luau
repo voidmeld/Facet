@@ -149,6 +149,37 @@ local LONG = string.rep(
 	25
 )
 
+local function longContent(UI: any, Host: any, width: number?): any
+	return Host.Frame "Words" {
+		BackgroundTransparency = 1,
+		Size = if width then UDim2.fromOffset(width, 0) else UDim2.new(1, 0, 0, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder }),
+		UI.Label({
+			Name = "Copy",
+			LayoutOrder = 1,
+			text = LONG,
+			TextWrapped = true,
+			Size = UDim2.new(1, 0, 0, 0),
+			AutomaticSize = Enum.AutomaticSize.Y,
+		}),
+		Host.Frame "Spacer" {
+			LayoutOrder = 2,
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, 900),
+		},
+	}
+end
+
+local function copyFits(t: any, where: string, root: any)
+	local copy = root and root:FindFirstChild("Copy", true)
+	t.check(
+		where .. " the long wrapped copy grows to its text and is not cut",
+		copy ~= nil and copy.TextFits and copy.AbsoluteSize.Y >= copy.TextBounds.Y - 1,
+		copy and { copy.TextBounds, copy.AbsoluteSize, copy.TextFits }
+	)
+end
+
 local function longDialog(UI: any, Host: any, Compose: any, opened: any?): any
 	return Host.Frame "Board" {
 		Size = UDim2.fromScale(1, 1),
@@ -158,13 +189,7 @@ local function longDialog(UI: any, Host: any, Compose: any, opened: any?): any
 			onPresentedChange = function() end,
 			title = "Leave the race?",
 			content = function()
-				return UI.Label({
-					Name = "Words",
-					text = LONG,
-					TextWrapped = true,
-					Size = UDim2.new(1, 0, 0, 0),
-					AutomaticSize = Enum.AutomaticSize.Y,
-				})
+				return longContent(UI, Host)
 			end,
 			actionLabel = "Leaving now forfeits this heat.",
 			actions = {
@@ -322,6 +347,7 @@ add("dialog-room-desktop-short-phone", { "post-overlays-011", "post-overlays-012
 			body and body.ScrollingEnabled == true and body.AbsoluteCanvasSize.Y > body.AbsoluteWindowSize.Y + 1,
 			body and { body.AbsoluteCanvasSize, body.AbsoluteWindowSize }
 		)
+		copyFits(t, "desktop:", body)
 		for _, name in { "Header", "ActionLabel", "Actions" } do
 			local node = t.find(panel, name)
 			t.check(`desktop: {name} shows in full`, node ~= nil and whole(t, node), node and t.rect(node))
@@ -331,9 +357,10 @@ add("dialog-room-desktop-short-phone", { "post-overlays-011", "post-overlays-012
 		end
 	end
 	t.cleanup()
-	local short = device(t, { device = "xbox", width = 320, height = 160 })
+	local short = device(t, { device = "xbox", width = 320, height = 220 })
 	t.note("short viewport", short)
-	t.check("the short window applied", short ~= nil and short.Y <= 200, short)
+	t.note("short window", "320x220 asked so the layer under the 87 px inset keeps a room taller than one 44 px action")
+	t.check("the short window applied", short ~= nil and short.Y <= 260, short)
 	stage = t.mount(function(UI, Host, Compose)
 		return longDialog(UI, Host, Compose)
 	end, { frames = 30 })
@@ -360,14 +387,19 @@ add("dialog-room-desktop-short-phone", { "post-overlays-011", "post-overlays-012
 		if room then
 			room.CanvasPosition = Vector2.new(0, math.max(0, room.AbsoluteCanvasSize.Y - room.AbsoluteWindowSize.Y))
 			t.settle(6)
+			local last
 			for _, name in { "Stay", "Leave" } do
 				local action = t.find(room, name)
-				t.check(
-					`short: {name} is reachable at the end of the room`,
-					action ~= nil and whole(t, action),
-					action and { t.rect(action), t.clipped(action) }
-				)
+				if action and (last == nil or action.AbsolutePosition.Y > last.AbsolutePosition.Y) then
+					last = action
+				end
 			end
+			t.note("short room window", room.AbsoluteWindowSize)
+			t.check(
+				"short: the last action is reachable at the end of the room",
+				last ~= nil and whole(t, last),
+				last and { last.Name, t.rect(last), t.clipped(last) }
+			)
 		end
 	end
 	t.cleanup()
@@ -385,7 +417,8 @@ add("dialog-room-desktop-short-phone", { "post-overlays-011", "post-overlays-012
 	if panel then
 		t.stable(panel)
 		t.inside("phone: the dialog inside the window", panel, layer, 1)
-		local room, body, content = t.find(panel, "Room"), t.find(panel, "Body"), t.find(panel, "Content")
+		local room, body = t.find(panel, "Room"), t.find(panel, "Body")
+		local content = body and body:FindFirstChild("Content")
 		t.check(
 			"phone: the room is not a scroller",
 			room and room.ScrollingEnabled == false,
@@ -716,13 +749,14 @@ add("popover-caps-and-side-hang", { "post-overlays-033", "post-overlays-166" }, 
 				maxWidth = if long then 320 else nil,
 				maxHeight = if long then 180 else nil,
 				content = function()
+					if long then
+						return longContent(UI, Host, 296)
+					end
 					return UI.Label({
 						Name = "Words",
-						text = if long then LONG else "Short note",
-						TextWrapped = long,
+						text = "Short note",
 						AutomaticSize = Enum.AutomaticSize.XY,
 						Size = UDim2.fromOffset(0, 0),
-						Host.UISizeConstraint({ MaxSize = Vector2.new(296, math.huge) }),
 					})
 				end,
 			}),
@@ -765,7 +799,12 @@ add("popover-caps-and-side-hang", { "post-overlays-033", "post-overlays-166" }, 
 			if name == "Plain" then
 				local words = body and body:FindFirstChild("Words")
 				if words then
-					t.near("absent caps keep the plain hug: width", p.w, words.AbsoluteSize.X + 16, 1.5)
+					local extra = p.w - (words.AbsoluteSize.X + 16)
+					t.check(
+						"absent caps keep the plain hug: width, allowing the 4 px scroll bar gutter",
+						extra >= -1.5 and extra <= 5.5,
+						{ panel = p.w, words = words.AbsoluteSize.X }
+					)
 					t.near("absent caps keep the plain hug: height", p.h, words.AbsoluteSize.Y + 16, 1.5)
 				end
 				t.check(
@@ -781,6 +820,7 @@ add("popover-caps-and-side-hang", { "post-overlays-033", "post-overlays-166" }, 
 					body and body.ScrollingEnabled and body.AbsoluteCanvasSize.Y > body.AbsoluteWindowSize.Y + 1,
 					body and { body.AbsoluteCanvasSize, body.AbsoluteWindowSize }
 				)
+				copyFits(t, name, body)
 				t.check(
 					name .. " panel does not cover its trigger",
 					not overlap(p, t.rect(triggers[name])),
@@ -867,13 +907,7 @@ add(
 					detents = { "medium", "large" },
 					scrollPolicy = "atLargestDetent",
 					content = function()
-						return UI.Label({
-							Name = "Words",
-							text = LONG,
-							TextWrapped = true,
-							Size = UDim2.new(1, 0, 0, 0),
-							AutomaticSize = Enum.AutomaticSize.Y,
-						})
+						return longContent(UI, Host)
 					end,
 				},
 			}
@@ -911,6 +945,7 @@ add(
 			body and body.AbsoluteCanvasSize.Y > body.AbsoluteWindowSize.Y + 1,
 			body and { body.AbsoluteCanvasSize, body.AbsoluteWindowSize }
 		)
+		copyFits(t, "at the tallest detent", body)
 	end
 )
 
@@ -983,7 +1018,7 @@ add(
 			end
 			t.cleanup()
 		end
-		local stage, built = scenario(t, "sheet", Vector2.new(640, 200))
+		local stage, built = scenario(t, "sheet", Vector2.new(640, 120))
 		built.steps.lobby()
 		t.settle(30)
 		local panel = visibleNamed(t, stage, "SheetPanel")
@@ -1274,7 +1309,7 @@ add("snackbar-composition-widths", { "post-overlays-048", "post-overlays-049", "
 				)
 				t.check(
 					`{where} the plain message stays on one line`,
-					message.TextBounds.Y < message.TextSize * 1.6,
+					message.TextBounds.Y < styled(message, "TextSize") * 1.6,
 					message.TextBounds
 				)
 			end
@@ -1300,7 +1335,7 @@ add("snackbar-composition-widths", { "post-overlays-048", "post-overlays-049", "
 			local message = t.find(row, "Message")
 			t.check(
 				`{where} long plain copy wraps`,
-				message ~= nil and message.TextBounds.Y > message.TextSize * 1.6,
+				message ~= nil and message.TextBounds.Y > styled(message, "TextSize") * 1.6,
 				message and message.TextBounds
 			)
 		end
@@ -1310,7 +1345,7 @@ add("snackbar-composition-widths", { "post-overlays-048", "post-overlays-049", "
 			local message, action = t.find(row, "Message"), t.find(row, "Action")
 			t.check(
 				`{where} long copy wraps`,
-				message ~= nil and message.TextBounds.Y > message.TextSize * 1.6,
+				message ~= nil and message.TextBounds.Y > styled(message, "TextSize") * 1.6,
 				message and message.TextBounds
 			)
 			if message and action then

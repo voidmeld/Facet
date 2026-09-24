@@ -1774,8 +1774,11 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 				root = ctx.column({ well }, rootProps)
 			end
 			local anchorAvailable = surfaces.available(well)
+			local anchorSeen = false
 			Compose.watch(function(use: Use)
-				if not use(anchorAvailable) and presented() then
+				if use(anchorAvailable) then
+					anchorSeen = true
+				elseif anchorSeen and presented() then
 					close("anchorLost")
 				end
 			end)

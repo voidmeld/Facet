@@ -1765,8 +1765,11 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 				native = rootProps,
 			})
 			local anchorAvailable = surfaces.available(plate)
+			local anchorSeen = false
 			Compose.watch(function(use: Use)
-				if not use(anchorAvailable) and presented:peek() then
+				if use(anchorAvailable) then
+					anchorSeen = true
+				elseif anchorSeen and presented:peek() then
 					close("anchorLost")
 				end
 			end)

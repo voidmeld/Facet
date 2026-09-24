@@ -1144,6 +1144,30 @@ t.describe("native ColorPicker alpha, empty, disabled and refusals", function()
 		expect(table.concat(reasons, ",")).toBe("anchorLost")
 		w.stop()
 	end)
+
+	t.it("stays open when it is built already presented and closes only after its anchor was shown", function()
+		local cell, _, change = caller(Color3.fromRGB(255, 0, 0))
+		local open = Compose.cell(true)
+		local reasons = {}
+		local w = world({
+			value = cell,
+			onChange = change,
+			isPresented = open,
+			onPresentedChange = function(next: boolean)
+				open:set(next)
+			end,
+			onDismiss = function(r: string)
+				table.insert(reasons, r)
+			end,
+		})
+		expect(open:peek()).toBe(true)
+		expect(#reasons).toBe(0)
+		expect(w.find("Panel") ~= nil).toBe(true)
+		w.find("Well").Visible = false
+		expect(open:peek()).toBe(false)
+		expect(table.concat(reasons, ",")).toBe("anchorLost")
+		w.stop()
+	end)
 end)
 
 return nil

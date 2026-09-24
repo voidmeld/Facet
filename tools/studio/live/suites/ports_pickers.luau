@@ -72,12 +72,35 @@ local function sameColor(a: any, b: any): boolean
 end
 
 local function themeNamed(t: any, name: string): any
+	local wanted = string.lower(string.gsub(name, "_", ""))
 	for _, entry in t.themes do
-		if entry.name == name then
+		if string.lower(string.gsub(entry.name, "_", "")) == wanted then
 			return entry.package
 		end
 	end
 	return nil
+end
+
+local function pointerScreen(t: any, width: number, height: number)
+	t.device({ device = "generic_handheld_720", width = width, height = height })
+	local tenFoot = GuiService:IsTenFootInterface()
+	if tenFoot then
+		t.device({ device = "xbox", frames = 1 })
+		pcall(function()
+			(game:GetService("StudioDeviceSimulatorService") :: any):StopSimulationAsync()
+		end)
+		t.settle(30)
+	end
+	t.note(`screen for {width}x{height}`, {
+		viewport = workspace.CurrentCamera.ViewportSize,
+		preferred = tostring(game:GetService("UserInputService").PreferredInput),
+		handheldWasTenFoot = tenFoot,
+	})
+	t.check(
+		`the {width}x{height} pointer screen is not a ten-foot interface`,
+		not GuiService:IsTenFootInterface(),
+		GuiService:IsTenFootInterface()
+	)
 end
 
 local function scenario(t: any, name: string, size: Vector2?, theme: any?): (any, any)
@@ -137,6 +160,23 @@ local function sequence(value: any): string
 	return table.concat(value.visited, ",")
 end
 
+local opening: { any } = {}
+
+local function openLater(Compose: any): any
+	local cell = Compose.cell(false)
+	table.insert(opening, cell)
+	return cell
+end
+
+local function openNow(t: any)
+	t.settle(4)
+	for _, cell in opening do
+		cell:set(true)
+	end
+	table.clear(opening)
+	t.settle(12)
+end
+
 local LABELLED = { "Handle", "JoinCode", "Briefing", "Fee", "Speed" }
 
 add("fields-label-above", { "post-pickers-002", "post-pickers-005" }, function(t)
@@ -159,10 +199,17 @@ add("fields-label-above", { "post-pickers-002", "post-pickers-005" }, function(t
 				continue
 			end
 			t.stable(input)
+			t.stable(label)
+			t.stable(title)
+			t.settle(4)
 			local l, ti, i = t.rect(label), t.rect(title), t.rect(input)
 			t.check(`{where} {name} label sits above its Input`, l.b <= i.y + 0.5, { label = l.b, input = i.y })
 			t.check(`{where} {name} label is at least 44 px tall`, l.h >= 43.5, l.h)
-			t.near(`{where} {name} title bottom meets the label bottom`, ti.b, l.b, 1)
+			t.check(`{where} {name} title bottom meets the label bottom`, math.abs(ti.b - l.b) <= 1, {
+				title = { ti.y, ti.h, ti.b },
+				label = { l.y, l.h, l.b },
+				bounds = title.TextBounds,
+			})
 			t.check(`{where} {name} title stays inside the label width`, ti.x >= l.x - 0.5 and ti.r <= l.r + 0.5, {
 				title = { ti.x, ti.r },
 				label = { l.x, l.r },
@@ -232,7 +279,19 @@ add("fields-error-still", { "post-pickers-007" }, function(t)
 		)
 		t.check(`round {round}: the error mark shows only with the error`, mark.Visible == shown, mark.Visible)
 		if shown then
-			t.near("the error mark is as tall as its message line", mark.AbsoluteSize.Y, words.AbsoluteSize.Y, 1)
+			t.stable(mark)
+			t.settle(4)
+			t.check(
+				"the error mark is as tall as its message line",
+				math.abs(mark.AbsoluteSize.Y - words.AbsoluteSize.Y) <= 1,
+				{
+					mark = mark.AbsoluteSize,
+					size = mark.Size,
+					styledSize = styled(mark, "Size"),
+					line = words.AbsoluteSize,
+					message = if mark.Parent then mark.Parent.AbsoluteSize else nil,
+				}
+			)
 			t.check("the error text is on one line at 1280 px", words.AbsoluteSize.Y <= words.TextSize * 1.6, {
 				words.AbsoluteSize,
 				words.TextSize,
@@ -1071,6 +1130,7 @@ local function datePicker(t: any, make: (any, any) -> any, holder: { [string]: a
 			UI.DateTimePicker("Date")(make(Compose, UI)),
 		}
 	end, { frames = 20 })
+	openNow(t)
 	return stage, t.find(stage, "Date"), layerOf(stage)
 end
 
@@ -1089,9 +1149,9 @@ add("dtp-anchor-below", { "post-pickers-141" }, function(t)
 			{ name = "bottom", position = UDim2.new(0, 40, 1, -40), anchor = Vector2.new(0, 1) },
 		}
 	do
-		t.device({ device = "xbox", width = 1280, height = 720 })
+		pointerScreen(t, 1280, 720)
 		local _, root, layer = datePicker(t, function(Compose)
-			return singleSpec(Compose, { isPresented = Compose.cell(true) })
+			return singleSpec(Compose, { isPresented = openLater(Compose) })
 		end, { position = place.position, anchor = place.anchor })
 		local plate = partOf(root, "Field")
 		local surface = surfaceOf(t, layer)
@@ -1256,7 +1316,7 @@ interactive(
 	function(t)
 		local value: any = {}
 		local stage = t.mount(function(UI, Host, Compose)
-			value.open = Compose.cell(true)
+			value.open = openLater(Compose)
 			return Host.Frame "Holder" {
 				BackgroundTransparency = 1,
 				Position = UDim2.fromOffset(40, 40),
@@ -1270,6 +1330,7 @@ interactive(
 				})),
 			}
 		end, { frames = 20 })
+		openNow(t)
 		local layer = layerOf(stage)
 		surfaceOf(t, layer)
 		local days = partOf(visibleNamed(t, layer, "Pane1"), "Days")
@@ -1313,7 +1374,7 @@ interactive(
 			value.open:set(false)
 			t.settle(6)
 			local stage = t.mount(function(UI, Host, Compose)
-				value.open = Compose.cell(true)
+				value.open = openLater(Compose)
 				return Host.Frame "Holder" {
 					BackgroundTransparency = 1,
 					Position = UDim2.fromOffset(40, 40),
@@ -1322,6 +1383,7 @@ interactive(
 					UI.DateTimePicker("Date")(singleSpec(Compose, { draft = true, isPresented = value.open })),
 				}
 			end, { frames = 20 })
+			openNow(t)
 			local layer = layerOf(stage)
 			surfaceOf(t, layer)
 			value.days = partOf(visibleNamed(t, layer, "Pane1"), "Days")
@@ -1458,13 +1520,13 @@ add("dtp-phone-fit", { "post-pickers-157" }, function(t)
 		t.note(`{turn.name} viewport`, workspace.CurrentCamera.ViewportSize)
 		t.note(`{turn.name} preferred input`, tostring(game:GetService("UserInputService").PreferredInput))
 		local _, root, layer = datePicker(t, function(Compose)
-			return singleSpec(Compose, { draft = true, isPresented = Compose.cell(true) })
+			return singleSpec(Compose, { draft = true, isPresented = openLater(Compose) })
 		end, { position = UDim2.fromOffset(16, 16), size = UDim2.new(1, -32, 0, 0) })
 		phoneChecks(t, `{turn.name} single`, root, layer, turn.name == "portrait")
 		t.cleanup()
 		t.device({ device = "iphone_14", orientation = turn.orientation })
 		local _, rangeRoot, rangeLayer = datePicker(t, function(Compose)
-			return rangeSpec(Compose, { draft = true, presets = preset, isPresented = Compose.cell(true) })
+			return rangeSpec(Compose, { draft = true, presets = preset, isPresented = openLater(Compose) })
 		end, { position = UDim2.fromOffset(16, 16), size = UDim2.new(1, -32, 0, 0) })
 		phoneChecks(t, `{turn.name} range`, rangeRoot, rangeLayer, turn.name == "portrait")
 		t.cleanup()
@@ -1473,8 +1535,9 @@ add("dtp-phone-fit", { "post-pickers-157" }, function(t)
 end)
 
 add("dtp-panel-hugs", { "post-pickers-158" }, function(t)
+	pointerScreen(t, 1280, 720)
 	local _, root, layer = datePicker(t, function(Compose)
-		return singleSpec(Compose, { isPresented = Compose.cell(true) })
+		return singleSpec(Compose, { isPresented = openLater(Compose) })
 	end)
 	local surface = surfaceOf(t, layer)
 	local calendar = if surface then partOf(surface, "Calendar") else nil
@@ -2420,7 +2483,7 @@ end)
 add("color-placement-real-layout", { "post-pickers-165", "post-pickers-167", "post-pickers-168" }, function(t)
 	for _, screen in { Vector2.new(1542, 1044), Vector2.new(1542, 560) } do
 		local where = `{screen.X}x{screen.Y}`
-		t.device({ device = "xbox", width = screen.X, height = screen.Y })
+		pointerScreen(t, screen.X, screen.Y)
 		local opens, names = {}, {}
 		local stage = t.mount(function(UI, Host, Compose)
 			local children: { any } = {}
@@ -2495,7 +2558,7 @@ add("color-placement-real-layout", { "post-pickers-165", "post-pickers-167", "po
 					well = t.rect(well),
 				})
 				t.inside(`{where} {name}: the panel stays inside the screen`, panel, layer, 1)
-				if screen.Y == 560 and name == "BareMiddle" then
+				if t.rect(layer).h < 600 and name == "BareMiddle" then
 					t.check(
 						`{where} {name}: the bare middle well opens beside`,
 						placement == "left" or placement == "right",
@@ -2528,10 +2591,11 @@ interactive(
 				Position = UDim2.fromOffset(40, 40),
 				Size = UDim2.fromOffset(44, 44),
 				UI.ColorPicker("Well")(
-					(colorSpec(Compose, { modes = { "swatches" }, isPresented = Compose.cell(true) }))
+					(colorSpec(Compose, { modes = { "swatches" }, isPresented = openLater(Compose) }))
 				),
 			}
 		end, { frames = 20 })
+		openNow(t)
 		local panel = openPanel(t, layerOf(stage))
 		local grid = partOf(panel, "Swatches")
 		local value: any = { cells = {} }
@@ -2737,7 +2801,7 @@ add("color-touch-bubble-room", { "post-pickers-183" }, function(t)
 		local inlineSpec, sheetSpec
 		inlineSpec, inlineValue = colorSpec(Compose, { style = "inline", modes = { "spectrum" }, alpha = true })
 		sheetSpec, sheetValue =
-			colorSpec(Compose, { modes = { "spectrum" }, alpha = true, isPresented = Compose.cell(true) })
+			colorSpec(Compose, { modes = { "spectrum" }, alpha = true, isPresented = openLater(Compose) })
 		return Host.Frame "Column" {
 			BackgroundTransparency = 1,
 			Position = UDim2.fromOffset(16, 16),
@@ -2753,6 +2817,7 @@ add("color-touch-bubble-room", { "post-pickers-183" }, function(t)
 			UI.ColorPicker("Inline")(inlineSpec),
 		}
 	end, { frames = 20 })
+	openNow(t)
 	local layer = layerOf(stage)
 	inlineValue:set(Color3.new(1, 1, 1))
 	sheetValue:set(Color3.new(1, 1, 1))
@@ -2889,5 +2954,155 @@ add("color-phone-sheet-apply-on-screen", { "post-pickers-182" }, function(t)
 		t.cleanup()
 	end
 end)
+
+local function tenFootCheck(t: any): boolean
+	t.device({ device = "xbox", width = 1280, height = 720 })
+	local tenFoot = GuiService:IsTenFootInterface()
+	t.check("the xbox emulator reports IsTenFootInterface() true", tenFoot, tenFoot)
+	return tenFoot
+end
+
+local function centred(t: any, name: string, node: any, layer: any)
+	local n, l = t.rect(node), t.rect(layer)
+	t.check(
+		`{name} is centred on the screen`,
+		math.abs((n.x + n.w / 2) - (l.x + l.w / 2)) <= 1.5 and math.abs((n.y + n.h / 2) - (l.y + l.h / 2)) <= 1.5
+			or (n.h >= l.h - 17 and math.abs((n.x + n.w / 2) - (l.x + l.w / 2)) <= 1.5),
+		{
+			node = { n.x, n.y, n.w, n.h },
+			layer = { l.x, l.y, l.w, l.h },
+		}
+	)
+end
+
+local function scrimOf(t: any, name: string, modal: any, layer: any)
+	local catcher = if modal then modal:FindFirstChild("DismissOutside", true) else nil
+	if not catcher then
+		t.check(`{name} scrim found`, false)
+		return
+	end
+	local shade = styled(catcher, "BackgroundTransparency")
+	t.check(`{name} shows a scrim behind the sheet`, shade < 0.95, shade)
+	t.inside(`{name} scrim covers the screen`, layer, catcher, 1)
+end
+
+add("dtp-ten-foot", { "post-pickers-159" }, function(t)
+	if not tenFootCheck(t) then
+		return
+	end
+	local _, root, layer = datePicker(t, function(Compose)
+		return singleSpec(Compose, { isPresented = openLater(Compose) })
+	end)
+	local surface = surfaceOf(t, layer)
+	local modal = visibleNamed(t, layer, "CalendarModal")
+	local done = if surface then visibleNamed(t, surface, "Done") else nil
+	if
+		not found(t, "the ten-foot calendar, its modal and Done were found", { "surface", "modal", "done" }, {
+			surface = surface,
+			modal = modal,
+			done = done,
+		})
+	then
+		return
+	end
+	t.check("the calendar routes to a sheet", root:GetAttribute("route") == "sheet", root:GetAttribute("route"))
+	centred(t, "the calendar sheet", surface, layer)
+	scrimOf(t, "the calendar", modal, layer)
+	t.check("Done is shown and selectable", done.Selectable and t.clipped(done) ~= nil, done.Selectable)
+	local selected = GuiService.SelectedObject
+	t.check(
+		"selection lands inside the calendar",
+		selected ~= nil and selected:IsDescendantOf(surface),
+		if selected then selected:GetFullName() else "nil"
+	)
+	GuiService.SelectedObject = nil
+	t.note(
+		"not checked",
+		"B cannot be sent by the input tools, so closing with B and the return of selection to the calendar icon are not checked"
+	)
+end)
+
+interactive(
+	"color-ten-foot-center",
+	{ "post-pickers-178" },
+	"afterDown: press the Down arrow key 8 times; afterUp: press the Up arrow key 8 times",
+	function(t)
+		local value: any = {}
+		if not tenFootCheck(t) then
+			return value
+		end
+		local stage = t.mount(function(UI, Host, Compose)
+			return Host.Frame "Box" {
+				BackgroundTransparency = 1,
+				Position = UDim2.fromOffset(40, 40),
+				Size = UDim2.fromOffset(44, 44),
+				UI.ColorPicker("Well")(
+					(colorSpec(Compose, { modes = { "spectrum", "swatches" }, isPresented = openLater(Compose) }))
+				),
+			}
+		end, { frames = 20 })
+		openNow(t)
+		local layer = layerOf(stage)
+		local panel = openPanel(t, layer)
+		local modal = visibleNamed(t, layer, "ColorPickerModal")
+		local done = if panel then visibleNamed(t, panel, "Done") else nil
+		local surface = if panel then visibleNamed(t, panel, "Surface") else nil
+		if
+			not found(
+				t,
+				"the ten-foot panel, modal, Done and plane were found",
+				{ "panel", "modal", "done", "surface" },
+				{
+					panel = panel,
+					modal = modal,
+					done = done,
+					surface = surface,
+				}
+			)
+		then
+			return value
+		end
+		local root = t.find(stage, "Well")
+		t.check(
+			"the panel is placed as the centred sheet",
+			root:GetAttribute("placement") == "center",
+			root:GetAttribute("placement")
+		)
+		centred(t, "the colour panel", panel, layer)
+		scrimOf(t, "the colour panel", modal, layer)
+		t.check("Done is shown and selectable", done.Selectable and t.clipped(done) ~= nil, done.Selectable)
+		t.check("the plane is selectable", surface.Selectable and t.clipped(surface) ~= nil, surface.Selectable)
+		t.note(
+			"selection at open",
+			if GuiService.SelectedObject then GuiService.SelectedObject:GetFullName() else "nil"
+		)
+		if GuiService.SelectedObject == nil or not GuiService.SelectedObject:IsDescendantOf(panel) then
+			GuiService.SelectedObject = surface
+			t.settle(2)
+		end
+		value.done, value.surface = done, surface
+		watchSelection(value)
+		t.note("gamepad", "D-pad movement is proven with the arrow keys, which drive the same native selection")
+		t.note("not checked", "B cannot be sent by the input tools")
+		return value
+	end,
+	{
+		afterDown = function(t, value)
+			t.check("Down reaches Done by gamepad selection", table.find(value.visited, "Done") ~= nil, value.visited)
+			watchSelection(value)
+		end,
+		afterUp = function(t, value)
+			t.check(
+				"Up reaches the plane by gamepad selection",
+				table.find(value.visited, "Surface") ~= nil,
+				value.visited
+			)
+			if value.connection then
+				value.connection:Disconnect()
+			end
+			GuiService.SelectedObject = nil
+		end,
+	}
+)
 
 return cases

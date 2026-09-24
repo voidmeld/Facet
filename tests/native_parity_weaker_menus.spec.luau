@@ -671,8 +671,14 @@ t.describe("native parity weaker menus", function()
 		local row = find(world.root, "Handling")
 		local options = find(row, "Options")
 		t.expect(options:FindFirstChildWhichIsA("UIListLayout").Wraps).toBe(true)
+		t.expect(options:FindFirstChild("TargetFloor").MinSize.Y).toBe(44)
 		row.AbsoluteSize = V2(world, 390, 100)
-		local limit = options:FindFirstChildWhichIsA("UISizeConstraint")
+		local limit
+		for _, child in options:GetChildren() do
+			if child.ClassName == "UISizeConstraint" and child.Name ~= "TargetFloor" then
+				limit = child
+			end
+		end
 		t.expect(limit ~= nil).toBe(true)
 		t.expect(limit.MaxSize.X).toBe(390)
 		row.AbsoluteSize = V2(world, 1280, 100)

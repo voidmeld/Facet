@@ -2001,6 +2001,13 @@ return function(
 		local picker = Host.Frame(p)
 		if style == "segmented" then
 			picker:AddTag("facet-segmented")
+			surfaces.attach(picker, {
+				Host.UISizeConstraint "TargetFloor" {
+					MinSize = function(use: ComposeTypes.Use)
+						return V2.new(0, if read(spec.axis, use) == "y" then 0 else 44)
+					end,
+				},
+			})
 			if spec.corners then
 				surfaces.attach(picker, {
 					Host.UICorner "Corners" { CornerRadius = D.new(if spec.corners == "pill" then 1 else 0, 0) },
