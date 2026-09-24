@@ -9,7 +9,7 @@ local InputTypes = require("./input_types")
 local NavigationTypes = require("./navigation_types")
 type Controls = {
 	Table: CollectionTypes.TableConstructor,
-	VirtualList: CollectionTypes.CollectionConstructor,
+	VirtualList: <V, K>(spec: CollectionTypes.KeyedCollectionSpec<V, K>) -> ScrollingFrame,
 	RowActions: Types.Constructor<CollectionTypes.RowActionsSpec, Frame>,
 	CollapsibleView: Types.Constructor<NavigationTypes.CollapsibleViewSpec, TextButton>,
 	Button: Types.Constructor<InputTypes.ButtonProps, TextButton>,
