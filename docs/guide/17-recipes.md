@@ -2,7 +2,9 @@
 
 ## Confirm a destructive command
 
-Keep presentation state in a cell. An Alert dismisses before calling the selected action, and restores surviving previous selection.
+Keep the presentation state in a cell. The Alert dismisses before it calls the
+selected action. Then it restores the previous selection if that object still
+exists.
 
 ```luau
 local confirm = Compose.cell(false)
@@ -49,9 +51,11 @@ local list = UI.VirtualList {
 }
 ```
 
-Mount `list` beside a TextInput bound to `query` using native layout. Keep selected ids and row drafts in the shared model. Let Compose preserve the collection anchor after filtering and sorting.
+Mount `list` next to a TextInput that is bound to `query`. Use native layout.
+Keep the selected ids and the row drafts in the shared model. Let Compose keep
+the collection anchor after filtering and sorting.
 
-## Retain a drill-down path
+## Keep a drill-down path
 
 ```luau
 local path = Compose.cell({})
@@ -67,4 +71,6 @@ return UI.NavigationStack {
 }
 ```
 
-Push `{ id = "item", value = itemId }` into `path` from the catalog action. The control uses Compose LayerStack and owns Back behavior. Do not keep a separate presenter stack.
+Push `{ id = "item", value = itemId }` into `path` from the catalog action. The
+control uses Compose `LayerStack` and owns the Back behavior. Do not keep a
+separate presenter stack.

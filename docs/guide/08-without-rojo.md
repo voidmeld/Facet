@@ -1,8 +1,18 @@
 # Installing without Rojo
 
-Build the local distributable with `tools/package.sh build`, then insert `build/Facet.rbxm` into ReplicatedStorage in Studio. Keep the entire module tree together: Facet includes its pinned Compose snapshot and license notice. Do not copy selected private implementation files into an application.
+1. Run `tools/package.sh build` to build the local distributable.
+2. In Studio, insert `build/Facet.rbxm` into ReplicatedStorage.
+3. Set `Workspace.PlayerScriptsUseInputActionSystem` to true. The native action
+   controls need it.
+4. Put a LocalScript in StarterPlayerScripts. Follow
+   [Getting started](03-getting-started.md).
 
-Enable `Workspace.PlayerScriptsUseInputActionSystem` for the native action controls. Place a LocalScript in StarterPlayerScripts and follow [Getting started](03-getting-started.md). The native runtime mounts your ScreenGui into PlayerGui. Native ScreenGui properties control safe areas, display order and reset behavior.
+Keep the full module tree together. Facet contains its pinned Compose snapshot
+and the license notice. Do not copy selected private implementation files into
+an application.
+
+The native runtime mounts your ScreenGui into PlayerGui. Native ScreenGui
+properties control safe areas, display order and reset behavior.
 
 ```luau
 local Facet = require(game.ReplicatedStorage:WaitForChild("Facet"))
@@ -25,6 +35,13 @@ script.Destroying:Connect(function()
 end)
 ```
 
-The sheet is a native child; the StyleLink references it to apply themed paint. Keep game models, remotes and assets outside the Facet module tree.
+The sheet is a native child. The StyleLink references the sheet and applies the
+themed paint. Keep game models, remotes and assets outside the Facet module
+tree.
 
-The official Roblox Package asset has not been created unless package metadata says otherwise. Do not invent an asset id or publish a package from a pull request. [Package maintainer instructions](../../package/README.md) describe local build/status and the release-only publish process.
+## The official Roblox Package
+
+The official Roblox Package asset does not exist until the package metadata
+says so. Do not invent an asset id. Do not publish a package from a pull
+request. The [package maintainer instructions](../../package/README.md) describe
+the local build and status commands and the release-only publish process.

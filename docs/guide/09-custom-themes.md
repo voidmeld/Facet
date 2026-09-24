@@ -1,10 +1,18 @@
 # Custom themes
 
-A game-owned theme package supplies semantic colors, typography, metrics, icons and optional artwork. Facet compiles it into native StyleRules; a StyleLink applies those rules to the target tree. Change the package rather than adding repeated screen-specific paint overrides.
+A game-owned theme package supplies semantic colors, typography, metrics, icons
+and optional artwork. Facet compiles the theme package into native StyleRules.
+A StyleLink applies those rules to the target tree. To change the look, change
+the theme package. Do not add repeated paint overrides to each screen.
 
 ## Define and validate
 
-Start from the neutral package, change named values, then validate the complete definition. RGB package values use normalized channel tables. Native code still uses Roblox datatypes for explicit properties.
+1. Start from the neutral theme package.
+2. Change the named values.
+3. Validate the complete definition.
+
+RGB values in a theme package use normalized channel tables. Native code still
+uses Roblox datatypes for explicit properties.
 
 ```luau
 local definition = Facet.themes.neutralPackage()
@@ -16,25 +24,39 @@ local package, report = Facet.themes.define(definition)
 assert(report.ok, "Invalid game theme")
 ```
 
-`define` returns `nil` with a report when validation fails. It validates RGB channels and semantic foreground/background contrast pairs. A successful numeric contrast check is not proof that every image background or selected state is readable; inspect the actual controls in Studio.
+If validation fails, `define` returns `nil` and a report. It validates the RGB
+channels and the semantic foreground and background contrast pairs. A
+successful numeric contrast check does not prove that every image background or
+selected state is readable. Examine the actual controls in Studio.
 
-Packages contain:
+A theme package contains these fields:
 
 | Field | Content |
 |---|---|
-| `identity` | Stable id, display name, version/schema metadata. |
-| `style` | `defaultTheme` and named palette array `themes`. |
+| `identity` | Stable id, display name, version and schema metadata. |
+| `style` | `defaultTheme` and the named palette array `themes`. |
 | `metrics` | Typography, spacing, corner radii, control sizes and control-specific measures. |
 | `icons` | Semantic icon names mapped to image content or declared assets. |
 | `assets` | Art declarations with content ids and optional slice geometry. |
 | `chrome` | Native or image-based skin recipes for semantic control slots. |
 | `rules` | Additional native `{ selector, properties }` rules. |
 
-Each palette has `name`, `colors` and `extra`. The main roles include surfaces, content, accent and semantic success/warning/danger pairs. Extras carry hover, pressed, selected and secondary-content values. Required type roles are caption, label, body, heading, title, control, strong and numeral.
+Each palette has `name`, `colors` and `extra`.
+
+- The main color roles include surfaces, content, accent, and the semantic
+  success, warning and danger pairs.
+- The extras hold the hover, pressed, selected and secondary-content values.
+- The required type roles are caption, label, body, heading, title, control,
+  strong and numeral.
+
+The [API reference](../reference/api.md#themes) lists every color name.
 
 ## Apply and switch
 
-Use the same package readable for controls and the StyleSheet. `controls` uses it for metrics, icons and artwork; the StyleSheet supplies native paint. Construct and parent the sheet inside the screen owner; a StyleLink reference alone does not parent it.
+Give the same theme package readable to the controls and to the StyleSheet.
+`controls` uses it for metrics, icons and artwork. The StyleSheet supplies the
+native paint. Make and parent the sheet inside the screen owner, as
+[Styling](05-styling.md) describes.
 
 ```luau
 local selectedPackage = Compose.cell(package)
@@ -52,12 +74,29 @@ local function Screen()
 end
 ```
 
-Explicit Instance paint properties override native stylesheet paint. Set them only when the screen needs that override. Keep native sizing in the screen's layout; controlSizes and typography feed control measurements and paint. Spacing values are package data for native layout declarations; changing space.m alone does not rewrite a screen's UIPadding or UIListLayout.
+Explicit Instance paint properties override the native stylesheet paint. Set
+them only when the screen needs that override.
+
+Keep native sizing in the layout of the screen. `controlSizes` and typography
+feed the control measurements and paint. Spacing values are theme package data
+for your native layout declarations. A change to `space.m` alone does not
+change the UIPadding or UIListLayout of a screen.
 
 ## Coverage and icons
 
-`checkCoverage(package, needs)` accepts a list of requirements. For example, `{ kind = "color", name = "accent" }` checks each palette, and `{ section = "metrics.typography", name = "body", fields = { "size" } }` checks numeric fields. The report lists covered and missing entries.
+`checkCoverage(package, needs)` accepts a list of requirements. For example:
 
-Icons resolve through `themes.resolveIcon`. Supply real image/vector image assets; do not substitute arbitrary text glyphs for interface icons. An image declaration is not evidence of ownership or successful loading. Keep asset provenance with the package, and verify images at native scale in the running application.
+- `{ kind = "color", name = "accent" }` checks each palette.
+- `{ section = "metrics.typography", name = "body", fields = { "size" } }`
+  checks numeric fields.
 
-See [rich skinning](10-rich-skinning.md) for artwork and [theme catalog](13-theme-catalog.md) for maintained packages.
+The report lists the covered entries and the missing entries.
+
+Icons resolve through `themes.resolveIcon`. Supply real image or vector image
+assets. Do not use arbitrary text glyphs as interface icons. An image
+declaration does not prove ownership or successful loading. Keep the asset
+provenance with the theme package. Verify the images at native scale in the
+running application.
+
+See [rich skinning](10-rich-skinning.md) for artwork and the
+[theme catalog](13-theme-catalog.md) for the maintained theme packages.

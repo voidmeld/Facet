@@ -1,8 +1,20 @@
 # Client and server
 
-Keep domain authority on the server. The client presents replicated facts and requests commands. Validate identity, authorization, prices, inventory and rate limits at the server boundary regardless of which control sent the request.
+Keep domain authority on the server. The client shows replicated facts and
+requests commands. At the server boundary, validate identity, authorization,
+prices, inventory and rate limits. Do this for every request, independent of
+the control that sent it.
 
-Separate the confirmed value from an in-progress edit and command status. A pending request is visible but has not succeeded. Correlate each response to the request that produced it so a stale response cannot overwrite a newer edit.
+## Pending requests
+
+Keep these values separate:
+
+- the confirmed value,
+- the edit in progress,
+- the command status.
+
+A pending request is visible, but it has not succeeded. Match each response to
+the request that caused it. Then a stale response cannot overwrite a newer edit.
 
 ```luau
 local balance = Compose.cell(0)
@@ -39,8 +51,24 @@ local function Purchase()
 end
 ```
 
-`request` and `reply` above are game-owned RemoteEvents; the server resolves the product id from its own catalog. Production code should also time out lost responses and keep durable pending state outside a screen when requests may survive navigation.
+`request` and `reply` in this example are RemoteEvents that the game owns. The
+server finds the product id in its own catalog.
 
-Optimistic editing needs a defined rejection path. Retain the last confirmed model, display pending state, and reconcile from the server response. Do not grant inventory or currency because a button animation completed.
+Production code must also time out lost responses. If a request can survive
+navigation, keep its durable pending state outside the screen.
 
-The reference applications demonstrate deterministic command state machines, seeded catalogs and rejection fixtures. Their clocks and mock services stay in the examples; they are not Facet infrastructure.
+## Optimistic edits
+
+An optimistic edit needs a defined rejection path:
+
+1. Keep the last confirmed model.
+2. Show the pending state.
+3. Reconcile the model from the server response.
+
+Do not grant inventory or currency because a button animation completed.
+
+## Reference applications
+
+The reference applications show deterministic command state machines, seeded
+catalogs and rejection fixtures. Their clocks and mock services stay in the
+examples. They are not Facet infrastructure.

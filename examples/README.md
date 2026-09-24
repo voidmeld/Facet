@@ -1,8 +1,21 @@
 # Facet examples
 
-Facet supplies UI controls. Compose owns state, composition, collection identity, animation and lifetime. Roblox owns layout, input routing, focus, scrolling, styling and the scene.
+Facet supplies UI controls.
 
-Create a runtime with `Facet.Roblox.createRuntime()`, bind `Host = runtime.constructors`, and get controls with `Facet.controls(runtime)`. A component returns native instances. Mount it with `runtime.mount`, and stop the mount before disposing the runtime. Install a theme through `Facet.themes.createStyleSheet` and a native `Host.StyleLink`.
+- Compose owns state, composition, collection identity, animation and lifetime.
+- Roblox owns layout, input routing, focus, scrolling, styling and the scene.
+
+Every example uses the entry path from
+[Getting started](../docs/guide/03-getting-started.md):
+
+1. Make a runtime with `Facet.Roblox.createRuntime()`.
+2. Set `Host = runtime.constructors`.
+3. Get the controls with `Facet.controls(runtime)`.
+4. Write a component that returns native Instances. Mount it with
+   `runtime.mount`.
+5. Install a theme with `Facet.themes.createStyleSheet` and a native
+   `Host.StyleLink`.
+6. Stop the mount before you dispose the runtime.
 
 | Task | Example |
 |---|---|
@@ -18,7 +31,20 @@ Create a runtime with `Facet.Roblox.createRuntime()`, bind `Host = runtime.const
 | A shared model on a world surface | [Outpost terminal](gallery/examples/outpost_terminal/init.luau) |
 | A complete multi-surface showcase | [Virtual monitors](virtual_monitors/README.md) |
 
+## Patterns in the examples
 
-Keep durable state in Compose cells. Read current values in property functions through `use`. Use `Compose.keyed` for bounded keyed children and the virtual controls for large collections. Use `runtime.spring` and `runtime.tween` for animation. Native `UIListLayout`, `UIGridLayout`, `UIPadding`, `CanvasGroup` and `StyleRule` express the presentation directly.
+- Keep durable state in Compose cells.
+- Read current values in property functions through `use`.
+- Use `Compose.keyed` for bounded keyed children. Use the virtual controls for
+  large collections.
+- Use `runtime.spring` and `runtime.tween` for animation.
+- Use native `UIListLayout`, `UIGridLayout`, `UIPadding`, `CanvasGroup` and
+  `StyleRule` for the presentation.
 
-The gallery keeps ten main demos with nested control, collection and motion pages. `tests/native_gallery.spec.luau` mounts those pages and exercises the games, settings, playlist and standalone consumer. Reference applications and virtual monitors have separate native tests and Studio evidence.
+## Tests
+
+The gallery has ten main demos with nested control, collection and motion
+pages. `tests/native_gallery.spec.luau` mounts those pages. It exercises the
+games, the settings, the playlist and the standalone consumer. The reference
+applications and the virtual monitors have separate native tests and Studio
+evidence.

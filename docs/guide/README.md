@@ -1,20 +1,28 @@
 # Facet guide
 
-Facet is UI controls over Compose and Roblox. Compose owns the tree, bindings, ownership, structural operations and motion. Roblox owns native layout, editing, scrolling, selection and styling. Facet owns interaction rules and adaptive control presentation.
+Facet is a library of UI controls. The controls use Compose and Roblox.
 
-Begin with [a working screen](03-getting-started.md) and [components](15-components.md). Choose a control with the [control chooser](14-choosing-controls.md), then use the [API reference](../reference/api.md) for its exact contract.
+- Compose owns the tree, bindings, ownership, structural operations and motion.
+- Roblox owns native layout, text editing, scrolling, selection and styling.
+- Facet owns interaction rules and adaptive control presentation.
+
+Start with [a working screen](03-getting-started.md) and
+[components](15-components.md). Use the [control chooser](14-choosing-controls.md)
+to select a control. Then read the exact contract of that control in the
+[API reference](../reference/api.md).
 
 ## Reading map
 
 | Topic | Guide |
 |---|---|
+| When to use Facet | [Choosing the abstraction](14-choosing-a-ui-library.md) |
 | Ownership, state and native nodes | [Concepts](01-concepts.md), [Architecture](02-architecture.md), [Components](15-components.md) |
 | Complete maintained examples | [Tutorial examples](04-tutorial-examples.md) |
-| Native paint, coordinated theme transitions and semantic themes | [Styling](05-styling.md), [Custom themes](09-custom-themes.md), [Rich skinning](10-rich-skinning.md), [Theme catalog](13-theme-catalog.md) |
-| Domain authority and requests | [Client/server](06-client-server.md) |
+| Native paint, theme transitions and semantic themes | [Styling](05-styling.md), [Custom themes](09-custom-themes.md), [Rich skinning](10-rich-skinning.md), [Theme catalog](13-theme-catalog.md) |
+| Domain authority and requests | [Client and server](06-client-server.md) |
 | Input, focus and cancellation | [Input](07-input.md) |
 | Installation without a source sync | [Without Rojo](08-without-rojo.md) |
-| What has been exercised | [Device verification](11-device-verification.md), [Performance lab](12-performance-lab.md) |
+| What has been exercised, and what has not | [Device verification](11-device-verification.md), [Performance lab](12-performance-lab.md), [Verification scope](18-verification-scope.md) |
 | Layout and control decisions | [Choosing controls](14-choosing-controls.md), [Adaptive recipes](15-adaptive-recipes.md), [Control families](16-controls.md), [Recipes](17-recipes.md) |
 | Contribution boundaries | [Maintainers](../MAINTAINERS.md), [Extension playbooks](../extending/new-control.md), [Constitution](../reference/constitution.md) |
 
@@ -23,18 +31,18 @@ Begin with [a working screen](03-getting-started.md) and [components](15-compone
 | Capability | Public surface |
 |---|---|
 | Version | `Facet.VERSION` |
-| Reactive graph, owners, keyed/presented composition | `Facet.Compose` |
-| Native host/runtime and target construction | `Facet.Roblox`; `runtime.constructors` as `Host` |
+| Reactive graph, owners, keyed and presented composition | `Facet.Compose` |
+| Native host, runtime and target construction | `Facet.Roblox`; `runtime.constructors` as `Host` |
 | Control constructors | `Facet.controls(runtime, options?)` |
 | Semantic native styling and art | `Facet.themes` |
 | Activation and rich action rows | `UI.Button` |
-| Boolean/mixed selection | `UI.Toggle` |
+| Boolean and mixed selection | `UI.Toggle` |
 | Native editing and numeric input | `UI.TextInput` |
 | Numeric adjustment | `UI.Stepper`, `UI.Slider` |
 | Rating and discrete levels | `UI.Rating`, `UI.LevelPicker` |
-| Selected/removable chips | `UI.Chip` |
+| Selected and removable chips | `UI.Chip` |
 | Shortcut display | `UI.ShortcutHint` |
-| Action menus and primary/secondary actions | `UI.Menu`, `UI.SplitButton` |
+| Action menus, and primary and secondary actions | `UI.Menu`, `UI.SplitButton` |
 | Choice and accepted custom text | `UI.Picker`, `UI.ComboBox` |
 | Named destinations, drill-down and sequential pages | `UI.TabView`, `UI.NavigationStack`, `UI.PageView` |
 | Contextual radial actions | `UI.RadialMenu` |
@@ -43,13 +51,17 @@ Begin with [a working screen](03-getting-started.md) and [components](15-compone
 | Contextual teaching | `UI.Callout` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
 | Sorting, selection, resizing and row reorder | `UI.Table` |
-| Row swipe/context actions | `UI.RowActions` |
+| Row swipe and context actions | `UI.RowActions` |
 | Text and compact status | `UI.Label`, `UI.Badge`, `UI.StatusIndicator` |
-| Progress/loading | `UI.ProgressView`, `UI.Skeleton` |
+| Progress and loading | `UI.ProgressView`, `UI.Skeleton` |
 | Async image state and cancellation | `UI.AsyncImage` |
 | Identity groups | `UI.Avatar`, `UI.AvatarGroup` |
 | Embedded 3D content | `UI.Stage` |
 
-All control roots are native Instances. Layout is expressed with Host constructors and native properties. Use Compose structural operations directly instead of introducing Facet aliases for them.
+Every control root is a native Instance. Use Host constructors and native
+properties for layout. Use the Compose structural operations directly. Do not
+add Facet aliases for them.
 
-Design records under `docs/plans` and `docs/superpowers` are historical. They may describe removed APIs; this guide and the API reference describe the supported surface.
+The design records in `docs/plans` and `docs/superpowers` are historical. They
+can describe removed APIs. This guide and the API reference describe the
+supported surface.

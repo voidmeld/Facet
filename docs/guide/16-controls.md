@@ -1,6 +1,9 @@
 # Control families
 
-Create controls with `local UI = Facet.controls(runtime)`. Controls return native Instances, accept native properties, and use Compose readables for data. [The API reference](../reference/api.md) lists required fields and callbacks.
+Make controls with `local UI = Facet.controls(runtime)`. Controls return native
+Instances and accept native properties. They use Compose readables for data.
+[The API reference](../reference/api.md) lists the required fields and
+callbacks.
 
 | Family | Controls |
 |---|---|
@@ -13,8 +16,19 @@ Create controls with `local UI = Facet.controls(runtime)`. Controls return nativ
 | Information | Label, Badge, StatusIndicator, ProgressView, Skeleton, ShortcutHint |
 | Media | AsyncImage, Avatar, AvatarGroup, Stage |
 
-The screen owns domain values. Input callbacks request changes; a provided callback must update the model to accept a request. Picker and other navigation selections update their writable model and then notify. Use the specific control contract rather than assuming every callback has identical semantics.
+## Callbacks
 
-Native layout composition uses Host classes. Reactive ownership and structure use Compose. Those mechanisms are not duplicated as another control family.
+The screen owns the domain values. Input callbacks request changes. If you
+supply a callback, it must update the model to accept the request. Picker and
+the other navigation controls update their writable model first, and then
+notify. Callbacks do not all have the same semantics. Read the contract of each
+control.
 
-Choose controls by task, [as described here](14-choosing-controls.md), and test the actual input paths and accessibility behavior in the gallery.
+## What is not a control family
+
+Native layout composition uses Host classes. Reactive ownership and structure
+use Compose. Facet does not duplicate those mechanisms as a control family.
+
+Choose controls by task, as [Choosing controls](14-choosing-controls.md)
+describes. Test the actual input paths and the accessibility behavior in the
+gallery.

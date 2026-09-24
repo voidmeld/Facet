@@ -1,23 +1,39 @@
 # Architecture
 
-`Facet.controls(runtime, options)` builds a control vocabulary for a Compose Roblox
-runtime. Constructing a control uses that runtime's native constructors and returns
-an Instance. Compose owns properties, events, children and cleanup directly.
+## The control factory
 
-The data path is model cell → Compose binding → native Instance property.
-Roblox performs layout and paint. There is no intermediate Facet node, dirty
-queue, renderer or settle pass.
+`Facet.controls(runtime, options)` makes the control constructors for one
+Compose Roblox runtime. A control constructor uses the native constructors of
+that runtime and returns an Instance. Compose owns the properties, events,
+children and cleanup directly.
 
-Use `Host = runtime.constructors` for engine objects, including ScreenGui,
-SurfaceGui, BillboardGui, ViewportFrame, UIListLayout, UIGridLayout and constraints.
-Use Compose.show/keyed/portal/LayerStack for composition and its animation APIs for
-motion. UI and 3D use the same runtime and ownership rules.
+## The data path
 
-Virtual controls supply native viewport facts and measured content sizes to
-Compose.OrderedCollection. Compose supplies placement, extent, identity and anchor
-adjustments; the control applies desiredOffset to CanvasPosition. Compose pools own
-reusable row containers. No Facet prefix index or anchor algorithm runs alongside.
+Data moves in one path: model cell, then Compose binding, then native Instance
+property. Roblox does the layout and the paint. There is no intermediate Facet
+node, dirty queue, renderer or settle pass.
 
-Control-specific algorithms remain where the platform has no equivalent, including
-radial choices, value validation and adaptive presentation. Native selection and
-input contexts implement those policies without a general Facet focus graph.
+## Composition
+
+- Use `Host = runtime.constructors` for engine objects. Examples are ScreenGui,
+  SurfaceGui, BillboardGui, ViewportFrame, UIListLayout, UIGridLayout and
+  constraints.
+- Use `Compose.show`, `Compose.keyed`, `Compose.portal` and
+  `Compose.LayerStack` for composition.
+- Use the Compose animation APIs for motion.
+
+UI and 3D content use the same runtime and the same ownership rules.
+
+## Virtual collections
+
+The virtual controls give native viewport facts and measured content sizes to
+`Compose.OrderedCollection`. Compose calculates placement, extent, identity and
+anchor adjustments. The control applies `desiredOffset` to `CanvasPosition`.
+Compose pools own the reusable row containers. Facet has no separate prefix
+index or anchor algorithm.
+
+## Control-specific policy
+
+Facet keeps an algorithm only when the platform has no equivalent. Examples are
+radial choices, value validation and adaptive presentation. Native selection
+and input contexts apply these policies. There is no general Facet focus graph.

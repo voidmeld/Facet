@@ -1,59 +1,106 @@
 # Choosing controls
 
-Start from the task and existing screen. Put a new action in the host toolbar, navigation or settings composition when it belongs there. Add another surface only when the existing one cannot express the task clearly.
+Start from the task and the existing screen. If a new action belongs in the
+toolbar, navigation or settings of the host screen, put it there. Add a new
+surface only when the existing surface cannot express the task clearly.
 
 ## Task to control
 
-| Need | Choice |
+| Need | Control |
 |---|---|
-| Perform one action | Button. |
-| Primary action with alternatives | SplitButton. |
+| Do one action | Button. |
+| Do a primary action that has alternatives | SplitButton. |
 | Select an independent boolean | Toggle. |
 | Choose one value from a set | Picker; ComboBox when custom values are valid. |
 | Edit text or a number | TextInput. |
 | Adjust a bounded value | Slider; Stepper for exact increments. |
-| Select a rating or level | Rating or LevelPicker. |
-| Show/remove compact selections | Chip. |
-| Reveal secondary document content | DisclosureGroup. |
+| Select a rating or a level | Rating or LevelPicker. |
+| Show or remove compact selections | Chip. |
+| Show secondary document content | DisclosureGroup. |
 | Expand a compact preview | CollapsibleView. |
 | Ask for a brief confirmation | Alert. |
-| Perform a substantial temporary task | Sheet. |
+| Do a substantial temporary task | Sheet. |
 | Teach a contextual action | Callout anchored to the action. |
 | Organize named peer destinations | TabView. |
 | Navigate a hierarchy | NavigationStack. |
 | Step through peer pages | PageView. |
 | Compare sortable columns | Table. |
 | Show large scrolling data | VirtualList or VirtualGrid. |
-| Add row-specific operations | RowActions. |
+| Add operations for one row | RowActions. |
 
 ## Compose in the existing screen
 
-Use native stacks/grids with `Host.UIListLayout`, `Host.UIGridLayout`, flex items, constraints and native scrolling. Reuse Facet controls for behavior. Customize semantic themes and skin slots before making new control variants. Add a reusable missing behavior to Facet; keep game-specific rules and content in the game.
+- Use native stacks and grids: `Host.UIListLayout`, `Host.UIGridLayout`, flex
+  items, constraints and native scrolling.
+- Use Facet controls for behavior.
+- Customize the semantic themes and the skin slots before you make new control
+  variants.
+- Add a reusable missing behavior to Facet. Keep game-specific rules and content
+  in the game.
 
-Use numeric children and native properties. Use Compose.show/keyed/LayerStack/portal directly for structure. A custom layout container is not needed merely to name a vertical group.
+Use numeric children and native properties. Use `Compose.show`,
+`Compose.keyed`, `Compose.LayerStack` and `Compose.portal` directly for
+structure. You do not need a custom layout container only to name a vertical
+group.
 
 ## Two-level navigation
 
-Use `TabView` with `style = "sidebarAdaptable"` for top-level peer destinations. Within one destination, ordinary page tabs can select local views. A game or gallery label does not change the navigation role. Use NavigationStack for drill-down instead of encoding a path as a set of unrelated tabs.
+Use `TabView` with `style = "sidebarAdaptable"` for top-level peer
+destinations. Inside one destination, ordinary page tabs can select local
+views. A label such as "game" or "gallery" does not change the navigation role.
+Use NavigationStack for drill-down. Do not encode a path as a set of unrelated
+tabs.
 
 ## Radial actions
 
-Choose a RadialMenu when the action set is contextual, small enough to scan spatially, and a stable anchor makes the relationship clear. Use a linear Menu when labels are long or the action hierarchy is the main information. A permanent toolbar is better for frequently used global actions.
+Choose a RadialMenu when all these conditions are true:
 
-Choose the radial preset, distribution and content-fit options for the available rectangle. Nested navigation and completion policy belong to the task: close after a final command, remain open for repeated toggles, or return to the parent/root when continuing a category. Keep a clear Back path and cancellation gesture.
+- the action set is contextual,
+- the action set is small enough to scan spatially,
+- a stable anchor makes the relationship clear.
 
-For a world object, project the object using the engine camera, then bind the resulting screen anchor to the control. One primary proximity command is usually a direct prompt; multiple contextual operations can justify a menu. Do not introduce a second input/focus system around it.
+Use a linear Menu when the labels are long or when the action hierarchy is the
+main information. For frequently used global actions, a permanent toolbar is
+better.
+
+Choose the radial preset, distribution and content-fit options for the
+available rectangle. The task decides the nested navigation and the completion
+policy:
+
+- close after a final command,
+- stay open for repeated toggles,
+- return to the parent or the root to continue in a category.
+
+Keep a clear Back path and a cancellation gesture.
+
+For a world object, project the object with the engine camera. Then bind the
+resulting screen anchor to the control. One primary proximity command is
+usually a direct prompt. Two or more contextual operations can justify a menu. Do not
+add a second input or focus system around it.
 
 ## Collection size and lifetime
 
-Use windowing for large or unbounded lists. VirtualList/Grid delegate range selection and anchoring to Compose OrderedCollection, and native ScrollingFrame owns the viewport. Stable keys identify data independently of order. Read `current` inside bound properties when row data can change.
+Use windowing for large or unbounded lists. VirtualList and VirtualGrid give
+range selection and anchoring to Compose `OrderedCollection`. The native
+ScrollingFrame owns the viewport. Stable keys identify data independently of
+order. When row data can change, read `current` inside bound properties.
 
-Keep durable edits and selections outside the row. A row leaving the window may be disposed and its native host reused. Use `mode = "all"` only when the collection is bounded and keeping every row mounted serves a concrete requirement.
+Keep durable edits and selections outside the row. When a row leaves the
+window, Compose can dispose it and reuse its native host. Use `mode = "all"`
+only when the collection is bounded and a concrete requirement needs every row
+mounted.
 
-Native anchor preservation can keep the same item visible after a sort. That is the collection contract; do not calculate a second independent window or force a conflicting scroll offset.
+After a sort, native anchor preservation can keep the same item visible. That
+is the collection contract. Do not calculate a second, independent window. Do
+not force a conflicting scroll offset.
 
 ## Accessibility and input
 
-Design with actual available size, preferred text size and input facts. Keep labels understandable and actions reachable without a pointer. Let controls own native selection containment, adjustment and cancellation. Exercise long copy, keyboard, gamepad, touch and reduced motion in the target application.
+Design with the actual available size, the preferred text size and the input
+facts. Keep labels clear. Keep actions reachable without a pointer. Let the
+controls own native selection containment, adjustment and cancellation. In the
+target application, exercise long copy, keyboard, gamepad, touch and reduced
+motion.
 
-World-fixed and billboard surfaces still contain flat UI. Facet does not supply 3D layout or ray/hand/gaze input.
+World-fixed and billboard surfaces also contain flat UI. Facet does not supply
+3D layout or ray, hand or gaze input.
