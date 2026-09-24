@@ -423,7 +423,7 @@ render owner.
 | `overscan` | `2`. |
 | `measure` | `false`; set to observe the rendered native `AbsoluteSize`. |
 | `measured` | An optional readable map from key to extent; overrides observed measurements. |
-| `follow` | The Compose `none` or `end` policy, with an optional `followThreshold`. |
+| `follow` | `none` or `end`, or a readable of one, with an optional `followThreshold`. |
 | `status` | An optional writable Compose collection status cell. |
 | `controls` | An optional table that the control fills with the Compose `indexOfKey`, `placementOf` and `offsetOf`. |
 | `maxRetained` | The pool keeps at most `32` row hosts by default. |
@@ -434,8 +434,10 @@ applies its desired offset to `CanvasPosition`. Sorting keeps the native anchor.
 It does not force the first item to the top.
 
 `snap = "item"` settles scrolling to the Compose placement boundaries. The
-default is `none`. `follow` is a static Compose option. To change its policy,
-replace the collection owner through `Compose.keyed`.
+default is `none`. With `follow = "end"`, the list follows appended rows while
+the viewport stays at the end. When a readable `follow` changes, the control
+replaces its Compose `OrderedCollection` and mounts the rows again. Keep durable
+row state in the model. Other values cause an error.
 
 Optional collection focus uses `focus`, `initialFocus`, `autoFocus`,
 `wrapFocus` and `disabled(item)`. With `wrapFocus = true`, `focus.next()`,

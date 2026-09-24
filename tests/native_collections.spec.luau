@@ -316,6 +316,50 @@ t.describe("Compose native collections", function()
 		runtime.dispose()
 	end)
 
+	t.it("follows a readable follow policy while the viewport stays at the end", function()
+		local engine, runtime, UI, target = setup()
+		local source, follow = Compose.cell(records(10)), Compose.cell("none")
+		local stop, node = runtime.mount(function()
+			return UI.VirtualList({
+				from = source,
+				key = key,
+				itemSize = 20,
+				overscan = 0,
+				follow = follow,
+				render = function(current)
+					return button(UI, current)
+				end,
+			})
+		end, target)
+		node.AbsoluteWindowSize = engine.types.Vector2.new(200, 100)
+		t.expect(node.CanvasPosition.Y).toBe(0)
+		node.CanvasPosition = engine.types.Vector2.new(0, 100)
+		source:set(records(11))
+		t.expect(node.CanvasPosition.Y).toBe(100)
+		node.CanvasPosition = engine.types.Vector2.new(0, 120)
+		follow:set("end")
+		t.expect(node.CanvasPosition.Y).toBe(120)
+		source:set(records(12))
+		t.expect(node.CanvasPosition.Y).toBe(140)
+		follow:set("none")
+		source:set(records(13))
+		t.expect(node.CanvasPosition.Y).toBe(140)
+		stop()
+		t.expect(function()
+			runtime.mount(function()
+				return UI.VirtualList({
+					from = source,
+					key = key,
+					follow = "bottom",
+					render = function(current)
+						return button(UI, current)
+					end,
+				})
+			end, target)
+		end).toThrow()
+		runtime.dispose()
+	end)
+
 	t.it("follows appended rows only while native viewport stays at the end", function()
 		local engine, runtime, UI, target = setup()
 		local source, status =

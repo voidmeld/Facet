@@ -17,6 +17,7 @@ export type FocusControls<K> = {
 export type Selection<K> = { [K]: boolean }
 export type Sort = { column: string, direction: "ascending" | "descending" }
 export type RowPredicate<V> = (item: V) -> boolean
+export type Follow = "end" | "none"
 export type RowRender<V, K> = (
 	current: Compose.Readable<V>,
 	placement: Compose.Readable<Compose.Placement>,
@@ -49,7 +50,7 @@ export type CollectionOptions<V, K> = Types.ScrollingFrameProps & ReorderOptions
 	measure: boolean?,
 	status: Compose.Cell<Compose.OrderedCollectionStatus>?,
 	controls: Compose.OrderedCollectionControls<K>?,
-	follow: ("end" | "none")?,
+	follow: Types.Value<Follow>?,
 	followThreshold: number?,
 	maxRetained: number?,
 	focus: FocusControls<K>?,
@@ -127,7 +128,7 @@ export type TableOptions<V, K> = Types.FrameProps & ReorderOptions<V, K> & {
 	focus: FocusControls<K>?,
 	measure: boolean?,
 	measured: Types.Value<{ [K]: number }>?,
-	follow: ("end" | "none")?,
+	follow: Types.Value<Follow>?,
 	followThreshold: number?,
 	reducedMotion: Types.Value<boolean>?,
 	editing: Types.Value<boolean>?,
