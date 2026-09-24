@@ -54,9 +54,13 @@ to select a control. Then read the exact contract of that control in the
 | Named destinations, drill-down and sequential pages | `UI.TabView`, `UI.NavigationStack`, `UI.PageView` |
 | Numbered result pages and workflow steps | `UI.Pagination`, `UI.StepIndicator` |
 | Contextual radial actions | `UI.RadialMenu` |
-| Brief decisions and substantial presented content | `UI.Alert`, `UI.Sheet` |
+| Brief decisions and substantial presented content | `UI.Alert`, `UI.Dialog`, `UI.Sheet` |
 | Inline disclosure and larger content presentation | `UI.DisclosureGroup`, `UI.CollapsibleView` |
 | Contextual teaching | `UI.Callout` |
+| Page status that stays in view | `UI.Notice` |
+| A short confirmation at the bottom of the screen | `UI.Snackbar` |
+| A surface top bar with Back, a title and tools | `UI.NavBar` |
+| Anchored content for one control | `UI.Popover` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
 | Browsable items with artwork and revealed actions | `UI.Card` |
 | A count or dot seal on a host's corner | `UI.badged` |

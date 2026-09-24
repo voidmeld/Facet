@@ -91,11 +91,9 @@ local stepProps: Facet.StepIndicatorSpec = {
 local stepIndicator: Frame = UI.StepIndicator(stepProps)
 type VoteValue = "up" | "down" | "none"
 local initialVote: VoteValue = "none"
-local voteCell = (Compose.cell(initialVote) :: unknown) :: Facet.Cell<VoteValue>
+local voteCell: Facet.Cell<VoteValue> = Compose.cell(initialVote)
 local voteProps: Facet.VoteSpec = {
-	value = function(use: Use): VoteValue
-		return use(voteCell)
-	end,
+	value = voteCell,
 	summary = "92% liked",
 	onChange = function(nextValue: VoteValue)
 		voteCell:set(nextValue)
@@ -114,6 +112,49 @@ local cardProps: Facet.CardSpec = {
 }
 local card: Frame = UI.Card(cardProps)
 local sealed: Frame = UI.badged(UI.Button({ label = "Inbox" }), 3)
+local dialogOpen = Compose.cell(false)
+local dialogProps: Facet.DialogSpec = {
+	isPresented = dialogOpen,
+	onPresentedChange = function(nextValue: boolean)
+		dialogOpen:set(nextValue)
+	end,
+	title = text,
+	content = content,
+	actions = { { id = "Leave", label = "Leave", role = "destructive" :: "destructive", onActivate = nothing } },
+	width = "narrow" :: "narrow",
+}
+local dialog: Frame = UI.Dialog(dialogProps)
+local popoverOpen = Compose.cell(false)
+local popoverProps: Facet.PopoverSpec = {
+	isPresented = popoverOpen,
+	onPresentedChange = function(nextValue: boolean)
+		popoverOpen:set(nextValue)
+	end,
+	source = { rect = { x = 0, y = 0, w = 40, h = 40 } },
+	edge = "trailing" :: "trailing",
+	content = content,
+}
+local popover: GuiObject = UI.Popover(popoverProps)
+local noticeProps: Facet.NoticeSpec = {
+	message = text,
+	severity = "warning" :: "warning",
+	placement = "affixed" :: "affixed",
+	onDismiss = nothing,
+}
+local notice: Frame = UI.Notice(noticeProps)
+local navBarProps: Facet.NavBarSpec = { title = text, onBack = nothing, backLabel = "Back" }
+local navBar: Frame = UI.NavBar(navBarProps)
+local snackOpen = Compose.cell(false)
+local snackbarProps: Facet.SnackbarSpec = {
+	isPresented = snackOpen,
+	message = text,
+	duration = 4,
+	action = { label = "Undo", onActivate = nothing },
+	onPresentedChange = function(nextValue: boolean)
+		snackOpen:set(nextValue)
+	end,
+}
+local snackbar: Frame = UI.Snackbar(snackbarProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -213,6 +254,11 @@ local mounted: { GuiObject } = {
 	vote,
 	card,
 	sealed,
+	dialog,
+	popover,
+	notice,
+	navBar,
+	snackbar,
 	menu,
 	split,
 	picker,

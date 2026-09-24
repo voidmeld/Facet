@@ -1354,6 +1354,13 @@ t.describe("native parity reference applications", function()
 				open = assert(within(pages(w), "Blends", "amber-harvest", "Open"))
 				t.expect(open.Text).toBe(sipStrings.expand("Amber Harvest"))
 				t.expect(w.root).toBe(root)
+				w.built.steps.open("amber-harvest")
+				local sheet = assert(modal(w.screen))
+				local close = assert(find(sheet, "Close"))
+				t.expect(close.Text).toBe(xa["common.done"])
+				t.expect(close.Text ~= en["common.done"]).toBe(true)
+				t.expect(i18n.setLocale("en")).toBe(true)
+				t.expect(close.Text).toBe(en["common.done"])
 				w.stop()
 			end
 		)
@@ -3964,7 +3971,7 @@ t.describe("native parity reference applications", function()
 				HStack = "StackProps",
 			}
 			local names = controlNames()
-			t.expect(#names).toBe(46)
+			t.expect(#names).toBe(51)
 			for _, name in names do
 				local contract = shared[name]
 				local found = if contract

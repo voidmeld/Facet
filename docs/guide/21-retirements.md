@@ -223,7 +223,7 @@ These contracts moved from class c to class a. The cases are in `tests/native_pa
 | `mech3-83` | 18 | Label `textSize = "fit"` paints the largest size that fits, between a cap and a floor. | `TextScaled` and `UITextSizeConstraint` | The engine picks the size. The headless engine does not scale text. |
 | `mech2-46` | 14 | Label `truncate = "middle"` keeps the start and the end of a long value. | The engine `TextBounds` of the label | The headless engine measures with a fixed glyph width. |
 
-Facet Neutral's `Light` palette (main `b1a08042`) is newer than the baseline, so no baseline contract records it. Facet Neutral declares `Dark` and `Light` again. Both palettes pass the contrast gate, and the theme strength specs check both palettes where they checked one before.
+Facet Neutral's `Light` palette (main `b1a08042`) is newer than the baseline. Its contract `post-lab-02` moves from class d to class a. Facet Neutral declares `Dark` and `Light` again. Both palettes pass the contrast gate, and the theme strength specs check both palettes where they checked one before.
 
 ## Retired contracts by area
 

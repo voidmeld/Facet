@@ -157,9 +157,10 @@ document their own write-then-notify behavior below.
   or a value plays it. See [Haptics](#haptics).
 - `controlSize`: the control-size step (`compact`, `regular` or `large`) for
   theme icons.
-- `onError`: receives a failure from the content of a presented Alert. The
-  alert dismisses. It also receives a failure that an `ErrorBoundary` without
-  its own `onError` contains.
+- `onError`: receives a failure from the content of a presented Alert or
+  Sheet, which then dismisses, and a failure from a Callout `onShow`. It also
+  receives a failure that an `ErrorBoundary` without its own `onError`
+  contains.
 - `services`, `guiService`, `userInputService` and `types`: native dependencies.
 - `inputParent` and `overlayParent`: placement targets.
 
@@ -173,9 +174,11 @@ cannot be interacted with, and the selection never stays on it.
 |---|---|---|
 | NavigationStack push | The new page slides in from the trailing edge. The old page moves 30 percent to the leading edge and dims. Critically damped spring with a 0.3 second period, visually complete in approximately 0.35 seconds. | Pop is the reverse. |
 | TabView page change | Crossfade, 0.2 seconds, Quad Out. | The same. |
-| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. The scrim fades in. | Slides down, 0.2 seconds. |
+| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. A side sheet slides in from its edge. The scrim fades in. | Slides down, or toward its edge, 0.2 seconds. |
 | Alert | Scales from 0.94 to 1 and fades in, 0.2 seconds, Cubic Out. The scrim fades in. | The reverse, 0.15 seconds. |
-| Callout, Button `help`, Menu, Picker menu | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+| Callout, Button `help`, Menu, Picker menu, Popover | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+| Snackbar | Slides up from below the layer, 0.2 seconds. | Slides down, 0.2 seconds. |
+| Dialog, Notice, NavBar | No motion. | No motion. |
 
 - Reduced motion (`reducedMotion` or `GuiService.ReducedMotionEnabled`) removes
   all of this motion. The change is immediate.
@@ -365,7 +368,14 @@ Presentation options:
 - `help`: one sentence that describes the action. It shows in a small panel
   when a pointer rests on the button for 0.45 seconds, or when a gamepad
   selects the button. It does not show on touch, so do not put information in
-  `help` that is available nowhere else.
+  `help` that is available nowhere else. `help` can also be a table
+  `{ title?, body, shortcut?, edge?, align? }`. `title` shows above the body.
+  `body` can be empty only when `title` has the words. `shortcut` is a list of
+  key chords such as `{ { "Ctrl", "K" }, { "F1" } }`. It is display text only
+  and binds no key. `edge` (`top`, `bottom`, `leading` or `trailing`) and
+  `align` (`start`, `center` or `end`) place the panel against the button. The
+  panel uses the anchored placement of `UI.Popover`. A malformed table stops
+  with an error that names `help`.
 - `compactLabel`: an alternative string or readable. The button uses it when a
   plain text button cannot fit its full label. It does not apply to icon, image
   or subtitle buttons.
@@ -765,19 +775,59 @@ presentation.
 
 Sheet requires a writable `isPresented` and a writable `detent`. The default
 detents are `medium` and `large`. A custom entry is `{ id, fraction }` or
-`{ id, height }`, never both.
+`{ id, height }`, never both. The `hug` entry fits the body and the pinned
+regions. It measures again when the content changes, and it stays inside the
+safe room and above a minimum of four target heights.
 
 Supply a `title` and a `content` factory that returns native children. The
-sheet calls the factory without arguments. Its subtree fills the available body
-region. The body uses a native vertical ScrollingFrame. Thus content taller
-than the selected detent stays reachable, and the sheet chrome stays fixed.
+sheet calls the factory without arguments. Its subtree fills the body region.
+The body uses a native vertical ScrollingFrame named `SheetContent`. Thus
+content taller than the selected detent stays reachable, and the sheet chrome
+stays fixed.
 
-Native drag detection resizes the sheet between the declared detents. The
-grabber is also a selectable `Resize` button that moves to the next detent, for
-touch taps, the mouse and the gamepad. The header shows the title and a `Done`
-action named `Close`. `interactiveDismissDisabled` blocks gesture dismissal.
-The Done action stays available. The sheet slides up from the bottom and slides
-down when it closes. See [Motion](#motion).
+Layout options:
+
+- `placement`: `automatic` (the default, the bottom edge), `bottom`, `center`
+  or `side`. A side sheet docks to `edge` (`left` or `right`, default
+  `right`). Its detents stay vertical. It slides in from its edge and leaves
+  toward it. Under reduced motion it arrives and leaves at once.
+- `width`: `automatic`, `narrow` or `wide`. These are the Dialog widths:
+  `controls.alert.maxWidth`, `controls.popup.panelWidth` and
+  `controls.dialog.wideWidth`. The safe room bounds each one.
+- `header`: absent shows `title`. An Instance or a factory replaces the title.
+  `false` removes the title row.
+- `hero`: `{ image | content, aspectRatio | height, scaleMode?, background?,
+  sticky? }`. A sticky hero stays pinned above the body. Otherwise it scrolls
+  with the body. With `header = false`, the close control sits over the hero.
+- `actions`: a list of `{ id, label, role?, enabled?, busy?, onActivate }`.
+  They stay pinned below the body and never close the sheet. `actionLayout`
+  is `automatic`, `row` or `stacked`. Cancel runs an enabled `role = "cancel"`
+  action first.
+- `contentInset`: `standard` (8 pixels) or `none`. It changes only the body
+  padding.
+- `scrollPolicy`: `always` (the default) keeps the body scrolling at every
+  height. `atLargestDetent` stops the body scroll below the tallest detent.
+- `closeButton`: `true` (the default), `false`, or a string or readable label
+  for the close button. The default label is `Done`.
+
+When the pinned regions and a short body do not fit the panel, every region
+moves into one scrolling column named `Room`. Thus each action stays
+reachable. The on-screen keyboard height comes off the room, and the panel
+sits above the keyboard.
+
+Native drag detection resizes the sheet. The grabber detector starts a drag at
+once. A second detector on the panel starts a drag only after 6 pixels, or 14
+pixels on touch. A release goes to the detent nearest to the released height
+plus 0.15 seconds of its velocity. A hold before the release has no velocity.
+A drag below 70 percent of the lowest detent dismisses the sheet. Past the
+limits the drag resists. `interactiveDismissDisabled` holds the sheet near its
+lowest detent and blocks Back and the backdrop. An outside detent change
+during a drag ends the drag. Only one drag runs at a time.
+
+The grabber is also a selectable button that moves to the next detent. Its
+accessible label reads `Size: Medium`, and `Size: Fit` for `hug`. A bottom
+sheet slides up from the bottom and slides down when it closes. See
+[Motion](#motion).
 
 ### DisclosureGroup and CollapsibleView
 
@@ -788,15 +838,224 @@ returned roots.
 
 ### Callout
 
-Callout requires a native `anchor` with a separate parent, content and
-`onRetire`. The callout borrows the anchor. When a native ancestor of the anchor
-is hidden, the callout is suspended. `seen`, `sessions`, `afterSessions`,
-`featureUsed` and priority set eligibility and queue order. Retirement is
-delivered once. `edge = "top"` puts the callout above the anchor. If there is
-no room above and there is room below, the callout goes below the anchor. A
-callout is contextual teaching attached to a control. It is not a second
-application presenter. The callout scales and fades from the edge nearest to
-its anchor. See [Motion](#motion).
+Callout requires a native `anchor` with a separate parent and `onRetire`. The
+callout borrows the anchor. When a native ancestor of the anchor is hidden, the
+callout is suspended. `seen`, `sessions`, `afterSessions`, `featureUsed` and
+priority set eligibility and queue order. Each fact can be a value, a readable
+or a function of `use`. Retirement is delivered once. A callout is contextual
+teaching attached to a control. It is not a second application presenter.
+`edge = "top"` puts the callout above the anchor. If there is no room above
+and there is room below, the callout goes below the anchor. The callout
+scales and fades from the edge nearest to its anchor. See [Motion](#motion).
+
+The plate parts are optional, but the plate must show something:
+
+- `content`: an Instance or a factory.
+- `title`: a string or a bound string. It shows as a heading.
+- `media`: `{ image, aspectRatio | height, scaleMode?, background? }`.
+- `steps`: `{ index, count }`. It shows `index of count`.
+- `actions`: one or two `{ id, label, role?, enabled?, busy?, onActivate }`.
+  They replace the bottom `Got it` button. A press retires the plate with the
+  reason `action`, once, also when `onActivate` fails. A disabled or busy
+  action does not run.
+- `closeButton`: `true` adds a close control at the top. It retires the plate
+  with the reason `dismissed`.
+
+A failure in `onShow` does not stop the plate. The failure goes to the
+`onError` factory option, or to a warning.
+
+### Dialog
+
+`UI.Dialog` returns an empty anchor Frame. The panel is a modal surface.
+
+```luau
+local open = Compose.cell(false)
+runtime.mount(function()
+    return Host.ScreenGui {
+        UI.Dialog "Leave" {
+            isPresented = open,
+            onPresentedChange = function(nextValue) open:set(nextValue) end,
+            onDismiss = function(reason) print(reason) end,
+            title = "Leave the race?",
+            content = function() return UI.Label { label = "Your lap will not count." } end,
+            actions = {
+                { id = "Stay", label = "Stay", role = "cancel", onActivate = function() open:set(false) end },
+                { id = "Leave", label = "Leave", role = "destructive", onActivate = function() open:set(false) end },
+            },
+        },
+    }
+end, playerGui)
+```
+
+The caller owns `isPresented`. The dialog reads it and never writes it. The
+close button, Cancel and a tap on the backdrop call `onPresentedChange(false)`.
+The dialog closes only when the fact changes. A refused proposal keeps the same
+panel and selection. Without `onPresentedChange`, set `closeButton = false`.
+Then the backdrop and Cancel do nothing.
+
+Actions never close the dialog. Each action runs its `onActivate`. A false that
+the caller accepts in that callback reports `action`. Cancel runs an enabled
+`role = "cancel"` action first. Otherwise Cancel proposes false. The one
+`role = "default"` action answers Return. A disabled or busy action does not
+run. `onDismiss(reason)` reports each closure once, after its cleanup:
+`close`, `outside`, `cancel` or `action`. The caller's own false and owner
+disposal report `cancel`. A failing callback is raised after the dialog state
+is consistent.
+
+Other options:
+
+- `title`, `actionLabel`: strings or bound strings. An empty bound title hides
+  until it has text.
+- `content`: a factory for the one body. The body scrolls between the pinned
+  header, hero, action label and actions.
+- `hero`: the shared media shape.
+- `actionLayout`: `automatic`, `row` or `stacked`. `automatic` puts two short
+  actions in a row and stacks three or more. A row that cannot show the full
+  labels also stacks.
+- `width`: `automatic`, `narrow` or `wide`.
+- `contentSelectable`: `true` (the default) makes an overflowing body one
+  selectable stop. With the selection on it, Up and Down scroll the body. At
+  each end the selection moves on.
+
+A dialog needs a title, content, a hero, an action label or actions. The
+height is the layer height less the keyboard height and the margins. When the
+pinned regions and a short body do not fit, every region moves into one
+scrolling column named `Room`. The dialog has no enter or exit motion.
+
+### Popover
+
+`UI.Popover` returns its `trigger`, or an empty Frame for a `source` popover.
+
+```luau
+local open = Compose.cell(false)
+runtime.mount(function()
+    return Host.ScreenGui {
+        UI.Popover "About" {
+            isPresented = open,
+            onPresentedChange = function(nextValue) open:set(nextValue) end,
+            trigger = UI.Button { label = "About scoring" },
+            maxWidth = 320,
+            content = function() return UI.Label { label = "Laps score by position." } end,
+        },
+    }
+end, playerGui)
+```
+
+Supply exactly one of `trigger` (a native GuiButton) or `source`. `source` is
+`{ node = GuiObject }` or `{ rect = { x, y, w, h } }`. A trigger press, Cancel
+and a tap outside call `onPresentedChange(next)`. The popover changes only when
+the caller's fact changes. An open popover is modal, so a press on its own
+trigger lands outside it. `onDismiss(reason)` reports each closure once:
+`cancel`, `outside` or `anchorLost`. The trigger proposal uses `trigger`.
+
+When a source node leaves the layer, the popover closes at once, proposes
+false and reports `anchorLost`. It does not open again until the caller's fact
+goes from false to true. A source node that is not mounted yet is not lost.
+The popover waits for it and warns once. A `rect` source never draws a tail.
+
+Placement options: `edge` (`top`, `bottom`, `leading` or `trailing`), `align`
+(`start`, `center` or `end`), `gap` (pixels, default 8) and `crossOffset`
+(pixels along the alignment axis). The placement tries the preferred edge,
+then the opposite edge. When neither side holds the panel, it hangs beside the
+source before any clamp. `maxWidth` and `maxHeight` bound the whole panel,
+chrome included, inside the live safe box. The body scrolls. `tail = false`
+removes the arrow.
+
+`compact` is `sheet` (the default) or `popover`. With `sheet`, a touch player
+on a layer narrower than 600 pixels gets the Sheet route. A live change of
+input or width switches the route without a proposal. Only one content owner
+exists at a time, and the selection returns to the same content node.
+
+The trigger keeps its own `onActivate`. The panel scales and fades from the
+edge nearest to its source. See [Motion](#motion).
+
+### Snackbar
+
+`UI.Snackbar` returns an empty anchor Frame. The row shows at the bottom center
+of the layer.
+
+```luau
+local shown = Compose.cell(true)
+runtime.mount(function()
+    return Host.ScreenGui {
+        UI.Snackbar "Saved" {
+            isPresented = shown,
+            message = "Settings saved",
+            duration = 4,
+            onPresentedChange = function(nextValue) shown:set(nextValue) end,
+            action = { label = "Undo", onActivate = function() print("undo") end },
+        },
+    }
+end, playerGui)
+```
+
+The caller owns `isPresented`. Close, Cancel on a selected row, a timeout and a
+supersession propose false through `onPresentedChange(false)`. The row leaves
+only when the fact is false. A refusal keeps the same row. `onDismiss(reason)`
+reports each retirement once: `action`, `close`, `timeout`, `superseded` or
+`cancel`. The caller's own false and owner teardown report `cancel`.
+
+- `message`: a string or a bound string. It wraps.
+- `icon`: an icon name or an image source.
+- `action`: `{ label, onActivate }`. It runs once and never closes the row by
+  itself.
+- `closeButton`: `true` (the default) or `false`. A close button or a
+  `duration` needs `onPresentedChange`.
+- `duration`: seconds of readable time. `nil` keeps the row until the caller
+  hides it. The timeout asks once, at the larger of `duration` and 2.5
+  seconds. A refusal keeps the row.
+- `priority`: higher rows go first. A strictly higher priority can ask the
+  shown row to leave after 2.5 readable seconds, once for each row.
+
+Readable time pauses while the row is hovered or selected, or while a modal is
+open. Queued time does not count. One row shows and up to eight wait. Nine rows
+can be shown, waiting or leaving. A tenth admission stops with an error. A message-only row hugs its text.
+A row with an action or a close button uses `controls.snackbar.maxWidth`,
+bounded by the layer. The action moves below long text. Arrival never takes the
+selection. Cancel on a selected row returns the selection to the content, also
+when the caller refuses. A visible row sets the `FacetInsetBottom` attribute on
+its layer until it has slid out. The row slides up to enter and down to leave.
+Under reduced motion it arrives and leaves at once.
+
+To show a snackbar from code, mount a `UI.Snackbar` with `runtime.mount`. The
+stop function that the mount returns releases the row and reports `cancel`.
+
+### Notice
+
+`UI.Notice` returns the notice Frame. It keeps a status in the page until the
+state changes. It is never modal.
+
+- `message`: required, a string or a bound string. `title` is optional.
+- `severity`: `info` (the default), `success`, `warning` or `error`.
+- `appearance`: `standard` or `emphasis`. `emphasis` fills the plate with the
+  severity color.
+- `icon`: `true` (the severity icon), `false`, or an icon name or source.
+- `link`: `{ label, onActivate }`. It uses the link appearance on a standard
+  plate.
+- `actions`: up to two actions. Roles only paint. There is no default or
+  cancel key.
+- `onDismiss`: shows a close button and reports the press. Remove the notice
+  yourself.
+- `placement`: `inline` (the default) or `affixed`.
+
+The link and actions sit beside the copy when the measured width holds them.
+Otherwise they move below it. The notice does not take the selection. An
+affixed notice fills the width and sets the `FacetInsetTop` attribute on its
+layer to its bottom edge. Several affixed notices keep the deepest edge.
+Content that must avoid the notice reads the attribute and pads by it.
+
+### NavBar
+
+`UI.NavBar` returns the bar Frame: `{ onBack?, backLabel?, title?, titleSize?,
+leading?, center?, trailing?, gap?, padding? }`.
+
+The first row holds Back, `leading` and a `center` that fills the remaining
+width. Without `center`, the title shows on one line and truncates. `trailing`
+is one GuiObject. Put a cluster in a Frame. When the center would fall under
+`controls.popup.panelWidth`, the trailing node moves to a second row. The
+center is not rebuilt, so a search field keeps its text. Back shows the
+`chevron.leading` icon. `gap` and `padding` are pixels or `space` metric
+names.
 
 ## Collections
 

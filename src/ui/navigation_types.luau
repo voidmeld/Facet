@@ -3,6 +3,7 @@ local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local Radial = require("./radial_types")
 local Inputs = require("./input_types")
+local Overlay = require("./overlay_types")
 
 export type Value<T> = Types.Value<T>
 export type Content = Instance | (() -> Instance)
@@ -178,6 +179,7 @@ export type AlertSpec<P = unknown> = Types.FrameProps & {
 export type SheetDetent =
 	"medium"
 	| "large"
+	| "hug"
 	| { id: string, fraction: number, height: nil }
 	| { id: string, fraction: nil, height: number }
 export type SheetSpec = Types.FrameProps & {
@@ -187,12 +189,28 @@ export type SheetSpec = Types.FrameProps & {
 	title: Value<string>?,
 	content: Content,
 	interactiveDismissDisabled: Value<boolean>?,
-	dragIndicator: "visible" | "hidden"?,
+	dragIndicator: ("automatic" | "visible" | "hidden")?,
+	placement: ("automatic" | "bottom" | "side" | "center")?,
+	edge: ("left" | "right")?,
+	width: Overlay.WidthPreset?,
+	closeButton: (boolean | Value<string>)?,
+	header: (Content | false)?,
+	hero: Overlay.Hero?,
+	actions: { Overlay.Action }?,
+	actionLayout: Overlay.ActionLayout?,
+	contentInset: ("standard" | "none")?,
+	scrollPolicy: ("always" | "atLargestDetent")?,
 }
-export type CalloutRetirement = "featureUsed" | "seen" | "dismissed" | "tapAway"
+export type SheetRequest = (string) -> boolean
+export type CalloutRetirement = "featureUsed" | "seen" | "dismissed" | "tapAway" | "action"
 export type CalloutSpec = Types.FrameProps & {
 	anchor: GuiObject,
-	content: Content,
+	content: Content?,
+	title: Value<string>?,
+	media: Overlay.Media?,
+	steps: { index: number, count: number }?,
+	actions: { Overlay.Action }?,
+	closeButton: boolean?,
 	dismissLabel: Value<string>?,
 	edge: Value<"top" | "bottom">?,
 	align: Value<"leading" | "center" | "trailing">?,
@@ -304,6 +322,7 @@ export type Surfaces = {
 	overlay: (GuiObject, Value<boolean>, (PresencePhase?) -> Instance, OverlayOptions?) -> Types.Child,
 	appearance: (PresencePhase?, MotionTiming) -> Appearance,
 	popover: (GuiObject, Appearance, (ComposeTypes.Use) -> (Vector2, Vector2)) -> (),
+	sheetModal: ((SheetSpec, SheetRequest) -> Frame)?,
 }
 export type PickerConstructor = (<V>(PickerSpec<V>) -> GuiObject) & ((string) -> <V>(PickerSpec<V>) -> GuiObject)
 export type MenuConstructor = (<V>(MenuSpec<V>) -> Frame) & ((string) -> <V>(MenuSpec<V>) -> Frame)

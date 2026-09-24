@@ -138,6 +138,10 @@ local neutral: ThemeTypes.ThemePackage = {
 		controls = {
 			progress = { trackHeight = 6, circularSize = 32, circularThickness = 3, spinnerDotSize = 4 },
 			image = { defaultSize = 48 },
+			alert = { maxWidth = 560 },
+			popup = { panelWidth = 360 },
+			dialog = { wideWidth = 800 },
+			snackbar = { maxWidth = 480 },
 		},
 	},
 	chrome = {},

@@ -12,6 +12,7 @@ local MediaTypes = require("@self/ui/media_types")
 local ContentTypes = require("@self/ui/content_types")
 local ThemeTypes = require("@self/ui/theme_types")
 local LayoutTypes = require("@self/ui/layout_types")
+local OverlayTypes = require("@self/ui/overlay_types")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
@@ -77,6 +78,14 @@ export type ZStackProps = LayoutTypes.ZStackProps
 export type ScrollViewProps = LayoutTypes.ScrollViewProps
 export type GridProps = LayoutTypes.GridProps
 export type ErrorBoundaryProps = LayoutTypes.ErrorBoundaryProps
+export type OverlayAction = OverlayTypes.Action
+export type OverlayMedia = OverlayTypes.Media
+export type OverlayHero = OverlayTypes.Hero
+export type DialogSpec = OverlayTypes.DialogSpec
+export type PopoverSpec = OverlayTypes.PopoverSpec
+export type NoticeSpec = OverlayTypes.NoticeSpec
+export type NavBarSpec = OverlayTypes.NavBarSpec
+export type SnackbarSpec = OverlayTypes.SnackbarSpec
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
@@ -98,7 +107,7 @@ export type Facet = {
 }
 
 local VERSION = "0.12.0"
-local COMPOSE_COMMIT = "cbab6e0f828b68faaf676ee718cb0036c20ed935"
+local COMPOSE_COMMIT = "eb5a381212aba43d9dde5c55859d9c4cda108042"
 local USED = {
 	"boundary",
 	"cell",

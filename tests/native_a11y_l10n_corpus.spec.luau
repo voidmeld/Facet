@@ -435,6 +435,51 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			actions = { { id = "ok", label = "OK" }, { id = "cancel", label = "Cancel", role = "cancel" } },
 		}
 	end,
+	Dialog = function(Host)
+		local open = Compose.cell(true)
+		return {
+			title = "Confirm",
+			isPresented = open,
+			onPresentedChange = function(nextValue: boolean)
+				open:set(nextValue)
+			end,
+			content = function()
+				return Host.TextLabel({ Text = "Body" })
+			end,
+			actions = { { id = "ok", label = "OK", onActivate = function() end } },
+		}
+	end,
+	Snackbar = function()
+		local shown = Compose.cell(true)
+		return {
+			isPresented = shown,
+			message = "Saved",
+			action = { label = "Undo", onActivate = function() end },
+			onPresentedChange = function(nextValue: boolean)
+				shown:set(nextValue)
+			end,
+		}
+	end,
+	Notice = function()
+		return {
+			message = "Connection interrupted",
+			link = { label = "Details", onActivate = function() end },
+			actions = { { id = "Retry", label = "Retry", onActivate = function() end } },
+			onDismiss = function() end,
+		}
+	end,
+	NavBar = function()
+		return { title = "Tracks", onBack = function() end, backLabel = "Back" }
+	end,
+	Popover = function(Host)
+		return {
+			isPresented = Compose.cell(true),
+			source = { rect = { x = 10, y = 10, w = 40, h = 40 } },
+			content = function()
+				return Host.TextLabel({ Text = "Body" })
+			end,
+		}
+	end,
 	Sheet = function(Host)
 		return {
 			title = "Sheet",

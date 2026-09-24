@@ -65,10 +65,15 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 1174 | 2,294 | 3,426 |
-| b | Retired. The Roblox Engine or Compose owns the mechanism | 302 | 1,581 | 1,440 |
-| c | Retired. The feature or code was deleted and is not promised | 811 | 6,079 | 5,973 |
+| a | Covered by a candidate case | 1443 | 2,294 | 3,710 |
+| b | Retired. The Roblox Engine or Compose owns the mechanism | 308 | 1,581 | 1,447 |
+| c | Retired. The feature or code was deleted and is not promised | 833 | 6,079 | 6,016 |
 | d | Gap. A promise remains and no candidate case verifies it | 3 | 894 | 9 |
+
+The contract counts and the main-case counts with new tests are the sums over
+the contracts in `tools/lune/verification_parity.json`. They include the
+contracts with a `mainBaseline` field, which record main cases that main added
+after the baseline.
 
 Class c is the largest class. Most of it tested the deleted solver,
 renderer, focus graph, input system, presenter, paint layer and their seams.
@@ -82,36 +87,36 @@ last column names the candidate specs that the group cites most.
 
 | Group | Main cases | a | Weaker | b | c | d | Candidate coverage |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Reactive core | 63 | 23 | 0 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
-| Lifetime and ownership | 316 | 142 | 6 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,326 | 280 | 211 | 218 | 827 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 497 | 95 | 59 | 232 | 170 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 532 | 109 | 7 | 257 | 166 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
-| Input actions | 332 | 101 | 13 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 368 | 63 | 0 | 97 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
-| Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
-| Motion | 581 | 144 | 4 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 709 | 199 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 379 | 149 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
-| Icons and media | 251 | 116 | 0 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 394 | 96 | 9 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
-| Value controls | 249 | 221 | 8 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
+| Reactive core | 64 | 23 | 0 | 4 | 37 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
+| Lifetime and ownership | 333 | 158 | 8 | 6 | 169 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
+| Layout and geometry | 1,393 | 338 | 250 | 221 | 833 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Text measurement and fit | 510 | 102 | 66 | 233 | 175 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Focus and selection | 547 | 123 | 13 | 257 | 167 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Input actions | 344 | 110 | 16 | 107 | 122 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
+| Pointer, touch and drag | 382 | 76 | 1 | 98 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Scrolling | 332 | 95 | 10 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
+| Motion | 596 | 159 | 6 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
+| Paint and theming | 713 | 203 | 10 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
+| Theme packages | 382 | 152 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Icons and media | 255 | 120 | 2 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
+| Action controls | 402 | 104 | 12 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Value controls | 252 | 224 | 8 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
 | Text input | 119 | 70 | 0 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 141 | 103 | 8 | 0 | 38 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
-| Navigation containers | 72 | 69 | 4 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 287 | 124 | 33 | 5 | 158 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
-| Virtual collections | 214 | 159 | 6 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
+| Menus and pickers | 149 | 110 | 10 | 0 | 39 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Navigation containers | 88 | 85 | 7 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
+| Presented surfaces | 332 | 168 | 41 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Virtual collections | 224 | 169 | 7 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 1 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
 | Row actions | 264 | 162 | 25 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 166 | 46 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 419 | 32 | 3 | 51 | 336 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
-| Public surface | 366 | 89 | 0 | 0 | 277 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
-| Docs, examples and tooling | 498 | 51 | 0 | 0 | 447 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
-| Gallery and examples | 425 | 246 | 51 | 113 | 66 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
+| HUD and world targets | 170 | 50 | 2 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| Adaptive environment | 424 | 36 | 5 | 51 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| Public surface | 369 | 89 | 0 | 0 | 280 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
+| Docs, examples and tooling | 513 | 51 | 0 | 0 | 462 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
+| Gallery and examples | 442 | 257 | 56 | 113 | 72 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 152 | 2 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 6 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
-| Error handling and refusals | 220 | 80 | 8 | 2 | 138 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
+| Error handling and refusals | 253 | 112 | 12 | 2 | 139 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
 
@@ -833,10 +838,10 @@ contract has `restoredBy` set to `parity/restore`.
 | Label `textSize = "fit"` | `mech3-83` | 18 | The engine picks the size through `TextScaled`. The headless engine does not scale text. |
 | Label `truncate = "middle"` | `mech2-46` | 14 | The headless engine measures with a fixed glyph width. |
 
-Facet Neutral's `Light` palette is newer than the baseline, so it has no
-baseline contract. `native_parity_restore` checks both palettes against the
-contrast gate. The theme strength specs check both palettes where they checked
-one before.
+Facet Neutral's `Light` palette is newer than the baseline. Its contract
+`post-lab-02` moves from class d to class a. `native_parity_restore` checks
+both palettes against the contrast gate, and the theme strength specs check
+both palettes where they checked one before.
 
 ### Final gap tests
 

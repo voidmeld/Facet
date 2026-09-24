@@ -58,7 +58,7 @@ def generate(definitions, schema):
         ordered.append(name)
     for name in CLASSES:
         visit(name)
-    result = ['--!strict', 'local Compose = require("../vendor/compose/core")', '', 'export type Value<T> = Compose.Given<T>', 'export type StaticValue = typeof(Compose.static(nil))', 'export type Constructor<P, N> = ((P) -> N) & ((string) -> (P) -> N)', 'export type AttributeValue = string | boolean | number | UDim | UDim2 | BrickColor | Color3 | Vector2 | Vector3 | CFrame | NumberSequence | ColorSequence | NumberRange | Rect | Font', 'export type Attributes = { [string]: Value<AttributeValue?> }', '']
+    result = ['--!strict', 'local Compose = require("../vendor/compose/core")', '', 'export type Value<T> = Compose.Value<T>', 'export type StaticValue = typeof(Compose.static(nil))', 'export type Constructor<P, N> = ((P) -> N) & ((string) -> (P) -> N)', 'export type AttributeValue = string | boolean | number | UDim | UDim2 | BrickColor | Color3 | Vector2 | Vector3 | CFrame | NumberSequence | ColorSequence | NumberRange | Rect | Font', 'export type Attributes = { [string]: Value<AttributeValue?> }', '']
     aliases = {}
     def shared(native):
         if native not in aliases:
@@ -96,7 +96,7 @@ def generate(definitions, schema):
     result[insert_at:insert_at] = shared_lines
     datatypes = 'UDim UDim2 Vector2 Vector3 Color3 CFrame Enum Font Rect ColorSequence ColorSequenceKeypoint NumberSequence NumberSequenceKeypoint NumberRange Path2DControlPoint FloatCurveKey TweenInfo'.split()
     result += ['export type RobloxTypes = {', *[f'\t{name}: typeof({name}),' for name in datatypes], '}', '']
-    observed = set('AbsoluteContentSize AbsolutePosition AbsoluteSize AbsoluteWindowSize CanvasPosition CurrentPage DisplayImage DisplayName Enabled FontFace GamepadEnabled GuiState Interactable KeyCode KeyboardEnabled MouseEnabled Parent Position PreferredBinding PreferredInput PreferredTransparency PrimaryModifier ReducedMotionEnabled SecondaryModifier SelectedObject Size Text TextBounds TextFits TextSize TextColor3 TextXAlignment TextYAlignment TextWrapped RichText TextScaled TextTruncate LineHeight TouchEnabled Visible'.split())
+    observed = set('AbsoluteContentSize AbsolutePosition AbsoluteSize AbsoluteWindowSize CanvasPosition CurrentPage DisplayImage DisplayName Enabled FontFace GamepadEnabled GuiState Interactable KeyCode KeyboardEnabled MouseEnabled Parent Position PreferredBinding PreferredInput PreferredTransparency PrimaryModifier ReducedMotionEnabled SecondaryModifier SelectedObject Size Text TextBounds TextFits TextSize TextColor3 TextXAlignment TextYAlignment TextWrapped RichText TextScaled TextTruncate LineHeight TouchEnabled Visible OnScreenKeyboardVisible OnScreenKeyboardSize AbsoluteCanvasSize'.split())
     observations = []
     observed_classes = set('GuiBase2d GuiObject GuiService UserInputService LayerCollector Instance InputAction InputBinding InputContext TextLabel TextBox TextButton ScrollingFrame UIGridStyleLayout UIPageLayout'.split())
     for name, entry in sorted(entries.items()):
