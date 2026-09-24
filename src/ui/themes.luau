@@ -467,21 +467,21 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		return typefaces[key] :: Font
 	end
 	local rules: { NativeRule } = {}
-	local function rule(selector: string, properties: ThemeTypes.RuleProperties)
+	local occurrences: { [string]: number } = {}
+	local function add(selector: string, properties: ThemeTypes.RuleProperties)
+		local occurrence = (occurrences[selector] or 0) + 1
+		occurrences[selector] = occurrence
 		table.insert(rules, {
-			id = selector .. ":" .. tostring(#rules + 1),
+			id = selector .. ":" .. tostring(occurrence),
 			selector = selector,
 			properties = properties,
 			priority = #rules * 10,
 		})
+	end
+	local function rule(selector: string, properties: ThemeTypes.RuleProperties)
+		add(selector, properties)
 		if string.sub(selector, -11) == "::UIPadding" then
-			local real = string.sub(selector, 1, -12) .. " > UIPadding"
-			table.insert(rules, {
-				id = real .. ":" .. tostring(#rules + 1),
-				selector = real,
-				properties = properties,
-				priority = #rules * 10,
-			})
+			add(string.sub(selector, 1, -12) .. " > UIPadding", properties)
 		end
 	end
 	rule("ScrollingFrame", {
@@ -968,6 +968,7 @@ function themes.createStyleSheet(
 	local currentTiming: TweenInfo? = nil
 	type MountedRule = {
 		node: StyleRule,
+		priority: number,
 		properties: ThemeTypes.RuleProperties?,
 		transitions: { [string]: TweenInfo }?,
 		timing: TweenInfo?,
@@ -1014,6 +1015,10 @@ function themes.createStyleSheet(
 		return same :: boolean
 	end
 	local function apply(record: MountedRule, definition: NativeRule, timing: TweenInfo)
+		if record.priority ~= definition.priority then
+			record.node.Priority = definition.priority
+			record.priority = definition.priority
+		end
 		local properties = definition.properties
 		local propertiesChanged = record.properties == nil
 			or (record.properties ~= properties and not sameRuleProperties(record.properties, properties))
@@ -1045,7 +1050,7 @@ function themes.createStyleSheet(
 					Selector = initial.selector,
 					Priority = initial.priority,
 				})
-				local record: MountedRule = { node = node }
+				local record: MountedRule = { node = node, priority = initial.priority }
 				mounted[id] = record
 				apply(record, initial, currentTiming :: TweenInfo)
 				Compose.cleanup(function()
