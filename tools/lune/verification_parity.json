@@ -59,7 +59,7 @@
     "collections-virtual": {
       "mainCases": 214,
       "a": 156,
-      "aWeaker": 127,
+      "aWeaker": 6,
       "b": 3,
       "c": 52,
       "d": 3,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1411
+    "coveredButWeaker": 1290
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2808,9 +2808,10 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets"
+        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-57 variable posts differ in height, never overlap, grow at each text offset and keep the scrolled post"
       ],
-      "weaker": "The 'solver says one declared height is a lie' half is gone; the toggle is checked via extents['1']==84."
+      "weaker": "The uniform 84 px toggle is checked only as slot geometry. No headless test can show that the real text content of a post is taller than its 84 px slot, because that needs engine TextBounds and AutomaticSize."
     },
     {
       "id": "apps2-58",
@@ -4033,9 +4034,9 @@
       "candidateCases": [
         "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection",
         "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
-        "native_perf::native benchmark workload contract::runs and tears down controlled workload lab-collection-churn"
-      ],
-      "weaker": "No negative control (a declared window fault must fail the mount), no insert/remove/reorder window bound, and no check that scrolling does not grow the reactive owner graph."
+        "native_perf::native benchmark workload contract::runs and tears down controlled workload lab-collection-churn",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-141 windows stay bounded at every size, through sweeps and churn, and scrolling adds no owners"
+      ]
     },
     {
       "id": "apps2-142",
@@ -5387,9 +5388,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows"
+        "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-231 a virtual grid inside the collections showcase tabs windows on its pane and scrolls"
       ],
-      "weaker": "Run on the collection scenario directly, not inside the showcase TabView."
+      "weaker": "The test sets the grid AbsoluteWindowSize directly. No headless test can show that the engine gives the grid a window equal to the measured Grid tab pane height inside the nested TabView."
     },
     {
       "id": "apps2-232",
@@ -5545,9 +5547,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "Tested on generic VirtualList/Table fixtures, not a single-selection list re-sorted live."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-243 a single-selection list keeps its selection and never re-renders a mounted row through a live re-sort"
+      ]
     },
     {
       "id": "apps2-244",
@@ -7968,9 +7970,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "Asserted through VirtualList, not Compose.keyed directly; handler reading latest item not asserted."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps-122 Compose.keyed rows keep their identity and hand handlers the latest item"
+      ]
     },
     {
       "id": "apps-123",
@@ -9900,9 +9902,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions"
-      ],
-      "weaker": "The candidate uses a Compose cell, not a theme metric."
+        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-07 a gap bound to a theme package metric moves placements on a theme swap without a rebuild"
+      ]
     },
     {
       "id": "collections-08",
@@ -9927,9 +9929,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "Pruning, the FacetSelected attribute and single/multi selection are asserted. No test asserts the default 'none' when the list has no selection options (no RowHit), that selection survives a re-sort, or that a list wi..."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-09 a list without selection options declares no row hit and single selection survives a re-sort"
+      ]
     },
     {
       "id": "collections-10",
@@ -10057,9 +10059,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "The per-row extent comes from the `measured` map (NC3), and the viewport from native AbsoluteWindowSize (NC1). No test changes a Readable itemSize, and no test resizes the viewport after the first geometry."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-19 a readable itemSize and a resized viewport re-window in place"
+      ]
     },
     {
       "id": "collections-20",
@@ -10071,9 +10073,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::follows appended rows only while native viewport stays at the end"
-      ],
-      "weaker": "The tail pin and staying put after scrolling away are asserted. No test asserts that a non-following list does not move when rows are appended."
+        "native_collections::Compose native collections::follows appended rows only while native viewport stays at the end",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-20 a list that does not follow never moves on growth and a follower rejoins inside its threshold"
+      ]
     },
     {
       "id": "collections-21",
@@ -12680,9 +12682,9 @@
         "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows",
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size"
-      ],
-      "weaker": "No test asserts the overscan row below the viewport or the Table CanvasSize."
+        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-208 a virtual table mounts the viewport plus overscan below, spends the gap once and sizes its canvas"
+      ]
     },
     {
       "id": "collections-209",
@@ -12873,9 +12875,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent"
-      ],
-      "weaker": "The extent and placements are asserted. Window line membership and a tall single line are not."
+        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ]
     },
     {
       "id": "collections-223",
@@ -12888,9 +12890,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
-        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size"
-      ],
-      "weaker": "GC4 asserts retained < 100 for 5000 items. PP2 is list-only."
+        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-223 a grid builds exactly the windowed cells and the same count for 100 and 10000 items"
+      ]
     },
     {
       "id": "collections-224",
@@ -13141,9 +13143,9 @@
       "candidateCases": [
         "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection"
-      ],
-      "weaker": "CanvasSize along X and lane heights are not asserted."
+        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
+      ]
     },
     {
       "id": "collections-241",
@@ -13271,9 +13273,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection",
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "CanvasSize along X and window membership are not asserted directly."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-249 a horizontal list sizes its x canvas, windows on the pitch and keeps focus visible along x"
+      ]
     },
     {
       "id": "collections-250",
@@ -13418,9 +13420,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
-      ],
-      "weaker": "The deprecated-spelling half is retired."
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-258 a list that declares no direction is vertical end to end"
+      ]
     },
     {
       "id": "collections-259",
@@ -13645,9 +13647,9 @@
         "native_collections::Compose native collections::observes automatic row sizes without overwriting content geometry",
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
-        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets"
-      ],
-      "weaker": "Automatic measurement on a horizontal list (AbsoluteSize.X) is not asserted."
+        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-274 a horizontal measured list sizes each item from its native width and shrinks back"
+      ]
     },
     {
       "id": "collections-275",
@@ -13952,9 +13954,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "Keep-visible and drop hit-testing with a non-zero gap are not asserted."
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-296 a gap stays out of the row for keep-visible, drop hit tests and the bounded window"
+      ]
     },
     {
       "id": "collections-297",
@@ -13988,9 +13990,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions"
-      ],
-      "weaker": "CanvasSize and keep-visible with ragged rows are not asserted."
+        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-299 ragged rows get their own boxes at running offsets, a full canvas and own-extent keep-visible"
+      ]
     },
     {
       "id": "collections-300",
@@ -14002,9 +14004,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets"
-      ],
-      "weaker": "There is no single tall row case."
+        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-300 a viewport inside one tall row windows that row alone and ragged windows stay bounded"
+      ]
     },
     {
       "id": "collections-301",
@@ -14089,9 +14091,9 @@
         "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
         "native_perf_principles::native performance invariants::idle heartbeat and identical state perform no native writes",
         "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice",
-        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds"
-      ],
-      "weaker": "The claim that a same-window scroll writes nothing is not asserted directly: PP2 compares across sizes. Async resource cancellation is covered only through Compose.cleanup counts."
+        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-305 same-window scrolls and off-window edits write nothing, re-entry is fresh and async loads cancel"
+      ]
     },
     {
       "id": "collections-306",
@@ -18144,9 +18146,9 @@
         "native_collections::Compose native collections::follows appended rows only while native viewport stays at the end",
         "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent",
         "native_collections::Compose native collections::defers initial offscreen focus until native geometry and suppresses navigation while editing",
-        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds"
-      ],
-      "weaker": "Main swept 3 row heights x 2 viewports for anchor restore; candidate uses single fixtures."
+        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech1-72 measured feeds restore their anchor across widths and offsets, and grids keep cells and anchor on reflow"
+      ]
     },
     {
       "id": "mech1-73",
@@ -18486,9 +18488,9 @@
       "class": "a",
       "candidateCases": [
         "native_documentation::native documentation::executes docs/guide/15-adaptive-recipes.md snippet 2",
-        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent"
-      ],
-      "weaker": "Recipe executes headlessly without a width sweep; responsive columns tested once (4->5)."
+        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech1-96 recipe columns follow measured width across a sweep and container bands follow each panel width"
+      ]
     },
     {
       "id": "mech1-97",
@@ -19398,9 +19400,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds"
-      ],
-      "weaker": "no byte-identical differential against a non-pooled run"
+        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech2-30 pooled rows are indistinguishable from unpooled rows at every scroll step and the pool stays bounded"
+      ]
     },
     {
       "id": "mech2-31",
@@ -20462,9 +20464,9 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "Candidate reuses only the empty row container and re-renders content (disposed == rendered); no case asserts a reused container carries none of the previous row's attributes/tags or that shadow/enabled/padding cannot ..."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech3-03 a reused row container never carries the previous row's children, tags, attributes or props"
+      ]
     },
     {
       "id": "mech3-04",
@@ -21602,9 +21604,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "Index/window math is now Compose OrderedCollection (vendored); Facet cases cover measured extents, windowing status and insertion slots but not degenerate inputs, logarithmic search bounds or mid-gutter boundary snapping"
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech3-97 degenerate collections answer without error and a past-the-end offset windows the last rows"
+      ]
     },
     {
       "id": "mech3-98",
@@ -26082,9 +26084,10 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders"
+        "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders",
+        "native_parity_weaker_virtual::native parity weaker virtual::navigation-4-68 a list in a hidden tab keeps its keyed anchor across data changes and resets on empty data"
       ],
-      "weaker": "Anchoring is tested for a removal above the viewport on a visible list, not while the tab is hidden; clamping to max on shorter data and reset to 0 on empty are not asserted (native ScrollingFrame clamping)."
+      "weaker": "Clamping to the new maximum on shorter data and the reset to 0 on empty data are engine ScrollingFrame clamping of CanvasPosition to CanvasSize, which the fake engine does not do."
     },
     {
       "id": "navigation-4-69",
@@ -29647,9 +29650,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Instance identity and LayoutOrder on reorder asserted; lease retention on reorder and replacement of a changed image source are not."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_weaker_virtual::native parity weaker virtual::themes-P1-35 avatar faces keep their resources on reorder and replace only a changed source or resource"
+      ]
     },
     {
       "id": "themes-P1-36",
@@ -34457,6 +34460,22 @@
       "file": "examples/gallery/scenarios/action_controls.luau",
       "title": "The Distant TV preview scales the gallery by 1.5, but the action controls demo read the unscaled viewport width. At 1440 px the Showroom and Race Setup sections stayed side by side under the preview. The gallery now gives demos ctx.sceneViewport, the viewport divided by the preview scale, and the demo reads it.",
       "fixedBy": "native_parity_weaker_gallery::native parity weaker gallery::navigation-3-32 showroom and race setup reflow across viewports and survive the distant preview"
+    },
+    {
+      "id": "WA6",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collections.luau",
+      "title": "VirtualList and VirtualGrid wrote an equal CanvasSize again on each scroll and on each edit to a row outside the window. Table wrote its outer Size, body Size, body CanvasSize and header Position again on each vertical scroll. These properties now bind to the numeric extent and the horizontal scroll offset, so only a real change writes.",
+      "fixedBy": "native_parity_weaker_virtual::native parity weaker virtual::collections-305 same-window scrolls and off-window edits write nothing, re-entry is fresh and async loads cancel"
+    },
+    {
+      "id": "WA7",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/media.luau",
+      "title": "AvatarGroup kept the old resource lease and image when the resource of a member changed under the same id. A member with a resource is now keyed by its id and its resource, so only that face mounts again with a new lease.",
+      "fixedBy": "native_parity_weaker_virtual::native parity weaker virtual::themes-P1-35 avatar faces keep their resources on reorder and replace only a changed source or resource"
     }
   ]
 }

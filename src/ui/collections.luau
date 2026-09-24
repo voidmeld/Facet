@@ -354,6 +354,10 @@ return function(ctx: Types.Context, UI: Controls): ()
 				end,
 			})
 			else orderedRows(followOf())
+		local contentExtent = Compose.formula(function(use: ComposeTypes.Use): number
+			local current = use(status)
+			return if current then current.extent else 0
+		end)
 		local native = props(spec, behavior, {
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
@@ -363,8 +367,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			ScrollBarThickness = 6,
 			SelectionGroup = true,
 			CanvasSize = function(use: ComposeTypes.Use)
-				local current = use(status)
-				local extent = if current then current.extent else 0
+				local extent = use(contentExtent)
 				return if horizontal then D2.fromOffset(extent, 0) else D2.fromOffset(0, extent)
 			end,
 		})
