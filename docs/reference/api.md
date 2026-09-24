@@ -137,7 +137,7 @@ Presentation options:
 
 - `appearance`, `role`, `selected`, `name`, `hint` and `pop`.
 - `controlSize`: `compact`, `regular` or `large`.
-- `corners`: `pill` or `square`.
+- `corners`: `pill` or `square`, or a readable of one.
 - `shape`: `rect` or `circle`.
 - `icon` and `trailingIcon`.
 - `image`, `imageAspectRatio` (default `16/9`) and `imageFraming` (`fit` or

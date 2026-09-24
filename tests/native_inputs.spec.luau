@@ -545,6 +545,23 @@ t.describe("native input controls", function()
 		stop()
 	end)
 
+	t.it("accepts a readable Button corners value and follows it", function()
+		local corners = Compose.cell("square")
+		local node, stop = world(function(UI)
+			return UI.Button "Corners" { label = "Corners", corners = corners }
+		end)
+		local corner = node:FindFirstChildWhichIsA("UICorner")
+		t.expect(corner.CornerRadius.Scale).toBe(0)
+		corners:set("pill")
+		t.expect(corner.CornerRadius.Scale).toBe(1)
+		stop()
+		t.expect(function()
+			world(function(UI)
+				return UI.Button "Corners" { label = "Corners", corners = "round" }
+			end)
+		end).toThrow()
+	end)
+
 	t.it("edits a controlled map field without duplicating durable state", function()
 		local notes = Compose.cell({ item = "saved" })
 		local requests = 0

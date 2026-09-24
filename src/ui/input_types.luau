@@ -19,7 +19,7 @@ export type ButtonVisualOptions = EnabledOptions & {
 	pop: boolean?,
 	appearance: Value<string>?,
 	controlSize: Value<Shared.ControlSize>?,
-	corners: ("pill" | "square")?,
+	corners: Value<"pill" | "square">?,
 	shape: ("rect" | "circle")?,
 	role: Value<ButtonRole>?,
 	icon: Value<string>?,
