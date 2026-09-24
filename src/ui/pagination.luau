@@ -468,6 +468,7 @@ return function(
 				gui.SelectedObject = landing
 			end
 		end)
+		root:SetAttribute("FacetSelectionOwner", true)
 		return root
 	end)
 end

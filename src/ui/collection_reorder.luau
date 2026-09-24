@@ -439,10 +439,10 @@ return function<V, K>(
 			else { E.KeyCode.Down, E.KeyCode.DPadDown }
 		ctx.action(root, "ReorderUp", earlier, keyboardActive, function()
 			step(-1)
-		end, { priority = 400 })
+		end, { priority = 400, capture = true })
 		ctx.action(root, "ReorderDown", later, keyboardActive, function()
 			step(1)
-		end, { priority = 400 })
+		end, { priority = 400, capture = true })
 		ctx.action(root, "ReorderCancel", { E.KeyCode.Escape, E.KeyCode.ButtonB }, function(use: ComposeTypes.Use)
 			return use(moving) ~= nil
 		end, cancel, { priority = 400 })
