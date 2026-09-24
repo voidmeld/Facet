@@ -213,6 +213,10 @@ return function(
 					end
 					local content = row:FindFirstChild("Content")
 					if content and content:IsA("GuiObject") then
+						local layout = content:FindFirstChildWhichIsA("UIListLayout")
+						if layout then
+							layout.HorizontalAlignment = E.HorizontalAlignment.Left
+						end
 						local natural = ctx.observe(content, "AbsoluteSize")
 						Compose.watch(function(use: Core.Use)
 							local next = table.clone(widths:peek())
@@ -1061,6 +1065,11 @@ return function(
 					end)
 					local family = if style == "segmented" then "facet-segment" else "facet-choice"
 					button:AddTag(family)
+					local content = button:FindFirstChild("Content")
+					local layout = if content then content:FindFirstChildWhichIsA("UIListLayout") else nil
+					if style ~= "segmented" and layout then
+						layout.HorizontalAlignment = E.HorizontalAlignment.Left
+					end
 					Compose.watch(function(use: Core.Use)
 						local current = selected(use) and read(spec.indicator, use) ~= "none"
 						if current then

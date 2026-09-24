@@ -100,6 +100,7 @@ return {
 					ScrollBarThickness = 4,
 					ScrollBarImageTransparency = 0.4,
 					VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar,
+					Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder }),
 					Host.Frame "Body" {
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,

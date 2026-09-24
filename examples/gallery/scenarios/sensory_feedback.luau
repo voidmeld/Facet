@@ -56,10 +56,11 @@ return {
 			end
 			historyText:set(table.concat(history, "\n"))
 		end
-		local function text(name, value)
+		local function text(name, value, role)
 			return UI.Label({
 				Name = name,
 				Text = value,
+				textRole = role,
 				Size = D2.new(1, 0, 0, 0),
 				AutomaticSize = E.AutomaticSize.Y,
 				TextWrapped = true,
@@ -73,8 +74,8 @@ return {
 				AutomaticSize = E.AutomaticSize.Y,
 				BackgroundTransparency = 1,
 				Host.UIListLayout({ Padding = D.new(0, 6), SortOrder = E.SortOrder.LayoutOrder }),
-				text("Title", title),
-				text("Description", description),
+				text("Title", title, "strong"),
+				text("Description", description, "caption"),
 				control,
 			})
 		end
@@ -131,16 +132,17 @@ return {
 					effects.release,
 					effects.selection,
 					effects.custom,
-					text("Heading", "Compare feedback timing"),
+					text("Heading", "Compare feedback timing", "heading"),
 					text(
 						"Introduction",
 						"Try a press, a completed click, a selection and a custom double pulse. This demo opts in to haptics; turn it off to compare the same controls without feedback."
 					),
 					UI.Toggle "PlayHaptics" { value = playHaptics, label = "Play haptics" },
-					text("Status", state),
+					text("Status", state, "caption"),
 					text(
 						"Evidence",
-						"The log records requests. It cannot confirm what a device’s motors played; unsupported hardware may remain silent."
+						"The log records requests. It cannot confirm what a device’s motors played; unsupported hardware may remain silent.",
+						"caption"
 					),
 					row(
 						"PressRow",
@@ -194,7 +196,7 @@ return {
 							record("custom")
 						end,
 					},
-					text("History", historyText),
+					text("History", historyText, "caption"),
 				}
 			end,
 		}

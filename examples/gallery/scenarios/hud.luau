@@ -304,6 +304,7 @@ return {
 				CanvasSize = D2.fromOffset(0, 0),
 				AutomaticCanvasSize = E.AutomaticSize.Y,
 				ScrollBarThickness = 3,
+				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
 				stack("Content", children),
 			})
 		end

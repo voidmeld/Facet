@@ -1281,9 +1281,13 @@ t.describe("native themes and media", function()
 		local nextPackage = themes.neutralPackage()
 		nextPackage.style.themes[1].colors.accent = { r = 0.7, g = 0.2, b = 0.1 }
 		nextPackage.style.themes[1].colors.control = { r = 0.3, g = 0.4, b = 0.5 }
+		nextPackage.style.themes[1].colors.contentSecondary = { r = 0.6, g = 0.6, b = 0.65 }
 		package:set(nextPackage)
 		t.expect(style(sheet, ".facet-progress-ring-fill").Color3).toBe(engine.types.Color3.new(0.7, 0.2, 0.1))
 		t.expect(style(sheet, ".facet-progress-ring-track").Color3).toBe(engine.types.Color3.new(0.3, 0.4, 0.5))
+		local secondary = nextPackage.style.themes[1].colors.contentSecondary
+		t.expect(style(sheet, ".facet-type-caption").TextColor3)
+			.toBe(engine.types.Color3.new(secondary.r, secondary.g, secondary.b))
 		t.expect(meter:FindFirstChild("RingFill", true)).toBe(arc)
 		stop()
 		t.expect(arc.isDestroyed()).toBe(true)

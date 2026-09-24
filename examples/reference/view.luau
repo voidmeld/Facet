@@ -47,6 +47,7 @@ return function(ctx)
 				PaddingLeft = D.new(0, 16),
 				PaddingRight = D.new(0, 16),
 			}),
+			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
 			view.column("Content", children, 16),
 		})
 	end

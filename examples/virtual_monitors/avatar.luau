@@ -182,6 +182,7 @@ return function(ctx)
 					else D2.new(1, 0, 1, -previewHeight(use) - 16)
 			end,
 			Host.UICorner({ CornerRadius = D.new(0, 12) }),
+			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
 			column("Settings", {
 				text("Heading", "Explorer", 28),
 				text("Subtitle", "Choose a palette and accessories.", 16, {}, "facet-secondary"),

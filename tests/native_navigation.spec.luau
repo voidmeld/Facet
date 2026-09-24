@@ -85,13 +85,19 @@ t.describe("native navigation controls", function()
 					LayoutOrder = 3,
 					selected = selected,
 					style = "segmented",
-					options = { { value = "one", label = "One" }, { value = "two", label = "Two" } },
+					options = {
+						{ value = "one", label = "One", icon = "edit" },
+						{ value = "two", label = "Two", icon = "edit" },
+					},
 				},
 				UI.Picker "List" {
 					label = "Group",
 					selected = selected,
 					style = "inline",
-					options = { { value = "one", label = "One" }, { value = "two", label = "Two" } },
+					options = {
+						{ value = "one", label = "One", icon = "edit" },
+						{ value = "two", label = "Two", icon = "edit" },
+					},
 				},
 			})
 		end)
@@ -110,6 +116,12 @@ t.describe("native navigation controls", function()
 		t.expect(list:FindFirstChild("Label").Text).toBe("Group")
 		t.expect(list:FindFirstChildWhichIsA("UIListLayout").FillDirection)
 			.toBe(world.engine.types.Enum.FillDirection.Vertical)
+		local Horizontal = world.engine.types.Enum.HorizontalAlignment
+		local function alignment(button)
+			return button:FindFirstChild("Content"):FindFirstChildWhichIsA("UIListLayout").HorizontalAlignment
+		end
+		t.expect(alignment(find(segments, "one"))).toBe(Horizontal.Center)
+		t.expect(alignment(find(list, "one"))).toBe(Horizontal.Left)
 		find(segments, "two").Activated.fire()
 		t.expect(selected:peek()).toBe("two")
 		world.stop()

@@ -123,6 +123,7 @@ return {
 					Size = D2.fromScale(1, 1),
 					CanvasSize = D2.new(),
 					AutomaticCanvasSize = E.AutomaticSize.Y,
+					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
 					section(),
 				}
 			end,

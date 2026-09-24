@@ -146,6 +146,7 @@ return {
 				AutomaticCanvasSize = E.AutomaticSize.Y,
 				CanvasSize = D2.new(),
 				BackgroundTransparency = 1,
+				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
 				table.unpack(children),
 			}
 		end

@@ -479,6 +479,7 @@ function example.build(ctx: any)
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				CanvasSize = UDim2.new(),
 				ScrollBarThickness = 6,
+				Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder }),
 				Host.Frame "col" {
 					BackgroundTransparency = 1,
 					Size = function(use)

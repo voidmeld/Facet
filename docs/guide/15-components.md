@@ -87,6 +87,11 @@ Keep durable row edits and selections in the model, outside the windowed row
 owners. Compose `OrderedCollection` and `Pool` supply the collection mechanisms
 for those controls. Screens do not need their own windowing.
 
+Put a `UIListLayout` directly in a vertical page `ScrollingFrame`. Without a
+layout, Roblox sizes a full-width child against the whole frame, so the child
+goes under the scroll bar. With a layout, the child fits the window beside the
+scroll bar.
+
 ## Ownership and native references
 
 The `ref` callback of a control receives its native root Instance. A borrowed

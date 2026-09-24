@@ -514,13 +514,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					Position = if description then D2.fromScale(0, 0) else D2.fromScale(0, 0.5),
 				})
 				elseif description then ctx.row(content, { Name = "Content", ZIndex = 1 })
-				else ctx.row(
-					content,
-					{ Name = "Content", ZIndex = 1, AnchorPoint = V2.new(0, 0.5), Position = D2.fromScale(0, 0.5) }
-				)
+				else ctx.row(content, { Name = "Content", ZIndex = 1, Size = D2.fromScale(1, 1) })
 			if not imageCard then
-				assert(contentFrame:FindFirstChildWhichIsA("UIListLayout")).VerticalAlignment =
-					E.VerticalAlignment.Center
+				local layout = assert(contentFrame:FindFirstChildWhichIsA("UIListLayout"))
+				layout.VerticalAlignment = E.VerticalAlignment.Center
+				if not spec.row and not description then
+					layout.HorizontalAlignment = E.HorizontalAlignment.Center
+				end
 			end
 			table.insert(p, contentFrame)
 		end

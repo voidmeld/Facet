@@ -185,6 +185,7 @@ return {
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
+						Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder }),
 						section(),
 					},
 				}

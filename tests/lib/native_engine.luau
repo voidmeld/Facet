@@ -34,6 +34,7 @@ local function new(options: any?)
 	local made = {}
 	local rejectedSelections = {}
 	local defaultsByClass = {}
+	local datatypes: { [string]: { [string]: string | false } } = {}
 	local cloneRecords = setmetatable({}, { __mode = "k" })
 	local events = {
 		ChildAdded = true,
@@ -366,11 +367,26 @@ local function new(options: any?)
 					assert(valid, `{key} is not a valid member of Path2D "{properties.Name}"`)
 				end
 				if value ~= nil and type(key) == "string" then
-					local ok, default = pcall(function()
-						return defaults[key]
-					end)
-					local kind = if ok then typeof(default) else nil
-					if kind == "Color3" or kind == "UDim2" or kind == "UDim" or kind == "Vector2" then
+					local kinds = datatypes[className]
+					if kinds == nil then
+						kinds = {}
+						datatypes[className] = kinds
+					end
+					local kind = kinds[key]
+					if kind == nil then
+						local ok, default = pcall(function()
+							return defaults[key]
+						end)
+						local found = if ok then typeof(default) else ""
+						kind = if found == "Color3"
+								or found == "UDim2"
+								or found == "UDim"
+								or found == "Vector2"
+							then found
+							else false
+						kinds[key] = kind
+					end
+					if kind then
 						assert(
 							typeof(value) == kind,
 							`Unable to assign property {key}. {kind} expected, got {typeof(value)}`

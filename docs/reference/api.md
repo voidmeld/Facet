@@ -538,7 +538,7 @@ same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
 
 `themes.SCHEMA` is `facet-theme/2`. `TYPE_ROLES` and `REQUIRED_TYPE_ROLES` list
 `caption`, `label`, `body`, `heading`, `title`, `control`, `strong` and
-`numeral`.
+`numeral`. The `caption` role also uses the `contentSecondary` color.
 
 - `neutralPackage()` returns a mutable copy of the neutral theme package.
 - `define(definition)` derives from `base` (neutral by default) and returns

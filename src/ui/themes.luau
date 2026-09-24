@@ -420,6 +420,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 			FontFace = f(typography.font),
 			TextSize = typography.size,
 			LineHeight = typography.lineHeight or 1.2,
+			TextColor3 = if role == "caption" then c("contentSecondary") else nil,
 		})
 	end
 	rule(".facet-validation", { TextColor3 = c("danger"), TextSize = package.metrics.typography.caption.size })
