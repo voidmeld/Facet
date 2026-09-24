@@ -11,58 +11,46 @@ function screen.build(Facet: any, runtime: any, options: any?)
 	return Host.Frame "Consumer" {
 		Size = types.UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
+		Host.UIPadding({
+			PaddingTop = types.UDim.new(0, 16),
+			PaddingLeft = types.UDim.new(0, 16),
+			PaddingRight = types.UDim.new(0, 16),
+		}),
 		Compose.show(visible, function()
 			return Host.Frame "Panel" {
-				Size = types.UDim2.new(1, -32, 0, 0),
-				Position = types.UDim2.fromOffset(16, 16),
+				Size = types.UDim2.fromScale(1, 0),
 				AutomaticSize = types.Enum.AutomaticSize.Y,
 				BackgroundTransparency = 1,
 				Host.UIListLayout({ SortOrder = types.Enum.SortOrder.LayoutOrder, Padding = types.UDim.new(0, 12) }),
-				UI.Label({
-					LayoutOrder = 1,
-					Name = "Title",
-					Text = "Facet consumer",
-					TextSize = 28,
-					Size = types.UDim2.new(1, 0, 0, 36),
-					BackgroundTransparency = 1,
-				}),
-				UI.Label({
-					LayoutOrder = 2,
-					Name = "Blurb",
-					Text = "One component, local state, one theme. Press Bump and watch the count follow.",
+				UI.Label "Title" { text = "Facet consumer", textRole = "title" },
+				UI.Label "Blurb" {
+					text = "One component, local state, one theme. Press Bump and watch the count follow.",
+					textRole = "caption",
+					Size = types.UDim2.fromScale(1, 0),
 					TextWrapped = true,
-					Size = types.UDim2.new(1, 0, 0, 0),
-					AutomaticSize = types.Enum.AutomaticSize.Y,
-					BackgroundTransparency = 1,
-				}),
-				UI.Label({
-					LayoutOrder = 3,
-					Name = "Count",
-					Text = function(use)
+				},
+				UI.Label "Count" {
+					text = function(use)
 						return if use(count) == 1 then "1 tap" else `{use(count)} taps`
 					end,
-					Size = types.UDim2.new(1, 0, 0, 32),
-					BackgroundTransparency = 1,
-				}),
-				UI.Toggle({ LayoutOrder = 4, Name = "Sound", label = "Sound", value = sound }),
-				UI.Button({
-					LayoutOrder = 5,
-					Name = "Bump",
+					textRole = "heading",
+				},
+				UI.Toggle "Sound" { label = "Sound", value = sound },
+				UI.Button "Bump" {
 					label = "Bump",
+					appearance = "emphasis",
 					onActivate = function()
 						count:update(function(value)
 							return value + 1
 						end)
 					end,
-				}),
-				UI.Button({
-					LayoutOrder = 6,
-					Name = "Close",
+				},
+				UI.Button "Close" {
 					label = "Close",
 					onActivate = function()
 						visible:set(false)
 					end,
-				}),
+				},
 			}
 		end),
 	}
