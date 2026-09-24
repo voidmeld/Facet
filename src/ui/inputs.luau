@@ -1,5 +1,6 @@
 --!strict
 local decoration = require("./native_decoration")
+local help = require("./help")
 local valueModel = require("./input_value")
 local InputTypes = require("./input_types")
 local Shared = require("./types")
@@ -230,6 +231,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		"shortcut",
 		"selected",
 		"appearance",
+		"help",
 		"controlSize",
 		"corners",
 		"role",
@@ -513,6 +515,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end)
 		)
 		node = ctx.styled(Host.TextButton(p), "button")
+		if spec.help ~= nil then
+			help.attach(ctx, node, spec.help)
+		end
 		if not guiService then
 			runtime.connect(node, "SelectionGained", function()
 				assert(fallbackSelection):set(true)

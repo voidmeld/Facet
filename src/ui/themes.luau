@@ -575,6 +575,9 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		end
 	end
 
+	rule(".facet-tooltip", { BackgroundColor3 = c("surfaceStrong"), BackgroundTransparency = 0, BorderSizePixel = 0 })
+	rule(".facet-tooltip::UICorner", { CornerRadius = types.UDim.new(0, 6) })
+	rule(".facet-tooltip::UIStroke", { Color = c("hairline"), Transparency = 0.4, Thickness = 1 })
 	rule(".facet-appearance-utility", { BackgroundTransparency = 1 })
 	rule(".facet-appearance-utility:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
 	rule(".facet-appearance-utility:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
@@ -766,10 +769,10 @@ function themes.createStyleSheet(
 		end
 		return result
 	end
-	local scaled: { [NativeRule]: { preference: number, properties: ThemeTypes.RuleProperties } } = setmetatable(
-		{},
+	local scaled = setmetatable(
+		{} :: { [NativeRule]: { preference: number, properties: ThemeTypes.RuleProperties } },
 		{ __mode = "k" }
-	) :: any
+	)
 	local function withPreference(definition: NativeRule, preference: number): NativeRule
 		local translucent = definition.properties.BackgroundTransparency
 		if preference >= 1 or type(translucent) ~= "number" or translucent <= 0 or translucent >= 1 then

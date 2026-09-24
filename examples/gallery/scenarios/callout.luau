@@ -142,7 +142,7 @@ return {
 			end)
 			local anchor = UI.Button "Plus" {
 				label = COPY.plus,
-				hint = COPY.helpPlus,
+				help = COPY.helpPlus,
 				onActivate = function()
 					presses:set(presses:peek() + 1)
 				end,
@@ -191,7 +191,7 @@ return {
 			local events = callbacks(second, function() end)
 			local anchor = UI.Button "Share" {
 				label = COPY.share,
-				hint = COPY.helpShare,
+				help = COPY.helpShare,
 				onActivate = function() end,
 			}
 			return Host.Frame "ShareSlot" {
@@ -296,7 +296,13 @@ return {
 					PaddingLeft = UDim.new(0, 12),
 					PaddingRight = UDim.new(0, 12),
 				}),
+				Host.UIListLayout({
+					FillDirection = Enum.FillDirection.Vertical,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					Padding = UDim.new(0, 12),
+				}),
 				Host.Frame "Bar" {
+					LayoutOrder = 1,
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -304,8 +310,10 @@ return {
 					avatarTip(),
 				},
 				Host.ScrollingFrame "Page" {
+					LayoutOrder = 2,
 					BackgroundTransparency = 1,
-					Size = UDim2.new(1, 0, 1, 0),
+					Size = UDim2.new(1, 0, 0, 0),
+					Host.UIFlexItem({ FlexMode = Enum.UIFlexMode.Fill }),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 					CanvasSize = UDim2.new(),
 					ScrollBarThickness = 6,
@@ -322,7 +330,7 @@ return {
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
 						Text = COPY.title,
-						TextSize = 16,
+						textRole = "heading",
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
@@ -335,7 +343,7 @@ return {
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
 						Text = COPY.intro,
-						TextSize = 12,
+						role = "secondary",
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,

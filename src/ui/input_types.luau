@@ -29,6 +29,7 @@ export type ButtonVisualOptions = EnabledOptions & {
 	imageFraming: ("fit" | "crop")?,
 	subtitle: Value<string>?,
 	hint: Value<string>?,
+	help: Value<string>?,
 	row: Row?,
 }
 export type ButtonInputOptions = {

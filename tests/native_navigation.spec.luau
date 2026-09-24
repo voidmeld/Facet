@@ -791,6 +791,30 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("shows button help after a pointer rests on it and never on touch", function()
+		local world = setup(function(UI, Host)
+			return Host.Frame "Screen" {
+				UI.Button "Plus" { label = "+", help = "Posts this avatar" },
+			}
+		end)
+		local plus = find(world.screen, "Plus")
+		local Enum = world.engine.types.Enum
+		world.input.PreferredInput = Enum.PreferredInput.KeyboardAndMouse
+		plus.GuiState = Enum.GuiState.Hover
+		t.expect(find(world.screen, "HelpText")).toBe(nil)
+		world.engine.heartbeat.fire(0.3)
+		t.expect(find(world.screen, "HelpText")).toBe(nil)
+		world.engine.heartbeat.fire(0.3)
+		t.expect(find(world.screen, "HelpText").Text).toBe("Posts this avatar")
+		plus.GuiState = Enum.GuiState.Idle
+		t.expect(find(world.screen, "HelpText")).toBe(nil)
+		world.input.PreferredInput = Enum.PreferredInput.Touch
+		plus.GuiState = Enum.GuiState.Hover
+		world.engine.heartbeat.fire(0.6)
+		t.expect(find(world.screen, "HelpText")).toBe(nil)
+		world.stop()
+	end)
+
 	t.it("takes selection into a modal only for players navigating by selection", function()
 		local presented = Compose.cell(false)
 		local world = setup(function(UI, Host)

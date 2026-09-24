@@ -2,6 +2,7 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Core = require("../vendor/compose/core")
+local help = require("./help")
 
 return function(ctx: Types.Context): Nav.Surfaces
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
@@ -292,6 +293,77 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end,
 		})
 	end
+	help.register(ctx, function(anchor: GuiObject, text: Types.Value<string>)
+		local state = ctx.observe(anchor, "GuiState")
+		local selection = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "SelectedObject") else nil
+		local preferred = if input and input.GetPropertyChangedSignal then ctx.observe(input, "PreferredInput") else nil
+		local wanted = Compose.formula(function(use: Core.Use): boolean
+			local kind = if preferred then use(preferred) else nil
+			if kind == E.PreferredInput.Touch then
+				return false
+			end
+			return use(state) == E.GuiState.Hover or (selection ~= nil and use(selection) == anchor)
+		end)
+		local rest = runtime.timeline({ duration = 0.45, autoplay = false })
+		Compose.watch(function(use: Core.Use)
+			if use(wanted) then
+				rest:restart()
+			else
+				rest:pause()
+				rest:seek(0)
+			end
+		end)
+		local armed = Compose.formula(function(use: Core.Use): boolean
+			return use(wanted) and use(rest.progress) >= 1
+		end)
+		attach(anchor, {
+			overlay(anchor, armed, function()
+				local layer = assert(anchor:FindFirstAncestorWhichIsA("LayerCollector"))
+				local at, bounds = ctx.observe(anchor, "AbsolutePosition"), ctx.observe(anchor, "AbsoluteSize")
+				local extent, origin = ctx.observe(layer, "AbsoluteSize"), ctx.observe(layer, "AbsolutePosition")
+				local label = ctx.text({
+					Name = "HelpText",
+					Text = function(use: Core.Use)
+						return ctx.read(text, use) or ""
+					end,
+					TextWrapped = true,
+					Size = D2.fromOffset(0, 0),
+					AutomaticSize = E.AutomaticSize.XY,
+				})
+				label:AddTag("facet-type-caption")
+				local panel = Host.Frame "Help" {
+					AutomaticSize = E.AutomaticSize.XY,
+					Size = D2.fromOffset(0, 0),
+					ZIndex = 120,
+					Host.UISizeConstraint({ MaxSize = V2.new(280, math.huge) }) :: Types.Child,
+					Host.UIPadding({
+						PaddingLeft = ctx.types.UDim.new(0, 8),
+						PaddingRight = ctx.types.UDim.new(0, 8),
+						PaddingTop = ctx.types.UDim.new(0, 6),
+						PaddingBottom = ctx.types.UDim.new(0, 6),
+					}),
+					label,
+				}
+				local measured = ctx.observe(panel, "AbsoluteSize")
+				runtime.decorate(panel, {
+					Position = function(use: Core.Use)
+						local anchorAt, anchorSize, offer, offset, box =
+							use(at), use(bounds), use(extent), use(origin), use(measured)
+						local x = anchorAt.X - offset.X + (anchorSize.X - box.X) / 2
+						local y = anchorAt.Y - offset.Y - box.Y - 6
+						if y < 8 then
+							y = anchorAt.Y - offset.Y + anchorSize.Y + 6
+						end
+						return D2.fromOffset(
+							math.clamp(x, 8, math.max(8, offer.X - box.X - 8)),
+							math.clamp(y, 8, math.max(8, offer.Y - box.Y - 8))
+						)
+					end,
+				})
+				return ctx.styled(panel, "tooltip")
+			end),
+		})
+	end)
 	return {
 		modal = modal,
 		skin = skin,
