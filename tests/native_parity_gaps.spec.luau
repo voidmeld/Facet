@@ -116,6 +116,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		Dialog = function()
 			return { isPresented = Compose.cell(false), closeButton = false, title = "Title" }
 		end,
+		Snackbar = function()
+			return { isPresented = Compose.cell(false), message = "Saved", closeButton = false }
+		end,
 		Notice = function()
 			return { message = "Saved" }
 		end,
@@ -281,7 +284,7 @@ t.describe("native parity gaps", function()
 			table.insert(names, name :: string)
 		end
 		table.sort(names)
-		t.expect(#names).toBe(39)
+		t.expect(#names).toBe(40)
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()

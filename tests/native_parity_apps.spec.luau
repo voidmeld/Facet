@@ -3836,7 +3836,7 @@ t.describe("native parity reference applications", function()
 			end
 			local shared = { VirtualList = "CollectionSpec", VirtualGrid = "CollectionSpec" }
 			local names = controlNames()
-			t.expect(#names).toBe(39)
+			t.expect(#names).toBe(40)
 			for _, name in names do
 				local contract = shared[name]
 				local found = if contract

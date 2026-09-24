@@ -109,6 +109,7 @@ controls(runtime).Sheet : function
 controls(runtime).ShortcutHint : function
 controls(runtime).Skeleton : function
 controls(runtime).Slider : function
+controls(runtime).Snackbar : function
 controls(runtime).SplitButton : function
 controls(runtime).Stage : function
 controls(runtime).StatusIndicator : function
@@ -174,6 +175,7 @@ type SheetSpec
 type ShortcutHintProps
 type SkeletonProps
 type SliderProps
+type SnackbarSpec
 type SplitButtonSpec
 type StageProps
 type StatusIndicatorProps

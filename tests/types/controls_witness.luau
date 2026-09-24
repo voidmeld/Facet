@@ -99,6 +99,17 @@ local noticeProps: Facet.NoticeSpec = {
 local notice: Frame = UI.Notice(noticeProps)
 local navBarProps: Facet.NavBarSpec = { title = text, onBack = nothing, backLabel = "Back" }
 local navBar: Frame = UI.NavBar(navBarProps)
+local snackOpen = Compose.cell(false)
+local snackbarProps: Facet.SnackbarSpec = {
+	isPresented = snackOpen,
+	message = text,
+	duration = 4,
+	action = { label = "Undo", onActivate = nothing },
+	onPresentedChange = function(nextValue: boolean)
+		snackOpen:set(nextValue)
+	end,
+}
+local snackbar: Frame = UI.Snackbar(snackbarProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -197,6 +208,7 @@ local mounted: { GuiObject } = {
 	popover,
 	notice,
 	navBar,
+	snackbar,
 	menu,
 	split,
 	picker,

@@ -46,6 +46,7 @@ export type Controls = {
 	Popover: typeof(((nil :: unknown) :: Overlay.OverlayControls).Popover),
 	Notice: typeof(((nil :: unknown) :: Overlay.OverlayControls).Notice),
 	NavBar: typeof(((nil :: unknown) :: Overlay.OverlayControls).NavBar),
+	Snackbar: typeof(((nil :: unknown) :: Overlay.OverlayControls).Snackbar),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

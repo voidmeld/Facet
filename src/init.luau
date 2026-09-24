@@ -67,6 +67,7 @@ export type DialogSpec = OverlayTypes.DialogSpec
 export type PopoverSpec = OverlayTypes.PopoverSpec
 export type NoticeSpec = OverlayTypes.NoticeSpec
 export type NavBarSpec = OverlayTypes.NavBarSpec
+export type SnackbarSpec = OverlayTypes.SnackbarSpec
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage

@@ -1,5 +1,4 @@
 --!strict
-local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 
 type Value<T> = Types.Value<T>
@@ -86,7 +85,6 @@ export type SnackbarSpec = Types.FrameProps & {
 	duration: number?,
 	priority: number?,
 }
-export type SnackbarState = { admitted: boolean, visible: boolean, queued: boolean, readable: number }
 
 export type NoticeSeverity = "info" | "success" | "warning" | "error"
 export type NoticeSpec = Types.FrameProps & {
@@ -114,16 +112,12 @@ export type NavBarSpec = Types.FrameProps & {
 	padding: number?,
 }
 
-export type Insets = { top: number, bottom: number }
-
 export type OverlayControls = {
 	Dialog: Types.Constructor<DialogSpec, Frame>,
 	Popover: Types.Constructor<PopoverSpec, GuiObject>,
 	Snackbar: Types.Constructor<SnackbarSpec, Frame>,
 	Notice: Types.Constructor<NoticeSpec, Frame>,
 	NavBar: Types.Constructor<NavBarSpec, Frame>,
-	presentSnackbar: (SnackbarSpec) -> () -> (),
-	hudInsets: (GuiObject) -> ComposeTypes.Readable<Insets>,
 }
 
 return {}

@@ -400,6 +400,17 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			actions = { { id = "ok", label = "OK", onActivate = function() end } },
 		}
 	end,
+	Snackbar = function()
+		local shown = Compose.cell(true)
+		return {
+			isPresented = shown,
+			message = "Saved",
+			action = { label = "Undo", onActivate = function() end },
+			onPresentedChange = function(nextValue: boolean)
+				shown:set(nextValue)
+			end,
+		}
+	end,
 	Notice = function()
 		return {
 			message = "Connection interrupted",
