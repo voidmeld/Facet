@@ -167,7 +167,7 @@ return {
 								LayoutOrder = 1,
 								Name = "Sort",
 								label = COPY.sortLabel,
-
+								compactLabel = SORT_COMPACT,
 								onActivate = function() end,
 							}),
 							UI.Label({
