@@ -12,7 +12,8 @@ function relay.start(base: string): string
 	local created = Instance.new("RemoteEvent")
 	created.Name = "FacetLiveRelay"
 	local parts: { [string]: { string } } = {}
-	created.OnServerEvent:Connect(function(_, name: string, index: number, count: number, text: string)
+	created.OnServerEvent:Connect(function(_, name: string, index: number, count: number, text: string, dir: string?)
+		local folder = if dir == "perf" then "perf" else "live"
 		if not string.match(name, "^[%w%-_]+$") then
 			return
 		end
@@ -27,7 +28,7 @@ function relay.start(base: string): string
 		parts[name] = nil
 		local ok, result = pcall(function()
 			return HttpService:PostAsync(
-				`{base}/save?dir=live&name={name}`,
+				`{base}/save?dir={folder}&name={name}`,
 				table.concat(list, "", 1, count),
 				Enum.HttpContentType.ApplicationJson
 			)

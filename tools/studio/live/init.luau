@@ -390,13 +390,13 @@ function live.release()
 	end
 end
 
-function live.save(name: string, json: string): number
+function live.save(name: string, json: string, dir: string?): number
 	local event = storage:WaitForChild("FacetLiveRelay", 10) :: RemoteEvent?
 	assert(event, "start the relay in the Server datamodel first")
 	local size = 30000
 	local count = math.max(1, math.ceil(#json / size))
 	for index = 1, count do
-		event:FireServer(name, index, count, string.sub(json, (index - 1) * size + 1, index * size))
+		event:FireServer(name, index, count, string.sub(json, (index - 1) * size + 1, index * size), dir)
 	end
 	return #json
 end
