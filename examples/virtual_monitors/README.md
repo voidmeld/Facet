@@ -88,8 +88,11 @@ world; they provide no VR ray, gaze or hand-input implementation.
 `Invoke("mode", "Screen" | "Spatial")`, `Invoke("dark", boolean)`,
 `Invoke("accent", "sage" | "clay" | "iris")`,
 `Invoke("focus", app)`, `Invoke("tab", app)`, `Invoke("open", gameId)` (opens
-the details and starts a launch), `Invoke("close")`, `Invoke("summary", boolean)` (presents or dismisses the
-Avatar look summary sheet) and `Invoke("chat", text)`.
+the details and starts a launch), `Invoke("close")`, `Invoke("summary", boolean)` (the Avatar look summary
+sheet), `Invoke("about", boolean)` and `Invoke("status", boolean)` (the About
+dialog and the presence popover of the selected app in the current mode),
+`Invoke("appearance", boolean)` and `Invoke("tips", boolean)` (the Avatar
+Appearance disclosure and Tips) and `Invoke("chat", text)`.
 
 Automated behavior coverage lives in `tests/native_virtual_monitors.spec.luau`.
 `tests/native_virtual_monitors_coverage.spec.luau` mounts the three apps and the

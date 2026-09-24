@@ -52,6 +52,7 @@ function model.new(Compose: any)
 		presence = Compose.cell("online"),
 		chatUnread = Compose.cell(0),
 		toasts = { Discover = Compose.cell(nil), Chat = Compose.cell(nil) },
+		presentations = {},
 		modeChosen = false,
 	}
 	local serial = 0

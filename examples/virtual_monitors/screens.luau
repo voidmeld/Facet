@@ -165,6 +165,14 @@ function screens.create(Facet: any, runtime: any, actions: any)
 	local function shell(name, build)
 		local about = Compose.cell(false)
 		local statusOpen = Compose.cell(false)
+		local presentationKey = name .. (if actions.spatial then ":Spatial" else ":Screen")
+		local presentation = { about = about, status = statusOpen }
+		model.presentations[presentationKey] = presentation
+		Compose.cleanup(function()
+			if model.presentations[presentationKey] == presentation then
+				model.presentations[presentationKey] = nil
+			end
+		end)
 		local width = Compose.cell(920)
 		local function wide(use)
 			return use(width) >= 860

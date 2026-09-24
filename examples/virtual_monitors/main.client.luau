@@ -418,6 +418,16 @@ local lifetime = Compose.createRootOwner(function()
 				model.selectedGame:set(nil)
 			elseif command == "summary" then
 				model.avatarSummary:set(argument == true)
+			elseif command == "about" or command == "status" then
+				local key = model.selectedTab:peek() .. ":" .. mode:peek()
+				local presentation = model.presentations[key]
+				if presentation then
+					presentation[command]:set(argument == true)
+				end
+			elseif command == "appearance" then
+				model.avatarSettingsExpanded:set(argument == true)
+			elseif command == "tips" then
+				model.avatarTipsExpanded:set(argument == true)
 			elseif command == "chat" then
 				model.prompt(argument)
 				model.chat.send()
