@@ -802,6 +802,35 @@ These 22 contracts (56 main cases) still have a promise and no candidate case.
 | themes-P2-62 | icons-media | 1 | A status plate re-letters the picture: kind tag and direct child |
 | themes-P4-42 | error-handling | 1 | Self-referential definition terminates (cycles rejected) |
 
+## Main cases after the baseline
+
+Some cases were added on `main` after the baseline. Each family records them here and in `postBaseline` of the data file.
+
+### Content and navigation
+
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 18 contracts and 18 main cases (a: 17, b: 1). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
+
+| Contract | Main spec | Main cases | Class | Candidate cases | Note |
+|---|---|---:|---|---|---|
+| post-pagination-01 | `pagination` | 1 | a | `shows the seven-slot pattern near each edge and in the middle, and a gap of one shows the page` |  |
+| post-pagination-02 | `pagination` | 1 | a | `mounts the window, marks the current page and proposes without writing` |  |
+| post-pagination-03 | `pagination` | 1 | a | `keeps the overlapping page nodes when the window moves` |  |
+| post-pagination-04 | `pagination` | 1 | a | `shows zero pages as inert context and one page with no enabled navigation` |  |
+| post-pagination-05 | `pagination` | 1 | a | `follows the flags of an unknown count, shows the page label and never a last page` |  |
+| post-pagination-06 | `pagination` | 1 | a | `shows an outside page clamped with a diagnostic and never writes it back` |  |
+| post-pagination-07 | `pagination` | 1 | a | `refuses malformed construction and keeps the last legal value for a late one` | Main refused width = hug; the native control refuses AutomaticSize on X, the equivalent native declaration. |
+| post-pagination-08 | `pagination` | 1 | a | `drops the farthest boundary page, then the farthest neighbour, then shows the label as room narrows` | Text widths come from injected TextBounds on the measure labels; real glyph widths need Studio. |
+| post-pagination-09 | `pagination` | 1 | b | - | Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize. |
+| post-pagination-10 | `pagination` | 1 | a | `reverses the row once in rtl and keeps the meaning of previous and next` |  |
+| post-pagination-11 | `pagination` | 1 | a | `hands the selection of a page that leaves the window to the current page` | Arrival from the neighbours is native gamepad selection and is not simulated headlessly. |
+| post-pagination-12 | `pagination` | 1 | a | `hands the selection of an arrow that disables at an edge to the current page` |  |
+| post-pagination-13 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Slot and arrow sizes are asserted; hit rectangles need the native layout. |
+| post-pagination-14 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Anchor, position and compact size are asserted; the centred rectangle needs the native layout. |
+| post-pagination-15 | `pagination` | 1 | a | `keeps the label reservation while the label gains a digit, ltr and rtl, known and unknown` | The label reservation and its measure text are asserted; the arrow X positions need the native layout. |
+| post-pagination-16 | `pagination` | 1 | a | `leaves no stop inside the row when the count drops to zero` | The landing on a live neighbour is native selection. |
+| post-pagination-17 | `pagination` | 1 | a | `stays safe when a callback changes the count and removes the control` |  |
+| post-pagination-18 | `pagination` | 1 | a | `follows an accepted page in the Paging scenario context and changes nothing on a refusal` |  |
+
 ## Use the data
 
 - `totals` has the class counts before and after the new tests.

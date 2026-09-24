@@ -96,6 +96,7 @@ controls(runtime).LevelPicker : function
 controls(runtime).Menu : function
 controls(runtime).NavigationStack : function
 controls(runtime).PageView : function
+controls(runtime).Pagination : function
 controls(runtime).Picker : function
 controls(runtime).ProgressView : function
 controls(runtime).RadialMenu : function
@@ -149,6 +150,7 @@ type NavigationEntry
 type NavigationStackSpec
 type Owner
 type PageViewSpec
+type PaginationSpec
 type PickerOption
 type PickerSpec
 type ProgressViewProps

@@ -19,6 +19,8 @@
 - The getting-started guide shows how to test a screen headlessly with the fake native engine. Guides and tutorial examples use `text` for `UI.Label`.
 - `Facet.bind(Compose, Roblox)` returns a Facet table whose controls and themes use the Compose instance that you give. A game that already uses Compose keeps one reactive graph. The controls in `src/ui` use the pinned copy only for types. `Facet.COMPOSE_COMMIT` names the tested Compose commit. `bind` names a missing Compose function. A control names itself when a runtime or a readable from a different Compose instance reaches it. Before this change, such a control failed with a Compose owner error, or did not update.
 - The public-surface snapshot lists the `RadialItem` and `RadialMenuSpec` types.
+- `UI.Pagination` selects a page of numbered results. The caller owns `page`, and a press proposes one page through `onChange`. The window shows the boundary pages, the current page and its neighbours. It drops the farthest pages when the measured width is too small, and then shows "Page n of m". The selection moves to the current page when a selected page leaves the window or a selected arrow becomes disabled.
+- The type check raises the analyzer's `LuauTarjanChildLimit` to 40000. The public `Facet` type with the added controls is larger than the default limit of 10000.
 
 ## Pre-0.12.0 development history
 

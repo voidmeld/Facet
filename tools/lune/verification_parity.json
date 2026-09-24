@@ -34059,6 +34059,288 @@
         "native_navigation::native navigation controls::darkens modal scrims as the player lowers background transparency"
       ],
       "weaker": "nav_modal.preference and themes.preferenceFor are two separate implementations; tests show both multiply, not that they share one function."
+    },
+    {
+      "id": "post-pagination-01",
+      "group": "navigation-containers",
+      "title": "The seven-slot window near each edge and in the middle; a gap of one shows the page; bounded work",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::shows the seven-slot pattern near each edge and in the middle, and a gap of one shows the page"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-02",
+      "group": "navigation-containers",
+      "title": "Mounts the window, marks the current page and proposes without writing",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::mounts the window, marks the current page and proposes without writing"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-03",
+      "group": "navigation-containers",
+      "title": "Keeps overlapping page nodes when the window moves",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::keeps the overlapping page nodes when the window moves"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-04",
+      "group": "navigation-containers",
+      "title": "Zero pages is inert context; one page has no enabled navigation",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::shows zero pages as inert context and one page with no enabled navigation"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-05",
+      "group": "navigation-containers",
+      "title": "An unknown count follows its flags, shows the page label and never a last page",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::follows the flags of an unknown count, shows the page label and never a last page"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-06",
+      "group": "error-handling",
+      "title": "An outside page is shown clamped with a diagnostic and never written back",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::shows an outside page clamped with a diagnostic and never writes it back"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-07",
+      "group": "error-handling",
+      "title": "Malformed construction is refused and a late illegal value keeps the last legal one",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::refuses malformed construction and keeps the last legal value for a late one"
+      ],
+      "weaker": "Main refused width = hug; the native control refuses AutomaticSize on X, the equivalent native declaration.",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-08",
+      "group": "text-measure-fit",
+      "title": "Four-digit pages keep full targets; narrow room drops the farthest boundary page, then neighbours, then labels",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::drops the farthest boundary page, then the farthest neighbour, then shows the label as room narrows"
+      ],
+      "weaker": "Text widths come from injected TextBounds on the measure labels; real glyph widths need Studio.",
+      "needsLive": "pagination-fit",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-09",
+      "group": "layout-geometry",
+      "title": "A hugging parent settles on the same window a filling one shows at that width",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "needsLive": "pagination-hug",
+      "nativeMechanism": "Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize.",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-10",
+      "group": "navigation-containers",
+      "title": "rtl reverses the row once and keeps previous/next meaning",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::reverses the row once in rtl and keeps the meaning of previous and next"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-11",
+      "group": "focus-selection",
+      "title": "Reached from its neighbours; a vanished focused page leaves focus inside",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::hands the selection of a page that leaves the window to the current page"
+      ],
+      "weaker": "Arrival from the neighbours is native gamepad selection and is not simulated headlessly.",
+      "needsLive": "pagination-neighbours",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-12",
+      "group": "focus-selection",
+      "title": "An arrow that disables at an edge hands focus to the current page",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::hands the selection of an arrow that disables at an edge to the current page"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-13",
+      "group": "layout-geometry",
+      "title": "Page buttons and arrows reserve the target floor: no two hit bands overlap",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::gives every page and arrow a slot at the target floor and a compact plate centred in it"
+      ],
+      "weaker": "Slot and arrow sizes are asserted; hit rectangles need the native layout.",
+      "needsLive": "pagination-targets",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-14",
+      "group": "layout-geometry",
+      "title": "A page is a small plate centred in a target-wide slot",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::gives every page and arrow a slot at the target floor and a compact plate centred in it"
+      ],
+      "weaker": "Anchor, position and compact size are asserted; the centred rectangle needs the native layout.",
+      "needsLive": "pagination-targets",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-15",
+      "group": "text-measure-fit",
+      "title": "The arrows hold still while the label grows a digit, ltr and rtl, known and unknown",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::keeps the label reservation while the label gains a digit, ltr and rtl, known and unknown"
+      ],
+      "weaker": "The label reservation and its measure text are asserted; the arrow X positions need the native layout.",
+      "needsLive": "pagination-arrows-still",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-16",
+      "group": "focus-selection",
+      "title": "Count to zero leaves no internal stop and focus returns to a live neighbour",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::leaves no stop inside the row when the count drops to zero"
+      ],
+      "weaker": "The landing on a live neighbour is native selection.",
+      "needsLive": "pagination-neighbours",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-17",
+      "group": "lifetime-ownership",
+      "title": "A callback that changes the count or disposes the control is safe",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::stays safe when a callback changes the count and removes the control"
+      ],
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-pagination-18",
+      "group": "gallery-examples",
+      "title": "The Paging scenario results context follows an accepted page, and a refusal changes nothing",
+      "mainSpecs": [
+        "pagination"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "candidateCases": [
+        "native_pagination::native Pagination::follows an accepted page in the Paging scenario context and changes nothing on a refusal"
+      ],
+      "family": "content-navigation"
     }
   ],
   "bugs": [
@@ -34477,5 +34759,24 @@
       "title": "AvatarGroup kept the old resource lease and image when the resource of a member changed under the same id. A member with a resource is now keyed by its id and its resource, so only that face mounts again with a new lease.",
       "fixedBy": "native_parity_weaker_virtual::native parity weaker virtual::themes-P1-35 avatar faces keep their resources on reorder and replace only a changed source or resource"
     }
-  ]
+  ],
+  "postBaseline": {
+    "content-navigation": {
+      "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
+      "contracts": 18,
+      "mainCases": 18,
+      "mainCasesByClass": {
+        "a": 17,
+        "b": 1
+      },
+      "needsLive": [
+        "pagination-arrows-still",
+        "pagination-fit",
+        "pagination-hug",
+        "pagination-neighbours",
+        "pagination-targets"
+      ]
+    }
+  }
 }

@@ -63,6 +63,9 @@ local fixtures = {
 	Stage = function()
 		return {}
 	end,
+	Pagination = function()
+		return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
+	end,
 	Menu = function()
 		return { items = { { id = "a", label = "A", onSelect = function() end } } }
 	end,

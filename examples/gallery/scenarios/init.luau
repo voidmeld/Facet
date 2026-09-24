@@ -26,6 +26,7 @@ local names = {
 	"navigation_stack",
 	"outpost_terminal",
 	"page_view",
+	"paging",
 	"preferred_transparency",
 	"progress_ring",
 	"radial_menu",

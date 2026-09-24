@@ -67,6 +67,16 @@ local avatarProps: Facet.AvatarProps = { name = "Alder", presence = "online" :: 
 local avatar: GuiObject = UI.Avatar(avatarProps)
 local avatars: GuiObject = UI.AvatarGroup({ items = { { id = "a", name = "Alder" } } })
 local stage: ViewportFrame = UI.Stage({ fieldOfView = 60 })
+local pageCell = Compose.cell(1)
+local paginationProps: Facet.PaginationSpec = {
+	page = pageCell,
+	pageCount = 12,
+	form = "numbers" :: "numbers",
+	onChange = function(nextPage: number)
+		pageCell:set(nextPage)
+	end,
+}
+local pagination: Frame = UI.Pagination(paginationProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -161,6 +171,7 @@ local mounted: { GuiObject } = {
 	avatar,
 	avatars,
 	stage,
+	pagination,
 	menu,
 	split,
 	picker,
