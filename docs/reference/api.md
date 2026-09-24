@@ -152,15 +152,52 @@ document their own write-then-notify behavior below.
 - `reducedMotion` and `icons`: these can also be reactive. Control motion also
   follows `GuiService.ReducedMotionEnabled`. Motion is reduced when either one
   is true.
-- `pressHaptic`: a native `HapticEffect`. Each button that has no
-  `PressHapticEffect` uses it as its native `PressHapticEffect`. Thus buttons,
-  segments and toggles play the effect when they are pressed.
+- `pressHaptic`: a native `HapticEffect`. Only a control that changes a state
+  or a value plays it. See [Haptics](#haptics).
 - `controlSize`: the control-size step (`compact`, `regular` or `large`) for
   theme icons.
 - `onError`: receives a failure from the content of a presented Alert. The
   alert dismisses.
 - `services`, `guiService`, `userInputService` and `types`: native dependencies.
 - `inputParent` and `overlayParent`: placement targets.
+
+### Motion
+
+The controls animate navigation and presentation by default. All motion uses
+the Compose runtime. Motion does not block input or focus. An exiting element
+cannot be interacted with, and the selection never stays on it.
+
+| Control | Enter | Exit |
+|---|---|---|
+| NavigationStack push | The new page slides in from the trailing edge. The old page moves 30 percent to the leading edge and dims. Critically damped spring with a 0.3 second period, visually complete in approximately 0.35 seconds. | Pop is the reverse. |
+| TabView page change | Crossfade, 0.2 seconds, Quad Out. | The same. |
+| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. The scrim fades in. | Slides down, 0.2 seconds. |
+| Alert | Scales from 0.94 to 1 and fades in, 0.2 seconds, Cubic Out. The scrim fades in. | The reverse, 0.15 seconds. |
+| Callout, Button `help`, Menu, Picker menu | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+
+- Reduced motion (`reducedMotion` or `GuiService.ReducedMotionEnabled`) removes
+  all of this motion. The change is immediate.
+- A presentation that has not drawn a frame, or whose anchor is no longer
+  available, leaves immediately.
+- If you present a control again during its exit, the exit reverses.
+- PageView keeps its native page swipe.
+
+### Haptics
+
+`pressHaptic` plays only for a control that changes a state or a value:
+
+- Toggle and a Chip with `selected`.
+- A Picker option that is not selected. A multiple Picker option always plays.
+- A Stepper step.
+- A Slider with a `step`. The effect plays once for each detent, not for each
+  frame.
+- Rating and LevelPicker.
+- An Alert action with the `destructive` role or the `defaultAction` shortcut.
+
+A plain Button, a tab, a menu row, a keyboard key and a link do not play it.
+Set `haptic = true` on a Button to play `pressHaptic` for a game-specific
+action. `haptic` can be a readable. An explicit `PressHapticEffect` always
+wins.
 
 The `theme` option does not install paint. Parent a `createStyleSheet` result
 and its StyleLink in the native tree, with the same theme package source.
@@ -191,6 +228,8 @@ Presentation options:
   button has `onActivate` and no `trailingIcon`, it also shows a disclosure
   chevron. `value` and `icon` are static strings. `hint` shows as a second
   line of text below the label.
+- `haptic`: a boolean or a readable. When it is true, the button plays the
+  `pressHaptic` of the controls. The default is false. See [Haptics](#haptics).
 - `help`: one sentence that describes the action. It shows in a small panel
   when a pointer rests on the button for 0.45 seconds, or when a gamepad
   selects the button. It does not show on touch, so do not put information in
@@ -289,6 +328,8 @@ menus keep the control-specific navigation of the menu.
 - When the player navigates by selection, an open menu selects its first
   enabled item. Back and Left close one level and return the selection to the
   item that opened it.
+- The menu panel scales and fades from the edge nearest to its trigger. See
+  [Motion](#motion).
 
 SplitButton combines a primary `label` and `onActivate` action with the
 secondary `items` of the menu. Use it when the secondary operations supplement
@@ -349,9 +390,10 @@ cannot be hidden.
 not look like user input. The control owns scroll and focus restoration and
 shoulder navigation.
 
-Native fades accept direct Compose tween options, such as
-`transition = { seconds = 0.18, ease = Compose.easing.outQuad }`. Use `false`
-to disable motion. Named Facet transition presets do not exist.
+A page change uses a native crossfade. The default is
+`transition = { seconds = 0.2, ease = Compose.easing.outQuad }`. Supply other
+direct Compose tween options to change it. Use `false` to disable motion. Named
+Facet transition presets do not exist. The first page shows without motion.
 
 ### NavigationStack
 
@@ -364,6 +406,15 @@ is an array of `{ id, value }` entries. `root` and each `destinations[id]` are
 
 `backLabel` sets the text of the native Back chrome. Compose `LayerStack` owns
 the retained pages and their disposal.
+
+A push slides the new page in from the trailing edge. The covered page moves
+30 percent to the leading edge and dims. A pop plays the reverse. The popped
+page stays until its motion completes. It cannot be interacted with, and it
+cannot hold the selection. The default motion is a critically damped Compose
+spring. `transition = { seconds, ease }` replaces the slide with a crossfade
+that uses those Compose tween options.
+`transition = false` disables motion. The pages that are present when the
+stack mounts show without motion.
 
 ### PageView
 
@@ -418,7 +469,9 @@ Motion options:
   it still exists. Compose owns the snapshot and the departing presentation.
   The source stays mounted.
 - Native reduced motion makes the handoff immediate.
-- Without `transition`, the presentation is immediate.
+- Without `transition`, the alert scales from 0.94 to 1 and fades in. See
+  [Motion](#motion).
+- `transition = false` makes the presentation immediate.
 
 The alert clears a writable `error` on dismissal. Use an alert for a brief
 decision. `icon`, `severity`, suppression and custom content refine the
@@ -439,7 +492,8 @@ Native drag detection resizes the sheet between the declared detents. The
 grabber is also a selectable `Resize` button that moves to the next detent, for
 touch taps, the mouse and the gamepad. The header shows the title and a `Done`
 action named `Close`. `interactiveDismissDisabled` blocks gesture dismissal.
-The Done action stays available.
+The Done action stays available. The sheet slides up from the bottom and slides
+down when it closes. See [Motion](#motion).
 
 ### DisclosureGroup and CollapsibleView
 
@@ -455,7 +509,8 @@ Callout requires a native `anchor` with a separate parent, content and
 is hidden, the callout is suspended. `seen`, `sessions`, `afterSessions`,
 `featureUsed` and priority set eligibility and queue order. Retirement is
 delivered once. A callout is contextual teaching attached to a control. It is
-not a second application presenter.
+not a second application presenter. The callout scales and fades from the edge
+nearest to its anchor. See [Motion](#motion).
 
 ## Collections
 

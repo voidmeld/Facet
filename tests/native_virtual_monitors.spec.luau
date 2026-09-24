@@ -102,19 +102,27 @@ t.describe("native virtual monitors", function()
 		t.expect(path.Thickness).toBe(3)
 		path:Destroy()
 	end)
-	t.it("plays the showcase press haptic from every monitor button", function()
+	t.it("plays the showcase press haptic only from monitor controls that change a value", function()
 		local effect = engineModule.new().new("HapticEffect")
 		withScreens(function(world)
-			local count = 0
+			local buzzing, quiet = 0, 0
 			for _, name in { "Discover", "Avatar", "Chat" } do
 				for _, node in world[name]:GetDescendants() do
 					if node:HasTag("facet-button") then
-						t.expect(node.PressHapticEffect).toBe(effect)
-						count += 1
+						local changesValue = node:HasTag("facet-toggle")
+							or node:HasTag("facet-chip")
+							or (node:HasTag("facet-segment") and not node:HasTag("facet-segment-current"))
+						t.expect(node.PressHapticEffect).toBe(if changesValue then effect else nil)
+						if changesValue then
+							buzzing += 1
+						else
+							quiet += 1
+						end
 					end
 				end
 			end
-			t.expect(count > 0).toBe(true)
+			t.expect(buzzing > 0).toBe(true)
+			t.expect(quiet > buzzing).toBe(true)
 		end, { pressHaptic = effect })
 	end)
 

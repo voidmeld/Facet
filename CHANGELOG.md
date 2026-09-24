@@ -19,6 +19,8 @@
 - The getting-started guide shows how to test a screen headlessly with the fake native engine. Guides and tutorial examples use `text` for `UI.Label`.
 - `Facet.bind(Compose, Roblox)` returns a Facet table whose controls and themes use the Compose instance that you give. A game that already uses Compose keeps one reactive graph. The controls in `src/ui` use the pinned copy only for types. `Facet.COMPOSE_COMMIT` names the tested Compose commit. `bind` names a missing Compose function. A control names itself when a runtime or a readable from a different Compose instance reaches it. Before this change, such a control failed with a Compose owner error, or did not update.
 - The public-surface snapshot lists the `RadialItem` and `RadialMenuSpec` types.
+- Navigation and presentation animate by default. A NavigationStack push slides the new page in from the trailing edge and moves the covered page 30 percent with a dim. A pop plays the reverse. TabView crossfades pages in 0.2 seconds. Sheet slides up. Alert scales from 0.94 and fades in. Callout, Button `help` and Menu scale and fade from their anchor. Each exit plays the reverse, faster. Reduced motion removes the motion. `transition = false` removes it for NavigationStack, TabView and Alert. An exiting presentation releases its modal scope and the selection when its exit starts.
+- `pressHaptic` plays only for a control that changes a state or a value: Toggle, a selectable Chip, an unselected Picker option, a Stepper step, a Slider detent, Rating, LevelPicker, and a destructive or default Alert action. A plain Button, a tab, a menu row, a keyboard key and a link do not play it. Button `haptic = true` opts in.
 
 ## Pre-0.12.0 development history
 

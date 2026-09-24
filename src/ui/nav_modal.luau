@@ -3,6 +3,7 @@ local Types = require("./types")
 local Nav = require("./navigation_types")
 local ComposeTypes = require("../vendor/compose/core")
 local help = require("./help")
+local reducedMotion = require("./motion")
 
 return function(ctx: Types.Context): Nav.Surfaces
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
@@ -16,6 +17,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 	end
 	local gui = service("GuiService") :: GuiService?
 	local input = service("UserInputService") :: UserInputService?
+	local POPOVER: Nav.MotionTiming = { enter = 0.15, exit = 0.1 }
 
 	local function selecting(): (ComposeTypes.Use) -> boolean
 		local active = gui ~= nil and gui.SelectedObject ~= nil
@@ -75,8 +77,82 @@ return function(ctx: Types.Context): Nav.Surfaces
 		return panel
 	end
 
+	local function appearance(phase: Nav.PresencePhase?, timing: Nav.MotionTiming): Nav.Appearance
+		local reduce = reducedMotion(ctx)
+		local exiting: ComposeTypes.Readable<boolean> = if phase then phase.exiting else Compose.cell(false)
+		local shown = Compose.cell(false)
+		local progress = runtime.tween(function(use: ComposeTypes.Use): number
+			return if use(exiting) or not use(shown) then 0 else 1
+		end, {
+			seconds = function(_: ComposeTypes.Use): number
+				return if exiting:peek() then timing.exit else timing.enter
+			end,
+			ease = Compose.easing.outCubic,
+		})
+		shown:set(true)
+		return function(use: ComposeTypes.Use?): number
+			if reduce(use) then
+				return 1
+			end
+			return ctx.read(progress, use)
+		end
+	end
+	local function popover(
+		panel: GuiObject,
+		amount: Nav.Appearance,
+		place: (ComposeTypes.Use) -> (Vector2, Vector2)
+	): ()
+		local function scale(use: ComposeTypes.Use): number
+			return 0.9 + 0.1 * amount(use)
+		end
+		runtime.decorate(panel, {
+			Position = function(use: ComposeTypes.Use)
+				local at, origin = place(use)
+				local shrink = 1 - scale(use)
+				return D2.fromOffset(at.X + origin.X * shrink, at.Y + origin.Y * shrink)
+			end,
+		})
+		if panel:IsA("CanvasGroup") then
+			runtime.decorate(panel, {
+				GroupTransparency = function(use: ComposeTypes.Use)
+					return 1 - amount(use)
+				end,
+			})
+		end
+		attach(panel, { Host.UIScale "PresentationScale" { Scale = scale } })
+	end
+	local function attached(anchor: GuiObject): boolean
+		local at: Instance? = anchor
+		while at do
+			if at:IsA("GuiObject") and (not at.Visible or not at.Interactable) then
+				return false
+			end
+			if at:IsA("LayerCollector") then
+				return at.Enabled
+			end
+			at = at.Parent
+		end
+		return false
+	end
+	local function departure(
+		timing: Nav.MotionTiming,
+		anchor: GuiObject,
+		shown: () -> boolean
+	): ComposeTypes.PresenceOptions
+		return {
+			exit = function()
+				if not shown() or not attached(anchor) or reducedMotion(ctx)() then
+					return { completed = Compose.cell(true) }
+				end
+				return { completed = runtime.timeline({ duration = timing.exit }).completed }
+			end,
+		}
+	end
+
 	local function modal(content: () -> GuiObject, dismiss: (string?) -> (), options: Nav.ModalOptions?): Frame
 		local spec: Nav.ModalOptions = options or {}
+		local exiting = spec.exiting
+		local shown = spec.appearance
 		local previous = if gui then gui.SelectedObject else nil
 		local preferred = preference()
 		local focusIn = selecting()
@@ -111,7 +187,8 @@ return function(ctx: Types.Context): Nav.Surfaces
 					else function(use: ComposeTypes.Use)
 						local authored = ctx.read(spec.backgroundTransparency, use)
 						local value = if type(authored) == "number" then math.clamp(authored, 0, 1) else 1
-						return if value >= 1 then 1 else value * preferred(use)
+						local amount = if shown then shown(use) else 1
+						return if value >= 1 then 1 else 1 - (1 - value * preferred(use)) * amount
 					end,
 				BackgroundColor3 = if spec.backgroundTransparency == nil then nil else ctx.types.Color3.new(0, 0, 0),
 				AutoButtonColor = false,
@@ -143,15 +220,38 @@ return function(ctx: Types.Context): Nav.Surfaces
 			} :: Instance,
 			panel,
 		}
+		if exiting then
+			props.Interactable = function(use: ComposeTypes.Use)
+				return not use(exiting)
+			end
+		end
 		root = Host.Frame(props)
 		local catcher = root:FindFirstChild("DismissOutside")
 		if spec.backgroundTransparency == nil and catcher then
 			catcher:AddTag("facet-scrim")
+			if shown then
+				attach(catcher, {
+					Host.UIGradient "ScrimFade" {
+						Transparency = function(use: ComposeTypes.Use)
+							return ctx.types.NumberSequence.new(1 - shown(use))
+						end,
+					},
+				})
+			end
 		end
-		local modals = table.clone(ctx.modalScopes:peek())
-		table.insert(modals, root)
-		ctx.modalScopes:set(modals)
-		Compose.cleanup(function()
+		local released = false
+		local function claim()
+			local modals = table.clone(ctx.modalScopes:peek())
+			table.insert(modals, root)
+			ctx.modalScopes:set(modals)
+			released = false
+		end
+		claim()
+		local function release()
+			if released then
+				return
+			end
+			released = true
 			local remaining = {}
 			for _, modal in ctx.modalScopes:peek() do
 				if modal ~= root then
@@ -159,7 +259,34 @@ return function(ctx: Types.Context): Nav.Surfaces
 				end
 			end
 			ctx.modalScopes:set(remaining)
-		end)
+			if gui then
+				local selected = gui.SelectedObject
+				if selected == nil or selected.Parent == nil or within(selected, root) then
+					gui.SelectedObject = if previous
+							and previous.Parent ~= nil
+							and not within(previous, root)
+						then previous
+						else nil
+				end
+			end
+		end
+		Compose.cleanup(release)
+		if exiting then
+			Compose.watch(function(use: ComposeTypes.Use)
+				if use(exiting) then
+					release()
+				elseif released then
+					local selected = if gui then gui.SelectedObject else nil
+					if selected and not within(selected, root) then
+						previous = selected
+					end
+					claim()
+					if gui and selected then
+						gui.SelectedObject = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
+					end
+				end
+			end)
+		end
 		ctx.action(
 			root,
 			"ModalBack",
@@ -171,14 +298,13 @@ return function(ctx: Types.Context): Nav.Surfaces
 		if gui then
 			local mounted = ctx.observe(root, "Parent")
 			Compose.watch(function(use: ComposeTypes.Use)
-				if use(mounted) and focusIn(use) and not within(gui.SelectedObject, root) then
+				if
+					use(mounted)
+					and not (exiting and use(exiting))
+					and focusIn(use)
+					and not within(gui.SelectedObject, root)
+				then
 					gui.SelectedObject = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
-				end
-			end)
-			Compose.cleanup(function()
-				local selected = gui.SelectedObject
-				if selected == nil or selected.Parent == nil or within(selected, root) then
-					gui.SelectedObject = if previous and previous.Parent ~= nil then previous else nil
 				end
 			end)
 		end
@@ -277,7 +403,11 @@ return function(ctx: Types.Context): Nav.Surfaces
 				return if target then { target } else {}
 			end,
 			render = function(current)
+				local age: ComposeTypes.Readable<number>? = nil
 				local function render(phase: Nav.PresencePhase?): Folder
+					if phase then
+						age = runtime.timeline({ duration = 0.001 }).elapsed
+					end
 					return Host.Folder "OverlayPortal" {
 						Compose.portal(current:peek(), function()
 							if options and options.failure then
@@ -293,11 +423,32 @@ return function(ctx: Types.Context): Nav.Surfaces
 						end),
 					}
 				end
-				return Host.Folder "Presentation" {
-					if options and options.presence
-						then Compose.presence(condition, render, options.presence)
-						else Compose.show(condition, render),
-				}
+				local presence = if options and options.presence
+					then options.presence
+					elseif options and options.motion then departure(options.motion, anchor, function(): boolean
+						local elapsed = age
+						return elapsed ~= nil and elapsed:peek() > 0
+					end)
+					else nil
+				local function presentation(): Folder
+					return Host.Folder "Presentation" {
+						if presence
+							then Compose.presence(condition, render, presence)
+							else Compose.show(condition, render),
+					}
+				end
+				local identity = options and options.identity
+				if identity then
+					return Host.Folder "Presentations" {
+						Compose.keyed({
+							from = function(use: ComposeTypes.Use)
+								return { identity(use) }
+							end,
+							render = presentation,
+						}),
+					}
+				end
+				return presentation()
 			end,
 		})
 	end
@@ -325,7 +476,8 @@ return function(ctx: Types.Context): Nav.Surfaces
 			return use(wanted) and use(rest.progress) >= 1
 		end)
 		attach(anchor, {
-			overlay(anchor, armed, function()
+			overlay(anchor, armed, function(phase: Nav.PresencePhase?)
+				local amount = appearance(phase, POPOVER)
 				local layer = assert(anchor:FindFirstAncestorWhichIsA("LayerCollector"))
 				local at, bounds = ctx.observe(anchor, "AbsolutePosition"), ctx.observe(anchor, "AbsoluteSize")
 				local extent, origin = ctx.observe(layer, "AbsoluteSize"), ctx.observe(layer, "AbsolutePosition")
@@ -353,7 +505,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 					AutomaticSize = E.AutomaticSize.Y,
 				})
 				label:AddTag("facet-type-caption")
-				local panel = Host.Frame "Help" {
+				local panel = Host.CanvasGroup "Help" {
 					AutomaticSize = E.AutomaticSize.XY,
 					Size = D2.fromOffset(0, 0),
 					ZIndex = 120,
@@ -367,23 +519,22 @@ return function(ctx: Types.Context): Nav.Surfaces
 					measure,
 				}
 				local measured = ctx.observe(panel, "AbsoluteSize")
-				runtime.decorate(panel, {
-					Position = function(use: ComposeTypes.Use)
-						local anchorAt, anchorSize, offer, offset, box =
-							use(at), use(bounds), use(extent), use(origin), use(measured)
-						local x = anchorAt.X - offset.X + (anchorSize.X - box.X) / 2
-						local y = anchorAt.Y - offset.Y - box.Y - 6
-						if y < 8 then
-							y = anchorAt.Y - offset.Y + anchorSize.Y + 6
-						end
-						return D2.fromOffset(
-							math.clamp(x, 8, math.max(8, offer.X - box.X - 8)),
-							math.clamp(y, 8, math.max(8, offer.Y - box.Y - 8))
-						)
-					end,
-				})
+				popover(panel, amount, function(use: ComposeTypes.Use): (Vector2, Vector2)
+					local anchorAt, anchorSize, offer, offset, box =
+						use(at), use(bounds), use(extent), use(origin), use(measured)
+					local x = anchorAt.X - offset.X + (anchorSize.X - box.X) / 2
+					local y = anchorAt.Y - offset.Y - box.Y - 6
+					local below = y < 8
+					if below then
+						y = anchorAt.Y - offset.Y + anchorSize.Y + 6
+					end
+					local left = math.clamp(x, 8, math.max(8, offer.X - box.X - 8))
+					local top = math.clamp(y, 8, math.max(8, offer.Y - box.Y - 8))
+					local center = anchorAt.X - offset.X + anchorSize.X / 2 - left
+					return V2.new(left, top), V2.new(math.clamp(center, 0, box.X), if below then 0 else box.Y)
+				end)
 				return ctx.styled(panel, "tooltip")
-			end),
+			end, { motion = POPOVER }),
 		})
 	end)
 	return {
@@ -398,5 +549,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		selecting = selecting,
 		overlay = overlay,
 		available = available,
+		appearance = appearance,
+		popover = popover,
 	}
 end

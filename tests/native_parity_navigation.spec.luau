@@ -500,8 +500,8 @@ t.describe("native parity navigation", function()
 		end
 	)
 
-	t.it("uses a plain native frame and hides the old page immediately when no transition is declared", function()
-		for _, declared in { "none", "false" } do
+	t.it("uses a plain native frame and hides the old page immediately when transition is false", function()
+		for _, declared in { "false" } do
 			local selection = Compose.cell("a")
 			local world = setup(function(UI, Host)
 				return UI.TabView({
@@ -1361,6 +1361,7 @@ t.describe("native parity navigation", function()
 			t.expect(panel.Size.X.Offset).toBe(348)
 			t.expect(panel.Size.Y.Offset).toBe(104)
 			panel.AbsoluteSize = V2(world, 348, 104)
+			world.engine.heartbeat.fire(1)
 			t.expect(panel.Position).toBe(world.engine.types.UDim2.fromOffset(100, 148))
 			find(find(panel, "long"), "Content").AbsoluteSize = V2(world, 500, 44)
 			t.expect(panel.Size.X.Offset).toBe(400)
@@ -1861,6 +1862,7 @@ t.describe("native parity navigation", function()
 			anchor.AbsoluteSize = V2(world, 240, 44)
 			local panel = find(world.screen, "CalloutPanel")
 			panel.AbsoluteSize = V2(world, 280, 100)
+			world.engine.heartbeat.fire(1)
 			t.expect(panel.Position.Y.Offset).toBe(660 - 100 - 8)
 			t.expect(panel.Position.X.Offset).toBe(140)
 			align:set("leading")

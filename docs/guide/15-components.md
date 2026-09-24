@@ -117,6 +117,29 @@ Use `runtime.spring`, `runtime.tween` and `runtime.timeline` for motion. Obey
 the reduced-motion setting. Bind animated values to native properties. Roblox
 StyleRule transitions own the theme paint animation.
 
+Navigation and presented controls animate by default. Do not add your own
+motion to them. NavigationStack slides a pushed page in from the trailing edge.
+TabView crossfades its pages. Sheet slides up. Alert scales and fades in.
+Callout, Button `help` and Menu scale and fade from their anchor. Each exit
+plays the reverse, faster. Reduced motion removes this motion. To use a
+crossfade in NavigationStack or TabView, supply `transition` with Compose tween
+options. To remove the motion, supply `transition = false`. The
+[motion table](../reference/api.md#motion) gives each duration and curve.
+
+```luau
+local path = Compose.cell({})
+return UI.NavigationStack {
+	path = path,
+	root = { title = "Library", content = Host.Frame {} },
+	destinations = { game = { title = "Game", content = Host.Frame {} } },
+	transition = { seconds = 0.25, ease = Compose.easing.outCubic },
+}
+```
+
+Haptics are restrained. The `pressHaptic` of the controls plays only for a
+control that changes a state or a value, for example a Toggle or a Stepper
+step. To make a game-specific Button play it, set `haptic = true`.
+
 See the [native API contract](../reference/api.md),
 [adaptive composition](15-adaptive-recipes.md) and
 [practical recipes](17-recipes.md).

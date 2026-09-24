@@ -1133,19 +1133,77 @@ t.describe("native input controls", function()
 			end)
 		end).toThrow()
 	end)
-	t.it("uses the application press haptic unless a button names its own", function()
+	t.it("plays the application press haptic only for controls that change a state or a value", function()
 		local effect, own
+		local opted = Compose.cell(false)
 		local node, stop = world(function(UI, _, runtime)
 			return runtime.constructors.Frame({
 				UI.Button "Plain" { label = "Play" },
+				UI.Button "Opted" { label = "Buy", haptic = true },
+				UI.Button "Switched" { label = "Maybe", haptic = opted },
 				UI.Button "Custom" { label = "Play", PressHapticEffect = own },
+				UI.Toggle "Sound" { value = Compose.cell(true), label = "Sound" },
+				UI.Chip "Filter" { label = "Filter", selected = Compose.cell(false) },
+				UI.Stepper "Count" { value = Compose.cell(1), min = 0, max = 5 },
+				UI.Rating "Stars" { value = Compose.cell(2) },
+				UI.LevelPicker "Level" { value = Compose.cell(2) },
 			})
 		end, function(engine)
 			effect, own = engine.new("HapticEffect"), engine.new("HapticEffect")
 			return { pressHaptic = effect }
 		end)
-		t.expect(find(node, "Plain").PressHapticEffect).toBe(effect)
+		t.expect(find(node, "Plain").PressHapticEffect).toBe(nil)
+		t.expect(find(node, "Opted").PressHapticEffect).toBe(effect)
+		t.expect(find(node, "Switched").PressHapticEffect).toBe(nil)
+		opted:set(true)
+		t.expect(find(node, "Switched").PressHapticEffect).toBe(effect)
+		opted:set(false)
+		t.expect(find(node, "Switched").PressHapticEffect).toBe(nil)
 		t.expect(find(node, "Custom").PressHapticEffect).toBe(own)
+		for _, name in { "Sound", "Filter", "Decrease", "Increase", "Stars", "Level" } do
+			t.expect(find(node, name).PressHapticEffect).toBe(effect)
+		end
+		stop()
+	end)
+
+	t.it("plays the press haptic once for each slider detent and never for a continuous slider", function()
+		local stepped, continuous, plays = Compose.cell(25), Compose.cell(0.5), 0
+		local effect = {
+			Play = function()
+				plays += 1
+			end,
+		}
+		local node, stop, engine = world(function(UI, _, runtime)
+			return runtime.constructors.Frame({
+				UI.Slider "Stepped" { value = stepped, min = 0, max = 100, step = 25 },
+				UI.Slider "Continuous" { value = continuous },
+			})
+		end, function()
+			return { pressHaptic = effect }
+		end)
+		local V = engine.types.Vector2
+		local track, drag = find(find(node, "Stepped"), "Track"), find(find(node, "Stepped"), "Drag")
+		track.AbsoluteSize = V.new(200, 44)
+		track.AbsolutePosition = V.new(0, 0)
+		drag.DragStart.fire(V.new(50, 0))
+		t.expect(stepped:peek()).toBe(25)
+		t.expect(plays).toBe(0)
+		for x = 51, 150 do
+			drag.DragContinue.fire(V.new(x, 0))
+		end
+		t.expect(stepped:peek()).toBe(75)
+		t.expect(plays).toBe(2)
+		drag.DragEnd.fire()
+		local free, freeDrag = find(find(node, "Continuous"), "Track"), find(find(node, "Continuous"), "Drag")
+		free.AbsoluteSize = V.new(200, 44)
+		free.AbsolutePosition = V.new(0, 0)
+		freeDrag.DragStart.fire(V.new(10, 0))
+		for x = 11, 190 do
+			freeDrag.DragContinue.fire(V.new(x, 0))
+		end
+		freeDrag.DragEnd.fire()
+		t.expect(continuous:peek() > 0.9).toBe(true)
+		t.expect(plays).toBe(2)
 		stop()
 	end)
 
