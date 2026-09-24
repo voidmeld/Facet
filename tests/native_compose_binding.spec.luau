@@ -4,26 +4,8 @@ local t = require("./lib/testkit")
 local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
 
-local COPY = "artifacts/compose_copy"
-
-local function copyTree(from: string, to: string)
-	fs.writeDir(to)
-	for _, name in fs.readDir(from) do
-		local source, target = from .. "/" .. name, to .. "/" .. name
-		if fs.isDir(source) then
-			copyTree(source, target)
-		else
-			fs.writeFile(target, fs.readFile(source))
-		end
-	end
-end
-
-if fs.isDir(COPY) then
-	fs.removeDir(COPY)
-end
-copyTree("src/vendor/compose", COPY)
-local Core = require("../artifacts/compose_copy/core")
-local Roblox = require("../artifacts/compose_copy/roblox")
+local Core = require("./lib/compose_twin/core")
+local Roblox = require("./lib/compose_twin/roblox")
 
 local function find(node: any, name: string): any
 	for _, child in node:GetChildren() do
