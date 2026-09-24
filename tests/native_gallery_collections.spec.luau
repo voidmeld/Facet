@@ -306,15 +306,17 @@ t.describe("native gallery collections", function()
 		local row = find(list, "Row_m1")
 		row.AbsoluteSize = engine.types.Vector2.new(700, 112)
 		local content = find(row, "Item_m1")
+		t.expect(action(world.target, "RowActionsToggle")).toBeNil()
 		world.gui.SelectedObject = content
 		t.expect(world.gui.SelectedObject).toBe(content)
-		t.expect(action(world.target, "RowActionsToggle")).toBeNil()
-		world.gui.SelectedObject = nil
-		world.keys.LeftShift = true
-		world.gui.SelectedObject = content
 		local toggle = action(world.target, "RowActionsToggle")
 		t.expect(toggle ~= nil).toBe(true)
-		t.expect(toggle:FindFirstChildWhichIsA("InputBinding").KeyCode).toBe(engine.types.Enum.KeyCode.Return)
+		local binding = toggle:FindFirstChildWhichIsA("InputBinding")
+		t.expect(binding.KeyCode).toBe(engine.types.Enum.KeyCode.Return)
+		t.expect(
+			binding.PrimaryModifier == engine.types.Enum.KeyCode.LeftShift
+				or binding.PrimaryModifier == engine.types.Enum.KeyCode.RightShift
+		).toBe(true)
 		t.expect(find(world.target, "MenuPanel")).toBeNil()
 		toggle.Pressed.fire()
 		local panel = find(world.target, "MenuPanel")

@@ -529,18 +529,33 @@ return function(ctx: Types.Context, UI: Controls): ()
 		ctx.action(root, "RowActionsDelete", { E.KeyCode.Delete, E.KeyCode.Backspace }, function(use: ComposeTypes.Use)
 			return eligible(use) and read(open, use) == nil and not use(menuOpen) and destructive(use) ~= nil
 		end, delete, { priority = 300 })
-		ctx.action(root, "RowActionsToggle", { E.KeyCode.Return }, function(use: ComposeTypes.Use)
-			local input = ctx.config.userInputService
-			return eligible(use)
-				and input ~= nil
-				and (input:IsKeyDown(E.KeyCode.LeftShift) or input:IsKeyDown(E.KeyCode.RightShift))
-		end, function()
+		ctx.action(
+			root,
+			"RowActionsToggle",
+			{
+				{ KeyCode = E.KeyCode.Return, PrimaryModifier = E.KeyCode.LeftShift },
+				{ KeyCode = E.KeyCode.Return, PrimaryModifier = E.KeyCode.RightShift },
+			},
+			eligible,
+			function()
+				if menuOpen:peek() then
+					menuOpen:set(false)
+				else
+					reveal()
+				end
+			end,
+			{ priority = 300 }
+		)
+		ctx.shiftRoute(root, function()
+			if read(spec.enabled) == false then
+				return
+			end
 			if menuOpen:peek() then
 				menuOpen:set(false)
 			else
 				reveal()
 			end
-		end, { priority = 300 })
+		end)
 		if spec.editing then
 			runtime.mountFragment(function()
 				return {

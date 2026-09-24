@@ -734,6 +734,45 @@ t.describe("native parity controls", function()
 		world.stop()
 	end)
 
+	t.it("routes a Shift+Return native activation of the row content to the row menu", function()
+		local shifted, activated = false, 0
+		local world = setup(function(UI, Host)
+			return Host.Frame({
+				UI.RowActions("Row")({
+					content = UI.Button("Action")({
+						label = "Row",
+						onActivate = function()
+							activated += 1
+						end,
+					}),
+					trailing = { { id = "Delete", label = "Delete", role = "destructive" } },
+				}),
+			})
+		end)
+		local Keys = world.engine.types.Enum.KeyCode
+		world.input.IsKeyDown = function(_, code)
+			return shifted and (code == Keys.LeftShift or code == Keys.RightShift)
+		end
+		local content = find(world.node, "Action")
+		world.gui.SelectedObject = content
+		local press = { KeyCode = Keys.Return, UserInputType = world.engine.types.Enum.UserInputType.Keyboard }
+		content.Activated.fire(press, 1)
+		t.expect(activated).toBe(1)
+		t.expect(find(world.root, "MenuPanel")).toBeNil()
+		shifted = true
+		content.Activated.fire(press, 1)
+		t.expect(activated).toBe(1)
+		t.expect(find(world.root, "MenuPanel") ~= nil).toBe(true)
+		find(world.root, "ModalBack").Pressed.fire()
+		t.expect(find(world.root, "MenuPanel")).toBeNil()
+		content.Activated.fire(
+			{ KeyCode = Keys.Unknown, UserInputType = world.engine.types.Enum.UserInputType.MouseButton1 },
+			1
+		)
+		t.expect(activated).toBe(2)
+		world.stop()
+	end)
+
 	t.it("toggles the row menu with Shift+Return, reveals it with ButtonX and dismisses it with the row", function()
 		local shifted, invoked = false, 0
 		local show = Compose.cell(true)
@@ -764,14 +803,19 @@ t.describe("native parity controls", function()
 				)
 		end
 		local content = find(world.node, "Action")
-		world.gui.SelectedObject = content
 		t.expect(action(world.root, "RowActionsToggle")).toBeNil()
-		t.expect(action(world.root, "Activate") ~= nil).toBe(true)
-		world.gui.SelectedObject = nil
-		shifted = true
 		world.gui.SelectedObject = content
+		t.expect(action(world.root, "Activate") ~= nil).toBe(true)
 		local toggle = action(world.root, "RowActionsToggle")
-		t.expect(toggle:FindFirstChildWhichIsA("InputBinding").KeyCode).toBe(world.engine.types.Enum.KeyCode.Return)
+		local Keys = world.engine.types.Enum.KeyCode
+		local chords = {}
+		for _, binding in toggle:GetChildren() do
+			t.expect(binding.KeyCode).toBe(Keys.Return)
+			table.insert(chords, binding.PrimaryModifier.Name)
+		end
+		table.sort(chords)
+		t.expect(chords).toEqual({ "LeftShift", "RightShift" })
+		shifted = true
 		toggle.Pressed.fire()
 		t.expect(find(world.root, "MenuPanel") ~= nil).toBe(true)
 		t.expect(invoked).toBe(0)

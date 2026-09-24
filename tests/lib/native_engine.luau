@@ -468,6 +468,17 @@ local function new(options: any?)
 						table.insert(rejectedSelections, value)
 						return
 					end
+					if options and options.selectionNeedsPlayerGui then
+						local ancestor = value.Parent
+						while ancestor and ancestor.ClassName ~= "PlayerGui" do
+							ancestor = ancestor.Parent
+						end
+						if not ancestor then
+							error(
+								`Cannot set GuiService.SelectedObject to {value.Name} because it is not a descendant of a PlayerGui`
+							)
+						end
+					end
 				end
 				if key == "Parent" then
 					if previous then

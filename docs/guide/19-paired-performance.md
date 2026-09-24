@@ -301,11 +301,18 @@ comparison needs the performance lab place in Studio.
   `render/compose_controls` through `overlay.luau`). This is the same error
   that stops three `main` scenes in the headless runs. Thus a Studio A/B of the
   lab against `main` needs a change to `main`.
-- After the `dense-scroll-native` workload, the lab in Studio did not mount the
-  next workload: the native list stayed on the screen with 76,979 instances.
-  The same sequence in the headless lab mounts the next workload correctly. The
-  captures after that point measured the wrong screen, so this page does not
-  use them. The cause is not known.
+- Earlier `dense-scroll-native` captures in Studio measured the wrong screen.
+  The cause: the `clean` and `theme` commands remounted the workload. The
+  native list fills over frames and takes about 80 s in Studio with more than
+  100,000 instances, so a capture after `clean` saw a list that was not full.
+  Now `clean` and `theme` keep the mounted workload, and
+  `native_perf_lab` tests it. The later workloads mount correctly after the
+  native list.
+- The branch records these Studio captures at 1280x720 and the Medium text
+  size: three `dense-scroll-native` and three `dense-scroll` repeats, one
+  `dense-scroll` capture with `fantasy_ornate`, and five emulator captures
+  (iPhone 14 portrait and landscape, a 720p handheld, PS5 and a 768x1024
+  handheld). The rows are in `artifacts/performance-stress-places/studio`.
 
 No check shows a regression in the three flagged scenes.
 

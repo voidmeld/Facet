@@ -57,6 +57,16 @@ function. An interactive case has `setup(t)` and named `steps` in place of
 - `t.note` records a measurement that is not an assertion.
 - `t.themes` lists every theme package that builds.
 - `t.scenario(name)` and `t.context(...)` mount a gallery scenario.
+- `t.gallery({ size, demo })` mounts the whole gallery shell in the fixture.
+- `t.stable(node)` waits until the rectangle of the node stops changing.
+- `t.offenders(root, bounds)` lists the visible objects that cross the bounds
+  sideways or vertically, and the text that is drawn outside its box. It
+  uses only the part of each object that its clipping ancestors show.
+
+When you give `size`, the fixture is the screen. The controls get a viewport
+of that size, and `overlayParent` is a frame of that size. Thus alerts,
+callouts, menus and adaptive rules use the fixture and not the camera. Give
+`emulate = false` to keep the camera viewport.
 
 ### Run the suites
 
@@ -72,7 +82,11 @@ function. An interactive case has `setup(t)` and named `steps` in place of
 saves each result as `artifacts/studio-live/<suite>-<tag>.json` and returns a
 summary. Use a tag that names the viewport and the text size, for example
 `portrait-largest`. `run(suite, options)` runs one suite and returns the JSON.
-The `only` option selects cases by id.
+The `only` option selects cases by id. The other suites are `primitives`,
+`needs_live_b`, `needs_live_c` and `native_mechanisms`. The suites
+`needs_live_input` and `native_mechanisms_input` have interactive cases, and
+`native_mechanisms_input` covers engine mechanisms that have no headless
+oracle.
 
 An interactive case needs real input between its steps:
 
@@ -83,8 +97,18 @@ An interactive case needs real input between its steps:
 
 ### Set the device and the text size
 
-Use the Device Emulator for the viewport and the orientation. Scripts cannot
-write `GuiService.PreferredTextSize`. To test the largest text size, open the
+Use the Device Emulator for the viewport and the orientation. In the Client
+data model, `StudioDeviceSimulatorService` also sets the device from a
+script:
+
+- `SetDeviceAsync(id)` selects a device, for example `iphone_14`, `xbox`,
+  `ps5` or `generic_handheld_720`.
+- `SetResolutionAsync(width, height)` sets the viewport of the device.
+- `SetOrientationAsync(Enum.ScreenOrientation.Portrait)` turns the device.
+- `StopSimulationAsync()` stops the emulation. Then the viewport follows the
+  size of the Studio window.
+
+Scripts cannot write `GuiService.PreferredTextSize`. To test the largest text size, open the
 Roblox menu in the playtest and set Settings > Text size to Largest. The
 result records the viewport, the safe inset, the preferred text size and the
 source stamp.
@@ -97,4 +121,15 @@ source stamp.
 - Studio does not play haptic motors. The harness proves that a control
   requests the effect. A physical phone or gamepad must confirm the output.
 - A horizontal drag from the Studio input tools can arrive as a tap. Confirm a
-  swipe with a real pointer or touch drag.
+  swipe with a real pointer or touch drag. The mouse moves of the input tools
+  do not fire `InputChanged` while a button is held, so a `UIDragDetector`
+  does not start.
+- The input tools refuse Tab and Escape, because the core interface owns
+  them. They also send `ButtonA` as keyboard input, and engine activation does
+  not use it.
+- While a `GuiButton` has the selection, the engine uses Return for the native
+  activation of that button. No `InputAction` that binds Return fires, also
+  with a modifier key.
+- The input tools cannot open the Roblox menu, so a live run cannot change the
+  text size. Record the Largest text size on a device or in a session where a
+  person opens the menu.

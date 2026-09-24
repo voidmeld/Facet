@@ -149,11 +149,15 @@ t.describe("native layout primitives", function()
 			t.expect(layout.ItemLineAlignment).toBe(E.ItemLineAlignment.Automatic)
 			t.expect(layout.HorizontalFlex).toBe(E.UIFlexAlignment.SpaceBetween)
 			t.expect(layout.HorizontalAlignment).toBe(E.HorizontalAlignment.Left)
+			t.expect(layout.VerticalFlex).toBe(E.UIFlexAlignment.None)
 			align:set("stretch")
 			t.expect(layout.ItemLineAlignment).toBe(E.ItemLineAlignment.Stretch)
+			t.expect(layout.VerticalFlex).toBe(E.UIFlexAlignment.Fill)
+			t.expect(layout.HorizontalFlex).toBe(E.UIFlexAlignment.SpaceBetween)
 			t.expect(layout.VerticalAlignment).toBe(E.VerticalAlignment.Top)
 			align:set("end")
 			t.expect(layout.VerticalAlignment).toBe(E.VerticalAlignment.Bottom)
+			t.expect(layout.VerticalFlex).toBe(E.UIFlexAlignment.None)
 			stop()
 			local column = build(nil, function(UI)
 				return UI.VStack { align = "end", distribute = "center" }
@@ -436,7 +440,9 @@ t.describe("native layout primitives", function()
 			local root, engine, stop = build(nil, function(UI)
 				return UI.ScrollView { align = "stretch", UI.Label { text = "A" } }
 			end)
-			t.expect(child(root, "UIListLayout").ItemLineAlignment).toBe(engine.types.Enum.ItemLineAlignment.Stretch)
+			local layout = child(root, "UIListLayout")
+			t.expect(layout.ItemLineAlignment).toBe(engine.types.Enum.ItemLineAlignment.Stretch)
+			t.expect(layout.HorizontalFlex).toBe(engine.types.Enum.UIFlexAlignment.Fill)
 			stop()
 		end)
 
@@ -481,7 +487,7 @@ t.describe("native layout primitives", function()
 			local height = themes.neutralPackage().metrics.controlSizes.regular.height
 			t.expect(grid.CellSize.X.Scale).toBeCloseTo(1 / 3)
 			t.expect(grid.CellSize.X.Offset).toBe(-6)
-			for _, width in { 300, 301, 302 } do
+			for width = 60, 900 do
 				local row = 3 * (grid.CellSize.X.Scale * width + grid.CellSize.X.Offset) + 2 * grid.CellPadding.X.Offset
 				t.expect(row <= width).toBe(true)
 			end

@@ -221,7 +221,8 @@ document their own write-then-notify behavior below.
   receives a failure that an `ErrorBoundary` without its own `onError`
   contains.
 - `services`, `guiService`, `userInputService` and `types`: native dependencies.
-- `inputParent` and `overlayParent`: placement targets.
+- `inputParent` and `overlayParent`: placement targets. A callout and a help
+  plate place themselves inside `overlayParent` when you set it.
 
 ### Motion
 
@@ -335,7 +336,7 @@ return UI.Screen "Settings" {
 | `gap` | a spacing step or a number of pixels | `UIListLayout.Padding` |
 | `padding` | a spacing step, a number, or `{ top?, right?, bottom?, left? }` | a `UIPadding` child |
 | `width`, `height` | `"fill"`, `"hug"` or a number of pixels | `Size` and `AutomaticSize` |
-| `align` | `start`, `center`, `end` or `stretch` | cross-axis alignment and `ItemLineAlignment` |
+| `align` | `start`, `center`, `end` or `stretch` | cross-axis alignment, `ItemLineAlignment` and the cross-axis flex |
 | `distribute` | `start`, `center`, `end`, `spaceBetween`, `spaceAround` or `spaceEvenly` | main-axis alignment and `HorizontalFlex` or `VerticalFlex` |
 
 - The spacing steps are `xs`, `s`, `m`, `l` and `xl`. They come from
@@ -348,8 +349,10 @@ return UI.Screen "Settings" {
   values.
 - `"fill"` sets the scale of that axis to 1. `"hug"` sets `AutomaticSize` on
   that axis. A number sets the pixel offset.
-- `align = "stretch"` sets `ItemLineAlignment.Stretch`, so each child fills the
-  cross axis.
+- `align = "stretch"` sets `ItemLineAlignment.Stretch` and sets the flex of
+  the cross axis to `Fill`, so each child fills the cross axis of the
+  container. `ItemLineAlignment.Stretch` alone fills only the line, and the
+  line is as wide as the widest child.
 - A container writes an alignment property only when you set `align` or
   `distribute`.
 - All options accept a value, a readable or a `function(use)` body.
@@ -1098,13 +1101,16 @@ measured width and the native PreferredInput:
 
 - If you supply `query`, it uses the navigation-link presentation.
 - It uses `segmented` for four options or fewer when no option has a
-  description and the picker is at least 360 pixels wide.
+  description, the picker is at least 360 pixels wide and the measured
+  labels fit in the width.
 - Otherwise, for keyboard and mouse, and for touch, it uses a menu.
 - For other input, it uses `inline` for six options or fewer, and a menu for
   larger sets.
 
 A `label` shows on the leading edge of a horizontal segmented row, with the
-control at its natural width on the trailing edge. The label shows above a vertical
+control at its natural width on the trailing edge. A horizontal segmented strip
+wraps its segments onto more lines when they do not fit in the width of the
+row. The label shows above a vertical
 segmented, inline or radio group control. A menu shows the label on the leading
 edge of the row and the value on the trailing edge.
 
@@ -1443,6 +1449,7 @@ teaching attached to a control. It is not a second application presenter.
 `edge = "top"` puts the callout above the anchor. If there is no room above
 and there is room below, the callout goes below the anchor. The callout
 scales and fades from the edge nearest to its anchor. See [Motion](#motion).
+A callout and a help plate paint above a snackbar and below a presented modal.
 
 The plate parts are optional, but the plate must show something:
 
@@ -1878,7 +1885,7 @@ Sizes:
 - The header height starts at 40.
 - The estimated row height starts at the larger of 40 and the regular control
   height of the theme.
-- The native touch and gamepad minimum row height is `44`.
+- The native touch and gamepad minimum row height and header height is `44`.
 - Native text bounds can make both larger.
 
 `header = false` removes the header band. `scrolls = false` mounts all rows and

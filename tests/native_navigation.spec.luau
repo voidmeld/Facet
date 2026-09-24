@@ -1746,6 +1746,89 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("paints a presented modal above a visible callout", function()
+		local world = setup(function(UI, Host)
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
+			return Host.Frame({
+				anchor,
+				UI.Callout({
+					anchor = anchor,
+					isPresented = Compose.cell(true),
+					onRetire = function() end,
+					content = function()
+						return UI.Label({ text = "Tip" })
+					end,
+				}),
+				UI.Alert({
+					isPresented = Compose.cell(true),
+					title = "Leave?",
+					actions = { { id = "Stay", label = "Stay" } },
+				}),
+			})
+		end)
+		world.settle()
+		local callout, modal = find(world.screen, "CalloutPanel"), find(world.screen, "AlertModal")
+		t.expect(callout ~= nil and modal ~= nil).toBe(true)
+		t.expect(callout.ZIndex < modal.ZIndex).toBe(true)
+		local arrow = find(world.screen, "Arrow")
+		t.expect(arrow == nil or arrow.ZIndex < modal.ZIndex).toBe(true)
+		world.stop()
+	end)
+
+	t.it("places a callout inside the overlay parent that receives it", function()
+		local engine = engines.new()
+		local gui = engine.new("GuiService")
+		local input = engine.new("UserInputService")
+		input.GetFocusedTextBox = function()
+			return nil
+		end
+		local runtime = Roblox.createRuntime(engine)
+		local overlay = engine.new("Frame")
+		local UI = controls(Compose, runtime, {
+			types = engine.types,
+			services = { GuiService = gui, UserInputService = input },
+			overlayParent = overlay,
+		})
+		local stop, screen = runtime.mount(function()
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
+			return runtime.constructors.ScreenGui({
+				runtime.constructors.Frame({
+					anchor,
+					UI.Callout({
+						anchor = anchor,
+						isPresented = Compose.cell(true),
+						onRetire = function() end,
+						content = function()
+							return UI.Button({ label = "Tip" })
+						end,
+					}),
+				}),
+			})
+		end, engine.new("Folder"))
+		overlay.Parent = screen
+		local V = engine.types.Vector2
+		screen.AbsoluteSize = V.new(1920, 1080)
+		overlay.AbsolutePosition = V.new(100, 50)
+		overlay.AbsoluteSize = V.new(320, 400)
+		local anchor, panel = find(screen, "Anchor"), find(screen, "CalloutPanel")
+		t.expect(panel:IsDescendantOf(overlay)).toBe(true)
+		anchor.AbsolutePosition = V.new(380, 70)
+		anchor.AbsoluteSize = V.new(32, 44)
+		panel.AbsoluteSize = V.new(280, 100)
+		for _ = 1, 60 do
+			engine.heartbeat.fire(1 / 60)
+		end
+		t.expect(panel.Position.X.Offset).toBe(32)
+		t.expect(panel.Size.X.Offset).toBe(280)
+		overlay.AbsoluteSize = V.new(200, 400)
+		for _ = 1, 60 do
+			engine.heartbeat.fire(1 / 60)
+		end
+		t.expect(panel.Size.X.Offset).toBe(184)
+		stop()
+		runtime:dispose()
+	end)
+
 	t.it("retargets native sheet motion and honors live reduced motion without losing content", function()
 		local selected, shown = Compose.cell("medium"), Compose.cell(true)
 		local world = setup(function(UI)

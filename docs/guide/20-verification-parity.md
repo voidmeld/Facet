@@ -25,8 +25,8 @@ where.
   704 of them, no candidate test and no live Studio record show that
   Facet uses the mechanism correctly.
 - Of 130 main `full` producers, no producer is a gap and no producer is a
-  weaker replacement. Four producers run but wait for live Studio evidence. See
-  [Producers](#producers).
+  weaker replacement. The five Studio producers of the performance lab have
+  their evidence. See [Producers](#producers).
 - A complete run writes `artifacts/verify/latest-<tier>.json` with release
   gate evidence. `tools/package.sh publish` reads the `release` file and
   refuses anything but a clean, passing run of the same source.
@@ -187,7 +187,7 @@ of each one after the producer restoration. The data is in `producers.rows`.
 | Equivalent candidate producer | 48 |
 | Replaced by a different check | 16 |
 | Replaced by a weaker check | 0 |
-| Producer runs; its live evidence is not recorded | 4 |
+| Producer runs; its live evidence is not recorded | 0 |
 | Retired with its subject | 62 |
 | Total | 130 |
 
@@ -304,25 +304,24 @@ strength of `main`, or their subject is deleted.
 | `fuzz-replication` | `suite` (`native_stress`) | fast, full, release | Retired. `src/replication` is deleted. The example authority model converges under 400 seeded deliveries, the same count as `main`. |
 | `soak` | `suite` (`native_stress`) | fast, full, release | The same two fixtures as `main`: 200 modal cycles and 100 structural cycles, each twice, with a census after each cycle. |
 
-### Producers that wait for live evidence
+### Producers with Studio evidence
 
-These producers run in `full` and `release`. Each one exits 2 until its
-Studio capture of the native performance lab is recorded under
+These producers run in `full` and `release`. Each one reads the Studio
+captures of the native performance lab under
 `artifacts/performance-stress-places/studio`. The lab place is
 `examples/performance.project.json`, and `workspace.FacetPerfLabAPI` drives
 it (`select`, `theme`, `clean`, `run`, `stop`, `capture`). The capture schema
 is in `examples/performance/lab/capture.luau`. A capture row records the
-theme and the preferred text size.
+theme, the preferred text size and the viewport. All five producers pass.
+See [the lab in Roblox Studio](19-paired-performance.md#the-performance-lab-in-roblox-studio).
 
-`perf-gate-evidence-studio` passes with one clean capture. See
-[the lab in Roblox Studio](19-paired-performance.md#the-performance-lab-in-roblox-studio).
-
-| Main producer | Candidate producer | Tier | Note |
+| Main producer | Candidate producer | Tier | Evidence |
 |---|---|---|---|
-| `check_perf_gate_evidence-device-matrix` | `perf-gate-evidence-device-matrix` | full, release | Five emulator-class viewports are not recorded. Set `workspace.Facet_PerfEvidenceClass` to `emulator` for these rows. |
-| `check_perf_gate_evidence-large-text` | `perf-gate-evidence-large-text` | full, release | Only the Largest text size is recorded. Scripts cannot set the preference, so each size needs the Roblox menu. |
-| `check_perf_gate_evidence-native-reference` | `perf-gate-evidence-native-reference` | full, release | In Studio the lab did not mount the next workload after `dense-scroll-native`. Those captures were discarded. |
-| `check_perf_gate_evidence-theme-cost` | `perf-gate-evidence-theme-cost` | full, release | The ornate capture came after the fault above and was discarded. |
+| `check_perf_gate_evidence-studio` | `perf-gate-evidence-studio` | full, release | Eight clean Studio captures at the current workload versions. |
+| `check_perf_gate_evidence-native-reference` | `perf-gate-evidence-native-reference` | full, release | Three clean `dense-scroll-native` captures and five clean `dense-scroll` captures at seed 1 and 2,000 rows. |
+| `check_perf_gate_evidence-theme-cost` | `perf-gate-evidence-theme-cost` | full, release | Clean `dense-scroll` captures with the neutral package and with `fantasy_ornate`. |
+| `check_perf_gate_evidence-large-text` | `perf-gate-evidence-large-text` | full, release | Captures at the Medium and the Largest preferred text sizes. |
+| `check_perf_gate_evidence-device-matrix` | `perf-gate-evidence-device-matrix` | full, release | Five emulator captures: iPhone 14 portrait and landscape, a 720p handheld, PS5 and a 768x1024 handheld. |
 
 ### Retired producers
 

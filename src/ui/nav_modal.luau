@@ -333,6 +333,10 @@ return function(ctx: Types.Context): Nav.Surfaces
 		)
 		if gui then
 			local mounted = ctx.observe(root, "Parent")
+			local ancestry = Compose.cell(0)
+			runtime.connect(root, "AncestryChanged", function()
+				ancestry:set(ancestry:peek() + 1)
+			end)
 			local rootInteractive = ctx.observe(root, "Interactable")
 			local panelInteractive = ctx.observe(panel, "Interactable")
 			Compose.watch(function(use: ComposeTypes.Use)
@@ -346,11 +350,15 @@ return function(ctx: Types.Context): Nav.Surfaces
 					end
 				elseif
 					use(mounted)
+					and use(ancestry) >= 0
 					and not (exiting and use(exiting))
 					and focusIn(use)
 					and not within(gui.SelectedObject, root)
 				then
-					gui.SelectedObject = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
+					local target = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
+					pcall(function()
+						gui.SelectedObject = target
+					end)
 				end
 			end)
 		end
@@ -528,7 +536,8 @@ return function(ctx: Types.Context): Nav.Surfaces
 		attach(anchor, {
 			overlay(anchor, armed, function(phase: Nav.PresencePhase?)
 				local amount = appearance(phase, POPOVER)
-				local layer = assert(anchor:FindFirstAncestorWhichIsA("LayerCollector"))
+				local layer: GuiBase2d = ctx.config.overlayParent :: GuiBase2d?
+					or assert(anchor:FindFirstAncestorWhichIsA("LayerCollector"))
 				local at, bounds = ctx.observe(anchor, "AbsolutePosition"), ctx.observe(anchor, "AbsoluteSize")
 				local extent, origin = ctx.observe(layer, "AbsoluteSize"), ctx.observe(layer, "AbsolutePosition")
 				local measure = ctx.text({
@@ -559,7 +568,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 					Name = "Help",
 					AutomaticSize = E.AutomaticSize.XY,
 					Size = D2.fromOffset(0, 0),
-					ZIndex = 120,
+					ZIndex = 96,
 				}
 				table.insert(panelProps, ctx.padding(8, 6))
 				table.insert(
