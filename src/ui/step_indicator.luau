@@ -313,7 +313,6 @@ return function(
 						table.insert(props, child)
 					end
 					local button = UI.Button(props)
-					button:AddTag("facet-step")
 					node = button
 				else
 					local props: Types.FrameNativeProps = {
@@ -333,7 +332,6 @@ return function(
 						table.insert(props, child)
 					end
 					node = Host.Frame(props)
-					node:AddTag("facet-step")
 					Compose.watch(function(use: ComposeTypes.Use)
 						local live = stepById(id, use)
 						if live and live.enabled == false or not enabled(use) then
