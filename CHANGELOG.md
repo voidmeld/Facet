@@ -8,6 +8,10 @@
 - Gallery, virtual monitors, reference apps, consumer and performance lab use the same native authoring model. Themes compile to native StyleSheets linked by the caller.
 - Verification records which old mechanism tests were retired and which control behaviors have replacement evidence. The generated Compose vendor remains unchanged.
 - Removed first-party explanatory code comments. Compiler directives and legal notices remain.
+- VirtualList, VirtualGrid and Table call `onActivate(item, key, input, clickCount)` with the native activation input and click count. The second click of a double click does not change the selection.
+- A `RadialMenu` with `follow = "fixed"` keeps its ring and its center hole until it opens again. The list presentation shows one navigation control: `close` and `back` at the root read "Close", and `back` in a submenu reads "Back".
+- Button refuses an `imageFraming` other than `fit` or `crop`. ComboBox refuses a value that is not a string and missing `options`.
+- `Facet` exports the `RadialItem` and `RadialMenuSpec` types.
 
 ## Pre-0.12.0 development history
 
