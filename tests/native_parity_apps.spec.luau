@@ -21,6 +21,10 @@ local sipTask = require("../examples/reference/p3_sipworks/services/task")
 local foyer = require("../examples/reference/p4_foyer")
 local foyerSeed = require("../examples/reference/p4_foyer/content/seed")
 local foyerStrings = require("../examples/reference/p4_foyer/content/strings")
+local galleryAssets = require("../examples/gallery/examples/assets")
+local fs = require("@lune/fs")
+local gallery = require("../examples/gallery/client/screen")
+local catalogue = require("../examples/gallery/client/demo_picker")
 local Compose = Facet.Compose
 
 type World = {
@@ -1649,5 +1653,577 @@ t.describe("native parity reference applications", function()
 				t.expect(refresh.isDestroyed()).toBe(true)
 			end
 		)
+	end)
+
+	t.describe("Gallery examples", function()
+		local function nativeContext(): (any, any, any)
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local viewport = Compose.cell({ width = 1280, height = 720 })
+			local target = engine.new("Folder")
+			local guiService = engine.new("GuiService")
+			local ctx: { [string]: any } = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = runtime,
+				Host = runtime.constructors,
+				types = engine.types,
+				viewport = viewport,
+				inputTarget = target,
+				worldTarget = engine.new("Folder"),
+				guiService = guiService,
+				runService = { Heartbeat = engine.heartbeat },
+				UI = Facet.controls(
+					runtime,
+					{ types = engine.types, viewport = viewport, guiService = guiService } :: any
+				),
+			}
+			return ctx, engine, target
+		end
+
+		local function mountGallery(kind: string, name: string): (any, any, () -> (), any, any)
+			local ctx, engine = nativeContext()
+			local path = if kind == "example" then "examples/" else "scenarios/"
+			local built
+			local host = engine.new("ScreenGui")
+			local stop, node = ctx.runtime.mount(function()
+				built = (require :: any)("../examples/gallery/" .. path .. name).build(ctx)
+				if built.dispose then
+					Compose.cleanup(built.dispose)
+				end
+				return built.screen()
+			end, host)
+			return built, node, function()
+				stop()
+				ctx.runtime:dispose()
+			end, ctx, engine
+		end
+
+		t.it("converts only numeric Fahrenheit, previews live and commits on Enter or focus loss", function()
+			local built, node, stop = mountGallery("example", "01_temperature_converter")
+			local editor = assert(find(node, "Fahrenheit"))
+			t.expect(editor.ClassName).toBe("TextBox")
+			t.expect(find(node, "Preview").Text).toBe("Preview: —")
+			t.expect(find(node, "Result").Text).toBe("Result: —")
+			editor:CaptureFocus()
+			editor.Text = "212"
+			t.expect(built.fahrenheitText()).toBe("212")
+			t.expect(find(node, "Preview").Text).toBe("Preview: 100 °C  (live, as you type)")
+			t.expect(find(node, "Result").Text).toBe("Result: —")
+			editor.Text = "21a"
+			t.expect(editor.Text).toBe("212")
+			t.expect(built.fahrenheitText()).toBe("212")
+			t.expect(find(node, "Preview").Text).toBe("Preview: 100 °C  (live, as you type)")
+			editor:ReleaseFocus(true)
+			t.expect(find(node, "Result").Text).toBe("Result: 100 °C")
+			editor:CaptureFocus()
+			editor.Text = "-40"
+			t.expect(find(node, "Result").Text).toBe("Result: 100 °C")
+			t.expect(find(node, "Preview").Text).toBe("Preview: -40 °C  (live, as you type)")
+			editor:ReleaseFocus(false)
+			t.expect(find(node, "Result").Text).toBe("Result: -40 °C")
+			press(node, "Clear")
+			t.expect(editor.Text).toBe("")
+			t.expect(find(node, "Preview").Text).toBe("Preview: —")
+			t.expect(find(node, "Result").Text).toBe("Result: —")
+			for _, child in node:GetDescendants() do
+				t.expect(child.Name ~= "Convert" and child.Name ~= "Increase").toBe(true)
+			end
+			stop()
+		end)
+
+		t.it("reaches every sync state through its controls and keeps a bounded newest-first history", function()
+			local built, node, stop = mountGallery("example", "03_settings_sync")
+			local function history(): string
+				return find(node, "History").Text
+			end
+			t.expect(find(node, "Status").Text).toBe("idle")
+			press(node, "Deliver")
+			t.expect(history()).toBe("Nothing to deliver. Send a change first.\nReady. Nothing sent yet.")
+			t.expect(find(node, "Status").Text).toBe("idle")
+			press(node, "Music")
+			t.expect(find(node, "Status").Text).toBe("pending")
+			t.expect(find(node, "Draft").Text).toBe("What you see now: music on, volume 10")
+			t.expect(string.find(find(node, "Confirmed").Text, "music off", 1, true) ~= nil).toBe(true)
+			press(node, "Music")
+			t.expect(find(node, "Status").Text).toBe("pending")
+			t.expect(string.sub(history(), 1, 45)).toBe("Already waiting for a reply. Deliver it first")
+			t.expect(built.report().draft.music).toBe(true)
+			press(node, "Deliver")
+			t.expect(find(node, "Status").Text).toBe("confirmed")
+			t.expect(find(node, "Confirmed").Text).toBe("Server confirmed: music on, volume 10 (revision 2)")
+			press(node, "Invalid")
+			t.expect(find(node, "Draft").Text).toBe("What you see now: music on, volume 99")
+			press(node, "Deliver")
+			t.expect(find(node, "Status").Text).toBe("rejected")
+			t.expect(find(node, "Draft").Text).toBe("What you see now: music on, volume 10")
+			t.expect(string.sub(history(), 1, 22)).toBe("Server rejected volume")
+			local lines = string.split(history(), "\n")
+			t.expect(#lines).toBe(3)
+			t.expect(lines[2]).toBe("Sent settings. Waiting for the server.")
+			press(node, "Volume", "Decrease")
+			t.expect(find(node, "Status").Text).toBe("pending")
+			press(node, "Reset")
+			t.expect(find(node, "Status").Text).toBe("idle")
+			t.expect(history()).toBe("Reset. Nothing sent yet.")
+			t.expect(find(node, "Draft").Text).toBe("What you see now: music off, volume 10")
+			press(node, "Deliver")
+			t.expect(string.sub(history(), 1, 19)).toBe("Nothing to deliver.")
+			for _ = 1, 10 do
+				press(node, "Music")
+				press(node, "Deliver")
+			end
+			t.expect(#string.split(history(), "\n")).toBe(3)
+			t.expect(string.split(history(), "\n")[1]).toBe("Server accepted. Both readouts agree.")
+			stop()
+		end)
+
+		t.it("confirms or keeps a deletion through one dialog and restores the save", function()
+			local built, node, stop = mountGallery("example", "04_confirm_dialog")
+			local host = node.Parent
+			local function dialogs(): number
+				local count = 0
+				for _, child in host:GetDescendants() do
+					if child.Name == "AlertPanel" then
+						count += 1
+					end
+				end
+				return count
+			end
+			local delete = assert(find(node, "Delete"))
+			delete.Activated.fire()
+			delete.Activated.fire()
+			t.expect(dialogs()).toBe(1)
+			press(host, "AlertPanel", "Cancel")
+			t.expect(dialogs()).toBe(0)
+			t.expect(find(node, "Outcome").Text).toBe("Kept. Nothing was deleted.")
+			t.expect(built.hasSave()).toBe(true)
+			delete.Activated.fire()
+			press(host, "AlertPanel", "Confirm")
+			t.expect(dialogs()).toBe(0)
+			t.expect(find(node, "Outcome").Text).toBe("Deleted. The slot is empty now.")
+			t.expect(find(node, "Title").Text).toBe("Save Slot 1 — empty")
+			t.expect(delete.Interactable).toBe(false)
+			delete.Activated.fire()
+			t.expect(dialogs()).toBe(0)
+			press(node, "Restore")
+			t.expect(built.hasSave()).toBe(true)
+			t.expect(find(node, "Outcome").Text).toBe("This slot holds a save. Deleting it cannot be undone.")
+			t.expect(delete.Interactable).toBe(true)
+			delete.Activated.fire()
+			t.expect(dialogs()).toBe(1)
+			stop()
+		end)
+
+		t.it("disables a spent rack slot instead of leaving a live blank button", function()
+			local built, node, stop = mountGallery("example", "06_tile_game")
+			local slot = assert(find(node, "rt1"))
+			local letter = built.rackLetter(1)
+			t.expect(slot.Text).toBe(letter)
+			t.expect(slot.Interactable).toBe(true)
+			slot.Activated.fire()
+			press(node, "cell4_4", "tap")
+			t.expect(built.pendingAt(4, 4)).toBe(letter)
+			t.expect(slot.Text).toBe("·")
+			t.expect(slot.Interactable).toBe(false)
+			slot.Activated.fire()
+			t.expect(built.selected()).toBeNil()
+			built.undo()
+			t.expect(slot.Text).toBe(letter)
+			t.expect(slot.Interactable).toBe(true)
+			stop()
+		end)
+
+		t.it("deals match-three boards with no opening run, a legal move and five distinct tile arts", function()
+			local built, _, stop = mountGallery("example", "07_match3")
+			local function runs(): number
+				local found = 0
+				for r = 1, built.rows do
+					for c = 1, built.cols do
+						local kind = built.kindAt(r, c)
+						if
+							c + 2 <= built.cols
+							and built.kindAt(r, c + 1) == kind
+							and built.kindAt(r, c + 2) == kind
+						then
+							found += 1
+						end
+						if
+							r + 2 <= built.rows
+							and built.kindAt(r + 1, c) == kind
+							and built.kindAt(r + 2, c) == kind
+						then
+							found += 1
+						end
+					end
+				end
+				return found
+			end
+			local opening = table.concat(built.boardSnapshot(), ",")
+			for _ = 1, 20 do
+				t.expect(runs()).toBe(0)
+				t.expect(next(built.findMatches()) == nil).toBe(true)
+				t.expect(built.hasLegalMove()).toBe(true)
+				built.reset()
+				t.expect(table.concat(built.boardSnapshot(), ",")).toBe(opening)
+			end
+			local kinds, images = {}, {}
+			for _, kind in built.boardSnapshot() do
+				kinds[kind] = true
+			end
+			local count = 0
+			for kind in kinds do
+				count += 1
+				local image = galleryAssets.match3Tiles[kind].image
+				t.expect(type(image) == "string" and image ~= "").toBe(true)
+				t.expect(images[image]).toBeNil()
+				images[image] = true
+			end
+			t.expect(count).toBe(5)
+			stop()
+		end)
+
+		t.it("explains a non-adjacent tap, refuses taps while resolving and resets to the opening values", function()
+			local built, node, stop, _, engine = mountGallery("example", "07_match3")
+			local function hit(r: number, c: number): any
+				return assert(within(node, "tile" .. built.tileIdAt(r, c), "hit"))
+			end
+			local function picked(): number
+				local count = 0
+				for _, child in node:GetDescendants() do
+					if child.Name == "Selection" and child.Transparency == 0 then
+						count += 1
+					end
+				end
+				return count
+			end
+			hit(1, 1).Activated.fire()
+			t.expect(picked()).toBe(1)
+			hit(3, 3).Activated.fire()
+			t.expect(string.find(built.hintText(), "have to touch", 1, true) ~= nil).toBe(true)
+			t.expect(picked()).toBe(1)
+			t.expect(built.moves()).toBe(0)
+			hit(3, 3).Activated.fire()
+			t.expect(picked()).toBe(0)
+			built.swap(1, 1, 1, 2)
+			t.expect(built.isResolving()).toBe(true)
+			local moves, score = built.moves(), built.score()
+			hit(4, 4).Activated.fire()
+			t.expect(built.hintText()).toBe("The board is still settling — wait for the tiles to land.")
+			t.expect(picked()).toBe(0)
+			t.expect(built.moves()).toBe(moves)
+			t.expect(built.score()).toBe(score)
+			press(node, "Reset")
+			t.expect(built.isResolving()).toBe(false)
+			t.expect(built.score()).toBe(0)
+			t.expect(built.moves()).toBe(0)
+			t.expect(built.tickHookActive()).toBe(false)
+			t.expect(picked()).toBe(0)
+			for index = 1, 30 do
+				if index % 2 == 0 then
+					press(node, "Reset")
+				else
+					hit(2, 2).Activated.fire()
+				end
+				engine.heartbeat.fire(1 / 60)
+			end
+			press(node, "Reset")
+			t.expect(picked()).toBe(0)
+			t.expect(built.moves()).toBe(0)
+			t.expect(built.hintText())
+				.toBe("Drag a tile onto a neighbor, or select two neighboring tiles. Three in a row clears.")
+			stop()
+		end)
+
+		t.it("edits the consumer's caller-owned Sound value through its toggle", function()
+			local ctx, _, target = nativeContext()
+			local stop, node = ctx.runtime.mount(function()
+				return require("../examples/consumer/src/screen").build(Facet, ctx.runtime, { types = ctx.types })
+			end, target)
+			local sound = assert(find(node, "Sound"))
+			local indicator = assert(find(sound, "Indicator"))
+			t.expect(indicator:GetAttribute("selected")).toBe(true)
+			sound.Activated.fire()
+			t.expect(indicator:GetAttribute("selected")).toBe(false)
+			sound.Activated.fire()
+			t.expect(indicator:GetAttribute("selected")).toBe(true)
+			press(node, "Bump")
+			press(node, "Bump")
+			t.expect(find(node, "Count").Text).toBe("2 taps")
+			t.expect(indicator:GetAttribute("selected")).toBe(true)
+			stop()
+			ctx.runtime:dispose()
+		end)
+	end)
+
+	t.describe("Gallery shell", function()
+		local function shell(demos: { any }, load: (string, string) -> any, native: boolean?): (any, any, () -> ())
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local target, gui = engine.new("Folder"), engine.new("GuiService")
+			gui.ReducedMotionEnabled = native == true
+			local input = engine.new("UserInputService")
+			input.PreferredInput = engine.types.Enum.PreferredInput.KeyboardAndMouse
+			input.GetFocusedTextBox = function()
+				return nil
+			end
+			local ctx: { [string]: any } = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = runtime,
+				Host = runtime.constructors,
+				types = engine.types,
+				viewport = Compose.cell({ width = 1280, height = 720 }),
+				inputTarget = target,
+				guiService = gui,
+				runService = { Heartbeat = engine.heartbeat },
+				selection = Compose.cell(demos[1].id),
+				theme = Compose.cell(Facet.themes.neutralPackage()),
+				themeMode = Compose.cell("light"),
+				demos = demos,
+				load = load,
+			}
+			ctx.packages = { Neutral = ctx.theme:peek() }
+			local stop, root = runtime.mount(function()
+				gallery.configure(ctx)
+				ctx.UI = Facet.controls(
+					runtime,
+					{
+						types = engine.types,
+						viewport = ctx.viewport,
+						inputParent = target,
+						services = { GuiService = gui, UserInputService = input },
+						theme = ctx.theme,
+						reducedMotion = ctx.reducedMotion,
+					} :: any
+				)
+				return ctx.Host.ScreenGui "GalleryTest" { gallery.build(ctx) }
+			end, target)
+			return ctx, root, function()
+				stop()
+				runtime:dispose()
+			end
+		end
+
+		local function two(): { any }
+			return {
+				{ id = "first", title = "First", kind = "fixture", module = "first" },
+				{ id = "second", title = "Second", kind = "fixture", module = "second" },
+			}
+		end
+
+		t.it("boots a scenario over an example over a demo and the default demo without attributes", function()
+			t.expect(gallery.boot).toBe(catalogue.boot)
+			local id, extra = catalogue.boot("hud", "outpost_terminal", 2)
+			t.expect(id).toBe("outpost_terminal")
+			t.expect(extra.kind).toBe("fixture")
+			t.expect(extra.module).toBe("outpost_terminal")
+			id, extra = catalogue.boot("hud", nil, 5)
+			t.expect(id).toBe("05_word_game")
+			t.expect(extra.kind).toBe("example")
+			t.expect(extra.module).toBe("05_word_game")
+			id, extra = catalogue.boot("hud", "", 2)
+			t.expect(id).toBe("02_playlist_table")
+			t.expect(extra.kind).toBe("example")
+			id, extra = catalogue.boot("hud", nil, nil)
+			t.expect(id).toBe("hud")
+			t.expect(extra).toBeNil()
+			id, extra = catalogue.boot(nil, nil, nil)
+			t.expect(id).toBe("all-controls")
+			t.expect(extra).toBeNil()
+			id, extra = catalogue.boot(nil, nil, 99)
+			t.expect(id).toBe("all-controls")
+			t.expect(extra).toBeNil()
+			for index, name in
+				{
+					"01_temperature_converter",
+					"02_playlist_table",
+					"03_settings_sync",
+					"04_confirm_dialog",
+					"05_word_game",
+					"06_tile_game",
+					"07_match3",
+				}
+			do
+				t.expect((catalogue.boot(nil, nil, index))).toBe(name)
+				t.expect(fs.isFile(`examples/gallery/examples/{name}.luau`)).toBe(true)
+			end
+			local client = fs.readFile("examples/gallery/client/init.client.luau")
+			t.expect(string.find(client, "gallery.boot(", 1, true) ~= nil).toBe(true)
+			for _, attribute in { "Facet_Demo", "Facet_Scenario", "Facet_Example" } do
+				t.expect(string.find(client, `"{attribute}"`, 1, true) ~= nil).toBe(true)
+			end
+		end)
+
+		t.it("stamps a demo that cannot build and does not report it mounted", function()
+			local ctx, root, stop = shell(two(), function(_, name)
+				if name == "second" then
+					return {
+						build = function()
+							error("second is broken")
+						end,
+					}
+				end
+				return {
+					build = function(page)
+						return {
+							screen = function()
+								return page.Host.Frame({ Name = name })
+							end,
+							report = function()
+								return { name = name }
+							end,
+						}
+					end,
+				}
+			end)
+			local first = gallery.dispatch(ctx, "report")
+			t.expect(first.mounted).toBe("first")
+			t.expect(first.error).toBeNil()
+			t.expect(first.demo.name).toBe("first")
+			local result = gallery.dispatch(ctx, "show", "second")
+			t.expect(result.ok).toBe(true)
+			t.expect(result.current).toBe("second")
+			t.expect(result.mounted).toBeNil()
+			t.expect(string.find(tostring(result.error), "second is broken", 1, true) ~= nil).toBe(true)
+			t.expect(ctx.errorMessage:peek()).toBe(result.error)
+			local failure = assert(find(root, "DemoFailure"))
+			t.expect(string.find(failure.Text, "Second could not load", 1, true)).toBe(1)
+			t.expect(gallery.dispatch(ctx, "report").demo).toBeNil()
+			local back = gallery.dispatch(ctx, "show", "first")
+			t.expect(back.mounted).toBe("first")
+			t.expect(back.error).toBeNil()
+			t.expect(find(root, "DemoFailure")).toBeNil()
+			stop()
+		end)
+
+		t.it("keeps the chosen motion setting across a demo swap", function()
+			local pages = {}
+			local ctx, root, stop = shell(two(), function(_, name)
+				return {
+					build = function(page)
+						pages[name] = page
+						return {
+							screen = function()
+								return page.Host.Frame({ Name = name })
+							end,
+						}
+					end,
+				}
+			end)
+			t.expect(ctx.reducedMotion:peek()).toBe(false)
+			press(root, "Settings")
+			local motion = assert(find(root, "Motion"))
+			press(motion, "reduced")
+			t.expect(ctx.reducedMotion:peek()).toBe(true)
+			t.expect(ctx.motionMode:peek()).toBe("reduced")
+			t.expect(find(motion, "reduced"):GetAttribute("selected")).toBe(true)
+			gallery.dispatch(ctx, "show", "second")
+			t.expect(ctx.active:peek()).toBe("second")
+			t.expect(ctx.reducedMotion:peek()).toBe(true)
+			t.expect(pages.second.reducedMotion:peek()).toBe(true)
+			t.expect(ctx.motionMode:peek()).toBe("reduced")
+			t.expect(find(motion, "reduced"):GetAttribute("selected")).toBe(true)
+			press(root, "FollowRobloxMotion")
+			t.expect(ctx.reducedMotion:peek()).toBe(false)
+			t.expect(pages.second.reducedMotion:peek()).toBe(false)
+			stop()
+		end)
+
+		t.it("releases a presenting demo's resources after its tree and exactly once per build", function()
+			local builds, disposals, order = 0, 0, {}
+			local tree: any = nil
+			local ctx, root, stop = shell(two(), function(_, name)
+				return {
+					build = function(page)
+						if name ~= "first" then
+							return {
+								screen = function()
+									return page.Host.Frame({ Name = name })
+								end,
+							}
+						end
+						builds += 1
+						local panel
+						return {
+							screen = function()
+								return page.Host.Frame "Presenting" {
+									page.UI.Alert "Notice" {
+										isPresented = Compose.cell(true),
+										title = "Notice",
+										message = "Presented by the demo",
+										actions = { { id = "ok", label = "OK", role = "cancel" } },
+										ref = function()
+											panel = true
+										end,
+									},
+								}
+							end,
+							dispose = function()
+								disposals += 1
+								local open = false
+								for _, node in tree:GetDescendants() do
+									if node.Name == "AlertPanel" then
+										open = true
+									end
+								end
+								table.insert(order, if open then "tree-alive" else "tree-gone")
+								t.expect(panel).toBe(true)
+							end,
+						}
+					end,
+				}
+			end)
+			tree = root
+			t.expect(find(root, "AlertPanel") ~= nil).toBe(true)
+			gallery.dispatch(ctx, "show", "second")
+			t.expect(find(root, "AlertPanel")).toBeNil()
+			t.expect(disposals).toBe(1)
+			gallery.dispatch(ctx, "show", "first")
+			t.expect(builds).toBe(2)
+			t.expect(find(root, "AlertPanel") ~= nil).toBe(true)
+			stop()
+			t.expect(disposals).toBe(2)
+			t.expect(table.concat(order, ",")).toBe("tree-gone,tree-gone")
+			t.expect(ctx.errorMessage:peek()).toBeNil()
+		end)
+
+		t.it("steps through the demo list in both directions and wraps", function()
+			local list = catalogue.list()
+			t.expect(#list > 2).toBe(true)
+			t.expect(catalogue.next(list[#list].id)).toBe(list[1].id)
+			t.expect(catalogue.next(list[1].id, -1)).toBe(list[#list].id)
+			local at = list[1].id
+			for _ = 1, #list do
+				at = catalogue.next(at)
+			end
+			t.expect(at).toBe(list[1].id)
+			for _ = 1, #list do
+				at = catalogue.next(at, -1)
+			end
+			t.expect(at).toBe(list[1].id)
+			local fallback = catalogue.next("missing")
+			local listed = false
+			for _, demo in list do
+				listed = listed or demo.id == fallback
+			end
+			t.expect(listed).toBe(true)
+			local ctx, _, stop = shell(two(), function(_, name)
+				return {
+					build = function(page)
+						return {
+							screen = function()
+								return page.Host.Frame({ Name = name })
+							end,
+						}
+					end,
+				}
+			end)
+			t.expect(gallery.dispatch(ctx, "next", -1).current).toBe("second")
+			t.expect(gallery.dispatch(ctx, "next").current).toBe("first")
+			t.expect(gallery.dispatch(ctx, "next", 3).current).toBe("second")
+			t.expect(ctx.active:peek()).toBe("second")
+			stop()
+		end)
 	end)
 end)

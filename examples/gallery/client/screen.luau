@@ -3,6 +3,7 @@ local catalogue = require("./demo_picker")
 local screen = {}
 screen.list = catalogue.list
 screen.next = catalogue.next
+screen.boot = catalogue.boot
 
 function screen.configure(ctx)
 	local Compose = ctx.Compose
