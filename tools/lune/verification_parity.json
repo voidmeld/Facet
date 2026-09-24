@@ -564,7 +564,7 @@
     "control_enabled: ledger does not cite a Chip enabled case or the TextInput enabled+disabled refusal; both are untested.",
     "reduced_motion_seam: ledger says reduced-motion cancellation remains covered, but only the factory reducedMotion option is tested; input controls ignore GuiService.ReducedMotionEnabled when the option is omitted (nav surfaces and the stylesheet follow it).",
     "button_behavior: ledger claims 'held-repeat release and trailing-activation suppression' generally; only a mouse release inside the button is tested (no touch/keyboard/gamepad or release-before/after variants). The ledger also does not note that the Busy frame is positioned outside the plate (UDim2.new(1, 5, 0.5, 0)).",
-    "control_feedback / haptics: ledger maps them to the gallery example only; the framework-level pressHaptic option (api.md Factory options) is covered by the newer native_inputs case 'uses the application press haptic unless a button names its own', which the ledger does not cite.",
+    "control_feedback / haptics: ledger maps them to the gallery example only; the framework-level pressHaptic option (api.md Factory options) is covered by the newer native_inputs case 'plays the application press haptic only for controls that change a state or a value', which the ledger does not cite.",
     "slider_live_step: ledger calls the live step validation covered via the shared input_value model; no mounted Slider is given a literal or live non-positive step.",
     "authoring: ledger groups it as deleted-reactive-scaffolding, but api.md still promises 'An unsupported control option causes an error' (src/ui/context.luau:176) and no candidate test asserts it.",
     "error_boundary: ledger calls it deleted scaffolding, but api.md promises controls `onError` receives presented Alert content failures; only the containment half is tested (native_navigation 'contains failed alert factories'), onError is never passed in any test.",
@@ -15171,7 +15171,7 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::uses the application press haptic unless a button names its own"
+        "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value"
       ],
       "weaker": "The application supplies the HapticEffect (pressHaptic); there is no Facet default 'contact' waveform."
     },
@@ -15314,7 +15314,7 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::uses the application press haptic unless a button names its own"
+        "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value"
       ],
       "weaker": "Effect is caller-supplied via pressHaptic; HoverHapticEffect untouched and non-GuiButton exclusion are not asserted."
     },
@@ -26504,7 +26504,7 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when no transition is declared"
+        "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when transition is false"
       ],
       "apiPromise": "api.md TabView: 'Use `false` to disable motion.'; nav_pages.luau layer(): nil/false -> plain Frame",
       "gap": {
@@ -26512,7 +26512,7 @@
         "headlessTestable": true,
         "proposedTest": "Mount TabView without transition and with transition=false; expect page layer ClassName=='Frame' and switching hides the old page immediately (Visible=false)."
       },
-      "closedBy": "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when no transition is declared"
+      "closedBy": "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when transition is false"
     },
     {
       "id": "navigation-5-26",
@@ -26903,7 +26903,7 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when no transition is declared"
+        "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when transition is false"
       ],
       "apiPromise": "api.md TabView: 'Use `false` to disable motion.'",
       "gap": {
@@ -26911,7 +26911,7 @@
         "headlessTestable": true,
         "proposedTest": "Mount without transition: page layer ClassName=='Frame'; with false: same."
       },
-      "closedBy": "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when no transition is declared"
+      "closedBy": "native_parity_navigation::native parity navigation::uses a plain native frame and hides the old page immediately when transition is false"
     },
     {
       "id": "navigation-5-51",
@@ -27846,7 +27846,7 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "GuiButton.PressHapticEffect (factory pressHaptic)",
-      "nativeEvidence": "native_inputs::native input controls::uses the application press haptic unless a button names its own; native_gallery::native gallery::requests native haptics and releases effects when the screen closes; physical moto..."
+      "nativeEvidence": "native_inputs::native input controls::plays the application press haptic only for controls that change a state or a value; native_gallery::native gallery::requests native haptics and releases effects when the screen closes; physical moto..."
     },
     {
       "id": "paint-58",

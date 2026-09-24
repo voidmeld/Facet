@@ -251,7 +251,11 @@ export type PageViewSpec = Types.FrameProps & {
 	controls: boolean?,
 }
 export type PresencePhase = { exiting: ComposeTypes.Readable<boolean> }
+export type MotionTiming = { enter: number, exit: number }
+export type Appearance = (ComposeTypes.Use?) -> number
 export type ModalOptions = {
+	exiting: ComposeTypes.Readable<boolean>?,
+	appearance: Appearance?,
 	Name: string?,
 	ZIndex: number?,
 	priority: number?,
@@ -263,6 +267,8 @@ export type ModalOptions = {
 }
 export type OverlayOptions = {
 	presence: ComposeTypes.PresenceOptions?,
+	motion: MotionTiming?,
+	identity: ((ComposeTypes.Use) -> number)?,
 	failure: ((unknown) -> Instance)?,
 }
 export type Surfaces = {
@@ -277,6 +283,8 @@ export type Surfaces = {
 	skin: (GuiObject, string?) -> GuiObject,
 	modal: (() -> GuiObject, (string?) -> (), ModalOptions?) -> Frame,
 	overlay: (GuiObject, Value<boolean>, (PresencePhase?) -> Instance, OverlayOptions?) -> Types.Child,
+	appearance: (PresencePhase?, MotionTiming) -> Appearance,
+	popover: (GuiObject, Appearance, (ComposeTypes.Use) -> (Vector2, Vector2)) -> (),
 }
 export type PickerConstructor = (<V>(PickerSpec<V>) -> GuiObject) & ((string) -> <V>(PickerSpec<V>) -> GuiObject)
 export type MenuConstructor = (<V>(MenuSpec<V>) -> Frame) & ((string) -> <V>(MenuSpec<V>) -> Frame)

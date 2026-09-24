@@ -3,6 +3,7 @@ local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
 local ComposeTypes = require("../vendor/compose/core")
+local reducedMotion = require("./motion")
 
 type Controls = {
 	TabView: Types.Constructor<Nav.TabViewSpec, Frame>,
@@ -18,6 +19,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local E, D2, V2, D = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2, ctx.types.UDim
 	local tabDepth = 0
 	local navigationDepth = 0
+	local TAB_FADE: Nav.Transition = { seconds = 0.2, ease = Compose.easing.outQuad }
+	local PUSH_SPRING = { period = 0.3, damping = 1, tolerance = 1e-3 }
+	local PARALLAX = 0.3
+	local DIM = 0.1
 	local function content<P>(
 		builder: Instance | ((Nav.NavigationEntry<P>?) -> Instance),
 		entry: Nav.NavigationEntry<P>?
@@ -37,7 +42,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		properties: Types.CanvasGroupNativeProps & Types.FrameNativeProps,
 		state: ComposeTypes.Readable<ComposeTypes.LayerStackState>,
 		transition: Nav.Transition | false?,
-		hidden: (() -> ())?
+		hidden: (() -> ())?,
+		immediate: boolean?
 	): GuiObject
 		if transition == nil or transition == false then
 			local node = Host.Frame(properties)
@@ -55,7 +61,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local gui = surfaces.service("GuiService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
 		local opacity = runtime.tween(function(use: ComposeTypes.Use)
-			return if use(mounted) and use(state).top then 1 else 0
+			return if (immediate or use(mounted)) and use(state).top then 1 else 0
 		end, transition)
 		properties.GroupTransparency = function(use: ComposeTypes.Use)
 			return if use(reduced) or read(ctx.config.reducedMotion, use) then 0 else 1 - use(opacity)
@@ -224,6 +230,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return ordered
 		end)
 		local visited = Compose.cell({} :: { string })
+		local tabsReady = false
 		local panels: { [string]: GuiObject } = {}
 		local bookmarks: { [string]: GuiObject? } = {}
 		local tabButtons: { [string]: TextButton } = {}
@@ -520,7 +527,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							built,
 						},
 						state,
-						spec.transition,
+						if spec.transition == nil then TAB_FADE else spec.transition,
 						if spec.retention == "top"
 							then function()
 								if spec.selection:peek() == id then
@@ -534,12 +541,13 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								end
 								visited:set(retained)
 							end
-							else nil
+							else nil,
+						not tabsReady
 					)
 					panels[id] = panel
 					local shown = ctx.observe(panel, "Visible")
 					Compose.watch(function(use: ComposeTypes.Use)
-						if not use(shown) or handoff ~= id or not gui then
+						if not use(shown) or not use(state).top or handoff ~= id or not gui then
 							return
 						end
 						handoff = nil
@@ -563,6 +571,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end,
 			}),
 		}
+		tabsReady = true
 		surfaces.attach(root, { bar, layers })
 		runtime.decorate(bar, {
 			Visible = function(use: ComposeTypes.Use)
@@ -724,6 +733,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local rootEntry: Nav.NavigationEntry<P> = { id = "@root" }
 		local errorText: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
 		local accepted = { rootEntry }
+		local reduce = reducedMotion(ctx)
+		local timing: Nav.Transition? = if type(spec.transition) == "table" then spec.transition else nil
+		local animated = spec.transition == nil
 		local function validate(path: { Nav.NavigationEntry<P> }): { Nav.NavigationEntry<P> }
 			assert(type(path) == "table", "NavigationStack.path must contain an array")
 			local list = { rootEntry }
@@ -747,6 +759,33 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			return accepted
 		end)
+		local leaving: ComposeTypes.Cell<Nav.NavigationEntry<P>?> = Compose.cell(nil :: Nav.NavigationEntry<P>?)
+		local shownList = entries:peek()
+		Compose.watch(function(use: ComposeTypes.Use)
+			local list = use(entries)
+			local former = shownList
+			shownList = list
+			local top = former[#former]
+			local departing = leaving:peek()
+			if table.find(list, top) == nil and animated and not reduce() then
+				leaving:set(top)
+			elseif departing and table.find(list, departing) then
+				leaving:set(nil)
+			end
+		end)
+		local displayed = Compose.formula(function(use: ComposeTypes.Use)
+			local list = use(entries)
+			local departing = use(leaving)
+			if departing == nil or table.find(list, departing) then
+				return list
+			end
+			local result = table.clone(list)
+			table.insert(result, departing)
+			return result
+		end)
+		local offsets: ComposeTypes.Cell<{ [Nav.NavigationEntry<P>]: (ComposeTypes.Use?) -> number }> = Compose.cell({})
+		local stackReady = false
+		local handoff = false
 		local function pop()
 			local path = table.clone(spec.path:peek())
 			if #path > 0 then
@@ -754,12 +793,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				spec.path:set(path)
 			end
 		end
+		local function frontOffset(use: ComposeTypes.Use): number
+			local list = use(displayed)
+			local measure = use(offsets)[list[#list]]
+			return if measure then measure(use) else 0
+		end
 		local root = Host.Frame(ctx.props(spec, { "path", "root", "destinations", "backLabel", "transition" }, {
 			Name = "NavigationStack",
 			BackgroundTransparency = 1,
 			Size = D2.fromScale(1, 1),
+			ClipsDescendants = function(use: ComposeTypes.Use)
+				return frontOffset(use) > 0
+			end,
 			Compose.LayerStack({
-				from = entries,
+				from = displayed,
 				retention = "all",
 				render = function(
 					current: ComposeTypes.Readable<Nav.NavigationEntry<P>>,
@@ -768,67 +815,176 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local entry = current:peek()
 					local destination = if entry == rootEntry then spec.root else spec.destinations[entry.id]
 					local chrome = if entry ~= rootEntry or destination.title and destination.title ~= "" then 44 else 0
-					local panel = layer({
-						Name = entry.id,
+					local role = Compose.formula(function(use: ComposeTypes.Use): string
+						local list = use(entries)
+						local at = table.find(list, entry)
+						return if at == nil then "exiting" elseif at == #list then "top" else "covered"
+					end)
+					local entering = Compose.cell(stackReady and animated and not reduce())
+					local function target(use: ComposeTypes.Use): number
+						return if use(role) == "exiting" or use(entering) and not reduce(use) then 1 else 0
+					end
+					local travel: ComposeTypes.Readable<number> = if animated
+						then runtime.spring(target, PUSH_SPRING)
+						else Compose.cell(0)
+					entering:set(false)
+					local function offset(use: ComposeTypes.Use?): number
+						if not animated or reduce(use) then
+							return if read(role, use) == "exiting" then 1 else 0
+						end
+						return read(travel, use)
+					end
+					local registered = table.clone(offsets:peek())
+					registered[entry] = offset
+					offsets:set(registered)
+					Compose.cleanup(function()
+						local remaining = table.clone(offsets:peek())
+						remaining[entry] = nil
+						offsets:set(remaining)
+					end)
+					local function placement(use: ComposeTypes.Use): (string, number)
+						local list = use(displayed)
+						local at = table.find(list, entry)
+						if at == #list then
+							return "front", offset(use)
+						end
+						if at == #list - 1 then
+							local above = use(offsets)[list[#list]]
+							local moved = if above then above(use) else 0
+							if moved > 0 or use(role) == "top" then
+								return "beneath", moved
+							end
+						end
+						return "rest", 0
+					end
+					local function reveal(use: ComposeTypes.Use): number
+						local place, moved = placement(use)
+						return if place == "beneath" then moved + PARALLAX * (1 - moved) else 1
+					end
+					local navigationBar = Host.Frame "NavigationBar" {
 						BackgroundTransparency = 1,
-						Size = D2.fromScale(1, 1),
-						Visible = function(use: ComposeTypes.Use)
-							return use(state).top
-						end,
-						Host.Frame "NavigationBar" {
+						Size = D2.new(1, 0, 0, chrome),
+						Visible = chrome > 0,
+						ctx.styled(
+							ctx.text({
+								Name = "Title",
+								Text = destination.title or "",
+								Size = D2.fromScale(1, 1),
+								TextTruncate = E.TextTruncate.AtEnd,
+								TextXAlignment = function(use: ComposeTypes.Use)
+									return if use(state).index > 1
+										then E.TextXAlignment.Center
+										else E.TextXAlignment.Left
+								end,
+							}),
+							if entry == rootEntry then "type-title" else "type-heading"
+						) :: Types.Child,
+						Compose.show(function(use: ComposeTypes.Use)
+							return use(state).index > 1
+						end, function()
+							return UI.Button "Back" {
+								label = spec.backLabel or "Back",
+								icon = "chevron.leading",
+								appearance = "link",
+								AnchorPoint = V2.new(0, 0.5),
+								Position = D2.fromScale(0, 0.5),
+								onActivate = pop,
+							}
+						end),
+					}
+					local destinationFrame = Host.Frame "Destination" {
+						BackgroundTransparency = 1,
+						Position = D2.fromOffset(0, chrome),
+						Size = D2.new(1, 0, 1, -chrome),
+						Compose.boundary(function()
+							navigationDepth += 1
+							local ok, built =
+								pcall(content, destination.content, if entry == rootEntry then nil else entry)
+							navigationDepth -= 1
+							if not ok then
+								error(built, 0)
+							end
+							return built
+						end, function(failure)
+							errorText:set(tostring(failure))
+							return ctx.text({
+								Name = "DestinationError",
+								Text = "This page could not be displayed.",
+								TextWrapped = true,
+							})
+						end),
+					}
+					local panel: GuiObject
+					if timing then
+						panel = layer({
+							Name = entry.id,
 							BackgroundTransparency = 1,
-							Size = D2.new(1, 0, 0, chrome),
-							Visible = chrome > 0,
-							ctx.styled(
-								ctx.text({
-									Name = "Title",
-									Text = destination.title or "",
-									Size = D2.fromScale(1, 1),
-									TextTruncate = E.TextTruncate.AtEnd,
-									TextXAlignment = function(use: ComposeTypes.Use)
-										return if use(state).index > 1
-											then E.TextXAlignment.Center
-											else E.TextXAlignment.Left
-									end,
-								}),
-								if entry == rootEntry then "type-title" else "type-heading"
-							) :: Types.Child,
+							Size = D2.fromScale(1, 1),
+							Visible = function(use: ComposeTypes.Use)
+								return use(state).top
+							end,
+							navigationBar,
+							destinationFrame,
+						}, state, timing)
+					else
+						panel = Host.Frame({
+							Name = entry.id,
+							BackgroundTransparency = 1,
+							Size = D2.fromScale(1, 1),
+							Position = function(use: ComposeTypes.Use)
+								local place, moved = placement(use)
+								return if place == "front"
+									then D2.fromScale(moved, 0)
+									elseif place == "beneath" then D2.fromScale(-PARALLAX * (1 - moved), 0)
+									else D2.fromScale(0, 0)
+							end,
+							ClipsDescendants = function(use: ComposeTypes.Use)
+								return reveal(use) < 1
+							end,
+							Visible = function(use: ComposeTypes.Use)
+								local place = placement(use)
+								return place == "beneath" or place == "front" and use(role) ~= "covered"
+							end,
+							Interactable = function(use: ComposeTypes.Use)
+								return use(role) == "top"
+							end,
+							Host.Frame "Page" {
+								BackgroundTransparency = 1,
+								Size = function(use: ComposeTypes.Use)
+									return D2.fromScale(1 / reveal(use), 1)
+								end,
+								navigationBar,
+								destinationFrame,
+							} :: Types.Child,
 							Compose.show(function(use: ComposeTypes.Use)
-								return use(state).index > 1
+								return placement(use) == "beneath"
 							end, function()
-								return UI.Button "Back" {
-									label = spec.backLabel or "Back",
-									icon = "chevron.leading",
-									appearance = "link",
-									AnchorPoint = V2.new(0, 0.5),
-									Position = D2.fromScale(0, 0.5),
-									onActivate = pop,
+								return Host.Frame "Dim" {
+									BackgroundColor3 = ctx.types.Color3.new(0, 0, 0),
+									BorderSizePixel = 0,
+									Size = D2.fromScale(1, 1),
+									ZIndex = 10,
+									Interactable = false,
+									BackgroundTransparency = function(use: ComposeTypes.Use)
+										local _, moved = placement(use)
+										return 1 - DIM * (1 - moved)
+									end,
 								}
-							end),
-						},
-						Host.Frame "Destination" {
-							BackgroundTransparency = 1,
-							Position = D2.fromOffset(0, chrome),
-							Size = D2.new(1, 0, 1, -chrome),
-							Compose.boundary(function()
-								navigationDepth += 1
-								local ok, built =
-									pcall(content, destination.content, if entry == rootEntry then nil else entry)
-								navigationDepth -= 1
-								if not ok then
-									error(built, 0)
-								end
-								return built
-							end, function(failure)
-								errorText:set(tostring(failure))
-								return ctx.text({
-									Name = "DestinationError",
-									Text = "This page could not be displayed.",
-									TextWrapped = true,
-								})
-							end),
-						},
-					}, state, spec.transition)
+							end) :: Types.Child,
+						})
+					end
+					Compose.watch(function(use: ComposeTypes.Use)
+						if use(role) ~= "exiting" then
+							return
+						end
+						if gui and surfaces.within(gui.SelectedObject, panel) then
+							handoff = true
+							gui.SelectedObject = nil
+						end
+						if offset(use) >= 1 and leaving:peek() == entry then
+							leaving:set(nil)
+						end
+					end)
 					local visible, parent = ctx.observe(panel, "Visible"), ctx.observe(panel, "Parent")
 					local remembered: GuiObject?
 					local previousTop: boolean?
@@ -840,7 +996,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 					end)
 					Compose.watch(function(use: ComposeTypes.Use)
-						local top = use(state).top
+						local top = use(role) == "top"
 						if not use(parent) then
 							return
 						end
@@ -851,8 +1007,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							and use(parent)
 							and previousTop ~= true
 							and (previousTop == false or use(state).index > 1)
-							and (gui.SelectedObject ~= nil or focusing(use))
+							and (gui.SelectedObject ~= nil or handoff or focusing(use))
 						then
+							handoff = false
 							gui.SelectedObject = if remembered
 									and remembered.Parent
 									and remembered.Visible
@@ -866,6 +1023,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end,
 			}),
 		}))
+		stackReady = true
 		if ctx.action then
 			ctx.action(root, "NavigationBack", { "Escape", "ButtonB" }, function(use: ComposeTypes.Use)
 				return #use(spec.path) > 0 and (depth == 0 or surfaces.within(use(selectedObject), root))

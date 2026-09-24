@@ -220,6 +220,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 	local icon = ctx.icon
 
 	local buttonKeys = {
+		"haptic",
 		"label",
 		"compactLabel",
 		"pop",
@@ -560,10 +561,16 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end)
 		)
 		local pressHaptic = ctx.config.pressHaptic
-		if p.PressHapticEffect == nil and pressHaptic then
+		local hapticSwitch = p.PressHapticEffect == nil and pressHaptic ~= nil and dynamic(spec.haptic)
+		if p.PressHapticEffect == nil and pressHaptic and not hapticSwitch and read(spec.haptic) == true then
 			p.PressHapticEffect = Compose.static(pressHaptic)
 		end
 		node = ctx.styled(Host.TextButton(p), "button")
+		if hapticSwitch then
+			Compose.watch(function(use: ComposeTypes.Use)
+				node.PressHapticEffect = (if read(spec.haptic, use) == true then pressHaptic else nil) :: HapticEffect
+			end)
+		end
 		if rich and (spec.subtitle ~= nil or spec.hint ~= nil or (spec.row ~= nil and spec.row.description ~= nil)) then
 			node:AddTag("facet-button-described")
 		end
@@ -1003,6 +1010,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				table.insert(p, Host.UIPadding(padding))
 				table.insert(p, indicator)
 			end
+		end
+		if spec.haptic == nil then
+			p.haptic = true
 		end
 		local toggle = ctx.styled(UI.Button(p), "toggle")
 		if presentation ~= "button" then
@@ -1488,6 +1498,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			local button = UI.Button(name)({
 				icon = glyph,
 				name = name,
+				haptic = true,
 				LayoutOrder = if direction < 0 then 1 else 3,
 				Size = D2.fromOffset(44, 36),
 				AutomaticSize = E.AutomaticSize.None,
@@ -1607,9 +1618,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local track: Frame
 		local dragging: boolean?
 		local snapshot: number?
+		local detent = ctx.config.pressHaptic
 		local function apply(value)
 			if enabled(spec) then
-				return changed(spec, model.quantize(value))
+				local moved = changed(spec, model.quantize(value))
+				if moved and detent and spec.step ~= nil then
+					detent:Play()
+				end
+				return moved
 			end
 			return false
 		end
@@ -1946,6 +1962,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				"onChange",
 			},
 			{
+				PressHapticEffect = if spec.PressHapticEffect == nil and ctx.config.pressHaptic
+					then Compose.static(ctx.config.pressHaptic)
+					else nil,
 				Text = "",
 				BackgroundTransparency = 1,
 				AutoButtonColor = false,
@@ -2087,6 +2106,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			rootProps.ZIndex, p.ZIndex = p.ZIndex, nil
 
 			p.Name = "Body"
+		end
+		if p.haptic == nil and spec.selected ~= nil then
+			p.haptic = true
 		end
 		local body = UI.Button(p)
 		if not spec.onRemove then

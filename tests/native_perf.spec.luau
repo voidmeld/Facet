@@ -264,12 +264,8 @@ t.describe("native benchmark workload contract", function()
 			t.expect(w.opens).toBe(3)
 			t.expect(w.surfaceItems).toBe(items)
 			t.expect(w.settled).toBe(3)
-			if name == "radial-menu-open-close" then
-				t.expect(w.closes).toBe(0)
-				t.expect(w.settleFrames > 0).toBe(true)
-			else
-				t.expect(w.closes).toBe(3)
-			end
+			t.expect(w.closes).toBe(0)
+			t.expect(w.settleFrames > 0).toBe(true)
 			scene.teardown(state)
 		end
 		local scene = registered["dense-motion"]
