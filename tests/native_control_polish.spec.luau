@@ -179,6 +179,25 @@ t.describe("native option rows keep the mark in its own slot", function()
 		end
 	end)
 
+	t.it("a radio row without a description keeps one line centered at the row height", function()
+		local options = table.clone(THREE)
+		options[2] = { value = "normal", label = "Normal", description = "Most players" }
+		local w = world(function(UI)
+			return UI.Picker "P" {
+				style = "radioGroup",
+				selected = Compose.cell("normal"),
+				options = options,
+			}
+		end)
+		local plain, described = find(w.screen, "easy"), find(w.screen, "normal")
+		expect(plain:HasTag("facet-button-described")).toBe(false)
+		expect(find(plain, "Content").AnchorPoint).toBe(w.V2.new(0, 0.5))
+		expect(find(plain, "Content").Position.Y.Scale).toBe(0.5)
+		expect(described:HasTag("facet-button-described")).toBe(true)
+		expect(find(described, "Content").AnchorPoint).toBe(w.V2.new(0, 0))
+		w.stop()
+	end)
+
 	t.it("the radio group in a presented popover keeps the same slot", function()
 		local w = world(function(UI)
 			return UI.Popover "Status" {

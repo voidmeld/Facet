@@ -50,6 +50,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 	local function dynamic(source: unknown): boolean
 		return Compose.isReadable(source) or type(source) == "function"
 	end
+	local function hasText(source: Shared.Value<string>?, use: ComposeTypes.Use?): boolean
+		local value = read(source, use)
+		return value ~= nil and value ~= ""
+	end
 	local function enabled(
 		spec: InputTypes.EnabledOptions | InputTypes.NumberInputOptions | InputTypes.LevelOptions | { value: Shared.Value<number>, onChange: ((number) -> ())? },
 		use: ComposeTypes.Use?
@@ -613,7 +617,16 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					AnchorPoint = if description then V2.zero else V2.new(0, 0.5),
 					Position = if description then D2.fromScale(0, 0) else D2.fromScale(0, 0.5),
 				})
-				elseif description then ctx.row(content, { Name = "Content", ZIndex = 1 })
+				elseif description then ctx.row(content, {
+					Name = "Content",
+					ZIndex = 1,
+					AnchorPoint = function(use: ComposeTypes.Use)
+						return if hasText(description, use) then V2.zero else V2.new(0, 0.5)
+					end,
+					Position = function(use: ComposeTypes.Use)
+						return if hasText(description, use) then D2.fromScale(0, 0) else D2.fromScale(0, 0.5)
+					end,
+				})
 				else ctx.row(content, { Name = "Content", ZIndex = 1, Size = D2.fromScale(1, 1) })
 			if not imageCard then
 				local layout = assert(contentFrame:FindFirstChildWhichIsA("UIListLayout"))
@@ -665,7 +678,15 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end)
 		end
 		if rich and (spec.subtitle ~= nil or spec.hint ~= nil or (spec.row ~= nil and spec.row.description ~= nil)) then
-			node:AddTag("facet-button-described")
+			local row: InputTypes.Row = spec.row or {}
+			local described = row.description or spec.subtitle or spec.hint
+			Compose.watch(function(use: ComposeTypes.Use)
+				if hasText(described, use) then
+					node:AddTag("facet-button-described")
+				else
+					node:RemoveTag("facet-button-described")
+				end
+			end)
 		end
 		if spec.help ~= nil then
 			help.attach(ctx, node, spec.help)
