@@ -1225,6 +1225,8 @@ return function(
 	UI.ComboBox = ctx.construct(function(spec: Nav.ComboBoxSpec): Frame
 		writable(spec.value, "ComboBox.value")
 		writable(spec.text, "ComboBox.text")
+		assert(type(spec.value:peek()) == "string", "ComboBox.value must be a string")
+		assert(type(read(spec.options)) == "table", "ComboBox requires options")
 		assert(type(spec.acceptCustom) == "function", "ComboBox requires acceptCustom")
 		local errorText = Compose.cell("")
 		local alive = true

@@ -267,6 +267,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			spec.dialogAction == nil or spec.dialogAction == "default" or spec.dialogAction == "cancel",
 			"Facet.Button: invalid dialogAction"
 		)
+		assert(
+			spec.imageFraming == nil or spec.imageFraming == "fit" or spec.imageFraming == "crop",
+			"Facet.Button: imageFraming must be fit or crop"
+		)
 		local popTimeline = if spec.pop then runtime.timeline({ duration = 0.45, autoplay = false }) else nil
 		local popStart = Compose.cell(1)
 		local popScale
