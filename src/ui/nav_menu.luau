@@ -752,7 +752,7 @@ return function(
 			width == nil or (type(width) == "number" and width > 0 and width < math.huge),
 			"Facet UI.Menu: width must be a finite number of pixels above 0, or a readable of one"
 		)
-		local opened = spec.isPresented or Compose.cell(false)
+		local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(false)
 		local function close()
 			if opened:peek() then
 				opened:set(false)
@@ -1055,7 +1055,7 @@ return function(
 		if style == "automatic" then
 			local input = surfaces.service("UserInputService")
 			local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
-			local opened = spec.isPresented or Compose.cell(false)
+			local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(false)
 			local width = Compose.cell(0)
 
 			local resolved = Compose.formula(function(use: ComposeTypes.Use): Nav.PickerStyle
@@ -1237,7 +1237,7 @@ return function(
 			return Host.Frame(row)
 		end
 		if style == "navigationLink" then
-			local opened = spec.isPresented or Compose.cell(false)
+			local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(false)
 			local native: Types.FrameNativeProps = ctx.props(spec, pickerKeys)
 			local triggerProps = (native :: unknown) :: Inputs.ButtonProps
 			triggerProps.Name = spec.Name or "Picker"

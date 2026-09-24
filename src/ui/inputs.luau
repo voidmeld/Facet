@@ -308,7 +308,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local iconState: ComposeTypes.Cell<ThemeTypes.SkinState>?
 		if spec.icon or spec.trailingIcon then
 			local initial: ThemeTypes.SkinState = "default"
-			iconState = Compose.cell(initial) :: ComposeTypes.Cell<ThemeTypes.SkinState>
+			iconState = Compose.cell(initial)
 		end
 		local held, repeated, elapsed = false, false, 0
 		local repeatDelay, repeatInterval = spec.repeatDelay or 0.4, spec.repeatInterval or 0.1
@@ -317,14 +317,15 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.Button: repeat timings must be finite and positive"
 		)
 		local function activate(...)
-			if enabled(spec) and node and ctx.available(node) and spec.onActivate then
+			local live = enabled(spec)
+			if live and node and ctx.available(node) and spec.onActivate then
 				if popTimeline and popReduced and not held and not popReduced() then
 					popStart:set(popScale:peek())
 					popTimeline:restart()
 				end
 				spec.onActivate(...)
 			end
-			if enabled(spec) and node and ctx.available(node) then
+			if live and node and ctx.available(node) then
 				activation.notify(node, ...)
 			end
 		end

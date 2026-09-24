@@ -4,7 +4,7 @@ local Compose = Facet.Compose
 local runtime = Facet.Roblox.createRuntime()
 local UI = Facet.controls(runtime)
 local gap = Compose.cell("s" :: Facet.Space)
-local width = Compose.cell("fill" :: Facet.Extent) :: Facet.Cell<Facet.Extent>
+local width: Facet.Cell<Facet.Extent> = Compose.cell("fill" :: Facet.Extent)
 local visible = Compose.cell(true)
 local stackProps: Facet.StackProps = { gap = "m", padding = { left = "xs", top = 4 }, align = "center" :: "center" }
 local screen: Frame = UI.Screen({
