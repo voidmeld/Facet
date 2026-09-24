@@ -688,7 +688,7 @@ t.describe("native parity paint", function()
 		local sheet, stop = sheetFor(h, package)
 		local sizes =
 			{ caption = 12, label = 14, body = 16, heading = 20, title = 24, control = 18, strong = 16, numeral = 18 }
-		local weights = { strong = "Bold", heading = "Bold", title = "Bold" }
+		local weights = { strong = "SemiBold", numeral = "Bold", heading = "Bold", title = "Bold" }
 		for _, role in themes.TYPE_ROLES do
 			local properties = style(sheet, ".facet-type-" .. role)
 			t.expect(properties.TextSize).toBe(sizes[role])
