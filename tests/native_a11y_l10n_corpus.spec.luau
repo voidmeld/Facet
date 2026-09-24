@@ -400,6 +400,17 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			actions = { { id = "ok", label = "OK", onActivate = function() end } },
 		}
 	end,
+	Notice = function()
+		return {
+			message = "Connection interrupted",
+			link = { label = "Details", onActivate = function() end },
+			actions = { { id = "Retry", label = "Retry", onActivate = function() end } },
+			onDismiss = function() end,
+		}
+	end,
+	NavBar = function()
+		return { title = "Tracks", onBack = function() end, backLabel = "Back" }
+	end,
 	Popover = function(Host)
 		return {
 			isPresented = Compose.cell(true),

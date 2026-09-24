@@ -109,6 +109,12 @@ local fixtures = {
 	Dialog = function()
 		return { title = "Confirm", isPresented = Compose.cell(false), closeButton = false }
 	end,
+	Notice = function()
+		return { message = "Saved" }
+	end,
+	NavBar = function()
+		return { title = "Tracks" }
+	end,
 	Popover = function(Host)
 		return {
 			isPresented = Compose.cell(false),

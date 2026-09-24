@@ -90,6 +90,15 @@ local popoverProps: Facet.PopoverSpec = {
 	content = content,
 }
 local popover: GuiObject = UI.Popover(popoverProps)
+local noticeProps: Facet.NoticeSpec = {
+	message = text,
+	severity = "warning" :: "warning",
+	placement = "affixed" :: "affixed",
+	onDismiss = nothing,
+}
+local notice: Frame = UI.Notice(noticeProps)
+local navBarProps: Facet.NavBarSpec = { title = text, onBack = nothing, backLabel = "Back" }
+local navBar: Frame = UI.NavBar(navBarProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -186,6 +195,8 @@ local mounted: { GuiObject } = {
 	stage,
 	dialog,
 	popover,
+	notice,
+	navBar,
 	menu,
 	split,
 	picker,
