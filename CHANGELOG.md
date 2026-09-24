@@ -8,6 +8,8 @@
 - Gallery, virtual monitors, reference apps, consumer and performance lab use the same native authoring model. Themes compile to native StyleSheets linked by the caller.
 - Verification records which old mechanism tests were retired and which control behaviors have replacement evidence. The generated Compose vendor remains unchanged.
 - Removed first-party explanatory code comments. Compiler directives and legal notices remain.
+- Restored the verification producers that still apply to the native architecture: documentation style, maintainer map, brand and call-shape drift, experiment markers, screen key bindings, theme drift, public-surface snapshot, live-evidence records, performance scene, capture, place and gate evidence, the release falsification and the release-gate evidence file. CI runs on Ubuntu and on the ARM reference runner.
+- Badge `corners` reads the package radii. The Table resize grip and the Slider track have accessible names. The ornate-gauge and custom-control theme fixtures use the current constructors.
 
 ## Pre-0.12.0 development history
 

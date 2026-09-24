@@ -4,6 +4,7 @@ local COPY = {
 	title = "Two plates, and who raised them",
 	intro = "A tooltip is pulled by the player and shows nothing on touch. A coach mark is pushed by the app and shows on every input class.",
 	plus = "+",
+	plusName = "Post to Marketplace",
 	share = "Share",
 	tipTitle = "Post Avatars to Marketplace",
 	tipSub = "Anyone can wear it",
@@ -142,6 +143,7 @@ return {
 			end)
 			local anchor = UI.Button "Plus" {
 				label = COPY.plus,
+				name = COPY.plusName,
 				help = COPY.helpPlus,
 				onActivate = function()
 					presses:set(presses:peek() + 1)

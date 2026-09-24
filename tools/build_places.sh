@@ -34,7 +34,12 @@ mkdir -p examples/places
 
 
 
-BUILD_STAMP="content $( { find src examples/gallery examples/reference examples/themes -type f -print0 2>/dev/null | LC_ALL=C sort -z | xargs -0 shasum -a 256 2>/dev/null; } | shasum -a 256 | cut -c1-12 )"
+if command -v sha256sum >/dev/null 2>&1; then
+  SHA=(sha256sum)
+else
+  SHA=(shasum -a 256)
+fi
+BUILD_STAMP="content $( { find src examples/gallery examples/reference examples/themes -type f -print0 2>/dev/null | LC_ALL=C sort -z | xargs -0 "${SHA[@]}" 2>/dev/null; } | "${SHA[@]}" | cut -c1-12 )"
 
 EXAMPLES=(
   "0|Facet-SettingsDemo|00_settings_demo"

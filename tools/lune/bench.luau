@@ -35,6 +35,7 @@ local fidelity = serde.decode("json", fs.readFile("bench/workload_fidelity.json"
 assert(fidelity.status == "verified", "microbenchmark workload fidelity audit is incomplete")
 local results = {}
 local failed = false
+local errored = false
 
 local function measure(scenario: any): any?
 	local entry: any = nil
@@ -80,7 +81,7 @@ local function measure(scenario: any): any?
 	end)
 	if not ok then
 		print(`  {scenario.name}: ERROR {err}`)
-		failed = true
+		errored = true
 		return nil
 	end
 	return entry
@@ -212,7 +213,7 @@ end
 artifact.writeJson("artifacts/bench.json", {
 	schema = "facet-bench/1",
 	workloadFidelity = fidelity,
-	status = if failed then "FAIL" else "PASS",
+	status = if errored or failed then "FAIL" else "PASS",
 	environment = "lune-headless (trend screening only; device authoritative per design §14.3)",
 	warmup = WARMUP,
 	samples = SAMPLES,
@@ -224,5 +225,13 @@ artifact.writeJson("artifacts/bench.json", {
 	comparisonMode = if baselineHasNorm then "normalized" else "raw-legacy",
 	results = results,
 })
-print(`bench: {failed and "FAIL" or "PASS"} (artifacts/bench.json)`)
-process.exit(if failed then 1 else 0)
+if errored then
+	print("bench: FAIL - a scenario raised an error (artifacts/bench.json)")
+	process.exit(1)
+end
+if failed then
+	print("bench: FAIL_ENVIRONMENT - a host timing comparison failed; see the rows above (artifacts/bench.json)")
+	process.exit(2)
+end
+print("bench: PASS (artifacts/bench.json)")
+process.exit(0)

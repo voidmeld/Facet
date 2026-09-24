@@ -215,7 +215,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					CornerRadius = function(use: Compose.Use)
 						local radius = read(spec.corners, use)
 						if type(radius) == "string" then
-							radius = ({ square = 0, rounded = 8, capsule = 999 })[radius]
+							radius = ({
+								square = 0,
+								rounded = metric("radii.control", use),
+								capsule = metric("radii.pill", use),
+							})[radius]
 						end
 						assert(type(radius) == "number", "Facet Badge invalid corners")
 						return D.new(0, radius)

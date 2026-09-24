@@ -292,7 +292,7 @@ end
 print("")
 
 if not result.ok then
-	print(`perf: FAIL — {#result.violations} budget violation(s) [artifact: {ARTIFACT_PATH}]`)
+	print(`perf: FAIL_ENVIRONMENT — {#result.violations} host timing budget violation(s) [artifact: {ARTIFACT_PATH}]`)
 	for _, v in result.violations do
 		print(
 			string.format(
@@ -307,7 +307,7 @@ if not result.ok then
 			)
 		)
 	end
-	process.exit(1)
+	process.exit(2)
 end
 
 print(`perf: PASS ({#report.runs} runs, {#scenes} scenes) [artifact: {ARTIFACT_PATH}]`)

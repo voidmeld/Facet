@@ -1,6 +1,6 @@
 # Verification parity with main
 
-This page compares the verification of the native cutover (PR22) with the
+This page compares the verification of the native cutover with the
 verification on `main`. It compares test assertions, not file names. It
 also compares the verification producers. The data is in
 [`tools/lune/verification_parity.json`](../../tools/lune/verification_parity.json).
@@ -15,23 +15,24 @@ where.
 
 - 894 main cases test behavior that `api.md`, a guide or `src`
   still promises, but no candidate case tested it. The parity tests close
-  472 of these cases. One case moved to class c, because `api.md`
-  no longer makes its promise. 421 cases remain.
-- 1,697 of the 2,766 covered cases have a weaker
+  475 of these cases. One case moved to class c, because `api.md`
+  no longer makes its promise. 418 cases remain.
+- 1,697 of the 2,769 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
   845 of them, no candidate test and no live Studio record show that
   Facet uses the mechanism correctly.
-- Of 130 main `full` producers, 39 have no replacement although
-  their subject still exists.
-- The release gate cannot pass. No producer writes
-  `artifacts/verify/latest-release.json`, so `tools/package.sh publish`
-  refuses with `gate-evidence-missing`. This fails closed.
-- The audit found 10 defects in `src` and 3 in the examples. The paint
-  and theme tests fixed E1, 4 more defects in `src` and 2 in the examples.
-  The control and navigation tests fixed 3 audit defects and 7 more
-  defects in `src`.
+- Of 130 main `full` producers, no producer is a gap. Five producers run
+  but wait for live Studio evidence, and four are weaker replacements. See
+  [Producers](#producers).
+- A complete run writes `artifacts/verify/latest-<tier>.json` with release
+  gate evidence. `tools/package.sh publish` reads the `release` file and
+  refuses anything but a clean, passing run of the same source.
+- The audit found 10 defects in `src` and 3 in the examples. All of them
+  are fixed. The parity tests found and fixed 11 more defects in `src` and
+  2 more in the examples. [Fixed after the audit](#fixed-after-the-audit)
+  names the test for each fix.
 
 ## Method
 
@@ -63,10 +64,10 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 977 | 2,294 | 2,766 |
+| a | Covered by a candidate case | 978 | 2,294 | 2,769 |
 | b | Retired. The Roblox Engine or Compose owns the mechanism | 306 | 1,581 | 1,581 |
 | c | Retired. The feature or code was deleted and is not promised | 823 | 6,079 | 6,080 |
-| d | Gap. A promise remains and no candidate case verifies it | 184 | 894 | 421 |
+| d | Gap. A promise remains and no candidate case verifies it | 183 | 894 | 418 |
 
 Class c is the largest class. Most of it tested the deleted solver,
 renderer, focus graph, input system, presenter, paint layer and their seams.
@@ -104,7 +105,7 @@ last column names the candidate specs that the group cites most.
 | HUD and world targets | 166 | 43 | 34 | 50 | 70 | 3 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 419 | 27 | 17 | 51 | 336 | 5 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 366 | 86 | 59 | 0 | 277 | 3 | `native_conformance`, `native_registration`, `native_parity_gaps` |
-| Docs, examples and tooling | 498 | 18 | 11 | 0 | 447 | 33 | `native_documentation`, `native_registration`, `scenario_require_paths` |
+| Docs, examples and tooling | 498 | 21 | 11 | 0 | 447 | 30 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 425 | 204 | 120 | 113 | 66 | 42 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 59 | 38 | 22 | 153 | 93 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 82 | 34 | 4 | 704 | 2 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
@@ -138,7 +139,7 @@ native mechanisms is not recorded per contract.
 | Replication fuzz | 400 seeded cases | 400 seeded deliveries against an example model |
 | Fault scenarios | 9 scenarios, 200 iterations each | 200 seeded async fault storms and 200 preference storms |
 | Soak | Presenter and scene soak fixtures | 200 modal cycles and 100 structural cycles, twice |
-| Accessibility and localization corpus | Corpus CLI and fixtures | UTF-8 edit storms only |
+| Accessibility and localization corpus | Corpus CLI and fixtures | `native_a11y_l10n_corpus`: accessible names of 36 controls and every gallery demo; 14 strings through 20 text controls |
 
 ### Ledger quality
 
@@ -156,103 +157,252 @@ not check that they assert the behavior.
 
 ## Producers
 
+Main ran 130 producers in its `full` tier. The table below gives the status
+of each one after the producer restoration. The data is in `producers.rows`.
+
 | Status | Main `full` producers |
 |---|---:|
-| Equivalent candidate producer | 18 |
-| Replaced by a different check | 5 |
-| Replaced by a weaker check | 6 |
-| Partly replaced | 2 |
-| Runs in CI only | 1 |
-| Retired with its subject | 59 |
-| Gap: the subject exists, the check does not run | 39 |
+| Equivalent candidate producer | 45 |
+| Replaced by a different check | 15 |
+| Replaced by a weaker check | 4 |
+| Producer runs; its live evidence is not recorded | 5 |
+| Retired with its subject | 61 |
+| Total | 130 |
 
-These producers are gaps:
+No main producer is a gap now. Each main producer is equivalent, replaced,
+retired with its subject, or has a candidate producer that waits for live
+evidence.
 
-| Main producer | Environment | Note |
-|---|---|---|
-| `check_experiment_markers` | deterministic | No scan for ZZ scratch markers in src. |
-| `check_brand_drift` | deterministic | Brand-name drift check deleted. |
-| `check_brand_drift-selftest` | deterministic | See the row above. |
-| `check_brand_drift-skip-builds` | deterministic | See the row above. |
-| `check_call_shape_drift` | deterministic | Call-shape drift of examples and docs is not checked. |
-| `check_call_shape_drift-selftest` | deterministic | See the row above. |
-| `check_device_captures` | device | Recorded Studio/device evidence validator deleted; live evidence now lives in parity_blockers.json and is not schema-checked per row. |
-| `check_device_sweep-selftest` | device | Recorded Studio/device evidence validator deleted; live evidence now lives in parity_blockers.json and is not schema-checked per row. |
-| `check_doc_style` | deterministic | Simplified Technical English style checker deleted; docs are not linted. |
-| `check_doc_style-selftest` | deterministic | See check_doc_style. |
-| `check_eq6_evidence` | studio | Recorded Studio/device evidence validator deleted; live evidence now lives in parity_blockers.json and is not schema-checked per row. |
-| `check_maintainer_map_cli` | deterministic | docs/MAINTAINERS.md map is no longer checked against the tree. |
-| `check_maintainer_map_cli-selftest` | deterministic | See check_maintainer_map_cli. |
-| `check_matrix_rows` | studio | Recorded Studio/device evidence validator deleted; live evidence now lives in parity_blockers.json and is not schema-checked per row. |
-| `check_no_fusion` | deterministic | Tool exists; not run. Fails locally only on an ignored artifacts/verify/scaffold snapshot. |
-| `check_no_fusion-selftest` | deterministic | Tool exists and passes; not run. |
-| `check_no_screen_key_bindings` | deterministic | No scan that screens do not bind raw keys; AGENTS.md still forbids screen-local input. |
-| `check_no_screen_key_bindings-selftest` | deterministic | See the row above. |
-| `check_perf_captures` | device | Tool exists; exits 1: cannot read rowVersion from examples/performance/lab/rows.luau. |
-| `check_perf_gate_evidence-budgets` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-device-matrix` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-falsifiable` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-headless-linkage` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-large-text` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-native-reference` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-perf-gate` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-prior-gates` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-scopes` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-studio` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_gate_evidence-theme-cost` | studio | Tool exists; not run. 10 of 11 modes exit 1 (evidence files missing); budgets passes. |
-| `check_perf_place` | studio | Tool exists; exits 1: the built place has no PerfLab native_list or scenario runner. |
-| `check_perf_scenes` | deterministic | Tool exists; exits 1: radial-menu-open-close never opened, dense-motion and control-motion did not do their work. |
-| `check_perf_scenes-themes` | deterministic | Tool exists; exits 1: no measured themeSwap; xp-a3 row missing. |
-| `check_row_actions_matrix` | device | Recorded Studio/device evidence validator deleted; live evidence now lives in parity_blockers.json and is not schema-checked per row. |
-| `check_theme_drift_cli` | deterministic | No drift check between theme packages and their built artifacts beyond theme-artifacts selftest. |
-| `check_traversal_evidence` | studio | Recorded Studio/device evidence validator deleted; live evidence now lives in parity_blockers.json and is not schema-checked per row. |
-| `check_xp_matrix` | device | Recorded Studio/device evidence validator deleted; live evidence now lives in parity_blockers.json and is not schema-checked per row. |
-| `corpus_cli` | deterministic | Accessibility and localization corpus (a11y_l10n_corpus) was deleted; native_stress covers UTF-8 editing only. |
-| `doctor` | deterministic | tools/doctor.sh exists and passes; not run. |
+### How the candidate runs its producers
 
-These producers are weaker replacements:
+`tools/verify.sh <tier>` runs every producer whose tiers include that tier.
+Use `--explain` to see each selected producer, its environment, its tiers and
+the main producers that it replaces.
 
-| Main producer | Candidate | Note |
-|---|---|---|
-| `check_public_surface` | public-allowlist + native_registration + native_public_surface | No generated public-surface snapshot diff. |
-| `check_docs_cli` | native_documentation spec | Checks the snippets it names; no whole-guide API drift scan. |
-| `check_example_drift_cli` | native_documentation + architecture | No guide/example source drift check. |
-| `check_manifest_integrity` | package-status | Package manifest only. |
-| `faults` | native_stress (200 seeded fault storms) | Main ran 9 fault scenarios x 200 iterations. |
-| `fuzz-replication` | native_stress (400 seeded deliveries) | Facet replication module deleted; test covers an example model. |
-| `package-verify` | package-build + package-status + package-canary | tools/package.sh verify passes on the candidate but is not run as one producer. |
-| `soak` | native_stress (200 modal cycles, 100 structural cycles) | Main soak ran the full presenter and scene soak fixtures. |
+- A producer that exits 0 passes.
+- A studio or device producer that exits 2 reports `FAIL_ENVIRONMENT`. Its
+  live evidence is not recorded in this checkout.
+- A perf producer that exits 2 reports `FAIL_ENVIRONMENT`. A host timing
+  budget failed. With `--reference-host`, the same result is `FAIL`.
+- Any other exit code is `FAIL`.
+- The `full` tier reports `FAIL_ENVIRONMENT` and continues. The `release`
+  tier stops on it.
 
-Other producer differences:
+Main put `perf` and `bench` in the `release` tier only, and its `full` tier
+read a recorded report. The candidate runs `perf` and `bench` in `full`, and
+then checks the report of the same run.
 
-- Release tier: `tools/verify.sh release` runs the same commands as `full`.
-  Main also ran `prove_perf_gate` and `render` in the release tier.
-  `tools/lune/prove_perf_gate.luau` still exists and does not run.
-- Release evidence: no producer writes `latest-release.json`. A release
-  refuses to publish until a producer writes it.
-- CI: the job moved from `ubuntu-latest` to `macos-15`. Ubuntu is not
-  verified.
-- New candidate producers: `vendor`, `comments`, `architecture`, `coverage`,
-  `replacement-cases`, `package-canary`, and the gallery, monitors,
-  performance and consumer builds.
+At the producer recheck, `tools/verify.sh full --explain` selected 71
+producers: 61 passed, 9 reported `FAIL_ENVIRONMENT` and 1 failed. The failure
+is `coverage`, because `tools/lune/parity_blockers.json` lists three pending
+live risks. The `FAIL_ENVIRONMENT` results are the five Studio evidence modes,
+the missing cited artifacts of `live-evidence`, and the host timing results of
+`perf`, `bench` and the `perf-gate` evidence mode. The host ran several Roblox
+Studio sessions during the run, so its timings are not reference timings.
+
+### Equivalent producers
+
+| Main producer | Candidate producer | Tier | Note |
+|---|---|---|---|
+| `check_public_surface` | `public-surface` | full, release | Snapshot of the public surface in tools/public_surface.txt, including the controls table and exported types. |
+| `build_model` | `model-build` | full, release | Moved from a CI-only step into the full tier. |
+| `build_places` | `standalone-builds` | full, release |  |
+| `build_reference_places` | `reference-builds` | full, release |  |
+| `build_themes` | `theme-builds` | full, release |  |
+| `build_word_lists-check` | `word-data` | full, release |  |
+| `build_word_lists-selftest` | `word-data-selftest` | full, release |  |
+| `check_experiment_markers` | `experiment-markers` | fast, full, release |  |
+| `check_brand_drift` | `brand-drift` | full, release | Old-brand and vendor-name rules; the sibling game and studio trees are skipped when absent. |
+| `check_brand_drift-selftest` | `brand-drift-selftest` | full, release |  |
+| `check_brand_drift-skip-builds` | `brand-drift-skip-builds` | full, release |  |
+| `check_call_shape_drift` | `call-shape-drift` | full, release | Refuses calls to constructors and scaffolding that the native API removed, in examples, bench, tests and doc snippets. |
+| `check_call_shape_drift-selftest` | `call-shape-drift-selftest` | full, release |  |
+| `check_doc_style` | `doc-style` | full, release | Scans docs/guide, docs/extending, README.md and docs/MAINTAINERS.md. |
+| `check_doc_style-selftest` | `doc-style-selftest` | full, release | See check_doc_style. |
+| `check_library_purity` | `package-purity` | full, release |  |
+| `check_links_cli` | `links` | full, release |  |
+| `check_links_cli-selftest` | `links-selftest` | full, release |  |
+| `check_maintainer_map_cli` | `maintainer-map` | full, release | Checks the native module areas, the proof table and the repository table. |
+| `check_maintainer_map_cli-selftest` | `maintainer-map-selftest` | full, release | See check_maintainer_map_cli. |
+| `check_no_fusion` | `no-fusion` | fast, full, release |  |
+| `check_no_fusion-selftest` | `no-fusion-selftest` | fast, full, release | Tool exists and passes; not run. |
+| `check_no_screen_key_bindings` | `screen-key-bindings` | fast, full, release | Refuses raw key handling in example screens and doc snippets. |
+| `check_no_screen_key_bindings-selftest` | `screen-key-bindings-selftest` | fast, full, release |  |
+| `check_perf_budgets` | `perf-budgets` | full, release |  |
+| `check_perf_captures` | `perf-captures` | full, release | Reads the lab capture schema and versions from examples/performance/lab. No capture row is recorded yet. |
+| `check_perf_gate_evidence-budgets` | `perf-gate-evidence-budgets` | full, release |  |
+| `check_perf_gate_evidence-falsifiable` | `perf-gate-evidence-falsifiable` | release | Release tier, after prove-perf-gate injects an 8x regression into lab-dense-scroll. |
+| `check_perf_gate_evidence-headless-linkage` | `perf-gate-evidence-headless-linkage` | full, release | Checks linkage; the timing verdict belongs to the perf-gate mode. |
+| `check_perf_gate_evidence-perf-gate` | `perf-gate-evidence-perf-gate` | full, release | A host timing failure is FAIL_ENVIRONMENT except on the reference host. |
+| `check_perf_metrics` | `perf-metrics` | full, release |  |
+| `check_perf_place` | `perf-place` | full, release | Checks the native performance place and that its workloads are byte-identical to the headless bench. |
+| `check_perf_scenes` | `perf-scenes` | full, release | Native workload counters: the radial opens six sectors and settles closed each sample; dense-motion moves every spring; control-motion reports each trigger. |
+| `check_perf_scenes-themes` | `perf-scenes-themes` | full, release | Native StyleRule differential replaces the solver movedRects count; Engine geometry is not solved headlessly. |
+| `check_public_allowlist` | `public-allowlist` | full, release |  |
+| `check_source_size` | `source-size` | full, release |  |
+| `check_theme_drift_cli` | `theme-drift` | full, release | Refuses theme-owned literals in src/ui controls. |
+| `check_types` | `types` | full, release |  |
+| `check_types-selftest` | `types-selftest` | full, release |  |
+| `doctor` | `doctor` | full, release |  |
+| `package-verify` | `package-verify` | full, release | Runs tools/package.sh verify as one producer. |
+| `stylua-check-check-src-tests-tools-bench-examples` | `format` | fast, full, release |  |
+| `stylua-check-check-src-tests-tools-examples` | `format` | fast, full, release | Subsumed by the wider format producer. |
+| `suite` | `suite` | fast, full, release | Runs 33+1 native specs (674 cases) instead of 496 specs (10,848 cases). See the contract table. |
+| `package-selftest` | `package-selftest` | full, release |  |
+
+### Replaced producers
+
+| Main producer | Candidate producer | Tier | Note |
+|---|---|---|---|
+| `check_boundary` | `architecture` | fast, full, release | Private-require scan for examples and bench only; tests may require src/ui directly. |
+| `check_comment_codes` | `comments` | fast, full, release | Zero-comment policy replaces comment codes. |
+| `check_comment_codes-selftest` | `comments-selftest` | fast, full, release |  |
+| `check_device_captures` | `live-evidence` | full, release | check_live_evidence.py validates each record in tools/lune/parity_blockers.json: required fields, cited cases, commits and evidence class. |
+| `check_device_sweep-selftest` | `live-evidence-selftest` | full, release | live-evidence-selftest plants malformed records and requires each rule to fail. |
+| `check_docs_cli` | `call-shape-drift` | full, release | native_documentation spec plus call-shape-drift, which checks every lua and luau snippet in docs against the native API. |
+| `check_eq6_evidence` | `live-evidence` | full, release | See check_device_captures. |
+| `check_manifest_integrity` | `replacement-cases` | fast, full, release | The gate manifest is deleted. replacement-cases reads each cited case verdict from the structured suite result, not from a grep. |
+| `check_matrix_rows` | `live-evidence` | full, release | See check_device_captures. |
+| `check_registration_cli` | `suite` | fast, full, release |  |
+| `check_row_actions_matrix` | `live-evidence` | full, release | See check_device_captures. |
+| `check_traversal_evidence` | `live-evidence` | full, release | See check_device_captures. |
+| `check_xp_matrix` | `live-evidence` | full, release | See check_device_captures. |
+| `corpus_cli` | `suite` | fast, full, release | native_a11y_l10n_corpus spec in the suite: accessible names of controls and gallery demos, and a localization string corpus. |
+| `verify-selftest` | `verification-selftest` | fast, full, release |  |
+
+### Weaker replacements
+
+These producers run, but they cover less than the main producer.
+
+| Main producer | Candidate producer | Tier | Note |
+|---|---|---|---|
+| `check_example_drift_cli` | `native_documentation`, `architecture` |  | No guide/example source drift check. |
+| `faults` | `native_stress (200 seeded fault storms)` |  | Main ran 9 fault scenarios x 200 iterations. |
+| `fuzz-replication` | `native_stress (400 seeded deliveries)` |  | Facet replication module deleted; test covers an example model. |
+| `soak` | `native_stress (200 modal cycles, 100 structural cycles)` |  | Main soak ran the full presenter and scene soak fixtures. |
+
+### Producers that wait for live evidence
+
+These producers run in `full` and `release`. Each one exits 2 until a
+Studio capture of the native performance lab is recorded under
+`artifacts/performance-stress-places/studio`. The lab place is
+`examples/performance.project.json`. The capture schema is in
+`examples/performance/lab/capture.luau`. The theme-cost and large-text modes
+also need a lab change: the lab captures only the neutral theme, and a capture
+row has no preferred text size.
+
+| Main producer | Candidate producer | Tier | Note |
+|---|---|---|---|
+| `check_perf_gate_evidence-device-matrix` | `perf-gate-evidence-device-matrix` | full, release | No emulator-class capture matrix is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
+| `check_perf_gate_evidence-large-text` | `perf-gate-evidence-large-text` | full, release | The native lab capture has no preferred text size field. The producer runs and reports FAIL_ENVIRONMENT. |
+| `check_perf_gate_evidence-native-reference` | `perf-gate-evidence-native-reference` | full, release | No dense-scroll versus dense-scroll-native Studio pair is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
+| `check_perf_gate_evidence-studio` | `perf-gate-evidence-studio` | full, release | No native Studio capture of the performance lab is recorded. The producer runs and reports FAIL_ENVIRONMENT. |
+| `check_perf_gate_evidence-theme-cost` | `perf-gate-evidence-theme-cost` | full, release | The native lab captures only the neutral theme; no ornate capture exists. The producer runs and reports FAIL_ENVIRONMENT. |
+
+### Retired producers
+
+| Main producer | Note |
+|---|---|
+| `check_elision_census` | Adapter elision is deleted. |
+| `check_flat_baseline` | Flat baseline of the deleted renderer. |
+| `check_input_authority` | Facet input system deleted; Roblox InputAction owns input. |
+| `check_input_authority-selftest` |  |
+| `check_perf_gate_evidence-prior-gates` | The prior-gate sweep and its gate manifest were deleted with the phase gates. |
+| `check_perf_gate_evidence-scopes` | Facet microprofiler scopes (src/core/profile.luau) were deleted. Compose owns its own profile module. |
+| `check_prop_parity_cli` | Deleted primitive property table. |
+| `check_reuse_ledger` | Deleted instance reuse ledger. |
+| `check_reuse_ledger-selftest` |  |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-a1-b7f5d0` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-a4-478080` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-c1-73e76f` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-c2-725d54` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-d1-1c5ceb` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-d3-46e41d` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-d4-9a25f3` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-d5-329c3e` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-f1-d7b43f` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-l1-edbdee` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-l2-dcc9ef` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-l3-fed491` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-m1-c62ec7` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-m2-5a0768` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-m4-9a0448` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-m5-8cdae7` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-m6-a9c408` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-m7-c31a70` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-m8-45ab23` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-p1-71afb8` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-p2-a5c718` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-p3-1a56dc` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-p4-d3903b` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-p5-f34f1a` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-t1-006c64` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-t2-1fee50` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-t3-b16b62` | Sponsor framework gap rows describe deleted main features. |
+| `check_sf_rows-artifacts-sponsor-framework-gaps-rows-sf-w1-e07115` | Sponsor framework gap rows describe deleted main features. |
+| `check_spike-artifacts-declarative-3d-architecture-costs-61165b` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-declarative-3d-architecture-studio-694f2a` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-studio-expansion-textinput-probe-j-378ee4` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-studio-ias-spike-json-api-surface-c265ac` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-studio-part2-table-phaseb-json-pla-c5d328` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-studio-phase1-gallery-json-engine-4934a9` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-studio-phase2-port-drive-json-flag-f8d169` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-studio-phase2-port-drive-json-real-9df8e9` | Historical Studio spike receipts for the deleted architecture. |
+| `check_spike-artifacts-studio-property-authority-spike-js-0120ab` | Historical Studio spike receipts for the deleted architecture. |
+| `check_surface_ledger` | Deleted surface ledger. |
+| `check_verdicts-artifacts-expansion-textinput-platform-resea-b2e918` | Historical phase verdict receipts. |
+| `check_verdicts-artifacts-part-2-opus-verification-json-PASS-1ef0c4` | Historical phase verdict receipts. |
+| `check_verdicts-artifacts-phase-0-opus-verification-json-PAS-86d658` | Historical phase verdict receipts. |
+| `check_verdicts-artifacts-phase-1-opus-verification-json-PAS-0becfb` | Historical phase verdict receipts. |
+| `check_verdicts-artifacts-phase-2-opus-verification-json-PAS-6c97e1` | Historical phase verdict receipts. |
+| `check_verdicts-artifacts-phase-3-opus-verification-json-PAS-0bd394` | Historical phase verdict receipts. |
+| `check_verdicts-artifacts-phase-4-opus-verification-json-ALL-6c8acd` | Historical phase verdict receipts. |
+| `fuzz-layout` | The Facet solver no longer exists; Roblox layout is not fuzzed headlessly. |
+| `fuzz-scheduler` | Compose owns the scheduler; the vendored snapshot is hash-checked (vendor) but its own tests are not run here. |
+| `rascalrally-suite` | Downstream game suite; maintainer lockstep, external. |
+| `suite_cache_selftest` | The native runner has no result cache. |
+| `theme_sync_cli-dump-artifacts-theme-packages-and-skinning-t-6f81a3` | Deleted theme sync tool. |
+| `archive-integrity` | External private archive; environment-specific. |
+| `studio-specialist-docs` | External studio tree check. |
+
+### Release evidence
+
+A complete `full` or `release` run writes `artifacts/verify/latest-<tier>.json`.
+Its `gateEvidence` object holds the tier, the status, the commit, whether the
+tree was dirty when the run started, and the package source hash.
+`tools/package.sh publish` reads `artifacts/verify/latest-release.json`. It
+refuses a missing file, another tier, a failed status, a dirty tree and a
+different source hash. Only a clean, passing `release` run allows a publish.
+The `release` tier adds `prove-perf-gate` and the `falsifiable` evidence mode.
+
+### CI
+
+CI runs the `fast` and `full` tiers on `ubuntu-latest` and on the pinned
+`macos-15` runner. The `macos-15` lane uses `--reference-host`, so a timing budget
+failure fails that lane. On Ubuntu, a timing budget failure is
+`FAIL_ENVIRONMENT`. Both lanes then build the distributable model and check
+its purity.
 
 ## Defects found
 
-Each item describes a test that failed at the recheck commit. The audit did
-not fix them. [Fixed after the audit](#fixed-after-the-audit) names the test
-that now covers each one.
+All audit defects are fixed. [Fixed after the audit](#fixed-after-the-audit)
+names the test that covers each one. The table keeps the original
+reproductions for reference.
 
 | ID | File | Defect | Failing test |
 |---|---|---|---|
-| B1 | `src/ui/collections.luau` | wrapFocus does not wrap arrow or D-pad navigation | Mount a VirtualList of 5 rows with wrapFocus = true and focus = {}. Set AbsoluteWindowSize to (200, 100). Call focus.focus(5). Fire FacetCollectionDown.CollectionDown.Pressed. Expect focus.current to be 1. Actual: 5. The arrow actions call focusScope.move, which ignores wrap; only focus.next wraps. |
-| B4 | `src/ui/inputs.luau` | A number TextInput commits after its parse callback disables it | Mount TextInput with presentation = "number", enabled cell true, and parse that sets enabled to false. Capture focus, set Text to "5", release focus with submit. Expect no onCommit and numericValue 2. Actual: onCommit runs and numericValue becomes 5. |
-| B5 | `src/ui/inputs.luau` | onPointerCancel alone never fires | Mount Button with only onPointerCancel. Fire InputBegan (MouseButton1) and MouseLeave. Expect one call. Actual: zero. The listeners connect only when repeatDelay, repeatInterval, onPointerDown or onPointerUp is present. |
-| B6 | `src/ui/inputs.luau` | Input controls ignore GuiService.ReducedMotionEnabled | Set GuiService.ReducedMotionEnabled = true and do not pass the reducedMotion factory option. Mount Button with pop = true, fire Activated and heartbeat 0.1. Expect UIScale.Scale 1. Actual: the pop animates. The StyleSheet and the navigation surfaces follow GuiService; Button pop, the validation pulse and the busy dots do not. |
-| B7 | `src/ui/collections.luau` | A readable follow option is accepted and ignored | Mount VirtualList with follow = Compose.cell("end"). Expect an error, because api.md says follow is static and an unsupported option causes an error. Actual: it mounts and behaves as follow = "none". |
-| B8 | `src/ui/media.luau` | Label with an icon returns a Frame | Mount Label with text and icon. Expect a TextLabel root, as api.md says. Actual: a Frame. |
-| B10 | `src/ui/inputs.luau` | Button corners rejects a readable, but Badge corners accepts one | Mount Button with corners = Compose.cell("square"). Expect it to mount, the same as Badge. Actual: an error. api.md does not say that corners is static. Low severity. |
-| E2 | `examples/gallery/examples/02_playlist_table.luau` | Playlist plays a track on one click; its hint says double-click | Mount the playlist and fire one RowHit.Activated with MouseButton1. Expect selection only. Actual: nowPlaying changes. |
-| E3 | `examples/themes/ornate_gauge.luau, examples/themes/custom_control.luau` | Theme fixtures call deleted constructors | Call each fixture blueprint with Facet.controls(runtime). Expect a mounted view. Actual: UI.ZStack, UI.HStack and UI.VStack are nil. docs/guide/13-theme-catalog.md still calls them tested fixtures. |
+| `B1` | `src/ui/collections.luau` | wrapFocus does not wrap arrow or D-pad navigation | Mount a VirtualList of 5 rows with wrapFocus = true and focus = {}. Set AbsoluteWindowSize to (200, 100). Call focus.focus(5). Fire FacetCollectionDown.CollectionDown.Pressed. Expect focus.current to be 1. Actual: 5. The arrow actions call focusScope.move, which ignores wrap; only focus.next wraps. |
+| `B2` | `src/ui/collection_row_actions.luau` | Full swipe runs an action on an unmeasured row | Mount RowActions with one trailing action and do not set AbsoluteSize. Fire DragStart (100, 0), DragContinue (85, 0), DragEnd. Expect no action. Actual: the action runs, because abs(0) >= 0 * 0.7. |
+| `B3` | `src/ui/collection_row_actions.luau` | A kept row stays collapsed after a destructive action | Mount RowActions with open = "trailing", a destructive Delete action and reducedMotion = true. Set AbsoluteSize (300, 40). Activate Delete and keep the row (the server refuses). Set open to "trailing" and activate Delete again. Expect a second commit and a usable row. Actual: committing is never cleared, the UIDragDetector stays disabled and the second commit does not run. |
+| `B4` | `src/ui/inputs.luau` | A number TextInput commits after its parse callback disables it | Mount TextInput with presentation = "number", enabled cell true, and parse that sets enabled to false. Capture focus, set Text to "5", release focus with submit. Expect no onCommit and numericValue 2. Actual: onCommit runs and numericValue becomes 5. |
+| `B5` | `src/ui/inputs.luau` | onPointerCancel alone never fires | Mount Button with only onPointerCancel. Fire InputBegan (MouseButton1) and MouseLeave. Expect one call. Actual: zero. The listeners connect only when repeatDelay, repeatInterval, onPointerDown or onPointerUp is present. |
+| `B6` | `src/ui/inputs.luau` | Input controls ignore GuiService.ReducedMotionEnabled | Set GuiService.ReducedMotionEnabled = true and do not pass the reducedMotion factory option. Mount Button with pop = true, fire Activated and heartbeat 0.1. Expect UIScale.Scale 1. Actual: the pop animates. The StyleSheet and the navigation surfaces follow GuiService; Button pop, the validation pulse and the busy dots do not. |
+| `B7` | `src/ui/collections.luau` | A readable follow option is accepted and ignored | Mount VirtualList with follow = Compose.cell("end"). Expect an error, because api.md says follow is static and an unsupported option causes an error. Actual: it mounts and behaves as follow = "none". |
+| `B8` | `src/ui/media.luau` | Label with an icon returns a Frame | Mount Label with text and icon. Expect a TextLabel root, as api.md says. Actual: a Frame. |
+| `B9` | `src/ui/media.luau` | ProgressView endLabel hides the showValue readout | Mount ProgressView with value 0.5, showValue = true and endLabel = "End". Expect a "50%" text. Actual: no text shows the value. |
+| `B10` | `src/ui/inputs.luau` | Button corners rejects a readable, but Badge corners accepts one | Mount Button with corners = Compose.cell("square"). Expect it to mount, the same as Badge. Actual: an error. api.md does not say that corners is static. Low severity. |
+| `E1` | `examples/gallery/examples/05_word_game.luau` | Word-game keys and the active row no longer show state by paint | Mount the word game and guess RULES against REACT. Expect key_R and key_U to carry different surfaces, and the active row to carry an outline. Actual: the surface formulas are computed and never applied. |
+| `E2` | `examples/gallery/examples/02_playlist_table.luau` | Playlist plays a track on one click; its hint says double-click | Mount the playlist and fire one RowHit.Activated with MouseButton1. Expect selection only. Actual: nowPlaying changes. |
 
 ### Fixed after the audit
 
@@ -325,17 +475,23 @@ adds these cases:
 
 | Candidate case | Closes | Main cases | Also partly covers |
 |---|---|---:|---|
-| keeps the changelog release heading equal to Facet.VERSION | apps-115 | 1 | - |
-| refuses an unknown lower-case option on every public constructor | collections-221, mech1-26, mech3-44, themes-P1-97 | 33 | - |
-| shows button help when gamepad selection rests on the button and hides it on deselection | inputs-91, mech3-70 | 4 | - |
-| disables a stepper direction at its bound and refuses the step | inputs-214 | 2 | - |
-| reports a failed alert body to the onError factory option and dismisses once | mech1-114 | 1 | - |
-| tags a disabled button for the theme disabled rule and lets a package retune it | mech2-24 | 3 | - |
-| keeps at most the documented number of pooled row hosts | mech2-31 | 2 | - |
-| fills the controls table with indexOfKey, placementOf and offsetOf | mech2-86 | 2 | - |
-| refuses malformed documented options with a named error | navigation-2-24, navigation-3-45, navigation-4-10, navigation-5-28 | 8 | apps-198, collections-129, inputs-43, inputs-104, inputs-150, inputs-188, navigation-3-81, navigation-4-45 |
-| delivers onActivate with the item and key and skips disabled rows | - | 0 | collections-184 |
-| wraps rating activation to zero only when allowZero and ignores a disabled rating | - | 0 | inputs-156 |
+| keeps the changelog release heading equal to Facet.VERSION | `apps-115` | 1 | - |
+| refuses an unknown lower-case option on every public constructor | `collections-221`, `mech1-26`, `mech3-44`, `themes-P1-97` | 33 | - |
+| shows button help when gamepad selection rests on the button and hides it on deselection | `inputs-91`, `mech3-70` | 4 | - |
+| disables a stepper direction at its bound and refuses the step | `inputs-214` | 2 | - |
+| reports a failed alert body to the onError factory option and dismisses once | `mech1-114` | 1 | - |
+| tags a disabled button for the theme disabled rule and lets a package retune it | `mech2-24` | 3 | - |
+| keeps at most the documented number of pooled row hosts | `mech2-31` | 2 | - |
+| fills the controls table with indexOfKey, placementOf and offsetOf | `mech2-86` | 2 | - |
+| refuses malformed documented options with a named error | `navigation-2-24`, `navigation-3-45`, `navigation-4-10`, `navigation-5-28` | 8 | `apps-198`, `collections-129`, `inputs-43`, `inputs-104`, `inputs-150`, `inputs-188`, `navigation-3-81`, `navigation-4-45` |
+| delivers onActivate with the item and key and skips disabled rows | - | 0 | `collections-184` |
+| wraps rating activation to zero only when allowZero and ignores a disabled rating | - | 0 | `inputs-156` |
+
+The producer restoration adds one more case, in `native_themes_media`:
+
+| Candidate case | Closes | Main cases | Also partly covers |
+|---|---|---:|---|
+| mounts the namespaced control fixtures with the current constructors | `themes-P5-12` | 3 | - |
 
 [`tests/native_parity_paint.spec.luau`](../../tests/native_parity_paint.spec.luau)
 closes every gap in the paint and theming group. A contract that two cases
@@ -639,7 +795,7 @@ Example and reference-app gaps:
 
 | Group | Contracts | Main cases |
 |---|---:|---:|
-| Docs, examples and tooling | 10 | 33 |
+| Docs, examples and tooling | 9 | 30 |
 | Gallery and examples | 14 | 42 |
 | Reference apps | 43 | 93 |
 

@@ -334,6 +334,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 					local gripProps: Types.TextButtonProps = {
 						Name = "Resize",
 						Text = "",
+						Attributes = {
+							AccessibleLabel = (function(use: ComposeTypes.Use): string
+								local value = use(current)
+								return "Resize " .. tostring(read(value.label or value.id, use))
+							end) :: Types.Value<Types.AttributeValue?>,
+						},
 						Selectable = true,
 						AnchorPoint = V2.new(1, 0),
 						Position = D2.fromScale(1, 0),

@@ -811,6 +811,17 @@ function example.build(ctx: any)
 							label = function(use)
 								return use(label) .. use(mark)
 							end,
+							name = function(use)
+								local letter = use(label)
+								local base = if letter ~= ""
+									then `Row {r}, column {c}, {letter}`
+									else `Row {r}, column {c}`
+								local current = use(state)
+								return if current == "pending"
+									then base .. ", not submitted"
+									elseif current == "centre" then base .. ", start square"
+									else base
+							end,
 							BackgroundColor3 = function(use)
 								local palette = {
 									idle = Color3.fromRGB(62, 70, 82),

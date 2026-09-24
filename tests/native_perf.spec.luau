@@ -250,6 +250,37 @@ t.describe("native benchmark workload contract", function()
 		t.expect(labels).toBe(8)
 		scene.teardown(state)
 	end)
+	t.it("counts real transient surfaces and settles the radial exit outside the timed step", function()
+		for name, items in
+			{ ["alert-present-dismiss"] = 3, ["picker-menu-open-close"] = 6, ["radial-menu-open-close"] = 6 }
+		do
+			local scene = registered[name]
+			local state = scene.setup(profiles.get("floorAndroid"))
+			for _ = 1, 3 do
+				scene.run(state)
+				scene.afterRun(state)
+			end
+			local w = state.workload
+			t.expect(w.opens).toBe(3)
+			t.expect(w.surfaceItems).toBe(items)
+			t.expect(w.settled).toBe(3)
+			if name == "radial-menu-open-close" then
+				t.expect(w.closes).toBe(0)
+				t.expect(w.settleFrames > 0).toBe(true)
+			else
+				t.expect(w.closes).toBe(3)
+			end
+			scene.teardown(state)
+		end
+		local scene = registered["dense-motion"]
+		local state = scene.setup(profiles.get("floorAndroid"))
+		for _ = 1, 4 do
+			scene.run(state)
+			scene.afterRun(state)
+		end
+		t.expect(state.workload.springsMoving).toBe(24)
+		scene.teardown(state)
+	end)
 	t.it("measures a dense HUD activation through its committed native text", function()
 		local scene = registered["dense-hud"]
 		local state = scene.setup(profiles.get("floorAndroid"))

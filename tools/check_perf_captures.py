@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-
 import json
 import os
 import re
@@ -9,8 +7,6 @@ import sys
 STUDIO_DIR = "artifacts/performance-stress-places/studio"
 DEVICE_DIR = "artifacts/cross-platform-proof/device"
 ACCEPTANCE = "artifacts/performance-stress-places/acceptance.md"
-
-
 
 REQUIRED = [
     "schema", "evidenceClass", "capturedAtIso", "repeat_",
@@ -25,20 +21,24 @@ REQUIRED_DEVICE = ["deviceModel", "osVersion", "clientVersion", "powerState"]
 DEVICE_CLASSES = {"phone-physical", "desktop-retail"}
 HOST_CLASSES = {"lune", "studio", "emulator"}
 
-
-
-
 SCHEMA = "facet-perf-capture/1"
 SCHEMAS = (SCHEMA, "luauui-perf-capture/1")
 
-
-
-
 VERSION_SOURCES = {
-    "rowVersion": ("examples/performance/lab/rows.luau", r'rows\.VERSION\s*=\s*"([^"]+)"'),
+    "rowVersion": ("examples/performance/lab/rows.luau", r'\bVERSION\s*=\s*"([^"]+)"'),
     "datasetVersion": ("examples/performance/lab/dataset.luau", r'dataset\.VERSION\s*=\s*"([^"]+)"'),
-    "scenarioVersion": ("examples/performance/lab/perf_lab.luau", r'SCENARIO_VERSION\s*=\s*"([^"]+)"'),
+    "scenarioVersion": ("examples/performance/lab/perf_lab.luau", r'lab\.VERSION\s*=\s*"([^"]+)"'),
 }
+
+
+def capture_contract():
+    with open("examples/performance/lab/capture.luau") as fh:
+        source = fh.read()
+    block = re.search(r"capture\.REQUIRED\s*=\s*\{(.*?)\n\}", source, re.S)
+    device = re.search(r"capture\.REQUIRED_DEVICE\s*=\s*\{([^}]*)\}", source)
+    if block is None or device is None:
+        raise SystemExit("check_perf_captures: cannot read capture.REQUIRED from capture.luau")
+    return re.findall(r'"([^"]+)"', block.group(1)), re.findall(r'"([^"]+)"', device.group(1))
 
 
 def source_versions():
@@ -56,8 +56,6 @@ def missing(row, keys):
     out = []
     for k in keys:
         v = row.get(k)
-
-
         if v is None or v == "" or (isinstance(v, str) and "unknown" in v):
             out.append(k)
     return out
@@ -85,14 +83,10 @@ def check_row(row, where):
 
 
 def collect_rows(path):
-
     with open(path) as fh:
         doc = json.load(fh)
     if isinstance(doc, dict) and doc.get("schema") in SCHEMAS:
         return [(doc, os.path.basename(path))]
-
-
-
     if isinstance(doc, dict) and isinstance(doc.get("row"), dict) and doc["row"].get("schema") in SCHEMAS:
         return [(doc["row"], os.path.basename(path))]
     rows = []
@@ -117,8 +111,12 @@ def main():
                 all_rows.append((row, where))
                 problems += check_row(row, where)
 
-
     current = source_versions()
+    required, required_device = capture_contract()
+    if required != REQUIRED:
+        problems.append(f"capture.luau REQUIRED {required} differs from this checker {REQUIRED}")
+    if required_device != REQUIRED_DEVICE:
+        problems.append(f"capture.luau REQUIRED_DEVICE {required_device} differs from this checker {REQUIRED_DEVICE}")
 
     def is_current(row):
         return all(row.get(f) == v for f, v in current.items())
@@ -140,15 +138,10 @@ def main():
                 "and the row does not say it was superseded"
             )
 
-
     device_rows = sum(classes.get(c, 0) for c in DEVICE_CLASSES)
     if os.path.isfile(ACCEPTANCE):
         with open(ACCEPTANCE) as fh:
             text = fh.read()
-
-
-
-
         claims_budget = re.search(r"\|\s*PASS_PHYSICAL\s*\|", text) is not None
         if claims_budget and device_rows == 0:
             problems.append(
