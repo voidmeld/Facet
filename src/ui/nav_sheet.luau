@@ -320,7 +320,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			)
 			dragHeight:set(height)
 			table.insert(current.samples, { height = height, at = now() })
-			if #current.samples > 4 then
+			if #current.samples > 8 then
 				table.remove(current.samples, 1)
 			end
 		end
@@ -329,12 +329,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if count < 2 then
 				return 0
 			end
-			local last, previous = current.samples[count], current.samples[count - 1]
-			local span = last.at - previous.at
-			if span <= 0 or now() - last.at > 0.1 then
+			local last = current.samples[count]
+			local first = last
+			for index = count - 1, 1, -1 do
+				if last.at - current.samples[index].at > 0.1 then
+					break
+				end
+				first = current.samples[index]
+			end
+			local span = last.at - first.at
+			if span < 1 / 240 or now() - last.at > 0.1 then
 				return 0
 			end
-			return (last.height - previous.height) / span
+			return (last.height - first.height) / span
 		end
 		local function finish(source: "grip" | "panel")
 			local current = session

@@ -43,6 +43,13 @@ local SEVERITIES = table.freeze({
 	error = "status.error",
 })
 
+local ICON_TAGS = table.freeze({
+	info = "facet-icon-info",
+	success = "facet-icon-success",
+	warning = "facet-icon-warning",
+	error = "facet-icon-error",
+})
+
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
 	local E, D2, UD = ctx.types.Enum, ctx.types.UDim2, ctx.types.UDim
@@ -232,7 +239,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				LayoutOrder = 1,
 			})
 			if not emphasis then
-				mark:AddTag("facet-icon-" .. severity)
+				mark:AddTag(ICON_TAGS[severity])
 			end
 			table.insert(rowChildren, mark)
 		end
@@ -489,7 +496,6 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end
 			end)
 		end
-		root:AddTag("facet-nav-bar")
 		return root
 	end)
 end

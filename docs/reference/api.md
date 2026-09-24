@@ -157,8 +157,8 @@ document their own write-then-notify behavior below.
   or a value plays it. See [Haptics](#haptics).
 - `controlSize`: the control-size step (`compact`, `regular` or `large`) for
   theme icons.
-- `onError`: receives a failure from the content of a presented Alert. The
-  alert dismisses.
+- `onError`: receives a failure from the content of a presented Alert or
+  Sheet, which then dismisses, and a failure from a Callout `onShow`.
 - `services`, `guiService`, `userInputService` and `types`: native dependencies.
 - `inputParent` and `overlayParent`: placement targets.
 
@@ -172,9 +172,11 @@ cannot be interacted with, and the selection never stays on it.
 |---|---|---|
 | NavigationStack push | The new page slides in from the trailing edge. The old page moves 30 percent to the leading edge and dims. Critically damped spring with a 0.3 second period, visually complete in approximately 0.35 seconds. | Pop is the reverse. |
 | TabView page change | Crossfade, 0.2 seconds, Quad Out. | The same. |
-| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. The scrim fades in. | Slides down, 0.2 seconds. |
+| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. A side sheet slides in from its edge. The scrim fades in. | Slides down, or toward its edge, 0.2 seconds. |
 | Alert | Scales from 0.94 to 1 and fades in, 0.2 seconds, Cubic Out. The scrim fades in. | The reverse, 0.15 seconds. |
-| Callout, Button `help`, Menu, Picker menu | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+| Callout, Button `help`, Menu, Picker menu, Popover | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+| Snackbar | Slides up from below the layer, 0.2 seconds. | Slides down, 0.2 seconds. |
+| Dialog, Notice, NavBar | No motion. | No motion. |
 
 - Reduced motion (`reducedMotion` or `GuiService.ReducedMotionEnabled`) removes
   all of this motion. The change is immediate.
@@ -788,8 +790,8 @@ on a layer narrower than 600 pixels gets the Sheet route. A live change of
 input or width switches the route without a proposal. Only one content owner
 exists at a time, and the selection returns to the same content node.
 
-The trigger keeps its own `onActivate`. The panel grows in from 97 percent
-scale. Under reduced motion it appears at once.
+The trigger keeps its own `onActivate`. The panel scales and fades from the
+edge nearest to its source. See [Motion](#motion).
 
 ### Snackbar
 
