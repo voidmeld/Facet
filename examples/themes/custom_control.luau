@@ -116,19 +116,21 @@ function custom_control.resolve(snapshot: any, package: any?, themeName: string?
 	}
 end
 
-function custom_control.blueprint(UI: any, resolved: any, id: string?): any
+function custom_control.blueprint(ctx: any, resolved: any, id: string?): any
+	local Host, UI = ctx.Host, ctx.UI
+	local D, D2, C3, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Color3, ctx.types.Enum
 	local name = id or "Gauge"
-	return UI.VStack({
-		id = name,
-		gap = "xs",
-		width = UI.fill(),
-
-		UI.Text({ id = name .. "Label", text = "Custom gauge (demo:gauge)", textSize = "caption" }),
-		UI.Box({
-			id = name .. "Track",
-			surface = "control",
-			width = UI.fill(),
-			height = { type = "fixed", px = resolved.height },
+	return Host.Frame(name)({
+		BackgroundTransparency = 1,
+		Size = D2.new(1, 0, 0, 0),
+		AutomaticSize = E.AutomaticSize.Y,
+		Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 4) }),
+		UI.Label(name .. "Label")({ LayoutOrder = 1, text = "Custom gauge (demo:gauge)", textRole = "caption" }),
+		Host.Frame(name .. "Track")({
+			LayoutOrder = 2,
+			BorderSizePixel = 0,
+			BackgroundColor3 = C3.new(resolved.tint.r, resolved.tint.g, resolved.tint.b),
+			Size = D2.new(1, 0, 0, resolved.height),
 		}),
 	})
 end

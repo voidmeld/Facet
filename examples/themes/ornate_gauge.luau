@@ -88,102 +88,92 @@ function ornate_gauge.resolve(snapshot: any, package: any?, themeName: string?):
 	}
 end
 
-function ornate_gauge.blueprint(UI: any, core: any, resolved: any, opts: any?): any
-	local Compose = core.Compose
+function ornate_gauge.blueprint(ctx: any, resolved: any, opts: any?): any
+	local Host, UI, Compose = ctx.Host, ctx.UI, ctx.Compose
+	local D, D2, V2, C3, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
 	local o: any = opts or {}
 	local name: string = o.id or "Gauge"
 	local capPx = ornate_gauge.CAP_PX
 	local fraction = o.fraction
+	local FLOOR = 1e-4
 
-	local function clamp01(v: any): number
-		local n = if type(v) == "number" then v else 0
-		return math.clamp(n, 0, 1)
+	local function share(use: any, leading: boolean): number
+		local value = if fraction ~= nil then use(fraction) else 0
+		local f = math.clamp(if type(value) == "number" then value else 0, 0, 1)
+		return math.max(if leading then f else 1 - f, FLOOR)
 	end
 
-	local FLOOR = 1e-4
-	local lead = Compose.formula(function(use: any)
-		local f = clamp01(if fraction ~= nil then use(fraction) else 0)
-		return UI.fill(math.max(f, FLOOR))
-	end)
-	local trail = Compose.formula(function(use: any)
-		local f = clamp01(if fraction ~= nil then use(fraction) else 0)
-		return UI.fill(math.max(1 - f, FLOOR))
-	end)
-
-	local dialHeight: any = if o.heightPx ~= nil
-		then Compose.formula(function(use: any)
-			return { type = "fixed", px = use(o.heightPx) }
-		end)
-		else { type = "fixed", px = resolved.height }
-
-	local FILL = UI.fill()
-
-	local needle = UI.shadow(
-		UI.Image(name .. "Needle")({
-			image = ornate_gauge.ART.needle,
-			width = { type = "fixed", px = ornate_gauge.NEEDLE_PX },
-			height = FILL,
-		}),
-		{
-			blurRadius = { scale = 0, offset = 18 },
-			color = resolved.needle,
-			transparency = 0.35,
-			zIndex = -1,
-		}
-	)
-
-	local dial = UI.corners(
-		UI.ZStack(name .. "Dial")({
-			width = FILL,
-			height = dialHeight,
-
-			UI.Image(name .. "Face")({
-				image = ornate_gauge.ART.face,
-				width = FILL,
-				height = FILL,
+	local function spacer(suffix: string, order: number, leading: boolean): any
+		return Host.Frame(name .. suffix)({
+			LayoutOrder = order,
+			BackgroundTransparency = 1,
+			Size = D2.fromScale(0, 1),
+			Host.UIFlexItem({
+				FlexMode = E.UIFlexMode.Custom,
+				GrowRatio = Compose.formula(function(use: any)
+					return share(use, leading)
+				end),
 			}),
+		})
+	end
 
-			UI.HStack(name .. "Track")({
-				width = FILL,
-				height = FILL,
-				gap = 0,
-				padding = { top = 0, right = capPx, bottom = 0, left = capPx },
+	local function cap(suffix: string, trailing: boolean): any
+		return Host.ImageLabel(name .. suffix)({
+			Image = ornate_gauge.ART.endcap,
+			BackgroundTransparency = 1,
+			AnchorPoint = V2.new(if trailing then 1 else 0, 0),
+			Position = D2.fromScale(if trailing then 1 else 0, 0),
+			Size = D2.new(0, capPx, 1, 0),
+		})
+	end
 
-				UI.Spacer(name .. "Lead")({ width = lead, height = FILL }),
-				needle,
-				UI.Spacer(name .. "Trail")({ width = trail, height = FILL }),
-			}),
-
-			UI.Anchor(name .. "Caps")({
-				width = FILL,
-				height = FILL,
-
-				UI.Image(name .. "CapStart")({
-					image = ornate_gauge.ART.endcap,
-					anchor = "left",
-					width = { type = "fixed", px = capPx },
-					height = FILL,
-				}),
-				UI.Image(name .. "CapEnd")({
-					image = ornate_gauge.ART.endcap,
-					anchor = "right",
-					width = { type = "fixed", px = capPx },
-					height = FILL,
-				}),
-			}),
-		}),
-		resolved.ring
-	)
-
-	return UI.VStack(name)({
-		gap = "xs",
-		width = FILL,
-
-		UI.Text(name .. "Label")({
+	local needle = resolved.needle
+	return Host.Frame(name)({
+		BackgroundTransparency = 1,
+		Size = D2.new(1, 0, 0, 0),
+		AutomaticSize = E.AutomaticSize.Y,
+		Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 4) }),
+		UI.Label(name .. "Label")({
+			LayoutOrder = 1,
 			text = o.label or "Boiler pressure (gauge:dial)",
-			textSize = "caption",
+			textRole = "caption",
 		}),
-		dial,
+		Host.Frame(name .. "Dial")({
+			LayoutOrder = 2,
+			BackgroundTransparency = 1,
+			Size = if o.heightPx ~= nil
+				then function(use: any)
+					return D2.new(1, 0, 0, use(o.heightPx))
+				end
+				else D2.new(1, 0, 0, resolved.height),
+			Host.UICorner({ CornerRadius = D.new(0, resolved.ring) }),
+			Host.ImageLabel(name .. "Face")({
+				Image = ornate_gauge.ART.face,
+				BackgroundTransparency = 1,
+				Size = D2.fromScale(1, 1),
+			}),
+			Host.Frame(name .. "Track")({
+				BackgroundTransparency = 1,
+				Size = D2.fromScale(1, 1),
+				Host.UIPadding({ PaddingLeft = D.new(0, capPx), PaddingRight = D.new(0, capPx) }),
+				Host.UIListLayout({ FillDirection = E.FillDirection.Horizontal, SortOrder = E.SortOrder.LayoutOrder }),
+				spacer("Lead", 1, true),
+				Host.ImageLabel(name .. "Needle")({
+					LayoutOrder = 2,
+					Image = ornate_gauge.ART.needle,
+					BackgroundTransparency = 1,
+					Size = D2.new(0, ornate_gauge.NEEDLE_PX, 1, 0),
+					Host.UIShadow({
+						Color = C3.new(needle.r, needle.g, needle.b),
+						Transparency = 0.35,
+						BlurRadius = D.new(0, 18),
+					}),
+				}),
+				spacer("Trail", 3, false),
+			}),
+			cap("CapStart", false),
+			cap("CapEnd", true),
+		}),
 	})
 end
 

@@ -39,6 +39,10 @@ local perfModules = {
 }
 local playlistExample = require("../examples/gallery/examples/02_playlist_table")
 local quickActions = require("../examples/gallery/scenarios/radial_menu")
+local studioTree = require("../tools/lune/lib/studio_tree")
+local themePackages = require("../tools/lune/theme_packages")
+local ornateGauge = require("../examples/themes/ornate_gauge")
+local customControl = require("../examples/themes/custom_control")
 local Compose = Facet.Compose
 
 type World = {
@@ -3796,6 +3800,255 @@ t.describe("native parity reference applications", function()
 					world.stop()
 				end
 			)
+		end)
+	end)
+
+	t.describe("Public surface, catalog and theme corpus", function()
+		local EXPECTED_SHIPPABLE = {
+			"classic_desktop",
+			"compact_pointer",
+			"fantasy_ornate",
+			"fantasy_parchment",
+			"glossy_mobile",
+			"glossy_touch",
+			"pixel_quest",
+			"scifi_hud",
+		}
+
+		local function controlNames(): { string }
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local names = {}
+			for name in Facet.controls(runtime, { types = engine.types } :: any) do
+				table.insert(names, name :: string)
+			end
+			table.sort(names)
+			runtime:dispose()
+			return names
+		end
+
+		t.it("exports the Props or Spec contract of every control and the documented Compose types", function()
+			local source = fs.readFile("src/init.luau")
+			local exported: { [string]: boolean } = {}
+			for name in string.gmatch(source, "export type ([%a_][%w_]*)") do
+				exported[name] = true
+			end
+			local shared = { VirtualList = "CollectionSpec", VirtualGrid = "CollectionSpec" }
+			local names = controlNames()
+			t.expect(#names).toBe(35)
+			for _, name in names do
+				local contract = shared[name]
+				local found = if contract
+					then exported[contract] == true
+					else exported[name .. "Props"] == true or exported[name .. "Spec"] == true
+				t.expect(`{name}: {found}`).toBe(`{name}: true`)
+			end
+			for _, name in
+				{ "Controls", "ControlOptions", "ThemePackage", "Cell", "Readable", "Runtime", "Owner", "Use" }
+			do
+				t.expect(`{name}: {exported[name] == true}`).toBe(`{name}: true`)
+			end
+			local reference = fs.readFile("docs/reference/api.md")
+			for _, name in
+				{ "Controls", "ControlOptions", "ThemePackage", "Cell<T>", "Readable<T>", "Runtime", "Owner", "Use" }
+			do
+				t.expect(string.find(reference, "`" .. name .. "`", 1, true) ~= nil).toBe(true)
+			end
+		end)
+
+		t.it("documents every Facet.themes export and every capability in the guide catalog", function()
+			local reference = fs.readFile("docs/reference/api.md")
+			local section = string.sub(reference, (assert(string.find(reference, "\n## Themes\n", 1, true))))
+			section = string.sub(section, 1, (string.find(section, "\n## ", 3, true) or #section))
+			local function documented(name: string): boolean
+				return string.find(section, "`" .. name, 1, true) ~= nil
+					or string.find(section, "`themes." .. name, 1, true) ~= nil
+			end
+			local count = 0
+			for name in Facet.themes do
+				count += 1
+				t.expect(`{name}: {documented(name :: string)}`).toBe(`{name}: true`)
+			end
+			t.expect(count >= 9).toBe(true)
+			t.expect(documented("definitelyNotAnExport")).toBe(false)
+			local guide = fs.readFile("docs/guide/README.md")
+			local start = (assert(string.find(guide, "## Capability catalog", 1, true)))
+			local catalog = string.sub(guide, start)
+			local stop = string.find(catalog, "\n## ", 3, true)
+			if stop then
+				catalog = string.sub(catalog, 1, stop)
+			end
+			for _, name in controlNames() do
+				t.expect(`UI.{name}: {string.find(catalog, "`UI." .. name .. "`", 1, true) ~= nil}`)
+					.toBe(`UI.{name}: true`)
+			end
+			for name in Facet :: any do
+				t.expect(`Facet.{name}: {string.find(catalog, "Facet." .. name, 1, true) ~= nil}`)
+					.toBe(`Facet.{name}: true`)
+			end
+			local engine: any = engineLib.new()
+			local UI = Facet.controls(Facet.Roblox.createRuntime(engine), { types = engine.types } :: any)
+			for name in string.gmatch(catalog, "`UI%.([%a_][%w_]*)`") do
+				t.expect(`UI.{name}: {(UI :: any)[name] ~= nil}`).toBe(`UI.{name}: true`)
+			end
+			for name in string.gmatch(catalog, "`Facet%.([%a_][%w_]*)") do
+				t.expect(`Facet.{name}: {(Facet :: any)[name] ~= nil}`).toBe(`Facet.{name}: true`)
+			end
+			for _, file in fs.readDir("docs/extending") do
+				t.expect(`{file}: {string.find(guide, "../extending/" .. file, 1, true) ~= nil}`).toBe(`{file}: true`)
+			end
+		end)
+
+		t.it("syncs the gallery through one client-context bootstrap script", function()
+			local found = 0
+			for _, entry in studioTree.entries("gallery") do
+				if entry.path == "ReplicatedStorage.Gallery" then
+					found += 1
+					t.expect(entry.className).toBe("Script")
+					t.expect(entry.runContext).toBe("Client")
+					t.expect(entry.file).toBe("examples/gallery/client/init.client.luau")
+				end
+				t.expect(string.find(entry.path, "StarterPlayerScripts.Gallery", 1, true)).toBeNil()
+			end
+			t.expect(found).toBe(1)
+		end)
+
+		t.it("gives every theme module a role and derives the eight shippable packages", function()
+			local result = themePackages.check()
+			t.expect(table.concat(result.problems, "\n")).toBe("")
+			t.expect(result.ok).toBe(true)
+			t.expect(#themePackages.files() >= 13).toBe(true)
+			t.expect(#themePackages.byRole("reference")).toBe(9)
+			t.expect(#themePackages.byRole("fixture") >= 2).toBe(true)
+			t.expect(#themePackages.byRole("control") >= 2).toBe(true)
+			t.expect(#themePackages.REFERENCE_ORDER).toBe(#themePackages.byRole("reference"))
+			t.expect(table.concat(themePackages.shippable(), ",")).toBe(table.concat(EXPECTED_SHIPPABLE, ","))
+			local excluded = 0
+			for _ in themePackages.NOT_SHIPPABLE do
+				excluded += 1
+			end
+			t.expect(#themePackages.shippable() + excluded).toBe(#themePackages.files())
+			t.expect(themePackages.artifactName("fantasy_ornate")).toBe("FantasyOrnate")
+			t.expect(themePackages.artifactName("classic_desktop")).toBe("ClassicDesktop")
+			t.expect(themePackages.artifactName("scifi_hud")).toBe("ScifiHud")
+			local seen = {}
+			for _, name in themePackages.shippable() do
+				local artifact = themePackages.artifactName(name)
+				t.expect(seen[artifact]).toBeNil()
+				seen[artifact] = name
+			end
+			local artifacts = fs.readFile("tools/lune/theme_artifacts.luau")
+			t.expect(string.find(artifacts, "theme_packages.shippable()", 1, true) ~= nil).toBe(true)
+		end)
+
+		t.it("reports each kind of drift in the theme corpus", function()
+			local function names(result: any, fragment: string): boolean
+				for _, problem in result.problems do
+					if string.find(problem, fragment, 1, true) then
+						return true
+					end
+				end
+				return false
+			end
+			local fresh = themePackages.check({ "brand_new_package" })
+			t.expect(fresh.ok).toBe(false)
+			t.expect(names(fresh, "brand_new_package.luau has no declared role")).toBe(true)
+			local roles: any = themePackages.ROLES
+			roles.a_package_that_moved = "reference"
+			local moved = themePackages.check()
+			roles.a_package_that_moved = nil
+			t.expect(names(moved, "declares a role for 'a_package_that_moved'")).toBe(true)
+			local excluded: any = themePackages.NOT_SHIPPABLE
+			excluded.a_fixture_that_moved = "a reason long enough to satisfy the reason rule below it, and no more"
+			local gone = themePackages.check()
+			excluded.a_fixture_that_moved = nil
+			t.expect(names(gone, "excludes 'a_fixture_that_moved'")).toBe(true)
+			local reason = excluded.layered_test
+			excluded.layered_test = "test"
+			local short = themePackages.check()
+			excluded.layered_test = reason
+			t.expect(names(short, "NOT_SHIPPABLE['layered_test'] needs a REASON")).toBe(true)
+			local control = excluded.custom_control
+			excluded.custom_control = nil
+			local leaked = themePackages.check()
+			excluded.custom_control = control
+			t.expect(names(leaked, "'custom_control' is shippable but its role is 'control'")).toBe(true)
+			local order: any = themePackages.REFERENCE_ORDER
+			local dropped = table.remove(order)
+			local unordered = themePackages.check()
+			table.insert(order, dropped)
+			t.expect(names(unordered, `'{dropped}' is a reference package but is missing from REFERENCE_ORDER`))
+				.toBe(true)
+			t.expect(themePackages.check().ok).toBe(true)
+		end)
+
+		t.it("builds the custom-control and ornate-gauge fixtures from their needs, fallbacks and own art", function()
+			local ornatePackage =
+				assert(Facet.themes.define(require("../examples/themes/fantasy_ornate").build(Facet.themes)))
+			local classicPackage =
+				assert(Facet.themes.define(require("../examples/themes/classic_desktop").build(Facet.themes)))
+			t.expect(#ornateGauge.needs).toBe(3)
+			local kinds = {}
+			for _, need in ornateGauge.needs do
+				t.expect(string.sub(need.name, 1, 6)).toBe("gauge:")
+				t.expect(need.fallback ~= nil).toBe(true)
+				kinds[need.kind] = true
+			end
+			t.expect(kinds.color and kinds.number and kinds.controlSize).toBe(true)
+			t.expect(ornateGauge.check(Facet.themes, ornatePackage).ok).toBe(true)
+			local uncovered = ornateGauge.check(Facet.themes, classicPackage)
+			t.expect(uncovered.ok).toBe(false)
+			t.expect(#uncovered.missing).toBe(3)
+			for _, id in ornateGauge.ART do
+				t.expect(string.match(id, "^rbxassetid://%d+$") ~= nil).toBe(true)
+				for _, asset in ornatePackage.assets or {} do
+					t.expect((asset.contentId or asset.content) ~= id).toBe(true)
+				end
+			end
+			local fallback = ornateGauge.resolve({}, nil)
+			t.expect(fallback.height).toBe(44)
+			t.expect(fallback.ring).toBe(6)
+			t.expect(fallback.usedFallback.size and fallback.usedFallback.needle and fallback.usedFallback.ring)
+				.toBe(true)
+			t.expect(#customControl.needs).toBe(2)
+			t.expect(customControl.check(classicPackage).ok).toBe(false)
+			t.expect(#customControl.check(classicPackage).missing).toBe(2)
+			local plain = customControl.resolve({}, nil)
+			t.expect(plain.height).toBe(24)
+			t.expect(plain.usedFallback.size and plain.usedFallback.tint).toBe(true)
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local ctx = {
+				Host = runtime.constructors,
+				UI = Facet.controls(runtime, { types = engine.types } :: any),
+				Compose = Compose,
+				types = engine.types,
+			}
+			local fraction = Compose.cell(0.25)
+			local stop, root = runtime.mount(function()
+				return ctx.Host.Frame({
+					ornateGauge.blueprint(ctx, fallback, { id = "Boiler", fraction = fraction }),
+					customControl.blueprint(ctx, plain, "Demo"),
+				})
+			end, engine.new("ScreenGui"))
+			local dial = assert(within(root, "Boiler", "BoilerDial"))
+			t.expect(dial.Size.Y.Offset).toBe(44)
+			t.expect(find(dial, "BoilerFace").Image).toBe(ornateGauge.ART.face)
+			t.expect(find(dial, "BoilerNeedle").Image).toBe(ornateGauge.ART.needle)
+			t.expect(find(dial, "BoilerCapStart").Image).toBe(ornateGauge.ART.endcap)
+			t.expect(find(dial, "BoilerCapEnd").Image).toBe(ornateGauge.ART.endcap)
+			local lead = find(find(dial, "BoilerLead"), "UIFlexItem")
+			local trail = find(find(dial, "BoilerTrail"), "UIFlexItem")
+			t.expect(lead.GrowRatio).toBe(0.25)
+			t.expect(trail.GrowRatio).toBe(0.75)
+			fraction:set(2)
+			t.expect(lead.GrowRatio).toBe(1)
+			t.expect(trail.GrowRatio).toBe(1e-4)
+			t.expect(hasText(root, "Boiler pressure (gauge:dial)")).toBe(true)
+			t.expect(within(root, "Demo", "DemoTrack").Size.Y.Offset).toBe(24)
+			t.expect(hasText(root, "Custom gauge (demo:gauge)")).toBe(true)
+			stop()
+			runtime:dispose()
 		end)
 	end)
 end)
