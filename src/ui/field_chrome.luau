@@ -174,7 +174,6 @@ return function(ctx: Shared.Context): Chrome
 					"type-label"
 				),
 			}
-			label:AddTag("facet-field-label")
 			table.insert(parts, label)
 		end
 		local body: GuiObject = plate
@@ -238,7 +237,6 @@ return function(ctx: Shared.Context): Chrome
 		native.AutomaticSize = native.AutomaticSize or E.AutomaticSize.Y
 		local root = ctx.column(parts, native)
 		assert(root:FindFirstChildWhichIsA("UIListLayout")).Padding = D.new(0, 4)
-		root:AddTag("facet-field-chrome")
 		return root
 	end
 	return chrome

@@ -582,8 +582,6 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		node = ctx.styled(Host.TextBox(nativeProps), "text")
 		if not framed then
 			ctx.styled(ctx.styled(node, "field"), "text-input")
-		else
-			node:AddTag("facet-field-editor")
 		end
 
 		local root: TextBox | Frame = node
@@ -781,6 +779,11 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		attributes(
 			node,
 			{
+				AccessibleLabel = if spec.label ~= nil
+					then function(use: ComposeTypes.Use): string
+						return chrome.labelText(spec, use)
+					end
+					else nil,
 				invalid = function(use: ComposeTypes.Use)
 					return use(invalid) or read(spec.invalid, use) == true
 				end,

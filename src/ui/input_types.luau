@@ -241,6 +241,7 @@ export type ChipImplementationProps = Shared.TextButtonNativeProps & ButtonVisua
 	selected: Value<boolean>?,
 	onToggle: ((boolean) -> ())?,
 	onRemove: (() -> ())?,
+	editing: FlagValue?,
 	removeLabel: Value<string>?,
 	removeFocusFallback: Value<GuiObject?>?,
 	leading: Instance?,

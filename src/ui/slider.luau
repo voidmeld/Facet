@@ -59,13 +59,6 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 	local function dynamic(source: unknown): boolean
 		return Compose.isReadable(source) or type(source) == "function"
 	end
-	local function tagWhile(node: Instance, tag: string, on: boolean)
-		if on then
-			node:AddTag(tag)
-		elseif node:HasTag(tag) then
-			node:RemoveTag(tag)
-		end
-	end
 	local function construction(spec: Spec)
 		for _, key in { "axis", "range", "minGap", "thumb", "tapToPosition" } do
 			local source = (spec :: { [string]: unknown })[key]
@@ -523,7 +516,6 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 					vertical,
 					true
 				)
-				handle:AddTag("facet-slider-handle")
 				runtime.mountFragment(function()
 					return {
 						Host.UIDragDetector "Drag" {
@@ -667,6 +659,11 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 					end)
 				end
 				h.attributes(handle, {
+					AccessibleLabel = function(use: ComposeTypes.Use): string
+						local named = read(spec.label, use)
+						local side = if thumb == "lower" then "lower" else "upper"
+						return if named and named ~= "" then `{named} {side}` else `Range {side}`
+					end,
 					value = proxy.value :: Shared.Value<Shared.AttributeValue?>,
 					minimum = model.min,
 					maximum = model.max,
@@ -787,8 +784,6 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 		else
 			h.valueAttributes(node, (spec :: unknown) :: NumberSpec, model)
 		end
-		tagWhile(node, "facet-slider-vertical", vertical)
-		tagWhile(node, "facet-slider-range", isRange)
 		Compose.cleanup(cancel)
 		return node
 	end)

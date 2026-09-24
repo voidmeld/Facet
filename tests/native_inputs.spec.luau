@@ -52,6 +52,7 @@ t.describe("native input controls", function()
 			return runtime.constructors.Frame({
 				UI.Chip({
 					selected = Compose.cell(false),
+					editing = Compose.cell(true),
 					onRemove = function() end,
 					ref = function(root)
 						table.insert(chipRefs, root)
@@ -67,7 +68,7 @@ t.describe("native input controls", function()
 		end)
 		t.expect(#chipRefs).toBe(1)
 		t.expect(#hintRefs).toBe(1)
-		t.expect(chipRefs[1].ClassName).toBe("Frame")
+		t.expect(chipRefs[1].ClassName).toBe("TextButton")
 		t.expect(hintRefs[1].ClassName).toBe("Frame")
 		t.expect(chipRefs[1].Parent).toBe(node)
 		t.expect(hintRefs[1].Parent).toBe(node)
@@ -1072,14 +1073,14 @@ t.describe("native input controls", function()
 			return { services = { GuiService = gui } }
 		end)
 		local function remove(id)
-			local target = find(find(node, id), "Remove")
+			local target = find(node, id)
 			gui.SelectedObject = target
 			target.Activated.fire()
 		end
 		remove("B")
-		t.expect(gui.SelectedObject).toBe(find(find(node, "C"), "Remove"))
+		t.expect(gui.SelectedObject).toBe(find(node, "C"))
 		remove("C")
-		t.expect(gui.SelectedObject).toBe(find(find(node, "A"), "Remove"))
+		t.expect(gui.SelectedObject).toBe(find(node, "A"))
 		remove("A")
 		t.expect(gui.SelectedObject).toBe(fallback)
 		stop()
@@ -1105,7 +1106,7 @@ t.describe("native input controls", function()
 			gui = engine.new("GuiService")
 			return { services = { GuiService = gui } }
 		end)
-		local remove = find(node, "Remove")
+		local remove = find(node, "Delayed")
 		gui.SelectedObject = remove
 		remove.Activated.fire()
 		t.expect(gui.SelectedObject).toBe(remove)

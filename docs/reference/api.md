@@ -417,8 +417,22 @@ The named sizes are `small` (20), `medium` (28) and `large` (36).
 ### Chip and ShortcutHint
 
 Chip takes `label` and either a boolean `selected` or `onRemove`.
-`onToggle(next)` is controlled. The removal options are `removeLabel`,
-`removeFocusFallback`, and native `leading` and `trailing` children.
+`onToggle(next)` is controlled. The other options are `editing`,
+`removeLabel`, `removeFocusFallback`, and native `leading` and `trailing`
+children.
+
+Removal is edit mode. A chip with both `selected` and `onRemove` requires
+`editing`, a boolean or a readable boolean that you own. A chip with
+`onRemove` and no `selected` is always in edit mode. Outside edit mode, a
+chip only selects and shows no close mark. In edit mode, a `Remove` text mark
+shows inside the one chip button, and the `AccessibleLabel` attribute is
+`removeLabel` (the default is "Remove" and the label). Then activation, and
+Delete, Backspace or ButtonX while the chip is selected, call `onRemove`. The
+mark is not a separate button or focus stop. `onRemove` does not change your
+collection. Remove the item yourself. When a selected chip is removed,
+selection moves to the next removable chip, then the previous one, then
+`removeFocusFallback`. A Delete or Backspace key that is still down when
+selection arrives does not remove the next chip.
 
 ShortcutHint takes `keys = { { "Ctrl", "K" } }` or an `action` InputAction. It
 also takes an optional `separator` and `controlSize`. The default separator is

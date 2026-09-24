@@ -1440,67 +1440,37 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.Chip: read-only selected requires onToggle"
 		)
 		assert(spec.selected ~= nil or spec.onRemove, "Facet.Chip: selected or onRemove is required")
+		assert(spec.editing == nil or spec.onRemove ~= nil, "Facet UI.Chip: editing requires onRemove")
+		if spec.selected ~= nil and spec.onRemove ~= nil and spec.editing == nil then
+			error("Facet UI.Chip: a selectable chip with onRemove requires editing, the caller's edit-mode cell", 0)
+		end
+		local removable = spec.onRemove ~= nil
+		local function editing(use: ComposeTypes.Use?): boolean
+			if not removable then
+				return false
+			end
+			return spec.selected == nil or read(spec.editing, use) == true
+		end
 		local p = table.clone(
 			spec :: Shared.TextButtonNativeProps & InputTypes.ButtonVisualOptions & InputTypes.ButtonInputOptions
 		) :: InputTypes.ButtonProps & {
 			onToggle: ((boolean) -> ())?,
 			onRemove: (() -> ())?,
+			editing: Shared.Value<boolean>?,
 			removeLabel: Shared.Value<string>?,
 			removeFocusFallback: Shared.Value<GuiObject?>?,
 			leading: Instance?,
 			trailing: Instance?,
 		}
-		p.onToggle, p.onRemove, p.removeLabel, p.removeFocusFallback, p.leading, p.trailing =
-			nil, nil, nil, nil, nil, nil
+		p.onToggle, p.onRemove, p.editing, p.removeLabel, p.removeFocusFallback, p.leading, p.trailing =
+			nil, nil, nil, nil, nil, nil, nil
 		p.ref = nil
-		p.onActivate = function()
-			if spec.selected then
-				local value = not read(spec.selected)
-				if spec.onToggle then
-					spec.onToggle(value)
-				else
-					(spec.selected :: ComposeTypes.Cell<boolean>):set(value)
-				end
-			end
-		end
-		p.Selectable = function(use: ComposeTypes.Use)
-			return spec.selected ~= nil and enabled(spec, use)
-		end
-		if spec.leading or spec.trailing then
-			p.Text = ""
-			local contents: { ComposeTypes.Child } = {}
-			if spec.leading then
-				table.insert(contents, spec.leading)
-			end
-			table.insert(contents, ctx.text({ Text = spec.label or "" }))
-			if spec.trailing then
-				table.insert(contents, spec.trailing)
-			end
-			table.insert(p, ctx.row(contents))
-		end
-		local rootProps: Shared.FrameNativeProps = {}
-		if spec.onRemove then
-			rootProps.Name, p.Name = p.Name, nil
-			rootProps.Size, p.Size = p.Size, nil
-			rootProps.Position, p.Position = p.Position, nil
-			rootProps.AnchorPoint, p.AnchorPoint = p.AnchorPoint, nil
-			rootProps.LayoutOrder, p.LayoutOrder = p.LayoutOrder, nil
-			rootProps.Visible, p.Visible = p.Visible, nil
-			rootProps.ZIndex, p.ZIndex = p.ZIndex, nil
-
-			p.Name = "Body"
-		end
-		local body = UI.Button(p)
-		if not spec.onRemove then
-			return ctx.styled(body, "chip")
-		end
-		local root: Frame
-		local remove: TextButton
+		local node: TextButton
 		local pendingFocus: GuiObject?
 		local gui = ctx.config.services.GuiService
-		local function candidate()
-			if root.Parent then
-				local siblings = root.Parent:GetChildren()
+		local function candidate(): GuiObject?
+			if node.Parent then
+				local siblings = node.Parent:GetChildren()
 				local ordinal = {}
 				for index, sibling in siblings do
 					ordinal[sibling] = index
@@ -1510,34 +1480,31 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					local second = if b:IsA("GuiObject") then b.LayoutOrder else 0
 					return if first == second then ordinal[a] < ordinal[b] else first < second
 				end)
-				local index = table.find(siblings, root)
-				local function target(at: number): GuiButton?
+				local index = table.find(siblings, node)
+				local function target(at: number): GuiObject?
 					local sibling = siblings[at]
-					if sibling then
-						for _, child in sibling:GetDescendants() do
-							if
-								child.Name == "Remove"
-								and child:IsA("GuiButton")
-								and child.Selectable
-								and ctx.available(child)
-							then
-								return child
-							end
-						end
+					if
+						sibling
+						and sibling:IsA("GuiObject")
+						and sibling:GetAttribute("editing") ~= nil
+						and sibling.Selectable
+						and ctx.available(sibling)
+					then
+						return sibling
 					end
 					return nil
 				end
 				if index then
 					for at = index + 1, #siblings do
-						local node = target(at)
-						if node then
-							return node
+						local found = target(at)
+						if found then
+							return found
 						end
 					end
 					for at = index - 1, 1, -1 do
-						local node = target(at)
-						if node then
-							return node
+						local found = target(at)
+						if found then
+							return found
 						end
 					end
 				end
@@ -1549,28 +1516,123 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				gui
 				and pendingFocus
 				and pendingFocus.Parent
-				and (gui.SelectedObject == remove or gui.SelectedObject == nil)
+				and (gui.SelectedObject == node or gui.SelectedObject == nil)
 			then
 				gui.SelectedObject = pendingFocus
 			end
 			pendingFocus = nil
 		end
-		remove = UI.Button "Remove" {
-			label = spec.removeLabel or "Remove",
-			enabled = spec.enabled,
-			onActivate = function()
-				if gui and gui.SelectedObject == remove then
-					pendingFocus = candidate()
+		local function remove()
+			if not enabled(spec) or not ctx.available(node) then
+				return
+			end
+			if gui and gui.SelectedObject == node then
+				pendingFocus = candidate()
+			end
+			assert(spec.onRemove)()
+			if node.Parent == nil then
+				restore()
+			end
+		end
+		p.onActivate = function()
+			if editing() then
+				remove()
+			elseif spec.selected then
+				local value = not read(spec.selected)
+				if spec.onToggle then
+					spec.onToggle(value)
+				else
+					(spec.selected :: ComposeTypes.Cell<boolean>):set(value)
 				end
-				spec.onRemove()
-				if root.Parent == nil then
-					restore()
+			end
+		end
+		p.Selectable = function(use: ComposeTypes.Use)
+			return (spec.selected ~= nil or removable) and enabled(spec, use)
+		end
+		if spec.leading or spec.trailing or removable then
+			p.Text = ""
+			local contents: { ComposeTypes.Child } = {}
+			if spec.leading then
+				table.insert(contents, spec.leading)
+			end
+			table.insert(contents, ctx.text({ Name = "Title", Text = spec.label or "" }))
+			if spec.trailing then
+				table.insert(contents, spec.trailing)
+			end
+			if removable then
+				table.insert(
+					contents,
+					ctx.text({
+						Name = "Remove",
+						Text = "×",
+						Visible = function(use: ComposeTypes.Use)
+							return editing(use)
+						end,
+					})
+				)
+			end
+			table.insert(p, ctx.row(contents, { Name = "Content" }))
+		end
+		node = ctx.styled(UI.Button(p), "chip")
+		if removable then
+			attributes(
+				node,
+				{
+					AccessibleLabel = function(use: ComposeTypes.Use): string
+						if not editing(use) then
+							return read(spec.label, use) or ""
+						end
+						local named = read(spec.removeLabel, use)
+						return named or `Remove {read(spec.label, use) or ""}`
+					end,
+					editing = function(use: ComposeTypes.Use)
+						return editing(use)
+					end,
+				} :: Shared.Attributes
+			)
+			local holding = false
+			local function removalHeld(): boolean
+				local input = ctx.config.services.UserInputService
+				local probe = (input :: unknown) :: { IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)? }?
+				if input == nil or probe == nil or probe.IsKeyDown == nil then
+					return false
 				end
-			end,
-		}
-		root = ctx.styled(ctx.row({ body, remove }, rootProps), "chip")
+				return input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace)
+			end
+			local focused: ComposeTypes.Readable<Instance?> = if gui
+				then ctx.observe(gui, "SelectedObject") :: ComposeTypes.Readable<Instance?>
+				else Compose.cell(nil :: Instance?)
+			local wasFocused = false
+			Compose.watch(function(use: ComposeTypes.Use)
+				local now = use(focused) == (node :: Instance)
+				if now and not wasFocused then
+					holding = removalHeld()
+				end
+				wasFocused = now
+			end)
+			ctx.action(
+				node,
+				"RemoveChip",
+				{ E.KeyCode.Delete, E.KeyCode.Backspace, E.KeyCode.ButtonX },
+				function(use: ComposeTypes.Use)
+					return use(focused) == (node :: Instance) and editing(use) and enabled(spec, use)
+				end,
+				function()
+					if holding then
+						return
+					end
+					remove()
+				end,
+				{
+					priority = 100,
+					onReleased = function()
+						holding = false
+					end,
+				}
+			)
+		end
 		Compose.cleanup(restore)
-		return root
+		return node
 	end)
 
 	UI.ShortcutHint = ctx.construct(
