@@ -45,7 +45,7 @@ function world.action(root: any, name: string): any
 	return nil
 end
 
-function world.new(build: (any, any, any, any) -> any, options: any?): any
+function world.new(build: (any, any, any, any, any) -> any, options: any?): any
 	local o = options or {}
 	local engine = engines.new()
 	local now = 0
@@ -69,7 +69,7 @@ function world.new(build: (any, any, any, any) -> any, options: any?): any
 	local target = engine.new("Folder")
 	local V = engine.types.Vector2
 	local stop, screen = runtime.mount(function()
-		return runtime.constructors.ScreenGui({ build(UI, runtime.constructors, engine, gui) })
+		return runtime.constructors.ScreenGui({ build(UI, runtime.constructors, engine, gui, runtime) })
 	end, target)
 	local size = o.size or V.new(800, 600)
 	screen.AbsoluteSize = size

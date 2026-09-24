@@ -312,12 +312,14 @@ function Sipworks.build(ctx)
 				isPresented = selectedOpen,
 				detent = Compose.cell("large"),
 				title = "House blend",
+				closeButton = text("common.done"),
 				content = detail,
 			},
 			UI.Sheet "Botanical" {
 				isPresented = botanicalOpen,
 				detent = Compose.cell("medium"),
 				title = "Botanical",
+				closeButton = text("common.done"),
 				content = function()
 					local item = catalog.botanical(botanical:peek())
 					local showFacts = Compose.cell(false)

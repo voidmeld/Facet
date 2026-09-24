@@ -287,7 +287,15 @@ local function new(options: any?)
 				return changed[key]
 			end,
 			SetAttribute = function(_, key, value)
+				local previous = properties["@" .. key]
 				properties["@" .. key] = value
+				if previous ~= value and changed["@" .. key] then
+					changed["@" .. key].fire()
+				end
+			end,
+			GetAttributeChangedSignal = function(_, key)
+				changed["@" .. key] = changed["@" .. key] or signal()
+				return changed["@" .. key]
 			end,
 			GetAttribute = function(_, key)
 				return properties["@" .. key]

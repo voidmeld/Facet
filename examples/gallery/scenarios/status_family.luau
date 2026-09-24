@@ -12,21 +12,39 @@ return {
 			nativeTypes.UDim, nativeTypes.UDim2, nativeTypes.Vector2, nativeTypes.Color3, nativeTypes.Enum
 		local marks = require("./status_indicator").build(ctx)
 		local badges = require("./badge").build(ctx)
+		local notices = require("./notice").build(ctx)
 		local function reset()
 			marks.reset()
 			badges.reset()
+			notices.reset()
+		end
+		local function reserved(content: any)
+			local top, bottom = Compose.cell(0), Compose.cell(0)
+			local function measure()
+				local layer = content:FindFirstAncestorWhichIsA("LayerCollector")
+				if layer == nil then
+					return
+				end
+				local offset = content.AbsolutePosition.Y - layer.AbsolutePosition.Y
+				local height = layer.AbsoluteSize.Y
+				local below = height - (offset + content.AbsoluteSize.Y)
+				top:set(math.max(0, (layer:GetAttribute("FacetInsetTop") or 0) - offset))
+				bottom:set(math.max(0, (layer:GetAttribute("FacetInsetBottom") or 0) - below))
+			end
+			return top, bottom, measure
 		end
 		return {
 			screen = function()
-				return Host.Frame "StatusFamily" {
+				local padding = Host.UIPadding({
+					PaddingTop = UDim.new(0, 16),
+					PaddingBottom = UDim.new(0, 16),
+					PaddingLeft = UDim.new(0, 16),
+					PaddingRight = UDim.new(0, 16),
+				})
+				local frame = Host.Frame "StatusFamily" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
-					Host.UIPadding({
-						PaddingTop = UDim.new(0, 16),
-						PaddingBottom = UDim.new(0, 16),
-						PaddingLeft = UDim.new(0, 16),
-						PaddingRight = UDim.new(0, 16),
-					}),
+					padding,
 					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
@@ -42,11 +60,43 @@ return {
 							label = "Reset status",
 							onActivate = reset,
 						},
+						notices.section(2),
 						marks.section(),
 						badges.section(),
 					},
+					notices.affixed(),
 				}
+				local top, bottom, measure = reserved(frame)
+				ctx.runtime.decorate(padding, {
+					PaddingTop = function(use: any)
+						return UDim.new(0, 16 + use(top))
+					end,
+					PaddingBottom = function(use: any)
+						return UDim.new(0, 16 + use(bottom))
+					end,
+				})
+				local connections: { RBXScriptConnection } = {}
+				local watched: Instance? = nil
+				local function follow()
+					local layer = frame:FindFirstAncestorWhichIsA("LayerCollector")
+					if layer and layer ~= watched then
+						watched = layer
+						table.insert(connections, layer:GetAttributeChangedSignal("FacetInsetTop"):Connect(measure))
+						table.insert(connections, layer:GetAttributeChangedSignal("FacetInsetBottom"):Connect(measure))
+					end
+					measure()
+				end
+				table.insert(connections, frame:GetPropertyChangedSignal("AbsolutePosition"):Connect(measure))
+				table.insert(connections, frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(measure))
+				table.insert(connections, frame.AncestryChanged:Connect(follow))
+				Compose.cleanup(function()
+					for _, connection in connections do
+						connection:Disconnect()
+					end
+				end)
+				return frame
 			end,
+			notices = notices,
 			reset = reset,
 			steps = { reset = reset },
 			report = function()
