@@ -190,6 +190,37 @@ t.describe("Compose native collections", function()
 		runtime.dispose()
 	end)
 
+	t.it("wraps arrow and D-pad focus at both ends when wrapFocus is set", function()
+		for _, wrap in { true, false } do
+			local engine, runtime, UI, target, gui = setup()
+			local focus = {}
+			local stop, node = runtime.mount(function()
+				return UI.VirtualList({
+					from = records(5),
+					key = key,
+					itemSize = 20,
+					focus = focus,
+					wrapFocus = wrap,
+					render = function(current)
+						return button(UI, current)
+					end,
+				})
+			end, target)
+			node.AbsoluteWindowSize = engine.types.Vector2.new(200, 100)
+			focus.focus(5)
+			t.expect(gui.SelectedObject.Text).toBe("5")
+			target:FindFirstChild("FacetCollectionDown"):FindFirstChild("CollectionDown").Pressed.fire()
+			t.expect(focus.current:peek()).toBe(if wrap then 1 else 5)
+			focus.focus(1)
+			target:FindFirstChild("FacetCollectionUp"):FindFirstChild("CollectionUp").Pressed.fire()
+			t.expect(focus.current:peek()).toBe(if wrap then 5 else 1)
+			target:FindFirstChild("FacetCollectionRight"):FindFirstChild("CollectionRight").Pressed.fire()
+			t.expect(focus.current:peek()).toBe(if wrap then 5 else 1)
+			stop()
+			runtime.dispose()
+		end
+	end)
+
 	t.it("uses measured extents and column placements for both scroll directions", function()
 		for _, direction in { "vertical", "horizontal" } do
 			local engine, runtime, UI, target = setup()

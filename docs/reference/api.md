@@ -432,7 +432,9 @@ default is `none`. `follow` is a static Compose option. To change its policy,
 replace the collection owner through `Compose.keyed`.
 
 Optional collection focus uses `focus`, `initialFocus`, `autoFocus`,
-`wrapFocus` and `disabled(item)`.
+`wrapFocus` and `disabled(item)`. With `wrapFocus = true`, `focus.next()`,
+`focus.previous()` and the arrow and D-pad actions wrap at the two ends of the
+collection. A list wraps only along its scrolling axis.
 
 - `selection` is a writable key-set map.
 - `selectionMode` defaults to single when you supply `selection` or its

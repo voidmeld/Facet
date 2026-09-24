@@ -548,9 +548,52 @@ return function(ctx: Types.Context, UI: Controls): ()
 			{ name = "Up", direction = "up", keys = { E.KeyCode.Up, E.KeyCode.DPadUp } },
 			{ name = "Down", direction = "down", keys = { E.KeyCode.Down, E.KeyCode.DPadDown } },
 		}
+		local function atEdge(key: K, step: number): boolean
+			local rows = read(spec.from)
+			local at: number? = nil
+			for index, item in rows do
+				if keyOf(item, index) == key then
+					at = index
+					break
+				end
+			end
+			if at == nil then
+				return false
+			end
+			local index = at + step
+			while index >= 1 and index <= #rows do
+				if not policy.disabled(spec.disabled, rows[index]) then
+					return false
+				end
+				index += step
+			end
+			return true
+		end
+		local function wrapStep(direction: ComposeTypes.FocusDirection): number
+			local along = if kind == "grid"
+				then true
+				elseif horizontal then direction == "left" or direction == "right"
+				else direction == "up" or direction == "down"
+			if not along then
+				return 0
+			end
+			return if direction == "right" or direction == "down" then 1 else -1
+		end
 		for _, binding in directions do
 			ctx.action(root, "Collection" .. binding.name, binding.keys, eligible, function()
-				focusScope.move(binding.direction)
+				local before = focusScope.current:peek()
+				local after = focusScope.move(binding.direction)
+				local step = if spec.wrapFocus and before ~= nil and after == before
+					then wrapStep(binding.direction)
+					else 0
+				if step ~= 0 and not atEdge(assert(before), step) then
+					step = 0
+				end
+				if step > 0 then
+					focusScope.next()
+				elseif step < 0 then
+					focusScope.previous()
+				end
 			end, { priority = 200 })
 		end
 		ctx.action(root, "CollectionFirst", { E.KeyCode.Home }, eligible, focusScope.first, { priority = 200 })
