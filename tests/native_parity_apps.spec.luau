@@ -3392,8 +3392,8 @@ t.describe("native parity reference applications", function()
 				hit("drift").Activated.fire(click(world, "mouse", 1))
 				hit("drift").Activated.fire(click(world, "mouse", 1))
 				t.expect(label.Text).toBe("Now playing — Neon Straightaway")
-				t.expect(selected("drift")).toBe(false)
-				t.expect(selected("neon")).toBe(true)
+				t.expect(selected("drift")).toBe(true)
+				t.expect(selected("neon")).toBe(false)
 				hit("turbo").Activated.fire(click(world, "touch", 1))
 				t.expect(label.Text).toBe("Now playing — Turbo Cascade")
 				hit("pit").Activated.fire(click(world, "key", 1))
@@ -3964,7 +3964,7 @@ t.describe("native parity reference applications", function()
 				HStack = "StackProps",
 			}
 			local names = controlNames()
-			t.expect(#names).toBe(41)
+			t.expect(#names).toBe(42)
 			for _, name in names do
 				local contract = shared[name]
 				local found = if contract

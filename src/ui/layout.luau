@@ -196,7 +196,8 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		assert(type(spec.view) == "function", "Facet ErrorBoundary requires a view function")
 		assert(type(spec.fallback) == "function", "Facet ErrorBoundary requires a fallback function")
 		local properties = ctx.props(spec, { "view", "fallback", "onError", "width", "height" })
-		local size, automatic = kit.extent(spec, "hug", "hug")
+		local box: Types.Box = { width = spec.width, height = spec.height }
+		local size, automatic = kit.extent(box, "hug", "hug")
 		local failed: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
 		local native: Engine.FrameNativeProps = {
 			BackgroundTransparency = 1,
@@ -209,7 +210,7 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 			return (spec.view() :: unknown) :: ComposeTypes.Node
 		end, function(failure: unknown, retry: () -> ())
 			failed:set(tostring(failure))
-			local report = spec.onError or ctx.config.onError
+			local report: ((unknown) -> ())? = spec.onError or ctx.config.onError
 			if report then
 				report(failure)
 			end

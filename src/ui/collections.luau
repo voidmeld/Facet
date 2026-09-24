@@ -127,7 +127,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local selection: ComposeTypes.Cell<CollectionTypes.Selection<K>> = spec.selection or Compose.cell({})
 		local selectionMode: "none" | "single" | "multi" = spec.selectionMode
 			or (if spec.selection or spec.onSelectionChange then "single" else "none")
-		local selectRow = createSelection(ctx, spec, source, keyOf, controls, selection, selectionMode)
+		local selectRow, extendSelection = createSelection(ctx, spec, source, keyOf, controls, selection, selectionMode)
 		local measured: ComposeTypes.Cell<{ [K]: number }> = Compose.cell({})
 		local horizontal = spec.direction == "horizontal"
 		local root: ScrollingFrame
@@ -179,7 +179,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			local pointer = input ~= nil and input.UserInputType == E.UserInputType.MouseButton1
 			local double = pointer and (clicks or 1) >= 2
 			if not double then
-				selectRow(key, current:peek())
+				selectRow(key, current:peek(), input)
 			end
 			if spec.onActivate and (selectionMode == "none" or not pointer or double) then
 				spec.onActivate(current:peek(), key, input, clicks)
@@ -647,10 +647,24 @@ return function(ctx: Types.Context, UI: Controls): ()
 				elseif step < 0 then
 					focusScope.previous()
 				end
+				local landed = focusScope.current:peek()
+				if landed ~= nil then
+					extendSelection(before, landed)
+				end
 			end, { priority = 200 })
 		end
-		ctx.action(root, "CollectionFirst", { E.KeyCode.Home }, eligible, focusScope.first, { priority = 200 })
-		ctx.action(root, "CollectionLast", { E.KeyCode.End }, eligible, focusScope.last, { priority = 200 })
+		local function jump(move: () -> ()): () -> ()
+			return function()
+				local before = focusScope.current:peek()
+				move()
+				local landed = focusScope.current:peek()
+				if landed ~= nil then
+					extendSelection(before, landed)
+				end
+			end
+		end
+		ctx.action(root, "CollectionFirst", { E.KeyCode.Home }, eligible, jump(focusScope.first), { priority = 200 })
+		ctx.action(root, "CollectionLast", { E.KeyCode.End }, eligible, jump(focusScope.last), { priority = 200 })
 
 		if spec.onReachEnd then
 			local previousTotal = -1

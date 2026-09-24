@@ -11,7 +11,7 @@ return function<V, K>(
 	controls: ComposeTypes.OrderedCollectionControls<K>,
 	selection: ComposeTypes.Cell<CollectionTypes.Selection<K>>,
 	defaultMode: "none" | "single" | "multi"
-): (K, V) -> ()
+): ((K, V, InputObject?) -> (), (K?, K) -> ())
 	local Compose, read, E = ctx.Compose, ctx.read, ctx.types.Enum
 	local anchor: K?
 	local mode = spec.selectionMode or defaultMode
@@ -44,26 +44,91 @@ return function<V, K>(
 			publish(pruned)
 		end
 	end)
-	return function(key: K, item: V): ()
-		if mode == "none" or not policy.allows(spec.selectable, item) or policy.disabled(spec.disabled, item) then
-			return
-		end
-		local selected = if mode == "multi" then table.clone(read(selection)) else {}
+	local base: CollectionTypes.Selection<K> = {}
+	local shift = { E.KeyCode.LeftShift, E.KeyCode.RightShift }
+	local toggle = {
+		E.KeyCode.LeftControl,
+		E.KeyCode.RightControl,
+		E.KeyCode.LeftMeta,
+		E.KeyCode.RightMeta,
+		E.KeyCode.LeftSuper,
+		E.KeyCode.RightSuper,
+	}
+	local function held(keys: { Enum.KeyCode }): boolean
 		local input = ctx.config.userInputService
-		local shifted = input and (input:IsKeyDown(E.KeyCode.LeftShift) or input:IsKeyDown(E.KeyCode.RightShift))
-		local from, to = if anchor then assert(controls.indexOfKey)(anchor) else nil, assert(controls.indexOfKey)(key)
-		if mode == "multi" and shifted and from and to then
-			local rows = read(source)
-			for index = math.min(from, to), math.max(from, to) do
-				local candidate = rows[index]
-				if policy.allows(spec.selectable, candidate) and not policy.disabled(spec.disabled, candidate) then
-					selected[keyOf(candidate, index)] = true
-				end
+		if input == nil then
+			return false
+		end
+		for _, keyCode in keys do
+			if input:IsKeyDown(keyCode) then
+				return true
 			end
-		else
-			selected[key] = if selected[key] then nil else true
-			anchor = key
+		end
+		return false
+	end
+	local function eligible(item: V): boolean
+		return policy.allows(spec.selectable, item) and not policy.disabled(spec.disabled, item)
+	end
+	local function range(from: K, to: K): boolean
+		local first, last = assert(controls.indexOfKey)(from), assert(controls.indexOfKey)(to)
+		if first == nil or last == nil then
+			return false
+		end
+		local selected = table.clone(base)
+		local rows = read(source)
+		for index = math.min(first, last), math.max(first, last) do
+			local candidate = rows[index]
+			if candidate ~= nil and eligible(candidate) then
+				selected[keyOf(candidate, index)] = true
+			end
 		end
 		publish(selected)
+		return true
 	end
+	local function anchorAt(key: K, selected: CollectionTypes.Selection<K>): ()
+		anchor = key
+		base = table.clone(selected)
+	end
+	local function choose(key: K, item: V, input: InputObject?): ()
+		if mode == "none" or not eligible(item) then
+			return
+		end
+		if mode ~= "multi" then
+			local selected = { [key] = true }
+			anchorAt(key, selected)
+			publish(selected)
+			return
+		end
+		if anchor ~= nil and held(shift) and range(anchor, key) then
+			return
+		end
+		local selected: CollectionTypes.Selection<K> = {}
+		if held(toggle) or input == nil or input.UserInputType ~= E.UserInputType.MouseButton1 then
+			local current = read(selection)
+			for other, on in current do
+				if on and other ~= key then
+					selected[other] = true
+				end
+			end
+			if not current[key] then
+				selected[key] = true
+			end
+		else
+			selected[key] = true
+		end
+		anchorAt(key, selected)
+		publish(selected)
+	end
+	local function extend(from: K?, to: K): ()
+		if mode ~= "multi" or from == nil or from == to or not held(shift) then
+			return
+		end
+		if anchor == nil or assert(controls.indexOfKey)(anchor :: K) == nil then
+			local selected = table.clone(read(selection))
+			selected[from] = true
+			anchorAt(from, selected)
+		end
+		range(anchor :: K, to)
+	end
+	return choose, extend
 end

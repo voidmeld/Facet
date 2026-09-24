@@ -400,3 +400,223 @@ t.describe("native parity restore: Facet Neutral Light", function()
 		runtime:dispose()
 	end)
 end)
+
+t.describe("native parity restore: Table multi-select keys", function()
+	local held: { [string]: boolean } = {}
+	local function racers(): { { id: string, name: string } }
+		return {
+			{ id = "razz", name = "Razz" },
+			{ id = "bolt", name = "Bolt" },
+			{ id = "josh", name = "Josh" },
+			{ id = "mint", name = "Mint" },
+			{ id = "nova", name = "Nova" },
+		}
+	end
+	local function tableWorld(mode: string?): (World, any, any)
+		table.clear(held)
+		local selection = Compose.cell({})
+		local focus: any = {}
+		local w = world(function(UI)
+			return UI.Table "Racers" {
+				from = racers(),
+				key = "id",
+				itemSize = 40,
+				focus = focus,
+				selection = selection,
+				selectionMode = mode or "multi",
+				columns = {
+					{
+						id = "name",
+						label = "Racer",
+						value = function(item)
+							return item.name
+						end,
+					},
+				},
+			}
+		end)
+		w.input.IsKeyDown = function(_, key: any)
+			return held[key.Name] == true
+		end
+		local body = find(w.screen, "Body")
+		body.AbsoluteWindowSize = w.engine.types.Vector2.new(300, 400)
+		return w, selection, focus
+	end
+	local function hit(w: World, key: string): any
+		return find(find(w.screen, "Body"), key):FindFirstChild("RowHit", true)
+	end
+	local function click(w: World, key: string, ...: string)
+		for _, name in { ... } do
+			held[name] = true
+		end
+		hit(w, key).Activated.fire({ UserInputType = w.engine.types.Enum.UserInputType.MouseButton1 }, 1)
+		table.clear(held)
+	end
+	local function tap(w: World, key: string)
+		hit(w, key).Activated.fire({ UserInputType = w.engine.types.Enum.UserInputType.Touch }, 1)
+	end
+	local function returnKey(w: World, key: string)
+		local E = w.engine.types.Enum
+		hit(w, key).Activated.fire({ UserInputType = E.UserInputType.Keyboard, KeyCode = E.KeyCode.Return }, 1)
+	end
+	local function arrow(w: World, name: string)
+		w.screen:FindFirstChild("FacetCollection" .. name):FindFirstChild("Collection" .. name).Pressed.fire()
+	end
+	local function selected(selection: any): { string }
+		local out: { string } = {}
+		for key, on in selection:peek() do
+			if on then
+				table.insert(out, key)
+			end
+		end
+		table.sort(out)
+		return out
+	end
+
+	t.it("replaces a multi selection on a plain mouse click", function()
+		local w, selection = tableWorld()
+		tap(w, "razz")
+		tap(w, "bolt")
+		t.expect(selected(selection)).toEqual({ "bolt", "razz" })
+		click(w, "josh")
+		t.expect(selected(selection)).toEqual({ "josh" })
+		w.stop()
+	end)
+
+	t.it("toggles rows in and out of a multi selection on a Ctrl-click and a Cmd-click", function()
+		for _, modifier in { "LeftControl", "RightControl", "LeftMeta", "RightMeta", "LeftSuper" } do
+			local w, selection = tableWorld()
+			click(w, "razz")
+			click(w, "josh", modifier)
+			t.expect(selected(selection)).toEqual({ "josh", "razz" })
+			click(w, "razz", modifier)
+			t.expect(selected(selection)).toEqual({ "josh" })
+			w.stop()
+		end
+	end)
+
+	t.it("extends a contiguous range from the anchor on a Shift-click and re-ranges from the same anchor", function()
+		local w, selection = tableWorld()
+		click(w, "razz")
+		click(w, "josh", "LeftShift")
+		t.expect(selected(selection)).toEqual({ "bolt", "josh", "razz" })
+		click(w, "bolt", "RightShift")
+		t.expect(selected(selection)).toEqual({ "bolt", "razz" })
+		w.stop()
+	end)
+
+	t.it("selects a reversed range when a Shift-click goes from a later row to an earlier one", function()
+		local w, selection = tableWorld()
+		click(w, "josh")
+		click(w, "razz", "LeftShift")
+		t.expect(selected(selection)).toEqual({ "bolt", "josh", "razz" })
+		w.stop()
+	end)
+
+	t.it("keeps Ctrl-toggled rows when a Shift-click ranges from a toggled anchor", function()
+		local w, selection = tableWorld()
+		click(w, "razz")
+		click(w, "josh", "LeftControl")
+		click(w, "nova", "LeftShift")
+		t.expect(selected(selection)).toEqual({ "josh", "mint", "nova", "razz" })
+		w.stop()
+	end)
+
+	t.it("keeps the additive toggle for a touch tap and a gamepad press", function()
+		local w, selection = tableWorld()
+		tap(w, "razz")
+		tap(w, "josh")
+		t.expect(selected(selection)).toEqual({ "josh", "razz" })
+		local E = w.engine.types.Enum
+		hit(w, "razz").Activated.fire({ UserInputType = E.UserInputType.Gamepad1, KeyCode = E.KeyCode.ButtonA }, 1)
+		t.expect(selected(selection)).toEqual({ "josh" })
+		w.stop()
+	end)
+
+	t.it("honors held modifiers on a keyboard Return", function()
+		local w, selection = tableWorld()
+		returnKey(w, "razz")
+		t.expect(selected(selection)).toEqual({ "razz" })
+		held.LeftControl = true
+		returnKey(w, "razz")
+		t.expect(selected(selection)).toEqual({})
+		table.clear(held)
+		returnKey(w, "bolt")
+		held.LeftShift = true
+		returnKey(w, "mint")
+		t.expect(selected(selection)).toEqual({ "bolt", "josh", "mint" })
+		w.stop()
+	end)
+
+	t.it("extends the selection from the anchor with Shift and an arrow, and moves focus with it", function()
+		local w, selection, focus = tableWorld()
+		focus.focus("bolt")
+		t.expect(w.gui.SelectedObject).toBe(hit(w, "bolt"))
+		returnKey(w, "bolt")
+		t.expect(selected(selection)).toEqual({ "bolt" })
+		held.LeftShift = true
+		arrow(w, "Down")
+		arrow(w, "Down")
+		t.expect(focus.current:peek()).toBe("mint")
+		t.expect(selected(selection)).toEqual({ "bolt", "josh", "mint" })
+		arrow(w, "Up")
+		t.expect(selected(selection)).toEqual({ "bolt", "josh" })
+		arrow(w, "Up")
+		arrow(w, "Up")
+		t.expect(focus.current:peek()).toBe("razz")
+		t.expect(selected(selection)).toEqual({ "bolt", "razz" })
+		w.stop()
+	end)
+
+	t.it("extends to the first and the last row with Shift and Home or End", function()
+		local w, selection, focus = tableWorld()
+		focus.focus("josh")
+		returnKey(w, "josh")
+		held.LeftShift = true
+		arrow(w, "Last")
+		t.expect(focus.current:peek()).toBe("nova")
+		t.expect(selected(selection)).toEqual({ "josh", "mint", "nova" })
+		arrow(w, "First")
+		t.expect(selected(selection)).toEqual({ "bolt", "josh", "razz" })
+		w.stop()
+	end)
+
+	t.it("starts a keyboard range at the focused row when nothing anchors it", function()
+		local w, selection, focus = tableWorld()
+		focus.focus("josh")
+		held.RightShift = true
+		arrow(w, "Down")
+		t.expect(selected(selection)).toEqual({ "josh", "mint" })
+		w.stop()
+	end)
+
+	t.it("moves focus with Ctrl and an arrow and with a plain arrow without changing the selection", function()
+		local w, selection, focus = tableWorld()
+		focus.focus("razz")
+		returnKey(w, "razz")
+		held.LeftControl = true
+		arrow(w, "Down")
+		arrow(w, "Down")
+		t.expect(focus.current:peek()).toBe("josh")
+		t.expect(selected(selection)).toEqual({ "razz" })
+		table.clear(held)
+		arrow(w, "Down")
+		t.expect(focus.current:peek()).toBe("mint")
+		t.expect(selected(selection)).toEqual({ "razz" })
+		w.stop()
+	end)
+
+	t.it("replaces in single mode whatever the modifiers and ignores a Shift-arrow", function()
+		local w, selection, focus = tableWorld("single")
+		click(w, "razz")
+		click(w, "josh", "LeftControl")
+		t.expect(selected(selection)).toEqual({ "josh" })
+		click(w, "mint", "LeftShift")
+		t.expect(selected(selection)).toEqual({ "mint" })
+		focus.focus("mint")
+		held.LeftShift = true
+		arrow(w, "Down")
+		t.expect(selected(selection)).toEqual({ "mint" })
+		w.stop()
+	end)
+end)
