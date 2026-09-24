@@ -298,6 +298,35 @@ function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.Them
 			end
 		end
 	end
+	local controlSizes = (package.metrics :: { controlSizes: unknown }).controlSizes
+	local xsmall = if type(controlSizes) == "table" then (controlSizes :: { [string]: unknown }).xsmall else nil
+	if xsmall ~= nil then
+		for _, field in { "height", "paddingX", "iconSize" } do
+			local value = if type(xsmall) == "table" then (xsmall :: { [string]: unknown })[field] else nil
+			if type(value) ~= "number" or (value :: number) < 0 then
+				table.insert(errors, {
+					field = "metrics.controlSizes.xsmall." .. field,
+					message = "The xsmall rung needs a height, a paddingX and an iconSize of 0 or more",
+				})
+			end
+		end
+	end
+	local targets = (package.metrics :: { targetSizes: unknown }).targetSizes
+	local sizes: { [string]: unknown } = if type(targets) == "table" then targets :: { [string]: unknown } else {}
+	local pointer, minimum = sizes.pointer, sizes.minimum
+	if
+		pointer ~= nil
+		and (
+			type(pointer) ~= "number"
+			or (pointer :: number) < 24
+			or (type(minimum) == "number" and (pointer :: number) > (minimum :: number))
+		)
+	then
+		table.insert(errors, {
+			field = "metrics.targetSizes.pointer",
+			message = "targetSizes.pointer must be from 24 to targetSizes.minimum",
+		})
+	end
 	local chrome: { [string]: ThemeTypes.SkinLayer } = package.chrome or {}
 	local shadows: { [string]: ThemeTypes.Shadow } = package.style.shadows or {}
 	for slot, recipe in chrome do
@@ -502,9 +531,19 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	local colors = merge(neutral.style.themes[1].colors, palette.colors)
 	local extra = merge(neutral.style.themes[1].extra :: ThemeTypes.PaletteExtra, palette.extra)
 	local resolvedColors: { [string]: Color3? }, typefaces: { [string]: Font? } = {}, {}
+	local fallbacks: { [string]: string } =
+		{ selection = "accent", onSelection = "onAccent", inverseSurface = "contentStrong", onInverse = "surface" }
+	local function source(role: string): ThemeTypes.RGB?
+		local value = (colors[role] or extra[role]) :: ThemeTypes.RGB?
+		local fallback = fallbacks[role]
+		if value == nil and fallback then
+			value = (colors[fallback] or extra[fallback]) :: ThemeTypes.RGB?
+		end
+		return value
+	end
 	local function c(role: string): Color3?
 		if resolvedColors[role] == nil then
-			resolvedColors[role] = color(types, (colors[role] or extra[role]) :: ThemeTypes.RGB?)
+			resolvedColors[role] = color(types, source(role))
 		end
 		return resolvedColors[role]
 	end
@@ -598,13 +637,18 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		FontFace = f(package.metrics.typography.control.font),
 		TextSize = package.metrics.typography.control.size,
 	})
+	for _, role in themes.TYPE_ROLES do
+		local typography = package.metrics.typography[role] or neutral.metrics.typography[role]
+		rule(".facet-button.facet-type-" .. role, { FontFace = f(typography.font), TextSize = typography.size })
+	end
 	for _, role in
 		{ "toggle", "toggle-indicator", "slider-rail", "slider-track", "chip", "shortcut-hint", "text-input" }
 	do
 		rule(".facet-" .. role, { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	end
 	for _, role in { "toggle-mark", "slider-fill", "slider-thumb", "selection-indicator" } do
-		rule(".facet-" .. role, { BackgroundColor3 = c("accent"), BackgroundTransparency = 0, BorderSizePixel = 0 })
+		local ink = if role == "slider-fill" or role == "selection-indicator" then "selection" else "accent"
+		rule(".facet-" .. role, { BackgroundColor3 = c(ink), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	end
 	for role, slot in { button = "control", field = "field", badge = "badge", panel = "panel" } :: { [string]: string } do
 		local recipe = (package.chrome or {})[slot]
@@ -629,6 +673,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		PaddingTop = types.UDim.new(0, math.max(10, buttonInsets.top or 0)),
 		PaddingBottom = types.UDim.new(0, math.max(10, buttonInsets.bottom or 0)),
 	})
+	rule(".facet-menu-dense::UIPadding", { PaddingTop = types.UDim.new(0, 0), PaddingBottom = types.UDim.new(0, 0) })
 	rule(".facet-busy::UIPadding", { PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0) + 20) })
 	rule(".facet-shape-circle::UIPadding", {
 		PaddingLeft = types.UDim.new(0, 0),
@@ -682,8 +727,13 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		".facet-divider",
 		{ BackgroundColor3 = c("hairline"), BackgroundTransparency = extra.hairlineOpacity, BorderSizePixel = 0 }
 	)
+	rule(".facet-divider-strong", {
+		BackgroundTransparency = extra.strongHairlineOpacity
+			or math.max(0, 1 - (1 - (extra.hairlineOpacity or 0.92)) * 3),
+	})
+	rule(".facet-pane", { BackgroundColor3 = c("surfaceStrong"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	rule(".facet-scrim", {
-		BackgroundColor3 = types.Color3.new(0, 0, 0),
+		BackgroundColor3 = color(types, extra.scrim) or types.Color3.new(0, 0, 0),
 		BackgroundTransparency = 1 - (extra.scrimOpacity or 0.45),
 		BorderSizePixel = 0,
 	})
@@ -751,16 +801,17 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-toggle-row.facet-selected", { TextColor3 = c("content") })
 	rule(".facet-toggle-row.facet-selected >> .facet-text", { TextColor3 = c("content") })
 	rule(".facet-toggle-row.facet-selected >> .facet-icon", { ImageColor3 = c("content") })
+	rule(".facet-toggle-plain", { BackgroundTransparency = 1 })
 	rule(".facet-toggle-row::UIPadding", { PaddingLeft = types.UDim.new(0, 0), PaddingRight = types.UDim.new(0, 0) })
 	rule(".facet-toggle-settings::UIPadding", {
 		PaddingLeft = types.UDim.new(0, math.max(12, buttonInsets.left or 0)),
 		PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0)),
 	})
 	rule(".facet-toggle-indicator", { BackgroundColor3 = c("control"), BackgroundTransparency = 0 })
-	rule(".facet-toggle-on", { BackgroundColor3 = c("accent") })
-	rule(".facet-toggle-switch >> .facet-toggle-mark", { BackgroundColor3 = c("onAccent") })
-	rule(".facet-toggle-checkbox >> .facet-toggle-mark", { BackgroundColor3 = c("onAccent") })
-	rule(".facet-toggle-check", { ImageColor3 = c("onAccent") })
+	rule(".facet-toggle-on", { BackgroundColor3 = c("selection") })
+	rule(".facet-toggle-switch >> .facet-toggle-mark", { BackgroundColor3 = c("onSelection") })
+	rule(".facet-toggle-checkbox >> .facet-toggle-mark", { BackgroundColor3 = c("onSelection") })
+	rule(".facet-toggle-check", { ImageColor3 = c("onSelection") })
 	rule(".facet-toggle-checkbox::UIStroke", { Color = c("contentSecondary"), Thickness = 1.5, Transparency = 0.2 })
 	rule(".facet-tooltip", { BackgroundColor3 = c("surfaceStrong"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	rule(".facet-tooltip::UICorner", { CornerRadius = types.UDim.new(0, 6) })
@@ -788,6 +839,34 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		".facet-appearance-link::UIPadding",
 		{ PaddingLeft = types.UDim.new(0, 0), PaddingRight = types.UDim.new(0, 0) }
 	)
+	local inverse, onInverse = source("inverseSurface"), source("onInverse")
+	rule(
+		".facet-appearance-inverse",
+		{ BackgroundColor3 = c("inverseSurface"), BackgroundTransparency = 0, TextColor3 = c("onInverse") }
+	)
+	if inverse and onInverse then
+		local function toward(amount: number): Color3
+			return types.Color3.new(
+				inverse.r + (onInverse.r - inverse.r) * amount,
+				inverse.g + (onInverse.g - inverse.g) * amount,
+				inverse.b + (onInverse.b - inverse.b) * amount
+			)
+		end
+		rule(".facet-appearance-inverse:Hover", { BackgroundColor3 = toward(0.12), TextColor3 = c("onInverse") })
+		rule(".facet-appearance-inverse:Press", { BackgroundColor3 = toward(0.2), TextColor3 = c("onInverse") })
+	end
+	rule(".facet-appearance-inverse >> .facet-button-caption", { TextColor3 = c("onInverse") })
+	rule(".facet-appearance-inverse >> .facet-text", { TextColor3 = c("onInverse") })
+	rule(".facet-appearance-inverse >> .facet-icon", { ImageColor3 = c("onInverse") })
+	local utilityStroke = package.metrics.strokes.utility
+	if type(utilityStroke) == "number" and utilityStroke > 0 then
+		rule(".facet-appearance-utility::UIStroke", {
+			Color = c("hairline"),
+			Transparency = extra.hairlineOpacity,
+			Thickness = utilityStroke,
+			ApplyStrokeMode = types.Enum.ApplyStrokeMode.Border,
+		})
+	end
 	rule(".facet-grabber", { BackgroundColor3 = c("contentSecondary"), BackgroundTransparency = 0.5 })
 	rule(".facet-menu-item", { BackgroundTransparency = 1 })
 	rule(".facet-menu-item:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
@@ -904,6 +983,61 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-skinned", { BackgroundTransparency = 1 })
 	rule(".facet-toggle-checkbox.facet-skinned::UIStroke", { Transparency = 1 })
 	rule(".facet-menu.facet-skinned::UIStroke", { Transparency = 1 })
+	local authoredSelection = false
+	for _, theme in package.style.themes do
+		if type(theme.extra) == "table" and theme.extra.selection ~= nil then
+			authoredSelection = true
+		end
+	end
+	local markPlate = if authoredSelection then c("selection") else c("controlSelected")
+	local markInk = if authoredSelection then c("onSelection") else onSelected
+	local markStates: { string } = if authoredSelection then { "", ":Hover", ":Press" } else { "" }
+	for _, suffix in markStates do
+		rule(".facet-selection-mark.facet-selected" .. suffix, { BackgroundColor3 = markPlate, TextColor3 = markInk })
+	end
+	rule(".facet-selection-mark.facet-selected >> .facet-button-caption", { TextColor3 = markInk })
+	rule(".facet-selection-mark.facet-selected >> .facet-text", { TextColor3 = markInk })
+	rule(".facet-selection-mark.facet-selected >> .facet-icon", { ImageColor3 = markInk })
+	if authoredSelection then
+		local linkInk = c("selection")
+		rule(".facet-appearance-link.facet-selected", { TextColor3 = linkInk })
+		rule(".facet-appearance-link.facet-selected >> .facet-button-caption", { TextColor3 = linkInk })
+		rule(".facet-appearance-link.facet-selected >> .facet-text", { TextColor3 = linkInk })
+		rule(".facet-appearance-link.facet-selected >> .facet-icon", { ImageColor3 = linkInk })
+	end
+	if extra.dimDisabledPlates == true then
+		local dim = extra.disabledContentOpacity or 0.4
+		local page = source("surface")
+		local function faded(role: string): Color3?
+			local plate = source(role)
+			if plate == nil or page == nil then
+				return c(role)
+			end
+			return types.Color3.new(
+				plate.r + (page.r - plate.r) * dim,
+				plate.g + (page.g - plate.g) * dim,
+				plate.b + (page.b - plate.b) * dim
+			)
+		end
+		for _, entry in
+			{
+				{ ".facet-button.facet-disabled", "control" },
+				{ ".facet-button.facet-selected.facet-disabled", "controlSelected" },
+				{ ".facet-accent.facet-disabled", "accent" },
+				{ ".facet-appearance-soft.facet-disabled", "accent" },
+				{ ".facet-appearance-inverse.facet-disabled", "inverseSurface" },
+				{ ".facet-role-destructive.facet-disabled", "danger" },
+				{ ".facet-disabled >> .facet-toggle-indicator", "control" },
+				{ ".facet-disabled >> .facet-toggle-on", "selection" },
+			} :: { { string } }
+		do
+			rule(entry[1], { BackgroundColor3 = faded(entry[2]) })
+		end
+		rule(".facet-appearance-utility.facet-disabled", { BackgroundColor3 = c("surface") })
+		if authoredSelection then
+			rule(".facet-selection-mark.facet-selected.facet-disabled", { BackgroundColor3 = faded("selection") })
+		end
+	end
 	for _, definition in (package.rules or {}) :: { ThemeTypes.Rule } do
 		rule(definition.selector, table.clone(definition.properties or definition.props or {}))
 	end

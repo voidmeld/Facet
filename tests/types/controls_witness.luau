@@ -200,6 +200,32 @@ local nestedRadial: GuiObject = UI.RadialMenu({ items = require("./radial_witnes
 local alert: GuiObject = UI.Alert({ isPresented = expanded, title = "Save", actions = { { id = "ok", label = "OK" } } })
 local sheet: GuiObject = UI.Sheet({ isPresented = expanded, detent = Compose.cell("large"), content = content })
 local disclosure: GuiObject = UI.DisclosureGroup({ expanded = expanded, content = content })
+local outline: GuiObject = UI.DisclosureGroup({
+	expanded = expanded,
+	content = content,
+	appearance = "outline" :: "outline",
+	textSize = "label",
+	indent = "m" :: "m",
+})
+local sideSheet: GuiObject = UI.Sheet({
+	isPresented = expanded,
+	detent = Compose.cell("large"),
+	content = content,
+	placement = "adaptive" :: "adaptive",
+})
+local compactTabs: GuiObject = UI.TabView({
+	selection = selected,
+	controlSize = "xsmall" :: "xsmall",
+	tabs = { { id = "home", label = "Home", content = content } },
+})
+local toolbarPicker: GuiObject = UI.Picker({
+	selected = selected,
+	style = "menu" :: "menu",
+	label = "Motion",
+	valueAlignment = "start" :: "start",
+	sizing = "hug" :: "hug",
+	options = { { value = "home", label = "Home" } },
+})
 local collapsible: GuiObject = UI.CollapsibleView({ expanded = expanded, content = content })
 local calloutAnchor: GuiObject = button
 local callout: GuiObject = UI.Callout({ anchor = calloutAnchor, content = content, onRetire = nothing })
@@ -293,6 +319,10 @@ local mounted: { GuiObject } = {
 	alert,
 	sheet,
 	disclosure,
+	outline,
+	sideSheet,
+	compactTabs,
+	toolbarPicker,
 	collapsible,
 	callout,
 	list,

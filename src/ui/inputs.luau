@@ -314,7 +314,30 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		"onPointerDown",
 		"onPointerUp",
 		"onPointerCancel",
+		"textSize",
+		"underline",
 	}
+	local typeRoles: { [string]: boolean } = {
+		caption = true,
+		label = true,
+		body = true,
+		heading = true,
+		title = true,
+		control = true,
+		strong = true,
+		numeral = true,
+	}
+	local function escapeRich(words: string): string
+		return (
+			string.gsub(words, "[&<>\"']", {
+				["&"] = "&amp;",
+				["<"] = "&lt;",
+				[">"] = "&gt;",
+				['"'] = "&quot;",
+				["'"] = "&apos;",
+			})
+		)
+	end
 	UI.Button = ctx.construct("Button", function(spec: InputTypes.ButtonProps): TextButton
 		assert(
 			spec.onActivate == nil or type(spec.onActivate) == "function",
@@ -339,6 +362,18 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		assert(
 			spec.imageFraming == nil or spec.imageFraming == "fit" or spec.imageFraming == "crop",
 			"Facet.Button: imageFraming must be fit or crop"
+		)
+		local declaredSize = read(spec.textSize)
+		assert(
+			declaredSize == nil
+				or (type(declaredSize) == "string" and typeRoles[declaredSize])
+				or (type(declaredSize) == "number" and declaredSize > 0 and declaredSize < math.huge),
+			"Facet.Button: textSize must be a type role or a positive number"
+		)
+		local underline = spec.underline
+		assert(
+			underline == nil or underline == "always" or underline == "hover",
+			"Facet.Button: underline must be always or hover"
 		)
 		local popTimeline = if spec.pop then runtime.timeline({ duration = 0.45, autoplay = false }) else nil
 		local popReduced = if popTimeline then reducedMotion(ctx) else nil
@@ -419,6 +454,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			or spec.row ~= nil
 			or spec.subtitle ~= nil
 			or spec.hint ~= nil
+		assert(
+			underline == nil or (not rich and spec.compactLabel == nil and spec.shape ~= "circle"),
+			"Facet.Button: underline belongs to a text button with no icon, image, row or compactLabel"
+		)
 		local enabledProperty = if dynamic(spec.enabled)
 				or dynamic(spec.disabled)
 				or dynamic(spec.busy)
@@ -436,6 +475,41 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			Selectable = enabledProperty,
 			Interactable = enabledProperty,
 		})
+		local engaged = Compose.cell(false)
+		if underline ~= nil then
+			p.RichText = true
+			p.Text = function(use: ComposeTypes.Use): string
+				local words = escapeRich(tostring(read(spec.label, use) or ""))
+				return if underline == "always" or use(engaged) then `<u>{words}</u>` else words
+			end
+		end
+		local function sized(label: TextLabel | TextButton)
+			local function apply(value: (string | number)?)
+				for role in typeRoles do
+					if value ~= role and label:HasTag("facet-type-" .. role) then
+						label:RemoveTag("facet-type-" .. role)
+					end
+				end
+				if type(value) == "string" then
+					assert(typeRoles[value], "Facet.Button: textSize must be a type role or a positive number")
+					label:AddTag("facet-type-" .. value)
+					label:ResetPropertyToDefault("TextSize")
+				elseif type(value) == "number" then
+					if label:IsA("TextButton") then
+						label.TextSize = value
+					elseif label:IsA("TextLabel") then
+						label.TextSize = value
+					end
+				end
+			end
+			if dynamic(spec.textSize) then
+				Compose.watch(function(use: ComposeTypes.Use)
+					apply(read(spec.textSize, use))
+				end)
+			elseif spec.textSize ~= nil then
+				apply(read(spec.textSize))
+			end
+		end
 		p.Activated = function(...)
 			if not repeated then
 				activate(...)
@@ -558,7 +632,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			local description = row.description or spec.subtitle or spec.hint
 			if not (spec.shape == "circle" and spec.icon) then
 				local function caption(name: string, text: Shared.Value<string>): TextLabel
-					return ctx.text({
+					local made = ctx.text({
 						Name = name,
 						Text = function(use: ComposeTypes.Use)
 							return read(text, use) or ""
@@ -571,6 +645,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						AutomaticSize = if imageCard then E.AutomaticSize.Y else E.AutomaticSize.XY,
 						TextWrapped = imageCard,
 					})
+					if name == "Title" then
+						sized(made)
+					end
+					return made
 				end
 				local captions = if description
 					then ctx.column({ caption("Title", label), caption("Description", description) }, {
@@ -672,6 +750,18 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		end
 		node = ctx.styled(Host.TextButton(p), "button")
 		activation.mark(node)
+		if not rich then
+			sized(node)
+		end
+		if underline == "hover" then
+			local state = ctx.observe(node, "GuiState")
+			Compose.watch(function(use: ComposeTypes.Use)
+				local now = use(state)
+				engaged:set(
+					now == E.GuiState.Hover or now == E.GuiState.Press or read(selectedForKeyboard, use) == true
+				)
+			end)
+		end
 		if hapticSwitch then
 			Compose.watch(function(use: ComposeTypes.Use)
 				node.PressHapticEffect = (if read(spec.haptic, use) == true then pressHaptic else nil) :: HapticEffect
@@ -838,6 +928,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			tag("facet-appearance-soft", appearance == "soft")
 			tag("facet-appearance-utility", appearance == "utility")
 			tag("facet-appearance-link", appearance == "link")
+			tag("facet-appearance-inverse", appearance == "inverse")
 			tag("facet-quiet-destructive", role == "destructive" and (appearance == "utility" or appearance == "link"))
 			attribute("selected", selected)
 			attribute("busy", busy)
@@ -992,6 +1083,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			spec.indicatorPosition == nil or spec.indicatorPosition == "leading" or spec.indicatorPosition == "trailing",
 			"Facet.Toggle: invalid indicatorPosition"
 		)
+		local plain = spec.appearance == "plain"
+		assert(not plain or presentation ~= "button", "Facet.Toggle: the button presentation cannot be plain")
 
 		local p = table.clone(
 			spec :: Shared.TextButtonProps & InputTypes.ButtonVisualOptions & InputTypes.ButtonInputOptions
@@ -1004,6 +1097,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				return read(spec.value, use) or read(spec.mixed, use) == true
 			end
 		p.ref = nil
+		if plain then
+			p.selected, p.appearance = nil, nil
+		end
 		p.onActivate = function()
 			local value = if read(spec.mixed) then true else not read(spec.value)
 			if spec.onChange then
@@ -1092,7 +1188,19 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			if rich then
 				p.Text = ""
 				local row: InputTypes.Row = spec.row or {}
-				local label: GuiObject = ctx.text({ Text = row.title or spec.label or "" })
+				local title = ctx.text({ Text = row.title or spec.label or "" })
+				local labelSize = read(spec.textSize)
+				assert(
+					labelSize == nil or typeRoles[labelSize :: string] or type(labelSize) == "number",
+					"Facet.Toggle: textSize must be a type role or a positive number"
+				)
+				if type(labelSize) == "string" then
+					title:AddTag("facet-type-" .. labelSize)
+				elseif type(labelSize) == "number" then
+					title.TextSize = labelSize
+				end
+				p.textSize = nil
+				local label: GuiObject = title
 				if row.description or spec.hint then
 					label = ctx.column({ label, ctx.text({ Text = row.description or spec.hint }) })
 				end
@@ -1136,7 +1244,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local toggle = ctx.styled(UI.Button(p), "toggle")
 		if presentation ~= "button" then
 			toggle:AddTag("facet-toggle-row")
-			if spec.row ~= nil or spec.hint ~= nil or spec.icon ~= nil then
+			if plain then
+				toggle:AddTag("facet-toggle-plain")
+			elseif spec.row ~= nil or spec.hint ~= nil or spec.icon ~= nil then
 				toggle:AddTag("facet-toggle-settings")
 			end
 		end
@@ -1649,6 +1759,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			p.haptic = true
 		end
 		node = ctx.styled(UI.Button(p), "chip")
+		node:AddTag("facet-selection-mark")
 		if removable then
 			attributes(
 				node,

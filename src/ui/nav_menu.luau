@@ -99,6 +99,7 @@ return function(
 		phase: Nav.PresencePhase?
 	): Frame
 		local shown = if phase then surfaces.appearance(phase, POPOVER) else nil
+		local hitFloor = ctx.hitFloor()
 		local path = Compose.cell({} :: { string })
 		local pendingFocus: string?
 		local rootItems = Compose.formula(function(use: ComposeTypes.Use)
@@ -253,7 +254,9 @@ return function(
 					local row = UI.Button({
 						Name = rowKey,
 						LayoutOrder = index,
-						Size = D2.new(1, 0, 0, 44),
+						Size = function(use: ComposeTypes.Use)
+							return D2.new(1, 0, 0, hitFloor(use))
+						end,
 						label = function(use: ComposeTypes.Use)
 							return read(actionItem(use(source)).label, use)
 						end,
@@ -298,6 +301,13 @@ return function(
 						end,
 					})
 					row:AddTag("facet-menu-item")
+					Compose.watch(function(use: ComposeTypes.Use)
+						if hitFloor(use) < ctx.metric("targetSizes.minimum", use) then
+							row:AddTag("facet-menu-dense")
+						elseif row:HasTag("facet-menu-dense") then
+							row:RemoveTag("facet-menu-dense")
+						end
+					end)
 					local accessories: { Types.Child } = {
 						Host.UIListLayout({
 							FillDirection = E.FillDirection.Horizontal,
@@ -969,6 +979,7 @@ return function(
 		"corners",
 		"maxHeight",
 		"indicatorPosition",
+		"valueAlignment",
 	}
 	local optionFields: { [string]: boolean } = {
 		id = true,
@@ -1052,6 +1063,10 @@ return function(
 		assert(
 			spec.maxHeight == nil or table.find({ "automatic", "menu", "navigationLink" }, declaredStyle),
 			"Facet UI.Picker: maxHeight belongs to the menu styles"
+		)
+		assert(
+			spec.valueAlignment == nil or spec.valueAlignment == "start" or spec.valueAlignment == "end",
+			"Facet UI.Picker: valueAlignment must be start or end"
 		)
 		assert(
 			spec.indicatorPosition == nil or declaredStyle == "radioGroup",
@@ -1326,6 +1341,7 @@ return function(
 										return translate(read(spec.appearance, use), presentation) or "utility"
 									end
 									else nil,
+								valueAlignment = spec.valueAlignment,
 								multiple = true :: true,
 								selected = spec.selected,
 								onChanging = spec.onChanging,
@@ -1369,6 +1385,7 @@ return function(
 										return translate(read(spec.appearance, use), presentation) or "utility"
 									end
 									else nil,
+								valueAlignment = spec.valueAlignment,
 								multiple = false :: false,
 								selected = spec.selected,
 								onChanging = spec.onChanging,
@@ -1487,16 +1504,40 @@ return function(
 			menuSpec.AutomaticSize = E.AutomaticSize.XY
 			menuSpec.AnchorPoint = nil
 			menuSpec.Position = nil
+			local inline = spec.valueAlignment == "start"
 			local label = ctx.text({
 				Name = "Label",
 				Text = function(use: ComposeTypes.Use)
 					return read(spec.label, use) or ""
 				end,
-				Size = D2.new(1, 0, 0, 0),
-				AutomaticSize = E.AutomaticSize.Y,
-				TextWrapped = true,
+				Size = if inline then D2.fromOffset(0, 0) else D2.new(1, 0, 0, 0),
+				AutomaticSize = if inline then E.AutomaticSize.XY else E.AutomaticSize.Y,
+				TextWrapped = not inline,
 				TextXAlignment = E.TextXAlignment.Left,
 			})
+			if inline then
+				local hug = function(use: ComposeTypes.Use): boolean
+					return read(spec.sizing, use) == "hug"
+				end
+				local row = ctx.row(
+					{ label, UI.Menu(menuSpec) },
+					ctx.props(spec, pickerKeys, {
+						Name = spec.Name or "Picker",
+						BackgroundTransparency = 1,
+						Size = function(use: ComposeTypes.Use)
+							return if hug(use) then D2.fromOffset(0, 0) else D2.new(1, 0, 0, 0)
+						end,
+						AutomaticSize = function(use: ComposeTypes.Use)
+							return if hug(use) then E.AutomaticSize.XY else E.AutomaticSize.Y
+						end,
+					})
+				)
+				local layout = assert(row:FindFirstChildWhichIsA("UIListLayout"))
+				layout.VerticalAlignment = E.VerticalAlignment.Center
+				layout.Wraps = true
+				row:SetAttribute("FacetValueAlignment", "start")
+				return row
+			end
 			local column = ctx.column(
 				{ label, UI.Menu(menuSpec) },
 				ctx.props(spec, pickerKeys, {

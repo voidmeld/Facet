@@ -40,6 +40,8 @@ export type ButtonVisualOptions = EnabledOptions & {
 	hint: Value<string>?,
 	help: Help?,
 	row: Row?,
+	textSize: Value<string | number>?,
+	underline: ("always" | "hover")?,
 }
 export type ButtonInputOptions = {
 	haptic: Value<boolean>?,

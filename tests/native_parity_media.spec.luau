@@ -925,7 +925,8 @@ t.describe("native parity media", function()
 					end,
 				} :: { (any) -> any }
 			do
-				t.expect(refusedWith(refusal(build), "Facet controlSize must be compact, regular or large")).toBe(true)
+				t.expect(refusedWith(refusal(build), "Facet controlSize must be xsmall, compact, regular or large"))
+					.toBe(true)
 			end
 			for _, bound in { "cell", "function" } do
 				local engine, runtime, UI = make()

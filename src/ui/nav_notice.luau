@@ -101,8 +101,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			error(`Facet {where}: onDismiss must be a function`, 0)
 		end
 		local size = ctx.read(spec.controlSize)
-		if size ~= nil and size ~= "compact" and size ~= "regular" and size ~= "large" then
-			error(`Facet {where}: controlSize must be compact, regular or large`, 0)
+		if size ~= nil and size ~= "xsmall" and size ~= "compact" and size ~= "regular" and size ~= "large" then
+			error(`Facet {where}: controlSize must be xsmall, compact, regular or large`, 0)
 		end
 		local actions: { Overlay.Action } = spec.actions or {}
 		parts.checkActions(ctx, where, spec.actions, 2, { "Link", "Close" })

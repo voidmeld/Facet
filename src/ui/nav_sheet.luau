@@ -42,7 +42,7 @@ local KEYS = {
 	"contentInset",
 	"scrollPolicy",
 }
-local PLACEMENTS = table.freeze({ automatic = true, bottom = true, side = true, center = true })
+local PLACEMENTS = table.freeze({ automatic = true, adaptive = true, bottom = true, side = true, center = true })
 local HANDLE = 20
 local SHEET = table.freeze({ enter = 0.3, exit = 0.2 })
 local SETTLE_LIMIT = 20
@@ -58,10 +58,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local function prepare(spec: Nav.SheetSpec): Prepared
 		assert(type(spec.detent) == "table" and spec.detent.set, "Sheet.detent requires a writable Compose cell")
 		local placement = spec.placement or "automatic"
-		assert(PLACEMENTS[placement], "Sheet.placement must be automatic, bottom, side or center")
+		assert(PLACEMENTS[placement], "Sheet.placement must be automatic, adaptive, bottom, side or center")
 		assert(
-			spec.edge == nil or (placement == "side" and (spec.edge == "left" or spec.edge == "right")),
-			"Sheet.edge is left or right, and only with placement side"
+			spec.edge == nil
+				or ((placement == "side" or placement == "adaptive") and (spec.edge == "left" or spec.edge == "right")),
+			"Sheet.edge is left or right, and only with placement side or adaptive"
 		)
 		assert(spec.width == nil or parts.WIDTHS[spec.width] ~= nil, "Sheet.width must be automatic, narrow or wide")
 		assert(
@@ -165,7 +166,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		phase: Nav.PresencePhase?
 	): Frame
 		local detents, byId = prepared.detents, prepared.byId
-		local placement = if spec.placement == nil or spec.placement == "automatic" then "bottom" else spec.placement
+		local declared = spec.placement or "automatic"
 		local edge = spec.edge or "right"
 		local gui = surfaces.service("GuiService")
 		local input = surfaces.service("UserInputService")
@@ -671,14 +672,33 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				Active = tallest,
 			})
 		end
-		local anchorX = if placement == "side" then (if edge == "left" then 0 else 1) else 0.5
-		local anchorY = if placement == "center" then 0.5 else 1
+		local pointer: (ComposeTypes.Use) -> boolean = function()
+			return false
+		end
+		if declared == "adaptive" and input and input.GetPropertyChangedSignal then
+			local mouse, touch = ctx.observe(input, "MouseEnabled"), ctx.observe(input, "TouchEnabled")
+			pointer = function(use: ComposeTypes.Use): boolean
+				return use(mouse) == true and use(touch) ~= true
+			end
+		end
+		local placed = Compose.formula(function(use: ComposeTypes.Use): string
+			if declared == "adaptive" then
+				return if use(extent).X >= 600 and pointer(use) then "side" else "bottom"
+			end
+			return if declared == "automatic" then "bottom" else declared
+		end)
+		local function anchors(use: ComposeTypes.Use): (number, number)
+			local placement = use(placed)
+			return if placement == "side" then (if edge == "left" then 0 else 1) else 0.5,
+				if placement == "center" then 0.5 else 1
+		end
 		local shown = surfaces.appearance(phase, SHEET, ready)
 		local function travel(use: ComposeTypes.Use): (number, number)
 			local rest = 1 - shown(use)
 			if rest <= 0 then
 				return 0, 0
 			end
+			local placement = use(placed)
 			if placement == "side" then
 				local width = use(panelWidth)
 				return rest * (if edge == "left" then -width else width), 0
@@ -697,8 +717,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		}, {
 			Name = "SheetPanel",
 			BackgroundTransparency = 0,
-			AnchorPoint = V2.new(anchorX, anchorY),
+			AnchorPoint = function(use: ComposeTypes.Use)
+				local anchorX, anchorY = anchors(use)
+				return V2.new(anchorX, anchorY)
+			end,
 			Position = function(use: ComposeTypes.Use)
+				local anchorX, anchorY = anchors(use)
 				local y = if anchorY == 1 then -keyboard(use) else -keyboard(use) / 2
 				local dx, dy = travel(use)
 				return D2.new(anchorX, dx, anchorY, y + dy)
@@ -713,6 +737,13 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			layout.Padding = ctx.types.UDim.new(0, 8)
 		end
 		ctx.styled(panel, "sheet")
+		runtime.decorate(panel, {
+			Attributes = {
+				FacetPlacement = function(use: ComposeTypes.Use): string
+					return use(placed)
+				end,
+			},
+		})
 		surfaces.skin(panel)
 		local overlay = surfaces.modal(function()
 			return panel

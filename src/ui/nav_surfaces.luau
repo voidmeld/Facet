@@ -69,8 +69,15 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local side = spec.chevronPosition or "leading"
 		assert(side == "leading" or side == "trailing", "Invalid DisclosureGroup.chevronPosition")
 		assert(
-			spec.appearance == nil or table.find({ "plain", "contained", "divided" }, spec.appearance),
+			spec.appearance == nil or table.find({ "plain", "contained", "divided", "outline" }, spec.appearance),
 			"Invalid DisclosureGroup.appearance"
+		)
+		local indent = spec.indent
+		assert(
+			indent == nil
+				or (type(indent) == "number" and indent >= 0 and indent < math.huge)
+				or (type(indent) == "string" and table.find({ "xs", "s", "m", "l", "xl" }, indent) ~= nil),
+			"DisclosureGroup.indent must be a spacing step or a number of pixels"
 		)
 		local function chevron(use: ComposeTypes.Use): string
 			return if use(spec.expanded) then "chevron.down" else "chevron.trailing"
@@ -81,8 +88,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			trailingIcon = if side == "trailing" then chevron else spec.icon,
 			subtitle = spec.description,
 			enabled = spec.enabled,
+			textSize = spec.textSize,
 			Size = D2.new(1, 0, 0, 44),
-			selected = spec.expanded,
+			selected = if spec.appearance == "outline" then nil else spec.expanded,
 			onActivate = function()
 				local value = not spec.expanded:peek()
 				spec.expanded:set(value)
@@ -134,6 +142,16 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							node,
 						})
 					end
+					local inset = if indent == nil
+						then nil
+						else Host.UIPadding({
+							PaddingLeft = function(use: ComposeTypes.Use)
+								return ctx.types.UDim.new(
+									0,
+									if type(indent) == "number" then indent else ctx.metric("space." .. indent, use)
+								)
+							end,
+						})
 					local fade = Host.CanvasGroup "RevealFade" {
 						BackgroundTransparency = 1,
 						Size = D2.new(1, 0, 0, 0),
@@ -143,6 +161,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end,
 						node,
 					}
+					if inset then
+						surfaces.attach(fade, { inset :: Types.Child })
+					end
 					local natural = ctx.observe(fade, "AbsoluteSize")
 					local reveal = Host.Frame "Reveal" {
 						BackgroundTransparency = 1,
@@ -191,6 +212,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				"chevronPosition",
 				"appearance",
 				"controlSize",
+				"textSize",
+				"indent",
 			}, { Name = "DisclosureGroup", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 		)
 		ctx.styled(root, "disclosure")

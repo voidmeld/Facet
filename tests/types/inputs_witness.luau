@@ -80,6 +80,17 @@ return function(UI: Inputs.InputControls, action: InputAction): ()
 			native.Name = "ActionHint"
 		end,
 	})
+	local link: TextButton =
+		UI.Button({ label = "Terms", appearance = "inverse", underline = "hover" :: "hover", textSize = "label" })
+	local plain: TextButton = UI.Toggle({
+		value = checked,
+		presentation = "checkbox" :: "checkbox",
+		appearance = "plain",
+		controlSize = "xsmall" :: "xsmall",
+		textSize = 14,
+	})
+	link.Visible = true
+	plain.Visible = true
 	button.Text = "Saved"
 	toggle.Selected = true
 	field.Visible = true
