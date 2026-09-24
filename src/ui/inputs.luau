@@ -1355,51 +1355,98 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				changed(spec, model.stepped(read(spec.value), direction))
 			end
 		end
-		local parts: { ComposeTypes.Child } = {}
-		if spec.label then
-			table.insert(parts, ctx.text({ Text = spec.label }))
-		end
-		table.insert(
-			parts,
-			UI.Button "Decrease" {
-				label = "−",
-				enabled = function(use: ComposeTypes.Use)
-					return enabled(spec, use) and read(spec.value, use) > model.min
-				end,
-				onActivate = function()
-					adjust(-1)
-				end,
-			}
+		-- One quiet track holds decrease, value and increase; a label, when present, leads the row so
+		-- the stepper reads like a settings line rather than three loose buttons.
+		local function stepButton(
+			name: string,
+			glyph: string,
+			direction: number,
+			allowed: (ComposeTypes.Use) -> boolean
 		)
-		table.insert(
-			parts,
-			ctx.text({
-				Name = "Value",
-				Text = function(use: ComposeTypes.Use)
-					return model.format(read(spec.value, use))
+			local button = UI.Button(name)({
+				label = glyph,
+				LayoutOrder = if direction < 0 then 1 else 3,
+				Size = D2.fromOffset(44, 36),
+				AutomaticSize = E.AutomaticSize.None,
+				enabled = allowed,
+				onActivate = function()
+					adjust(direction)
 				end,
 			})
-		)
-		table.insert(
-			parts,
-			UI.Button "Increase" {
-				label = "+",
-				enabled = function(use: ComposeTypes.Use)
+			button:AddTag("facet-stepper-button")
+			return button
+		end
+		local controls = ctx.styled(
+			Host.Frame "Controls" {
+				LayoutOrder = 2,
+				Size = D2.fromOffset(0, 40),
+				AutomaticSize = E.AutomaticSize.X,
+				Host.UIListLayout({
+					FillDirection = E.FillDirection.Horizontal,
+					SortOrder = E.SortOrder.LayoutOrder,
+					VerticalAlignment = E.VerticalAlignment.Center,
+				}) :: ComposeTypes.Child,
+				Host.UIPadding({ PaddingLeft = D.new(0, 2), PaddingRight = D.new(0, 2) }) :: ComposeTypes.Child,
+				stepButton("Decrease", "−", -1, function(use: ComposeTypes.Use)
+					return enabled(spec, use) and read(spec.value, use) > model.min
+				end),
+				ctx.text({
+					Name = "Value",
+					LayoutOrder = 2,
+					Size = D2.fromOffset(40, 36),
+					AutomaticSize = E.AutomaticSize.X,
+					TextXAlignment = E.TextXAlignment.Center,
+					TextYAlignment = E.TextYAlignment.Center,
+					Text = function(use: ComposeTypes.Use)
+						return model.format(read(spec.value, use))
+					end,
+				}),
+				stepButton("Increase", "+", 1, function(use: ComposeTypes.Use)
 					return enabled(spec, use) and read(spec.value, use) < model.max
-				end,
-				onActivate = function()
-					adjust(1)
-				end,
-			}
+				end),
+			},
+			"stepper-track"
 		)
+		local parts: { ComposeTypes.Child } = {
+			Host.UIListLayout({
+				FillDirection = E.FillDirection.Horizontal,
+				SortOrder = E.SortOrder.LayoutOrder,
+				VerticalAlignment = E.VerticalAlignment.Center,
+				Padding = D.new(0, 12),
+			}),
+			controls,
+		}
+		if spec.label then
+			table.insert(
+				parts,
+				ctx.text({
+					Name = "Label",
+					LayoutOrder = 1,
+					Text = spec.label,
+					Size = D2.fromScale(0, 0),
+					AutomaticSize = E.AutomaticSize.XY,
+					TextXAlignment = E.TextXAlignment.Left,
+					Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+				})
+			)
+		end
 		local p = props(spec, { "value", "min", "max", "step", "format", "enabled", "onChange", "label" }, {
 			Selectable = true,
-			Size = D2.fromOffset(0, 0),
-			AutomaticSize = E.AutomaticSize.XY,
+			Size = if spec.label then D2.new(1, 0, 0, 0) else D2.fromOffset(0, 0),
+			AutomaticSize = if spec.label then E.AutomaticSize.Y else E.AutomaticSize.XY,
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 		})
-		table.insert(p, ctx.row(parts, { Name = "Content", ZIndex = 1 }))
+		table.insert(
+			p,
+			Host.Frame "Content" {
+				ZIndex = 1,
+				BackgroundTransparency = 1,
+				Size = if spec.label then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44),
+				AutomaticSize = if spec.label then E.AutomaticSize.None else E.AutomaticSize.X,
+				table.unpack(parts),
+			}
+		)
 		local node = ctx.styled(Host.Frame(p), "stepper")
 		ctx.skin(node, "stepperPlate")
 		valueAttributes(node, spec, model)

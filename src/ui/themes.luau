@@ -581,6 +581,11 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	)
 	rule(".facet-tab-filled >> .facet-button-caption", { TextColor3 = c("onAccent") })
 	rule(".facet-tab-filled >> .facet-icon", { ImageColor3 = c("onAccent") })
+	rule(".facet-stepper-track", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
+	rule(".facet-stepper-track::UICorner", { CornerRadius = types.UDim.new(0, package.metrics.radii.control) })
+	rule(".facet-stepper-button", { BackgroundTransparency = 1 })
+	rule(".facet-stepper-button:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(".facet-stepper-button:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(".facet-segmented", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	rule(".facet-segmented::UICorner", { CornerRadius = types.UDim.new(0, package.metrics.radii.control + 2) })
 	rule(".facet-segmented::UIPadding", {
