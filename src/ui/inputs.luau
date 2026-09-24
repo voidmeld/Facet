@@ -412,7 +412,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							)
 						)
 					end
-					return Host.Frame(dots)
+					local busy = Host.Frame(dots)
+					ctx.playWhileShown(phase, busy)
+					return busy
 				end)
 			)
 		end

@@ -104,6 +104,46 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		return value
 	end
 	ctx.observe = (observe :: unknown) :: Shared.Observe
+	-- A repeating animation on a retained but hidden page does work nobody can see. Play it only
+	-- while every GuiObject ancestor is Visible and its layer is Enabled.
+	function ctx.playWhileShown(timeline: Shared.Playback, node: Instance)
+		local owner = assert(Compose.currentOwner(), "Facet playWhileShown requires a Compose owner")
+		local ancestryOwner: Compose.Owner?
+		local function locate()
+			if owner.isDisposed() then
+				return
+			end
+			if ancestryOwner then
+				ancestryOwner.dispose()
+			end
+			local childOwner = owner.createChild()
+			ancestryOwner = childOwner
+			Compose.withOwner(childOwner, function()
+				local sources: { Compose.Readable<boolean> } = {}
+				local at: Instance? = node
+				while at do
+					if at:IsA("GuiObject") then
+						table.insert(sources, ctx.observe(at, "Visible"))
+					elseif at:IsA("LayerCollector") then
+						table.insert(sources, ctx.observe(at, "Enabled"))
+						break
+					end
+					at = at.Parent
+				end
+				Compose.watch(function(use: Compose.Use)
+					for _, source in sources do
+						if not use(source) then
+							timeline:pause()
+							return
+						end
+					end
+					timeline:play()
+				end)
+			end)
+		end
+		runtime.connect(node, "AncestryChanged", locate)
+		locate()
+	end
 	local function observeStyled(node: Instance, property: string): Compose.Cell<unknown>
 		local initial: unknown = node:GetStyled(property)
 		local value = Compose.cell(initial)

@@ -639,7 +639,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if readout then
 			table.insert(children, readout)
 		end
-		return ctx.column(
+		local root = ctx.column(
 			children,
 			ctx.props(spec, {
 				"value",
@@ -668,6 +668,10 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 			})
 		)
+		if timeline then
+			ctx.playWhileShown(timeline, root)
+		end
+		return root
 	end)
 
 	local skeletonClock = Compose.createSharedResource(function()

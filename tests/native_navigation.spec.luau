@@ -856,6 +856,55 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("pauses repeating progress motion while its retained tab is hidden", function()
+		local selection = Compose.cell("one")
+		local world = setup(function(UI, Host)
+			return UI.TabView {
+				selection = selection,
+				tabs = {
+					{ id = "one", content = UI.ProgressView "Spinner" { presentation = "spinner" } },
+					{ id = "two", content = Host.Frame "Two" {} },
+				},
+			}
+		end)
+		local spinner = find(world.screen, "Spinner")
+		local function snapshot()
+			local values = {}
+			for _, node in spinner:GetDescendants() do
+				if node:IsA("GuiObject") then
+					values[node] = `{node.BackgroundTransparency}|{node.Rotation}|{node.Size}|{node.Position}`
+				end
+			end
+			return values
+		end
+		local function changed(before, after)
+			local count = 0
+			for node, value in before do
+				if after[node] ~= value then
+					count += 1
+				end
+			end
+			return count
+		end
+		local function advance()
+			for _ = 1, 10 do
+				world.engine.heartbeat.fire(1 / 30)
+			end
+		end
+		local shown = snapshot()
+		advance()
+		t.expect(changed(shown, snapshot()) > 0).toBe(true)
+		selection:set("two")
+		local hidden = snapshot()
+		advance()
+		t.expect(changed(hidden, snapshot())).toBe(0)
+		selection:set("one")
+		local returned = snapshot()
+		advance()
+		t.expect(changed(returned, snapshot()) > 0).toBe(true)
+		world.stop()
+	end)
+
 	t.it("hides a callout while its retained tab is away and shows it again on return", function()
 		local selection, events = Compose.cell("one"), {}
 		local world = setup(function(UI, Host)

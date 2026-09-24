@@ -17,6 +17,7 @@ export type Attributes = Engine.Attributes
 export type AttributeValue = Engine.AttributeValue
 export type RobloxTypes = Engine.RobloxTypes
 export type Observe = Engine.Observe
+export type Playback = { play: (self: any) -> (), pause: (self: any) -> () }
 export type ControlSize = "compact" | "regular" | "large"
 
 export type BillboardGuiProps = Engine.BillboardGuiProps
@@ -134,6 +135,7 @@ export type Context = {
 	controlSize: (Value<ControlSize>?, "height" | "paddingX" | "iconSize", Use?) -> number,
 	observe: Observe,
 	observeStyled: Observe,
+	playWhileShown: (Playback, Instance) -> (),
 	props: <P>(P, { string } | { [string]: boolean }?, unknown?) -> P,
 	construct: <F>(F) -> F & ((string) -> F),
 	styled: <N>(N & Instance, string) -> N & Instance,
