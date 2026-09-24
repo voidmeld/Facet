@@ -673,6 +673,7 @@ export type Observe =
 	& ((GuiObject, "Interactable") -> Compose.Cell<boolean>)
 	& ((GuiObject, "Position") -> Compose.Cell<UDim2>)
 	& ((GuiObject, "Visible") -> Compose.Cell<boolean>)
+	& ((GuiService, "PreferredTransparency") -> Compose.Cell<number>)
 	& ((GuiService, "ReducedMotionEnabled") -> Compose.Cell<boolean>)
 	& ((GuiService, "SelectedObject") -> Compose.Cell<GuiObject?>)
 	& ((InputAction, "DisplayName") -> Compose.Cell<string>)

@@ -3,7 +3,21 @@ return {
 	build = function(ctx)
 		local Host, UI, Compose = ctx.Host, ctx.UI, ctx.Compose
 		local UDim, UDim2, Color3, Enum = ctx.types.UDim, ctx.types.UDim2, ctx.types.Color3, ctx.types.Enum
-		local setting, opened = Compose.cell(1), Compose.cell(false)
+		local gui = ctx.guiService
+		local opened = Compose.cell(false)
+		local function current()
+			local value = if gui then gui.PreferredTransparency else nil
+			return if type(value) == "number" then value else 1
+		end
+		local preference = Compose.cell(current())
+		if gui then
+			local connection = gui:GetPropertyChangedSignal("PreferredTransparency"):Connect(function()
+				preference:set(current())
+			end)
+			Compose.cleanup(function()
+				connection:Disconnect()
+			end)
+		end
 		local function panel(name, transparency)
 			return Host.Frame({
 				Name = name,
@@ -23,24 +37,19 @@ return {
 				Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 12) }),
 				UI.Label({ label = "Background transparency", TextSize = 24 }),
 				UI.Label({
-
-					label = "Roblox owns the player's accessibility setting. The slider previews native background transparency; an authored group fade remains independent.",
+					label = "Change Background transparency in the Roblox menu under Settings. Facet scales translucent theme surfaces and modal backdrops by your setting. An authored group fade stays independent.",
 				}),
-				UI.Slider({
-
-					Name = "Setting",
-					label = "Preview transparency",
-					value = setting,
-					min = 0,
-					max = 1,
-					step = 0.05,
+				UI.Label({
+					Name = "Reading",
+					label = function(use)
+						return `Your setting: {math.round(use(preference) * 100)}%`
+					end,
 				}),
-				panel("Backdrop", function(use)
-					return use(setting) * 0.5
+				panel("Translucent surface", function(use)
+					return 0.5 * use(preference)
 				end),
 				panel("Opaque panel", 0),
 				Host.CanvasGroup({
-
 					Name = "AuthoredFade",
 					Size = UDim2.fromOffset(200, 96),
 					BackgroundTransparency = 1,
@@ -48,7 +57,6 @@ return {
 					panel("Authored fade", 0),
 				}),
 				UI.Button({
-
 					Name = "Open",
 					label = "Open a dialog",
 					onActivate = function()
@@ -56,34 +64,21 @@ return {
 					end,
 				}),
 				UI.Alert({
-
 					Name = "Dialog",
 					isPresented = opened,
-					title = "A native modal backdrop",
-					message = "The control reads Roblox's preference for its backdrop.",
+					title = "Modal backdrop",
+					message = "This backdrop darkens as you lower Background transparency.",
 					actions = { { id = "Close", label = "Close", role = "cancel" } },
 				}),
 			})
 		end
 		local function report()
-			return { setting = setting:peek(), dialogOpen = opened:peek() }
+			return { preference = preference:peek(), dialogOpen = opened:peek() }
 		end
 		return {
 			screen = screen,
 			report = report,
 			steps = {
-				setFull = function()
-					setting:set(1)
-					return report()
-				end,
-				setHalf = function()
-					setting:set(0.5)
-					return report()
-				end,
-				setOpaque = function()
-					setting:set(0)
-					return report()
-				end,
 				openDialog = function()
 					opened:set(true)
 					return report()

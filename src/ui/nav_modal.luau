@@ -14,6 +14,14 @@ return function(ctx: Types.Context): Nav.Surfaces
 		return services.UserInputService or (if game then game:GetService("UserInputService") else nil)
 	end
 	local gui = service("GuiService") :: GuiService?
+	-- Roblox's Background transparency preference scales every translucent surface behind content.
+	local function preference(): (Core.Use) -> number
+		local source = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "PreferredTransparency") else nil
+		return function(use: Core.Use): number
+			local value = if source then use(source) else 1
+			return if type(value) == "number" then math.clamp(value, 0, 1) else 1
+		end
+	end
 	local function within(node: Instance?, ancestor: Instance): boolean
 		while node do
 			if node == ancestor then
@@ -60,6 +68,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 	local function modal(content: () -> GuiObject, dismiss: (string?) -> (), options: Nav.ModalOptions?): Frame
 		local spec: Nav.ModalOptions = options or {}
 		local previous = if gui then gui.SelectedObject else nil
+		local preferred = preference()
 		local panel = content()
 		runtime.decorate(panel, {
 			SelectionGroup = true,
@@ -87,7 +96,10 @@ return function(ctx: Types.Context): Nav.Surfaces
 				Name = "DismissOutside",
 				Size = D2.fromScale(1, 1),
 				Text = "",
-				BackgroundTransparency = spec.backgroundTransparency or 0.35,
+				BackgroundTransparency = function(use: Core.Use)
+					local authored = ctx.read(spec.backgroundTransparency, use)
+					return (if type(authored) == "number" then authored else 0.35) * preferred(use)
+				end,
 				BackgroundColor3 = ctx.types.Color3.new(0, 0, 0),
 				AutoButtonColor = false,
 				Selectable = false,
@@ -281,6 +293,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		service = service :: (("GuiService") -> GuiService?) & (("UserInputService") -> UserInputService?),
 		within = within,
 		firstSelectable = firstSelectable,
+		preference = preference,
 		overlay = overlay,
 		available = available,
 	}

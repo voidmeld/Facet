@@ -269,6 +269,7 @@ export type Surfaces = {
 	service: (("GuiService") -> GuiService?) & (("UserInputService") -> UserInputService?),
 	within: (Instance?, Instance) -> boolean,
 	firstSelectable: (Instance, string?) -> GuiObject?,
+	preference: () -> (Compose.Use) -> number,
 	attach: <N>(N & Instance, { Types.Child }) -> N & Instance,
 	available: (GuiObject) -> Compose.Readable<boolean>,
 	centered: (GuiObject, number) -> GuiObject,

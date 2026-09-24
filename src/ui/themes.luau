@@ -630,6 +630,25 @@ function themes.createStyleSheet(
 			end)
 		end
 	end
+	local preferredTransparency = settings.preferredTransparency
+	if preferredTransparency == nil then
+		local globals = getfenv(0)
+		local gui = globals.game and globals.game:GetService("GuiService")
+		if gui then
+			local source = Compose.cell(gui.PreferredTransparency)
+			preferredTransparency = source
+			local connection = gui:GetPropertyChangedSignal("PreferredTransparency"):Connect(function()
+				source:set(gui.PreferredTransparency)
+			end)
+			Compose.cleanup(function()
+				connection:Disconnect()
+			end)
+		end
+	end
+	local function preferenceFor(use: Compose.Use): number
+		local value = read(preferredTransparency, use)
+		return if type(value) == "number" then math.clamp(value, 0, 1) else 1
+	end
 	local previousSeconds: number?, defaultTiming: TweenInfo? = nil, nil
 	local function timingFor(package: ThemeTypes.ThemePackage, use: Compose.Use): TweenInfo
 		local explicit = read(settings.transition, use)
@@ -680,6 +699,29 @@ function themes.createStyleSheet(
 			end
 		end
 		return result
+	end
+	local scaled: { [NativeRule]: { preference: number, properties: ThemeTypes.RuleProperties } } = setmetatable(
+		{},
+		{ __mode = "k" }
+	) :: any
+	local function withPreference(definition: NativeRule, preference: number): NativeRule
+		local translucent = definition.properties.BackgroundTransparency
+		if preference >= 1 or type(translucent) ~= "number" or translucent <= 0 or translucent >= 1 then
+			return definition
+		end
+		local cached = scaled[definition]
+		if cached == nil or cached.preference ~= preference then
+			local properties = table.clone(definition.properties)
+			properties.BackgroundTransparency = translucent * preference
+			cached = { preference = preference, properties = properties }
+			scaled[definition] = cached
+		end
+		return {
+			id = definition.id,
+			selector = definition.selector,
+			priority = definition.priority,
+			properties = cached.properties,
+		}
 	end
 	local ids = Compose.cell({} :: { string })
 	local currentTiming: TweenInfo? = nil
@@ -743,10 +785,12 @@ function themes.createStyleSheet(
 		local current = compiledRules(package, read(settings.theme, use))
 		local timing = timingFor(package, use)
 		currentTiming = timing
+		local preference = preferenceFor(use)
 		local previousIds = ids:peek()
 		local structureChanged = #previousIds ~= #current
 		table.clear(definitions)
-		for index, definition in current do
+		for index, compiledDefinition in current do
+			local definition = withPreference(compiledDefinition, preference)
 			definitions[definition.id] = definition
 			if previousIds[index] ~= definition.id then
 				structureChanged = true

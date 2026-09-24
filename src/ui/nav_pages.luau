@@ -234,11 +234,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if previous == id then
 				return
 			end
-			local leaving = previous ~= nil
-				and gui ~= nil
-				and panels[previous] ~= nil
-				and surfaces.within(gui.SelectedObject, panels[previous])
-			if leaving then
+			local leaving = false
+			local previousPanel = if previous then panels[previous] else nil
+			if gui and previousPanel and surfaces.within(gui.SelectedObject, previousPanel) then
+				leaving = true
 				bookmarks[previous :: string] = gui.SelectedObject
 			end
 			local order = table.clone(visited:peek())

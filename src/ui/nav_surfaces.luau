@@ -570,9 +570,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						})
 						surfaces.attach(panel, { corner })
 						local backdrop = modal:FindFirstChild("DismissOutside")
+						local preferred = surfaces.preference()
 						runtime.decorate(backdrop, {
 							BackgroundTransparency = function(use: Core.Use)
-								return 1 - amount(use) * 0.65
+								return 1 - amount(use) * (1 - 0.35 * preferred(use))
 							end,
 						})
 					else

@@ -48,6 +48,31 @@ t.describe("native themes and media", function()
 		runtime:dispose()
 	end)
 
+	t.it("scales translucent theme surfaces by the player's background transparency preference", function()
+		local engine, runtime = setup()
+		local preference = Compose.cell(1)
+		local sheet
+		local stop = runtime.mount(function()
+			sheet = themes.createStyleSheet(
+				runtime,
+				themes.neutralPackage(),
+				{ types = engine.types, preferredTransparency = preference }
+			)
+			return sheet
+		end, engine.new("Folder"))
+		local authored = style(sheet, ".facet-scrim").BackgroundTransparency
+		t.expect(authored > 0 and authored < 1).toBe(true)
+		preference:set(0.5)
+		t.expect(style(sheet, ".facet-scrim").BackgroundTransparency).toBe(authored * 0.5)
+		t.expect(style(sheet, ".facet-skinned").BackgroundTransparency).toBe(1)
+		preference:set(0)
+		t.expect(style(sheet, ".facet-scrim").BackgroundTransparency).toBe(0)
+		preference:set(1)
+		t.expect(style(sheet, ".facet-scrim").BackgroundTransparency).toBe(authored)
+		stop()
+		runtime:dispose()
+	end)
+
 	t.it("retargets native theme paint with shared timing and disables motion without replacing rules", function()
 		local engine, runtime = setup()
 		local package = themes.neutralPackage()

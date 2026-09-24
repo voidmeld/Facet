@@ -198,6 +198,7 @@ export type ThemeOptions = {
 	name: string?,
 	theme: Engine.Value<string>?,
 	reducedMotion: Engine.Value<boolean>?,
+	preferredTransparency: Engine.Value<number>?,
 	transition: Engine.Value<TweenInfo | false>?,
 }
 export type SkinOptions = {

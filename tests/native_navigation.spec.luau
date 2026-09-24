@@ -795,6 +795,24 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("darkens modal scrims as the player lowers background transparency", function()
+		local presented = Compose.cell(true)
+		local world = setup(function(UI)
+			return UI.Alert({
+				isPresented = presented,
+				title = "Leave race?",
+				actions = { { id = "stay", label = "Stay", role = "cancel" } },
+			})
+		end)
+		local scrim = find(world.screen, "DismissOutside")
+		t.expect(scrim.BackgroundTransparency).toBe(0.35)
+		world.gui.PreferredTransparency = 0.5
+		t.expect(scrim.BackgroundTransparency).toBe(0.175)
+		world.gui.PreferredTransparency = 0
+		t.expect(scrim.BackgroundTransparency).toBe(0)
+		world.stop()
+	end)
+
 	t.it("hands selection to the shown tab panel and restores it on return", function()
 		local selection = Compose.cell("one")
 		local world = setup(function(UI)
