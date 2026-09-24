@@ -239,6 +239,76 @@ p90, over 20 swaps. No swap causes a dropped frame at 60 frames per second.
 Thus the headless theme-swap flag is Luau and engine-double cost. It does not
 show as frame time in Studio.
 
+## Checks of the three flags
+
+These checks test the explanations of the three flags. They ran on
+`2fdb08c7` (`cand`) against `main` (`base`). The host load average was
+about 40 during the runs, so the absolute numbers are several times larger
+than in the tables above. Read the ratios and the paired ranges.
+
+### Theme swaps: the table copies of the engine double
+
+`nocopy` is `cand` with one change in `tests/lib/native_engine.luau`:
+`SetProperties` and `SetPropertyTransitions` keep the table that they get and
+do not copy it. The paired run has 6 rounds and the order base, cand, nocopy
+in each round (`tools/perf_paired.py run --skip-bench`).
+
+| Scene | cand / base p50 | paired range | nocopy / base p50 | paired range | nocopy / cand p50 | paired range |
+|---|---:|---|---:|---|---:|---|
+| theme-swap-flat | 0.399 | 0.07-0.58 | 0.185 | 0.09-0.50 | 0.464 | 0.30-1.19 |
+| theme-swap-metrics | 2.094 | 1.40-2.67 | 1.028 | 0.48-2.35 | 0.491 | 0.31-0.97 |
+| theme-swap-assets | 2.660 | 1.28-8.25 | 1.203 | 0.78-4.26 | 0.452 | 0.23-0.95 |
+
+Without the copies, the metric and asset swaps have no flag: the paired range
+includes 1 in both scenes. In each round, `nocopy` is faster than `cand`.
+Thus the flag comes from the table copies of the engine double. A copy does not
+occur in the Roblox engine. In Roblox Studio the candidate swap has a lower
+worst frame than `main` (19.8 ms against 29.3 ms, see
+[Theme swaps in Roblox Studio](#theme-swaps-in-roblox-studio)). The branch
+keeps the copies, because the tests read the rule tables after a write.
+
+### lab-dense-scroll: the median and the total work
+
+The p50 of this scene compares different step shapes. On `main` most steps
+change nothing, and some steps are very slow. On `cand` more steps do a small
+amount of work. The mean step time measures the total work. This run used a
+script that times 600 steps after 60 warm-up steps with the `perf_scenes` entry
+of each commit. It ran 5 rounds, in the order base, cand.
+
+| Round | base mean (ms) | cand mean (ms) | cand / base |
+|---|---:|---:|---:|
+| 1 | 43.42 | 18.01 | 0.41 |
+| 2 | 41.51 | 38.51 | 0.93 |
+| 3 | 52.87 | 29.32 | 0.55 |
+| 4 | 44.68 | 14.98 | 0.34 |
+| 5 | 14.22 | 25.66 | 1.81 |
+
+The median ratio is 0.55, and `cand` is faster in 4 of 5 rounds. The p50 ratio
+in the paired run is 2.25 (paired range 1.47-3.90), and the p95 ratio is 0.85.
+Thus the total work of `cand` is less than the total work of `main`. The two
+commits use different headless hosts: `main` drives its own adapter and
+presenter, and `cand` drives the native engine double. A like-for-like engine
+comparison needs the performance lab place in Studio.
+
+### The performance lab in Roblox Studio
+
+- `cand`: the lab place ran `dense-scroll` with 2,000 rows at 388x824 and the
+  Largest preferred text size, with the overlay hidden. 975 steps: p50
+  2.94 ms, p95 8.45 ms. The capture row is
+  `artifacts/performance-stress-places/studio/perf-dense-scroll-facet-neutral-clean-1.json`.
+- `main`: the lab place does not start at `a8c88956`. Its overlay registers a
+  cleanup outside a Compose owner (`Compose[owner/no-active-owner]` from
+  `render/compose_controls` through `overlay.luau`). This is the same error
+  that stops three `main` scenes in the headless runs. Thus a Studio A/B of the
+  lab against `main` needs a change to `main`.
+- After the `dense-scroll-native` workload, the lab in Studio did not mount the
+  next workload: the native list stayed on the screen with 76,979 instances.
+  The same sequence in the headless lab mounts the next workload correctly. The
+  captures after that point measured the wrong screen, so this page does not
+  use them. The cause is not known.
+
+No check shows a regression in the three flagged scenes.
+
 ## StyleSheet token prototype
 
 Branch `perf/stylesheet-tokens`, commit `5530b29f`, adds this change to

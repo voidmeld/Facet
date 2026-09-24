@@ -686,11 +686,11 @@
   "producers": {
     "mainFullTier": 130,
     "byStatus": {
-      "equivalent": 45,
-      "replaced": 15,
-      "retired": 61,
-      "replaced-weaker": 4,
-      "evidence-pending": 5
+      "equivalent": 48,
+      "replaced": 16,
+      "retired": 62,
+      "replaced-weaker": 0,
+      "evidence-pending": 4
     },
     "producerRecheckCommit": "84a1dd9e",
     "statusMeaning": {
@@ -980,9 +980,14 @@
       {
         "mainProducer": "check_example_drift_cli",
         "environment": "deterministic",
-        "status": "replaced-weaker",
-        "candidate": "native_documentation + architecture",
-        "note": "No guide/example source drift check."
+        "status": "equivalent",
+        "candidate": "example-drift",
+        "note": "tools/check_example_drift.py scans examples/gallery/examples and examples/reference for literal TextSize, literal paint colours, raw colours, unknown textRole names and engine reach-arounds, with a reason for each allowlisted literal and a stale-entry check. example-drift-selftest plants each rule. The crossword cell colours now come from the theme palette.",
+        "tiers": [
+          "full",
+          "release"
+        ],
+        "outcome": "example-drift PASS"
       },
       {
         "mainProducer": "check_flat_baseline",
@@ -1183,7 +1188,7 @@
         "environment": "studio",
         "status": "evidence-pending",
         "candidate": "perf-gate-evidence-device-matrix",
-        "note": "No emulator-class capture matrix is recorded. The producer runs and reports FAIL_ENVIRONMENT.",
+        "note": "The lab writes evidenceClass emulator when workspace.Facet_PerfEvidenceClass is emulator. Five emulated viewports are not recorded.",
         "tiers": [
           "full",
           "release"
@@ -1218,7 +1223,7 @@
         "environment": "studio",
         "status": "evidence-pending",
         "candidate": "perf-gate-evidence-large-text",
-        "note": "The native lab capture has no preferred text size field. The producer runs and reports FAIL_ENVIRONMENT.",
+        "note": "Capture rows now record GuiService.PreferredTextSize in counters. A capture at a second text size is not recorded yet; scripts cannot set the preference, so each size needs the Roblox menu.",
         "tiers": [
           "full",
           "release"
@@ -1230,7 +1235,7 @@
         "environment": "studio",
         "status": "evidence-pending",
         "candidate": "perf-gate-evidence-native-reference",
-        "note": "No dense-scroll versus dense-scroll-native Studio pair is recorded. The producer runs and reports FAIL_ENVIRONMENT.",
+        "note": "The lab now fills the native reference list over frames so Studio does not time out. In Studio the lab did not mount the next workload after dense-scroll-native (the native list stayed with 76,979 instances), so those captures were discarded. The headless lab remounts correctly. The pair needs a Studio rerun after the cause is found.",
         "tiers": [
           "full",
           "release"
@@ -1266,21 +1271,21 @@
       {
         "mainProducer": "check_perf_gate_evidence-studio",
         "environment": "studio",
-        "status": "evidence-pending",
+        "status": "equivalent",
         "candidate": "perf-gate-evidence-studio",
-        "note": "No native Studio capture of the performance lab is recorded. The producer runs and reports FAIL_ENVIRONMENT.",
+        "note": "A clean Studio capture of the native performance lab is recorded: dense-scroll, 2000 rows, 388x824, Largest text, overlay hidden, 975 measured steps (artifacts/performance-stress-places/studio/perf-dense-scroll-facet-neutral-clean-1.json). The lab is now scriptable through workspace.FacetPerfLabAPI.",
         "tiers": [
           "full",
           "release"
         ],
-        "outcome": "perf-gate-evidence-studio FAIL_ENVIRONMENT"
+        "outcome": "perf-gate-evidence-studio PASS"
       },
       {
         "mainProducer": "check_perf_gate_evidence-theme-cost",
         "environment": "studio",
         "status": "evidence-pending",
         "candidate": "perf-gate-evidence-theme-cost",
-        "note": "The native lab captures only the neutral theme; no ornate capture exists. The producer runs and reports FAIL_ENVIRONMENT.",
+        "note": "The lab now installs any theme package by name and records it in the row. The only ornate capture came after the dense-scroll-native fault above and was discarded.",
         "tiers": [
           "full",
           "release"
@@ -1808,9 +1813,15 @@
       {
         "mainProducer": "faults",
         "environment": "deterministic",
-        "status": "replaced-weaker",
-        "candidate": "native_stress (200 seeded fault storms)",
-        "note": "Main ran 9 fault scenarios x 200 iterations."
+        "status": "replaced",
+        "candidate": "native_stress",
+        "note": "Main ran 9 fault scenarios x 200 iterations. native_stress runs async-storm (200 seeds), locale and UTF8 text (200 seeds), preferred input switching (200 seeds), teardown (pending change, double and in-notification dispose) and presenter-dismiss-non-top (50 covered-sheet dismissals under an alert). scheduler-feedback is a Compose scheduler contract (vendored Compose and native_compose_contract). async-fixed tested the deleted Facet resource provider cache budget. accessibility clamped the deleted Facet environment facts; the engine now reports the preferences.",
+        "tiers": [
+          "fast",
+          "full",
+          "release"
+        ],
+        "outcome": "suite PASS"
       },
       {
         "mainProducer": "fuzz-layout",
@@ -1822,9 +1833,15 @@
       {
         "mainProducer": "fuzz-replication",
         "environment": "deterministic",
-        "status": "replaced-weaker",
+        "status": "retired",
         "candidate": "native_stress (400 seeded deliveries)",
-        "note": "Facet replication module deleted; test covers an example model."
+        "note": "The subject, src/replication (adapters and Mutation), is deleted. The authoritative model now lives in the outpost terminal example; native_stress converges it under 400 seeded delayed, duplicated and reordered deliveries, the same case count as main. Permanent drops with resnapshot recovery were an adapter feature and are not promised.",
+        "tiers": [
+          "fast",
+          "full",
+          "release"
+        ],
+        "outcome": "suite PASS"
       },
       {
         "mainProducer": "fuzz-scheduler",
@@ -1855,9 +1872,15 @@
       {
         "mainProducer": "soak",
         "environment": "deterministic",
-        "status": "replaced-weaker",
-        "candidate": "native_stress (200 modal cycles, 100 structural cycles)",
-        "note": "Main soak ran the full presenter and scene soak fixtures."
+        "status": "equivalent",
+        "candidate": "native_stress",
+        "note": "Main soak ran two fixtures: modal-churn-200 and foreach-structural-churn-100. native_stress runs 200 modal cycles and 100 structural cycles, each twice, with an instance and connection census against the baseline after every cycle.",
+        "tiers": [
+          "fast",
+          "full",
+          "release"
+        ],
+        "outcome": "suite PASS"
       },
       {
         "mainProducer": "stylua-check-check-src-tests-tools-bench-examples",
