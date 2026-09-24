@@ -125,15 +125,9 @@ return function(ctx: Types.Context, UI: Controls): ()
 			} :: ComposeTypes.OrderedCollectionStatus)
 		local controls: ComposeTypes.OrderedCollectionControls<K> = spec.controls or {}
 		local selection: ComposeTypes.Cell<CollectionTypes.Selection<K>> = spec.selection or Compose.cell({})
-		local selectRow = createSelection(
-			ctx,
-			spec,
-			source,
-			keyOf,
-			controls,
-			selection,
-			if spec.selection or spec.onSelectionChange then "single" else "none"
-		)
+		local selectionMode: "none" | "single" | "multi" = spec.selectionMode
+			or (if spec.selection or spec.onSelectionChange then "single" else "none")
+		local selectRow = createSelection(ctx, spec, source, keyOf, controls, selection, selectionMode)
 		local measured: ComposeTypes.Cell<{ [K]: number }> = Compose.cell({})
 		local horizontal = spec.direction == "horizontal"
 		local root: ScrollingFrame
@@ -177,12 +171,16 @@ return function(ctx: Types.Context, UI: Controls): ()
 				writingOffset = false
 			end
 		end
-		local function select(key: K, current: ComposeTypes.Readable<V>): ()
+		local function select(key: K, current: ComposeTypes.Readable<V>, input: InputObject?, clicks: number?): ()
 			if policy.disabled(spec.disabled, current:peek()) then
 				return
 			end
-			selectRow(key, current:peek())
-			if spec.onActivate then
+			local pointer = input ~= nil and input.UserInputType == E.UserInputType.MouseButton1
+			local double = pointer and (clicks or 1) >= 2
+			if not double then
+				selectRow(key, current:peek())
+			end
+			if spec.onActivate and (selectionMode == "none" or not pointer or double) then
 				spec.onActivate(current:peek(), key)
 			end
 		end
@@ -295,8 +293,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 									Interactable = function(use: ComposeTypes.Use)
 										return not policy.disabled(spec.disabled, use(current))
 									end,
-									Activated = function()
-										select(key, current)
+									Activated = function(input: InputObject?, clicks: number?)
+										select(key, current, input, clicks)
 									end,
 									Attributes = {
 										FacetSelected = function(use: ComposeTypes.Use)

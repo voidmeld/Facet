@@ -449,6 +449,10 @@ collection. A list wraps only along its scrolling axis.
   callback. Otherwise it defaults to none.
 - `onSelectionChange(nextMap)`, `onActivate(item, key)` and `onReachEnd`
   connect control events to domain behavior.
+- When the selection mode is not `none`, one mouse click selects a row. A
+  double click, Return, a gamepad press or a touch tap runs `onActivate`. A
+  double click keeps the selection. When the mode is `none`, each activation
+  runs `onActivate`. Table rows follow the same rule.
 - `selectable(item)`, `reorderable`, `movable(item)`, `dragLabel` and
   `onReorder(keys, insertionSlot)` use the same zero-based insertion contract
   among the remaining rows as Table.

@@ -1,6 +1,5 @@
 --!strict
 local reorder = require("./collection_reorder")
-local createSelection = require("./collection_selection")
 local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local EngineTypes = require("./engine_types")
@@ -186,7 +185,6 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end
 			return result
 		end)
-		local selectRow = createSelection(ctx, spec, ordered, keyOf, queries, selection, "single")
 		Compose.watch(function(use: ComposeTypes.Use)
 			local valid: { [K]: boolean } = {}
 			for index, item in read(spec.from, use) do
@@ -464,12 +462,11 @@ return function(ctx: Types.Context, UI: Controls): ()
 			snap = spec.snap,
 			reducedMotion = spec.reducedMotion,
 			followThreshold = spec.followThreshold,
-			onActivate = function(item: V, key: K)
-				selectRow(key, item)
-				if spec.onActivate then
-					spec.onActivate(item, key)
-				end
-			end,
+			selection = selection,
+			selectionMode = spec.selectionMode,
+			selectable = spec.selectable,
+			onSelectionChange = spec.onSelectionChange,
+			onActivate = spec.onActivate,
 
 			render = function(
 				current: ComposeTypes.Readable<V>,
