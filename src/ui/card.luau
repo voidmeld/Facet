@@ -5,6 +5,7 @@ local Inputs = require("./input_types")
 local Nav = require("./navigation_types")
 local ComposeTypes = require("../vendor/compose/core")
 local values = require("./content_values")
+local parts = require("./overlay_parts")
 local reducedMotion = require("./motion")
 
 local LIFT = 1.04
@@ -38,7 +39,14 @@ return function(
 	end
 
 	UI.Card = ctx.construct("Card", function(spec: Content.CardSpec): Frame
-		assert(nonempty(read(spec.image)), "Facet UI.Card: image is required: a nonempty image string")
+		assert(
+			spec.artwork == nil or type(spec.artwork) == "function",
+			"Facet UI.Card: artwork must be a function that returns a GuiObject"
+		)
+		assert(
+			nonempty(read(spec.image)) or (spec.artwork ~= nil and spec.image == nil),
+			"Facet UI.Card: image is required: a nonempty image string, or artwork"
+		)
 		assert(nonempty(read(spec.title)), "Facet UI.Card: title is required: a nonempty string")
 		assert(spec.caption == nil or text(read(spec.caption)), "Facet UI.Card: caption must be a string")
 		local ratio = spec.imageAspectRatio or 16 / 9
@@ -79,7 +87,9 @@ return function(
 		end
 		local checks = values(ctx, "Card")
 		local title = checks.legal("title", spec.title, nonempty, "must be a nonempty string")
-		local image = checks.legal("image", spec.image, nonempty, "must be a nonempty image string")
+		local image = if spec.image == nil
+			then ""
+			else checks.legal("image", spec.image, nonempty, "must be a nonempty image string")
 		local caption = checks.legal("caption", spec.caption or "", text, "must be a string")
 		local enabled = function(use: ComposeTypes.Use?): boolean
 			return read(spec.enabled, use) ~= false
@@ -205,6 +215,15 @@ return function(
 				DominantAxis = E.DominantAxis.Width,
 			}) :: Types.Child,
 		})
+		if spec.artwork then
+			local build = spec.artwork
+			runtime.mount(function()
+				local live = build()
+				assert(parts.instance(live) and live:IsA("GuiObject"), "Facet UI.Card: artwork must return a GuiObject")
+				runtime.decorate(live, { Size = D2.fromScale(1, 1) })
+				return live
+			end, artwork)
+		end
 		local titleLabel = ctx.text({
 			Name = "Title",
 			LayoutOrder = 2,
@@ -250,8 +269,8 @@ return function(
 				Size = D2.fromScale(1, 0),
 				AutomaticSize = E.AutomaticSize.Y,
 				enabled = enabled,
-				onActivate = function()
-					onActivate()
+				onActivate = function(input: InputObject?)
+					onActivate(input)
 				end,
 				onPointerDown = function()
 					pressingBody:set(true)
@@ -380,6 +399,7 @@ return function(
 		})
 		local card = Host.Frame(ctx.props(spec, {
 			"image",
+			"artwork",
 			"title",
 			"caption",
 			"imageAspectRatio",

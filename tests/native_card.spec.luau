@@ -201,6 +201,9 @@ t.describe("native Card", function()
 			{ image = "rbxassetid://1", title = "T", menu = { items = {}, extra = true } },
 			{ image = "rbxassetid://1", title = "T", caption = 5 },
 			{ image = "rbxassetid://1", title = "T", zIndex = 3 },
+			{ title = "T" },
+			{ title = "T", artwork = "rbxassetid://1" },
+			{ image = "", title = "T", artwork = function() end },
 		}
 		for _, spec in bad do
 			t.expect(worlds.mountError(function(UI)
@@ -224,6 +227,39 @@ t.describe("native Card", function()
 		t.expect(attr(root, "MenuOpen")).toBe(true)
 		t.expect(table.concat(log, ",")).toBe("body,primary")
 		world.stop()
+	end)
+
+	t.it("draws live artwork in the artwork frame and forwards the activating input to the body", function()
+		local inputs: { any } = {}
+		local released = 0
+		local world = worlds.new(function(UI, Host)
+			return UI.Card "C" {
+				title = "Afterlight",
+				artwork = function()
+					Compose.cleanup(function()
+						released += 1
+					end)
+					return Host.ViewportFrame({ Name = "Preview" })
+				end,
+				onActivate = function(input)
+					table.insert(inputs, input or "none")
+				end,
+			}
+		end, { reducedMotion = true })
+		local artwork = world.find("Artwork")
+		local live = artwork:FindFirstChild("Preview")
+		t.expect(artwork.Image).toBe("")
+		t.expect(live ~= nil).toBe(true)
+		t.expect(live.Size).toBe(UDim2.fromScale(1, 1))
+		t.expect(artwork:FindFirstChildWhichIsA("UIAspectRatioConstraint").AspectRatio).toBe(16 / 9)
+		local press = { UserInputType = "MouseButton1" }
+		world.find("Body").Activated.fire(press)
+		world.find("Body").Activated.fire()
+		t.expect(inputs[1]).toBe(press)
+		t.expect(inputs[2]).toBe("none")
+		t.expect(world.find("C"):GetAttribute("FacetBody")).toBe("button")
+		world.stop()
+		t.expect(released).toBe(1)
 	end)
 
 	t.it("gives an informational body no activation target and keeps its actions at rest", function()

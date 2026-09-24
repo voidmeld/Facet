@@ -1444,8 +1444,9 @@ local list = UI.VirtualList {
 
 Card shows one item of a browsable collection: artwork, a title and an
 optional caption, with a primary action and a More menu that show on
-engagement. It requires `image` and `title` (nonempty strings or readables).
-The other options are `caption`, `imageAspectRatio` (default `16/9`),
+engagement. It requires `title` and `image` (nonempty strings or readables).
+`artwork` can replace `image`. The other options are `caption`,
+`imageAspectRatio` (default `16/9`),
 `imageFraming` (`fit` or `crop`), `onActivate`, `primaryAction = { label,
 icon?, onActivate, enabled?, busy? }`, `menu = { items, label? }`, `reveal`
 (`automatic` or `always`), `browseTarget`, `enabled` and `controls`.
@@ -1453,7 +1454,12 @@ icon?, onActivate, enabled?, busy? }`, `menu = { items, label? }`, `reveal`
 Use a Card for a game, a track or a kart, where the picture helps the player
 choose. For rows of text, use VirtualList or Table.
 
-- With `onActivate`, the body is a Button. Without it, the body is plain
+- `artwork` is a factory that returns a GuiObject, such as a `Stage` preview.
+  The card mounts it once in the artwork frame, sizes it to fill the frame and
+  keeps the `imageAspectRatio`. With `image`, the image shows under the
+  artwork. The card owns the artwork and releases it with the card.
+- With `onActivate`, the body is a Button. `onActivate(input)` receives the
+  native input of the activation, or `nil`. Without it, the body is plain
   artwork and text. The primary action is a Button. `menu` is a Menu behind a
   More trigger (`menu.label`, default "More"). The body, the primary action
   and More are sibling targets under a root that is not a Button. Thus a press
