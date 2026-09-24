@@ -54,6 +54,7 @@ export type Controls = {
 	StepIndicator: typeof(((nil :: unknown) :: Content.ContentControls).StepIndicator),
 	Vote: typeof(((nil :: unknown) :: Content.ContentControls).Vote),
 	Card: typeof(((nil :: unknown) :: Content.ContentControls).Card),
+	badged: typeof(((nil :: unknown) :: Content.ContentControls).badged),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

@@ -67,6 +67,7 @@ export type Step = ContentTypes.Step
 export type VoteSpec = ContentTypes.VoteSpec
 export type CardSpec = ContentTypes.CardSpec
 export type CardControls = ContentTypes.CardControls
+export type BadgeValue = ContentTypes.BadgeValue
 export type Space = LayoutTypes.Space
 export type Padding = LayoutTypes.Padding
 export type Extent = LayoutTypes.Extent

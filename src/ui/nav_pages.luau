@@ -3,6 +3,7 @@ local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
 local Media = require("./media_types")
+local Content = require("./content_types")
 local ComposeTypes = require("../vendor/compose/core")
 local reducedMotion = require("./motion")
 
@@ -14,6 +15,7 @@ type Controls = {
 	Menu: Nav.MenuConstructor,
 	Picker: Nav.PickerConstructor,
 	StatusIndicator: Types.Constructor<Media.StatusIndicatorProps, TextLabel>,
+	badged: Content.Badged,
 }
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
@@ -398,7 +400,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							if read(spec.iconOnly, use) then
 								return ""
 							end
-							local badge = read(tab.badge, use)
+							local badge = if tab.icon then nil else read(tab.badge, use)
 							return tostring(read(tab.label, use) or tab.id)
 								.. (if badge ~= nil and badge ~= "" then " (" .. tostring(badge) .. ")" else "")
 						end,
@@ -462,6 +464,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							button.TextSize = math.clamp(math.floor(largest * available / width), smallest, largest)
 						end)
 						button:SetAttribute("FacetTextFit", true)
+					end
+					local glyph = button:FindFirstChild("LeadingIcon", true)
+					if tab.icon and tab.badge ~= nil and glyph then
+						local corner = UI.badged(
+							Host.Frame({ Name = "Anchor", BackgroundTransparency = 1, Size = D2.fromScale(1, 1) }),
+							function(use: ComposeTypes.Use): string?
+								local badge = read(use(current).badge, use)
+								return if badge == nil then nil else tostring(badge)
+							end
+						)
+						runtime.decorate(corner, { Size = D2.fromScale(1, 1), AutomaticSize = E.AutomaticSize.None })
+						runtime.mount(function()
+							return corner
+						end, glyph)
 					end
 					local indicator = tab.indicator
 					if indicator then

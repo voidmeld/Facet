@@ -81,7 +81,10 @@ export type CardSpec = Types.FrameProps & {
 	enabled: Value<boolean>?,
 	controls: CardControls?,
 }
+export type BadgeValue = string | number | boolean
+export type Badged = (GuiObject, Value<BadgeValue?>, ("ltr" | "rtl")?) -> Frame
 export type ContentControls = {
+	badged: Badged,
 	Card: Types.Constructor<CardSpec, Frame>,
 	Pagination: Types.Constructor<PaginationSpec, Frame>,
 	StepIndicator: Types.Constructor<StepIndicatorSpec, Frame>,

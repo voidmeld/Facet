@@ -299,7 +299,7 @@ t.describe("native parity gaps", function()
 		local probe: any = engineLib.new()
 		local names: { string } = {}
 		for name in Facet.controls(Facet.Roblox.createRuntime(probe), { types = probe.types } :: any) do
-			if name ~= "fill" then
+			if name ~= "fill" and name ~= "badged" then
 				table.insert(names, name :: string)
 			end
 		end

@@ -1026,6 +1026,19 @@ The Stage content callback mounts into its WorldModel. It can return a teardown
 function. Use the `Host.Part`, `Host.Model` and other native constructors of the
 same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
 
+`UI.badged(host, value, direction?) -> Frame` puts a count or a dot on the
+corner of a host, such as a Button, an icon Button or an Avatar. It returns a
+Frame named `<host name>+badge` that hugs the host and takes its
+`LayoutOrder`. A zero-size `Corner` frame sits at the top-right corner of the
+host, or at the top-left when `direction` is `"rtl"`. It holds a Badge named
+`CornerBadge`, centred on the corner. The Corner frame has no size, so the host
+keeps its layout box, its hit area and its selection. `value` is a string, a
+whole count (above 99 shows "99+"), `true` for a dot, or a readable of one.
+`nil`, `false`, `0` and `""` show nothing. A TabView tab with an `icon` shows
+its `badge` on the corner of the icon. A text tab keeps the count in its words.
+The seal paints past the host by half its size, so give a host at a clipping
+edge that much room.
+
 ## Themes
 
 `themes.SCHEMA` is `facet-theme/2`. `TYPE_ROLES` and `REQUIRED_TYPE_ROLES` list
@@ -1036,11 +1049,9 @@ from `body` with the `SemiBold` weight. If a definition sets `control` and does
 not set `numeral`, `define` makes `numeral` from `control` with the `Bold`
 weight. The derived role keeps the family, style, size and line height.
 
-- `neutralPackage()` returns a mutable copy of the neutral theme package. It
-  has the palettes `Dark` (the default) and `Light`.
+- `neutralPackage()` returns a mutable copy of the neutral theme package.
 - `define(definition)` derives from `base` (neutral by default) and returns
-  `package?, report`. A derived package keeps only the first palette of its
-  base, unless the definition gives its own `style.themes`. Check `report.ok` before use. An accepted theme package is
+  `package?, report`. Check `report.ok` before use. An accepted theme package is
   recursively frozen. Callbacks, cycles and malformed definitions are rejected.
   A type role needs a positive size. Each `metrics.space` step needs a pixel
   size of 0 or more. A chrome shadow name must be a

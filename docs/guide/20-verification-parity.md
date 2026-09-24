@@ -889,7 +889,7 @@ Some cases were added on `main` after the baseline. Each family records them her
 
 ### Content and navigation
 
-`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 120 contracts and 132 main cases (a: 111, b: 6, c: 15). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 123 contracts and 135 main cases (a: 111, b: 6, c: 15, d: 3). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
 
 | Contract | Main spec | Main cases | Class | Candidate cases | Note |
 |---|---|---:|---|---|---|
@@ -996,7 +996,7 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-showcase-05 | `showcase_tabs` | 1 | c | - | UI.ViewThatFits and the candidate solver were deleted (contracts mech1-04, mech1-126). A screen chooses a form with Compose.show on observed native bounds. |
 | post-fits-01 | `container_memo` | 1 | c | - | UI.ViewThatFits was deleted with the solver (mech1-04, mech1-126); there is no candidate rule to verify. |
 | post-lab-01 | `error_boundary` | 1 | c | - | UI.ErrorBoundary and the text primitive were deleted (mech1-115). Containment stays for presented Alert content and NavigationStack destinations; constructors take the native Name or the constructor name form. |
-| post-lab-02 | `theme_package` | 3 | a | `paints omitted semantic pairs from the neutral fallbacks in every palette`, `lists Neutral first then names, keeps the installed package on reselection and selects a palette` |  |
+| post-lab-02 | `theme_package` | 3 | d | - |  |
 | post-lab-03 | `tab_view` | 1 | a | `nests a TabView that a page builds later inside one of its branches` |  |
 | post-lab-04 | `preview` | 1 | c | - | The environment and its preview were deleted with the application shell. The engine owns the preferred text size and transparency; Studio emulates them. The gallery previews only viewing distance. |
 | post-lab-05 | `gallery_chrome` | 1 | c | - | The showcase settings have no device, orientation or input preview; the native gallery keeps only the viewing-distance preview. |
@@ -1013,6 +1013,9 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-recipes-08 | `view_recipes` | 1 | a | `wraps a row to a second line, or keeps it on one line in a sideways scroller` | Wraps and the X scroller are asserted; the overrun and clip rectangles need Studio. |
 | post-recipes-09 | `view_recipes` | 1 | a | `rounds, strokes and shadows one node with native modifiers` | A UICorner rounds every corner with one radius natively; main painted per-corner radii. |
 | post-recipes-10 | `recipes_common` | 1 | a | `insets and paints the recipe dividers from the installed theme` | The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported. |
+| post-badge-01 | `badge` | 1 | a | `centres a count seal on the top-right corner of its host without changing the host` | The zero-size Corner frame, the centred anchor, 99+ and no selection stop are asserted; the painted centre needs Studio. |
+| post-badge-02 | `badge` | 1 | a | `mirrors the seal to the top-left in rtl and shows true as a dot` |  |
+| post-badge-03 | `badge` | 1 | a | `puts an icon tab count on the icon corner and keeps a text tab count in its words` | TabView icon tabs are covered; the segmented Picker icon option corner belongs to the pickers family. A text tab keeps the count in its words, not a separate pill. |
 
 ## Use the data
 

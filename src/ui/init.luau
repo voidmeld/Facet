@@ -19,6 +19,7 @@ return function(Compose: Types.ComposeModule, runtime: Types.Runtime, options: T
 	require("@self/step_indicator")(ctx, UI)
 	require("@self/vote")(ctx, UI)
 	require("@self/card")(ctx, UI)
+	require("@self/badge_seal")(ctx, UI)
 	table.freeze(UI)
 	return UI
 end

@@ -58,6 +58,7 @@ to select a control. Then read the exact contract of that control in the
 | Contextual teaching | `UI.Callout` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
 | Browsable items with artwork and revealed actions | `UI.Card` |
+| A count or dot seal on a host's corner | `UI.badged` |
 | Sorting, selection, resizing and row reorder | `UI.Table` |
 | Row swipe and context actions | `UI.RowActions` |
 | Text and compact status | `UI.Label`, `UI.Badge`, `UI.StatusIndicator` |

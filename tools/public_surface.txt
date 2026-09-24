@@ -125,6 +125,7 @@ controls(runtime).VirtualGrid : function
 controls(runtime).VirtualList : function
 controls(runtime).Vote : function
 controls(runtime).ZStack : function
+controls(runtime).badged : function
 controls(runtime).fill : function
 type AlertAction
 type AlertSpec
@@ -133,6 +134,7 @@ type AvatarGroupProps
 type AvatarMember
 type AvatarProps
 type BadgeProps
+type BadgeValue
 type ButtonProps
 type CalloutSpec
 type CardControls

@@ -3,6 +3,7 @@ local t = require("./lib/testkit")
 local Facet = require("../src")
 local worlds = require("./lib/content_world")
 local Compose = Facet.Compose
+local UDim2 = require("@lune/roblox").UDim2
 
 local function cardSpec(log: { string }, extra: { [string]: any }?): { [string]: any }
 	local spec: { [string]: any } = {
@@ -445,7 +446,7 @@ t.describe("native Card", function()
 	end)
 
 	t.it("follows a live change of the measured envelope while revealed", function()
-		local world, root, controls = mount(cardSpec({}, { Size = require("@lune/roblox").UDim2.fromOffset(240, 0) }))
+		local world, root, controls = mount(cardSpec({}, { Size = UDim2.fromOffset(240, 0) }))
 		hover(root, true)
 		world.resize(root, 240, 300)
 		local before = controls.revealExtent:peek().body
@@ -634,6 +635,89 @@ t.describe("native Card", function()
 		t.expect(grid.CanvasPosition.Y).toBe(extent - 640)
 		grid.CanvasPosition = world.V2(0, 0)
 		t.expect(grid.CanvasPosition.Y).toBe(0)
+		world.stop()
+	end)
+
+	t.it("centres a count seal on the top-right corner of its host without changing the host", function()
+		local unread = Compose.cell(120 :: any)
+		local world = worlds.new(function(UI, Host)
+			return Host.Frame({
+				Name = "S",
+				UI.badged(UI.Button({ Name = "Inbox", label = "Inbox", LayoutOrder = 3 }), unread),
+			})
+		end)
+		local wrapper = world.find("Inbox+badge")
+		local host = world.find("Inbox")
+		t.expect(host.Parent).toBe(wrapper)
+		t.expect(wrapper.LayoutOrder).toBe(3)
+		t.expect(wrapper.AutomaticSize.Name).toBe("XY")
+		local corner = world.find("Corner", wrapper)
+		t.expect(corner.Size).toBe(UDim2.fromOffset(0, 0))
+		t.expect(corner.Position).toBe(UDim2.fromScale(1, 0))
+		local seal = world.find("CornerBadge", wrapper)
+		t.expect(seal.AnchorPoint).toBe(require("@lune/roblox").Vector2.new(0.5, 0.5))
+		t.expect(seal.Text).toBe("99+")
+		t.expect(seal:IsA("GuiButton")).toBe(false)
+		t.expect(seal.ZIndex > host.ZIndex).toBe(true)
+		unread:set(7)
+		t.expect(world.find("CornerBadge", wrapper).Text).toBe("7")
+		for _, empty in { nil, false, 0, "" } :: { any } do
+			unread:set(empty)
+			t.expect(world.find("CornerBadge", wrapper)).toBeNil()
+		end
+		world.stop()
+	end)
+
+	t.it("mirrors the seal to the top-left in rtl and shows true as a dot", function()
+		local world = worlds.new(function(UI)
+			return UI.badged(UI.Button({ Name = "Inbox", label = "Inbox" }), true, "rtl")
+		end)
+		local wrapper = world.find("Inbox+badge")
+		t.expect(world.find("Corner", wrapper).Position).toBe(UDim2.fromScale(0, 0))
+		t.expect(world.find("CornerBadge", wrapper).Text).toBe("•")
+		world.stop()
+		t.expect(worlds.mountError(function(UI)
+			return UI.badged(UI.Button({ label = "Inbox" }), 1, "up" :: any)
+		end) ~= nil).toBe(true)
+		t.expect(worlds.mountError(function(UI)
+			return UI.badged(UI.Button({ label = "Inbox" }), 1.5)
+		end) ~= nil).toBe(true)
+	end)
+
+	t.it("puts an icon tab count on the icon corner and keeps a text tab count in its words", function()
+		local world = worlds.new(function(UI, Host)
+			return UI.TabView({
+				selection = Compose.cell("inbox"),
+				placement = "topBar",
+				tabs = {
+					{
+						id = "inbox",
+						label = "Inbox",
+						icon = "menu",
+						badge = 3,
+						content = function()
+							return Host.Frame({})
+						end,
+					},
+					{
+						id = "sent",
+						label = "Sent",
+						badge = 2,
+						content = function()
+							return Host.Frame({})
+						end,
+					},
+				},
+			})
+		end)
+		local tabs = world.find("Tabs")
+		local inbox = world.find("inbox", tabs)
+		local seal = inbox:FindFirstChild("CornerBadge", true)
+		t.expect(seal ~= nil and seal.Text == "3").toBe(true)
+		t.expect(seal:FindFirstAncestorWhichIsA("ImageLabel") ~= nil).toBe(true)
+		local sent = world.find("sent", tabs)
+		t.expect(sent:FindFirstChild("CornerBadge", true)).toBeNil()
+		t.expect(sent.Text).toBe("Sent (2)")
 		world.stop()
 	end)
 

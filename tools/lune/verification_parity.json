@@ -36403,11 +36403,13 @@
         "theme_package"
       ],
       "mainCases": 3,
-      "class": "a",
-      "candidateCases": [
-        "native_parity_themes::native parity themes::paints omitted semantic pairs from the neutral fallbacks in every palette",
-        "native_parity_themes::native parity themes::lists Neutral first then names, keeps the installed package on reselection and selects a palette"
-      ],
+      "class": "d",
+      "apiPromise": "main api.md: neutralPackage() is the compiled package behind it (themes Dark and Light); a derived package inherits only its first theme.",
+      "gap": {
+        "description": "Facet Neutral still declares one palette. The theme strength specs count its palettes and pairs, so the Light palette needs those cases re-based in the same change.",
+        "headlessTestable": true,
+        "proposedTest": "Assert themes.neutralPackage().style.themes names Dark,Light; themes.define({ base = neutral }) keeps one palette; re-base native_parity_strength_themepkg and native_parity_strength_paint to count per palette."
+      },
       "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "family": "content-navigation"
     },
@@ -36667,6 +36669,54 @@
         "native_parity_paint::native parity paint::insets and paints the recipe dividers from the installed theme"
       ],
       "weaker": "The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-badge-01",
+      "group": "icons-media",
+      "title": "Centres the seal on the top-right corner, paint only: the host's box and target are unchanged",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::centres a count seal on the top-right corner of its host without changing the host"
+      ],
+      "weaker": "The zero-size Corner frame, the centred anchor, 99+ and no selection stop are asserted; the painted centre needs Studio.",
+      "needsLive": "badge-corner",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-badge-02",
+      "group": "icons-media",
+      "title": "Mirrors to the top-left in rtl, and true is a dot",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::mirrors the seal to the top-left in rtl and shows true as a dot"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-badge-03",
+      "group": "icons-media",
+      "title": "A tab icon wears its count on the icon corner; a text tab keeps the trailing pill",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::puts an icon tab count on the icon corner and keeps a text tab count in its words"
+      ],
+      "weaker": "TabView icon tabs are covered; the segmented Picker icon option corner belongs to the pickers family. A text tab keeps the count in its words, not a separate pill.",
       "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "family": "content-navigation"
     }
@@ -37137,14 +37187,16 @@
     "content-navigation": {
       "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
-      "contracts": 120,
-      "mainCases": 132,
+      "contracts": 123,
+      "mainCases": 135,
       "mainCasesByClass": {
         "a": 111,
         "b": 6,
-        "c": 15
+        "c": 15,
+        "d": 3
       },
       "needsLive": [
+        "badge-corner",
         "card-envelope",
         "card-grid",
         "card-pad",

@@ -663,7 +663,7 @@ t.describe("native accessibility and localization corpus", function()
 		local _, probe = world()
 		local UI = Facet.controls(probe, { types = engineLib.new().types })
 		for name in UI do
-			assert(fixtures[name] or name == "fill", `Missing corpus fixture: {name}`)
+			assert(fixtures[name] or name == "fill" or name == "badged", `Missing corpus fixture: {name}`)
 		end
 		for name in fixtures do
 			assert(UI[name], `Stale corpus fixture: {name}`)
