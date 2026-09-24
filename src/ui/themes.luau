@@ -616,6 +616,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-appearance-link:Press", { BackgroundTransparency = 1, TextTransparency = 0.3 })
 	rule(".facet-appearance-link >> .facet-button-caption", { TextColor3 = c("accent") })
 	rule(".facet-appearance-link >> .facet-icon", { ImageColor3 = c("accent") })
+	rule(".facet-grabber", { BackgroundColor3 = c("contentSecondary"), BackgroundTransparency = 0.5 })
 	rule(".facet-menu-item", { BackgroundTransparency = 1 })
 	rule(".facet-menu-item:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
 	rule(".facet-menu-item:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })

@@ -691,6 +691,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					spec.isPresented:set(false)
 				end
 				local available = Compose.cell(720)
+				local availableWidth = Compose.cell(0)
 				local dragHeight: Core.Cell<number?> = Compose.cell(nil :: number?)
 				local function height(detent: Detent, use: Core.Use?): number
 					return math.min(
@@ -763,9 +764,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						BackgroundTransparency = 1,
 						Size = D2.new(1, 0, 0, 24),
 						Visible = spec.dragIndicator ~= "hidden",
-						detector,
+						detector :: Instance,
+						ctx.styled(
+							Host.Frame "Grabber" {
+								AnchorPoint = V2.new(0.5, 0.5),
+								Position = D2.fromScale(0.5, 0.5),
+								Size = D2.fromOffset(36, 5),
+								BorderSizePixel = 0,
+								Host.UICorner({ CornerRadius = ctx.types.UDim.new(1, 0) }),
+							},
+							"grabber"
+						),
 					},
-					ctx.text({ Name = "Title", Text = spec.title }),
+					ctx.styled(ctx.text({ Name = "Title", Text = spec.title }), "type-heading"),
 					UI.Picker "Size" {
 						selected = spec.detent,
 						options = resizeOptions,
@@ -794,7 +805,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					Position = D2.fromScale(0.5, 1),
 					AutomaticSize = E.AutomaticSize.None,
 					Size = function(use: Core.Use)
-						return D2.new(1, 0, 0, math.min(use(available), math.max(220, use(dragHeight) or painted(use))))
+						local height = math.min(use(available), math.max(220, use(dragHeight) or painted(use)))
+						local width = use(availableWidth)
+						return if width > 0
+							then D2.fromOffset(math.min(width, 720), height)
+							else D2.new(1, 0, 0, height)
 					end,
 				})
 				ctx.styled(panel, "sheet")
@@ -815,6 +830,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local value = use(size)
 					if value.Y > 0 then
 						available:set(value.Y)
+						availableWidth:set(value.X)
 					end
 				end)
 				return overlay
