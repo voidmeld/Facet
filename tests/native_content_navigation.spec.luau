@@ -172,7 +172,9 @@ t.describe("native content navigation deltas", function()
 		rows.AbsoluteSize = Vector2.new(220, 201 * 52)
 		panel.AbsoluteSize = Vector2.new(220, 400)
 		local center = panel.CanvasPosition.Y + 400 / 2
-		t.expect(math.abs(center - (100 * 52 + 22)) <= 1).toBe(true)
+		local inset = rows:FindFirstChildWhichIsA("UIPadding")
+		local top = if inset then inset.PaddingTop.Offset else 0
+		t.expect(math.abs(center - (top + 100 * 52 + 22)) <= 1).toBe(true)
 		world.stop()
 		local checked = Compose.cell(true)
 		local toggles = menuWorld({
@@ -201,7 +203,10 @@ t.describe("native content navigation deltas", function()
 		chosen.AbsoluteSize = Vector2.new(220, 44)
 		rows.AbsoluteSize = Vector2.new(220, 201 * 52)
 		panel.AbsoluteSize = Vector2.new(220, 400)
-		t.expect(panel.CanvasPosition.Y).toBe(100 * 8 + 22 - 200)
+		local inset = rows:FindFirstChildWhichIsA("UIPadding")
+		local pad = if inset then inset.PaddingTop.Offset else 0
+		t.expect(panel.CanvasPosition.Y).toBe(pad + 100 * 8 + 22 - 200)
+		rows.AbsolutePosition = Vector2.new(0, -panel.CanvasPosition.Y)
 		for _, row in rows:GetChildren() do
 			if row:IsA("GuiObject") then
 				row.AbsoluteSize = Vector2.new(220, 44)
@@ -209,7 +214,9 @@ t.describe("native content navigation deltas", function()
 		end
 		layout.AbsoluteContentSize = Vector2.new(220, 201 * 52)
 		local center = panel.CanvasPosition.Y + 400 / 2
-		t.expect(math.abs(center - (100 * 52 + 22)) <= 1).toBe(true)
+		local inset = rows:FindFirstChildWhichIsA("UIPadding")
+		local top = if inset then inset.PaddingTop.Offset else 0
+		t.expect(math.abs(center - (top + 100 * 52 + 22)) <= 1).toBe(true)
 		world.stop()
 	end)
 
