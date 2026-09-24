@@ -38,6 +38,7 @@ to select a control. Then read the exact contract of that control in the
 | Screen roots, stacks and layers | `UI.Screen`, `UI.VStack`, `UI.HStack`, `UI.ZStack` |
 | Scrolling content and grids | `UI.ScrollView`, `UI.Grid` |
 | Main-axis fill | `UI.fill` |
+| Failure containment with fallback content | `UI.ErrorBoundary` |
 | One reactive graph with the game's own Compose | `Facet.bind(Compose, Roblox)`; `Facet.COMPOSE_COMMIT` |
 | Semantic native styling and art | `Facet.themes` |
 | Activation and rich action rows | `UI.Button` |

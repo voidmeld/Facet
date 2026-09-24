@@ -91,6 +91,7 @@ controls(runtime).Chip : function
 controls(runtime).CollapsibleView : function
 controls(runtime).ComboBox : function
 controls(runtime).DisclosureGroup : function
+controls(runtime).ErrorBoundary : function
 controls(runtime).Grid : function
 controls(runtime).HStack : function
 controls(runtime).Label : function
@@ -141,6 +142,7 @@ type ComposeRobloxModule
 type ControlOptions
 type Controls
 type DisclosureGroupSpec
+type ErrorBoundaryProps
 type Extent
 type Facet
 type GridProps
