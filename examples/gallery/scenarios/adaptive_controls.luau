@@ -24,7 +24,7 @@ return {
 		local function label(name, text, role)
 			return UI.Label({
 				Name = name,
-				label = text,
+				text = text,
 				textRole = role or "body",
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -163,7 +163,7 @@ return {
 									Size = UDim2.fromOffset(52, 132),
 								},
 								UI.Label "NavReadout" {
-									label = function(use)
+									text = function(use)
 										return `Selected: {use(section)} — the pill and the rail share this selection.`
 									end,
 									textRole = "caption",

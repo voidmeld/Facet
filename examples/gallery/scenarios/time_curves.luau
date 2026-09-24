@@ -53,7 +53,7 @@ return {
 		local function label(name, text)
 			return UI.Label({
 				Name = name,
-				Text = text,
+				text = text,
 				TextWrapped = true,
 				Size = D2.new(1, 0, 0, 0),
 				AutomaticSize = E.AutomaticSize.Y,

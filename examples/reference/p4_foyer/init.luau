@@ -230,7 +230,7 @@ function Foyer.build(ctx)
 				},
 			},
 			UI.Label({
-				label = notice,
+				text = notice,
 				TextWrapped = true,
 				Position = D2.new(0, 16, 1, -60),
 				Size = D2.new(1, -32, 0, 56),

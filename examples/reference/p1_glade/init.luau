@@ -389,7 +389,7 @@ function Glade.build(ctx)
 				},
 			},
 			UI.Label({
-				label = notice,
+				text = notice,
 				Position = D2.new(0, 16, 1, -60),
 				Size = D2.new(1, -32, 0, 56),
 				TextWrapped = true,

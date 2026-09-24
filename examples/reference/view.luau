@@ -5,7 +5,7 @@ return function(ctx)
 	local view = {}
 	function view.text(label, size)
 		return UI.Label({
-			label = label,
+			text = label,
 			TextSize = size or 16,
 			TextWrapped = true,
 			Size = D2.new(1, 0, 0, 0),

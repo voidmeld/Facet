@@ -214,7 +214,10 @@ t.describe("native parity weaker gallery", function()
 		local baseline = w.engine.census()
 		local roots = Compose.outstandingMounts()
 		local stop, node = w.runtime.mount(function()
-			return require("../examples/consumer/src/screen").build(Facet, w.runtime, { types = w.types })
+			return require("../examples/consumer/src/screen").build(
+				Facet,
+				Facet.controls(w.runtime, { types = w.types })
+			)
 		end, w.target)
 		local panel = find(node, "Panel")
 		for _, name in { "Title", "Blurb", "Count", "Sound", "Bump", "Close" } do

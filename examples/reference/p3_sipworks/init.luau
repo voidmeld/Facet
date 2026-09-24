@@ -349,7 +349,7 @@ function Sipworks.build(ctx)
 				},
 			},
 			UI.Label({
-				label = function(use)
+				text = function(use)
 					local key = use(notice)
 					return if key == "" then "" else i18n.at(use(i18n.locale), key)
 				end,

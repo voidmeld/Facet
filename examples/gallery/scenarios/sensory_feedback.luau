@@ -59,7 +59,7 @@ return {
 		local function text(name, value, role)
 			return UI.Label({
 				Name = name,
-				Text = value,
+				text = value,
 				textRole = role,
 				Size = D2.new(1, 0, 0, 0),
 				AutomaticSize = E.AutomaticSize.Y,

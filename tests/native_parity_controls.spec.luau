@@ -426,7 +426,10 @@ t.describe("native parity controls", function()
 
 	t.it("edits the consumer's caller-owned sound value through its toggle", function()
 		local world = setup(function(_, _, engine, runtime)
-			return require("../examples/consumer/src/screen").build(Facet, runtime, { types = engine.types })
+			return require("../examples/consumer/src/screen").build(
+				Facet,
+				Facet.controls(runtime, { types = engine.types })
+			)
 		end)
 		local sound = find(world.node, "Sound")
 		local indicator = find(sound, "Indicator")

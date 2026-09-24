@@ -31,7 +31,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = props.title,
+					text = props.title,
 					textRole = "body",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -165,7 +165,7 @@ return {
 							BorderSizePixel = 0,
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
-							Text = function(use)
+							text = function(use)
 								return `Balance: {math.floor(use(displayedBalance) + 0.5)} credits`
 							end,
 							TextWrapped = true,
@@ -211,7 +211,7 @@ return {
 									BorderSizePixel = 0,
 									Size = UDim2.new(1, 0, 0, 0),
 									AutomaticSize = Enum.AutomaticSize.Y,
-									Text = function(use)
+									text = function(use)
 										return `{use(item).name} costs {use(item).price} credits. Its row stays the same when reordered.`
 									end,
 									TextWrapped = true,

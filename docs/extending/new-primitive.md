@@ -11,7 +11,7 @@ return Host.Frame {
         FillDirection = Enum.FillDirection.Vertical,
         Padding = UDim.new(0, 8),
     },
-    UI.Label { label = "Inventory" },
+    UI.Label { text = "Inventory" },
     UI.Button { label = "Open", onActivate = openInventory },
 }
 ```

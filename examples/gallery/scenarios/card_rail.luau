@@ -38,7 +38,7 @@ return {
 		local function label(name, text, order, size)
 			return UI.Label({
 				Name = name,
-				Text = text,
+				text = text,
 				TextSize = size or 18,
 				LayoutOrder = order,
 				Size = D2.new(1, 0, 0, 0),
@@ -59,14 +59,14 @@ return {
 			end)
 			local nameProbe = UI.Label "NameMeasure" {
 				Visible = false,
-				Text = "Livery 000",
+				text = "Livery 000",
 				textRole = "label",
 				Size = D2.new(),
 				AutomaticSize = E.AutomaticSize.XY,
 			}
 			local badgeProbe = UI.Label "BadgeMeasure" {
 				Visible = false,
-				Text = "Endurance",
+				text = "Endurance",
 				textRole = "caption",
 				Size = D2.new(),
 				AutomaticSize = E.AutomaticSize.XY,
@@ -141,7 +141,7 @@ return {
 								track,
 							},
 							UI.Label "Name" {
-								Text = function(use)
+								text = function(use)
 									return use(current).name
 								end,
 								textRole = "label",
@@ -153,7 +153,7 @@ return {
 								BackgroundTransparency = 1,
 							},
 							UI.Label "Badge" {
-								Text = function(use)
+								text = function(use)
 									return use(current).badge
 								end,
 								textRole = "caption",

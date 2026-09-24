@@ -760,7 +760,7 @@ function example.build(ctx: any)
 		local function narrow()
 			return Host.UISizeConstraint({ MaxSize = Vector2.new(360, math.huge) })
 		end
-		local cells: { any } = { columns = SIZE, gap = 3, aspectRatio = 1, narrow() }
+		local cells: { any } = { columns = SIZE, gap = "xs", aspectRatio = 1, narrow() }
 		for r = 1, SIZE do
 			for c = 1, SIZE do
 				local rr, cc = r, c
@@ -842,7 +842,7 @@ function example.build(ctx: any)
 				)
 			end
 		end
-		local rackTiles: { any } = { columns = RACK_SIZE, gap = 3, cellHeight = 48, narrow() }
+		local rackTiles: { any } = { columns = RACK_SIZE, gap = "xs", cellHeight = 48, narrow() }
 		for i = 1, RACK_SIZE do
 			local slot = i
 			local letter = Compose.formula(function(use)

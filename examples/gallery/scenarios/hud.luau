@@ -90,7 +90,7 @@ return {
 		local function text(name, label, size)
 			return UI.Label({
 				Name = name,
-				label = label,
+				text = label,
 				TextSize = size or 15,
 				TextWrapped = true,
 				Size = D2.new(1, 0, 0, 0),
@@ -401,7 +401,7 @@ return {
 							onActivate = steps.openOverflow,
 						},
 						UI.Label "Objective" {
-							label = function(use)
+							text = function(use)
 								return if use(offer).width < 360 then copy.objectiveShort else copy.objective
 							end,
 							TextWrapped = true,

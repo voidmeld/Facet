@@ -87,7 +87,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Players together",
+					text = "Players together",
 					textRole = "heading",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
@@ -98,7 +98,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = "Faces keep their identity when reordered. Select the count to open the whole group.",
+					text = "Faces keep their identity when reordered. Select the count to open the whole group.",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -184,7 +184,7 @@ return {
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					Text = function(use)
+					text = function(use)
 						return `Selected the group {use(activations)} times`
 					end,
 					textRole = "caption",

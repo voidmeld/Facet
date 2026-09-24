@@ -724,7 +724,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if presentation == "bar" and spec.label and #trailing > 0 then
 			local header: { ComposeTypes.Child } = {
 				UI.Label({
-					label = spec.label,
+					text = spec.label,
 					LayoutOrder = 1,
 					Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 				}),
