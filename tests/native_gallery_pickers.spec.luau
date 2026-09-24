@@ -10,6 +10,9 @@ local function scenario(name: string): any
 	local runtime = Facet.Roblox.createRuntime(engine)
 	local guiService = engine.new("GuiService")
 	local input = engine.new("UserInputService")
+	input.GetFocusedTextBox = function()
+		return nil
+	end
 	local ctx: any = {
 		Facet = Facet,
 		Compose = Compose,
@@ -31,7 +34,7 @@ local function scenario(name: string): any
 		),
 	}
 	local built: any
-	local target = engine.new("Folder")
+	local target = engine.new("ScreenGui")
 	local stop, node = runtime.mount(function()
 		built = require("../examples/gallery/scenarios/" .. name).build(ctx)
 		if built.dispose then
@@ -127,5 +130,84 @@ t.describe("native gallery pickers and fields", function()
 		first.Activated.fire()
 		expect(s.built.report().tokenCount).toBe(2)
 		s.stop()
+	end)
+
+	t.it("the Choices tab shows the driver field, the race cards and the stroked lap strip", function()
+		local s = scenario("selection_controls")
+		local driver = find(s.node, "Driver")
+		expect(find(driver, "Label").Text).toBe("Driver *")
+		expect(find(driver, "Validation").Text).toBe("Who takes the wheel for this race.")
+		expect(s.built.steps.driverError().error).toBe("Pick a driver to continue.")
+		expect(find(driver, "Validation").Text).toBe("Pick a driver to continue.")
+		expect(find(driver, "MessageMark").Visible).toBe(true)
+		expect(find(driver, "Trigger").Text).toBe("Cy")
+		local mode = find(s.node, "Mode")
+		find(mode, "Card-sprint").Activated.fire()
+		expect(s.built.report().mode).toBeNil()
+		find(mode, "Card-endurance").Activated.fire()
+		expect(s.built.report().mode).toBe("endurance")
+		local laps = find(s.node, "Laps")
+		expect(laps:HasTag("facet-segmented-stroke")).toBe(true)
+		expect(find(laps, "Corners").CornerRadius.Scale).toBe(1)
+		find(laps, "10").Activated.fire()
+		expect(s.built.report().laps).toBe("10")
+		find(driver, "Trigger").Activated.fire()
+		local headings = {}
+		for _, node in s.target:GetDescendants() do
+			if node.Name == "SectionTitle" then
+				table.insert(headings, node.Text)
+			end
+		end
+		table.sort(headings)
+		expect(table.concat(headings, " ")).toBe("Crew Rivals")
+		s.stop()
+	end)
+	t.it("the Pickers tab commits colours and dates, and a refused proposal never paints", function()
+		local s = scenario("pickers")
+		local function hex(c: any): string
+			return string.format(
+				"#%02X%02X%02X",
+				math.floor(c.R * 255 + 0.5),
+				math.floor(c.G * 255 + 0.5),
+				math.floor(c.B * 255 + 0.5)
+			)
+		end
+		local function cells(): { any }
+			local out = {}
+			for _, child in find(s.target, "Swatches"):GetChildren() do
+				if child:IsA("GuiObject") then
+					table.insert(out, child)
+				end
+			end
+			table.sort(out, function(a, b)
+				return a.LayoutOrder < b.LayoutOrder
+			end)
+			return out
+		end
+		for _, name in { "Accent", "Body", "Trim", "Livery", "Fog", "RaceDay", "Starts", "Window" } do
+			expect(`{name} {find(s.node, name) ~= nil}`).toBe(`{name} true`)
+		end
+		expect(find(find(s.node, "Accent"), "Well")).toBeNil()
+		expect(find(find(s.node, "Fog"), "Well")).toBeNil()
+		expect(find(find(s.node, "Body"), "Title").Text).toBe("Kart body")
+		expect(find(s.node, "Committed").Text).toBe("Committed: nothing yet")
+		local trim = find(s.node, "Trim")
+		local well = find(trim, "Well")
+		expect(well:GetAttribute("label")).toBe("#FFC400")
+		well.Activated.fire()
+		local team = cells()
+		expect(#team >= 4).toBe(true)
+		team[4].Activated.fire()
+		expect(s.built.report().trim).toBe("#00AA8C")
+		expect(find(s.node, "Committed").Text).toBe("Committed: #00AA8C")
+		expect(hex(find(find(well, "Swatch"), "Plate").BackgroundColor3)).toBe("#00AA8C")
+		expect(s.built.steps.refuse().refuse).toBe(true)
+		cells()[2].Activated.fire()
+		expect(s.built.report().trim).toBe("#00AA8C")
+		expect(hex(find(find(well, "Swatch"), "Plate").BackgroundColor3)).toBe("#00AA8C")
+		expect(s.built.report().raceDay).toBe("10/04/2026")
+		expect(find(find(s.node, "RaceDay"), "Field") ~= nil).toBe(true)
+		s.stop()
+		expect(#s.target:GetChildren()).toBe(0)
 	end)
 end)

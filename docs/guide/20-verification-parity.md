@@ -1041,6 +1041,203 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-badge-02 | `badge` | 1 | a | `mirrors the seal to the top-left in rtl and shows true as a dot` |  |
 | post-badge-03 | `badge` | 1 | a | `puts an icon tab count on the icon corner and keeps a text tab count in its words` | TabView icon tabs are covered; the segmented Picker icon option corner belongs to the pickers family. A text tab keeps the count in its words, not a separate pill. |
 
+### Pickers and fields
+
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the pickers and the fields: `UI.DateTimePicker`, `Facet.civilDate`, `UI.ColorPicker`, `UI.NumberInput`, the `UI.TextInput` field chrome, the Picker field forms, the Slider shapes, the Chip edit mode, the Toggle row and the text press. The family has 190 contracts and 194 main cases (a: 194). Each case in `needsLive` also needs a live Studio check. The candidate specs are `native_chip_edit`, `native_color_picker`, `native_date_time_picker`, `native_fields`, `native_number_input`, `native_picker_fields`, `native_picker_models`, `native_slider_shapes`, `native_text_press`, `native_toggle_row`.
+
+| Contract | Main spec | Main cases | Class | Candidate cases | Note |
+|---|---|---:|---|---|---|
+| post-pickers-001 | `field_chrome` | 1 | a | `a field with no chrome keys keeps its native TextBox root` |  |
+| post-pickers-002 | `field_chrome` | 1 | a | `the label sits above its field, and a tap or a finger on it puts the caret in the field` | The fake engine computes no layout; the rectangle is a live item in needs-live/port-pickers.json. |
+| post-pickers-003 | `field_chrome` | 1 | a | `a disabled field's label follows it: no press or hover affordance, live both ways` |  |
+| post-pickers-004 | `field_chrome` | 1 | a | `the label adds no focus stop and reserves the touch floor in its own box` | Selectable flags replace the focus-order traversal; the hit-rectangle overlap is live. |
+| post-pickers-005 | `field_chrome` | 1 | a | `the required mark is part of the label's words, bound or static; optional paints no word` | The wrapped-title width check at 320 px is live. |
+| post-pickers-006 | `field_chrome` | 1 | a | `an error replaces the hint, in the danger role, beside a mark, and the field holds still` |  |
+| post-pickers-007 | `field_chrome` | 1 | a | `the error mark is floored at the icon rung and painted the message's colour` | The mark height against its line is live; the colour is read from the compiled StyleSheet rules. |
+| post-pickers-008 | `field_chrome` | 1 | a | `the caller's error outranks the numeric field's own rejection line` |  |
+| post-pickers-009 | `field_chrome` | 1 | a | `both accessories sit inside the plate, and the clear keeps its room between them` | LayoutOrder in one horizontal list replaces solved rectangles; containment is live. |
+| post-pickers-010 | `field_chrome` | 1 | a | `a static leading mark is not a stop; the clear and the trailing action are, in that order` | Selectable nodes in LayoutOrder replace the focus-graph traversal. |
+| post-pickers-011 | `field_chrome` | 1 | a | `the trailing action and the clear fire on activation without changing the other` | Only Activated is fired; per-input routing is the native Button and is live. |
+| post-pickers-012 | `field_chrome` | 1 | a | `the trailing action and the clear fire on activation without changing the other` | The clear is driven by Activated; the four input routes are native. |
+| post-pickers-013 | `field_chrome` | 1 | a | `a search field keeps its leading mark beside a trailing action, and refuses a second one` | The icon inset against the plate is live. |
+| post-pickers-014 | `field_chrome` | 1 | a | `appearance paints the plate a published surface; a bound word repaints in place` |  |
+| post-pickers-015 | `field_chrome` | 1 | a | `corners ride a native UICorner, and square is a radius of zero` |  |
+| post-pickers-016 | `field_chrome` | 1 | a | `a named rung shrinks the plate, reserves a whole target, and the label still focuses` | Target height from Size offsets; the tap area is live. |
+| post-pickers-017 | `field_chrome` | 1 | a | `an unknown chrome word is a build error that names the key` |  |
+| post-pickers-018 | `field_chrome` | 1 | a | `closing the screen leaves no field node or connection behind` |  |
+| post-pickers-019 | `number_input` | 1 | a | `it is the text engine with the number contract, and refuses a second presentation` |  |
+| post-pickers-020 | `number_input` | 1 | a | `step must be finite and above zero, precision a whole count of places, units strings` |  |
+| post-pickers-021 | `number_input` | 1 | a | `an incomplete draft reverts in silence, and says so only when the field is required` |  |
+| post-pickers-022 | `number_input` | 1 | a | `the default parser is the strict grammar, not the language's own reader` |  |
+| post-pickers-023 | `number_input` | 1 | a | `a commit reports the number first, and the string is only how it is written` |  |
+| post-pickers-024 | `number_input` | 1 | a | `an out-of-range commit clamps and says clamped rather than refusing` |  |
+| post-pickers-025 | `number_input` | 1 | a | `precision rounds half away from zero, at commit and never while typing` |  |
+| post-pickers-026 | `number_input` | 1 | a | `a callback that disposes the control mid-commit leaves nothing half-written` |  |
+| post-pickers-027 | `number_input` | 1 | a | `a prefix and a suffix stand beside the editor and never enter the draft` | LayoutOrder replaces solved rectangles; the unit positions are live. |
+| post-pickers-028 | `number_input` | 1 | a | `a step button moves the value by one step and commits with submit` | The press is fired through Activated; the four input routes are the native Button. |
+| post-pickers-029 | `number_input` | 1 | a | `a press goes through the typed path's rounding and clamping, bounded or not` |  |
+| post-pickers-030 | `number_input` | 1 | a | `without a precision, presses land on the step's own places, never on float noise` |  |
+| post-pickers-031 | `number_input` | 1 | a | `the step buttons are square targets at the touch floor and separate stops` | Sizes are read from native Size; the hit rectangles are live. |
+| post-pickers-032 | `number_input` | 1 | a | `the step buttons are ordinary focus stops after the editor and its clear, and claim no arrows` | LayoutOrder of selectable children replaces the focus-graph traversal. |
+| post-pickers-033 | `number_input` | 1 | a | `at the end of its range, read-only or disabled, the button says so and refuses` | Refusal is fired through Activated only. |
+| post-pickers-034 | `number_input` | 1 | a | `closing the screen releases the numeric field and its buttons` |  |
+| post-pickers-035 | `number_input` | 1 | a | `a field handed the arithmetic recipe commits the answer, and never runs the text` |  |
+| post-pickers-036 | `number_input` | 1 | a | `four operators, parentheses, both spellings, and no division by zero` |  |
+| post-pickers-037 | `number_input` | 1 | a | `it is total: length and nesting are bounded, so a hostile string answers nil` |  |
+| post-pickers-038 | `number_input` | 1 | a | `a press that never promotes leaves the native tap and typing alone` |  |
+| post-pickers-039 | `number_input` | 1 | a | `travel moves whole steps of the total, clamps, reports live and commits once at release` |  |
+| post-pickers-040 | `number_input` | 1 | a | `a scrub lands on the step's own places, never on float noise` |  |
+| post-pickers-041 | `number_input` | 1 | a | `a scrub over a typed draft starts from the committed number and discards the draft` |  |
+| post-pickers-042 | `number_input` | 1 | a | `cancel, class loss, disable, readOnly and scrub off restore the snapshot without a commit` |  |
+| post-pickers-043 | `number_input` | 1 | a | `a caller write mid-gesture ends it and the caller's number stands` |  |
+| post-pickers-044 | `number_input` | 1 | a | `disposal mid-gesture restores the snapshot; an unscrubbable field adds no listener` |  |
+| post-pickers-045 | `picker_fields` | 1 | a | `the required mark rides the label and the error replaces the hint beside a danger trigger` |  |
+| post-pickers-046 | `picker_fields` | 1 | a | `the hint line belongs to the picker: disposal releases it for every style` |  |
+| post-pickers-047 | `picker_fields` | 1 | a | `a named rung shrinks the trigger, corners reach it, and it still opens` | The reserved target wrapper is not built for the trigger; the target is live. |
+| post-pickers-048 | `picker_fields` | 1 | a | `the hint line belongs to the picker: disposal releases it for every style` |  |
+| post-pickers-049 | `picker_fields` | 1 | a | `maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused` |  |
+| post-pickers-050 | `picker_fields` | 1 | a | `a labelled menu picker stands its title above a trigger at the leading edge` | The retired placement warning channel does not exist; the field form is proven structurally instead. |
+| post-pickers-051 | `picker_fields` | 1 | a | `opening lands on the selected row with gamepad or keyboard selection` | Scroll position of the chosen row is live. |
+| post-pickers-052 | `picker_fields` | 1 | a | `an option avatar's keys are closed: a misspelt one is refused by name` |  |
+| post-pickers-053 | `picker_fields` | 1 | a | `an avatar leads its row without a second stop or press, and a disabled row is unreachable` |  |
+| post-pickers-054 | `picker_fields` | 1 | a | `an avatar leads its row without a second stop or press, and a disabled row is unreachable` | The panel width against its widest row is live. |
+| post-pickers-055 | `picker_fields` | 1 | a | `an avatar leads its row without a second stop or press, and a disabled row is unreachable` | The long label containment is live. |
+| post-pickers-056 | `picker_fields` | 1 | a | `appearance paints the track filled, stroked or not at all, live, and refuses a menu word` |  |
+| post-pickers-057 | `picker_fields` | 1 | a | `an automatic picker keeps its appearance intent across a live family switch` | The family switch is driven by the measured width and the PreferredInput, not by an environment object. |
+| post-pickers-058 | `picker_fields` | 1 | a | `corners reach the strip, and a rung shrinks the segments` | Hit-rectangle separation of segments is live. |
+| post-pickers-059 | `picker_fields` | 1 | a | `indicatorPosition moves the radio mark to either edge, and belongs to the radio group only` |  |
+| post-pickers-060 | `picker_fields` | 1 | a | `each option is a bordered card with its meta, the chosen one plated, on every input` | Selection is driven through Activated. |
+| post-pickers-061 | `picker_fields` | 1 | a | `choosing the chosen card again clears it only when the selection is not required` |  |
+| post-pickers-062 | `picker_fields` | 1 | a | `a row of cards wraps and long copy wraps inside its card; cards take no appearance` | Wrapping on a narrow phone is live. |
+| post-pickers-063 | `picker_fields` | 1 | a | `follows the caller's live option record: status changes and a removed mark goes` |  |
+| post-pickers-064 | `native_text_press` | 1 | a | `a pointer focus selects at its own release, after the engine's release writes` |  |
+| post-pickers-065 | `native_text_press` | 1 | a | `activation focus selects in Focused, and offsets are bytes` |  |
+| post-pickers-066 | `native_text_press` | 1 | a | `none (the default) writes nothing on any focus` |  |
+| post-pickers-067 | `native_text_press` | 1 | a | `blur before release, recycle and disabled cancel a pending selection` |  |
+| post-pickers-068 | `native_text_press` | 1 | a | `a touch on a field with nothing to select or scrub adds no listener` |  |
+| post-pickers-069 | `native_text_press` | 1 | a | `a policy change while focused applies at the next session` |  |
+| post-pickers-070 | `native_text_press` | 1 | a | `a press under the slop is a native tap: focus and caret stay, nothing is promoted` |  |
+| post-pickers-071 | `native_text_press` | 1 | a | `past the slop a horizontal drag releases focus and reports the total travel once to its end` |  |
+| post-pickers-072 | `native_text_press` | 1 | a | `a vertical drag or a refused promotion stays native for the rest of the press` |  |
+| post-pickers-073 | `native_text_press` | 1 | a | `Escape cancels, a recycle cancels, and a second finger never joins the first` |  |
+| post-pickers-074 | `native_text_press` | 1 | a | `a mouse press whose release never came does not block the next scrub` |  |
+| post-pickers-075 | `chip` | 4 | a | `a tag selects with no mark; editing shows the mark in its plate and activation removes, via pointer`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via touch`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via keyboard`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via gamepad` | Mark containment inside the plate is live. |
+| post-pickers-076 | `chip` | 1 | a | `Delete and Backspace remove the focused tag only while editing` |  |
+| post-pickers-077 | `chip` | 1 | a | `one plate in skinned themes: the mark is text inside the tag, never its own button` |  |
+| post-pickers-078 | `chip` | 1 | a | `a selectable tag that can be removed must say when it is editing` |  |
+| post-pickers-079 | `chip` | 1 | a | `Delete or Backspace on the last of N tags removes exactly one and lands on the new last` | The held key is modelled with IsKeyDown; the engine delivery is live. |
+| post-pickers-080 | `chip` | 1 | a | `a held removal does not repeat after an input change, and inherited disabled refuses it` | The input-class change is modelled by a frame with the key still held. |
+| post-pickers-081 | `picker_style` | 1 | a | `a searchable list's chosen row paints no wash and wears a check instead` |  |
+| post-pickers-082 | `picker_style` | 1 | a | `a labelled menu picker stands its title above a trigger at the leading edge` | The leading-edge position is structural; the rectangles are live. |
+| post-pickers-083 | `picker_style` | 1 | a | `a navigation link keeps its title and value in one row` | One-line fit at a regular width is live. |
+| post-pickers-084 | `picker_style` | 1 | a | `badge, meta and sectionTitle reach the menu engine from an automatic picker` |  |
+| post-pickers-085 | `picker_sweep` | 1 | a | `maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused` | The scroll-bar reserve width is live. |
+| post-pickers-086 | `text_input` | 1 | a | `a read-only field keeps its stop and contrast, refuses every edit and commits nothing` |  |
+| post-pickers-087 | `text_input` | 1 | a | `a function readOnly flips live on the same editor, keeping the draft and the edit` |  |
+| post-pickers-088 | `text_input` | 1 | a | `enabled and readOnly compose onto TextEditable in either order and recover` | The composition is proven through the control, not through the retired screen_props adapter. |
+| post-pickers-089 | `text_input` | 1 | a | `readOnly refuses anything but a boolean` |  |
+| post-pickers-090 | `text_input` | 1 | a | `the selectOnFocus policy lands on the same editor, live, and an illegal live word keeps the last` |  |
+| post-pickers-091 | `text_input` | 1 | a | `an unknown initial selectOnFocus word fails before mount` |  |
+| post-pickers-092 | `text_input` | 1 | a | `the box is the count of lines it was told; one line is shorter and still multiline` | Viewport heights come from the typography metric; rendered line boxes are live. |
+| post-pickers-093 | `text_input` | 1 | a | `past the count the box holds still while the editor grows inside it, on the same editor` |  |
+| post-pickers-094 | `text_input` | 1 | a | `an authored root size wins over the line count` |  |
+| post-pickers-095 | `text_input` | 1 | a | `a line count is a multiline fact and a whole number of at least one` |  |
+| post-pickers-096 | `toggle_presentations` | 1 | a | `a switch, bare or in a settings row, wears no plate and no control art` |  |
+| post-pickers-097 | `toggle_presentations` | 1 | a | `a toggle settings row starts its content where a button row does, in every package` | Padding rules are compared in every package sheet; the solved positions are live. |
+| post-pickers-098 | `value_controls` | 1 | a | `a vertical track fills from the bottom edge and the thumb climbs as the value rises` | Fill and thumb scales replace solved rectangles; the rendered geometry is live. |
+| post-pickers-099 | `value_controls` | 1 | a | `Up and Down adjust a vertical track and Left and Right do not` |  |
+| post-pickers-100 | `value_controls` | 1 | a | `the arrow that lands the ring is not a value step; the next arrow is` | The held key is modelled with IsKeyDown; the engine delivery is live. |
+| post-pickers-101 | `value_controls` | 1 | a | `every eighth of a turn reads the value the upright track would` |  |
+| post-pickers-102 | `value_controls` | 1 | a | `a press on a scrolled track reads the painted position` | The scrolled track is modelled by moving AbsolutePosition. |
+| post-pickers-103 | `value_controls` | 1 | a | `a bound angle turns the paint live and the label and readout stay upright` |  |
+| post-pickers-104 | `value_controls` | 1 | a | `both handles are touch-floor targets and the fill spans between them` | The target size is the handle Size; the hit rectangle is live. |
+| post-pickers-105 | `value_controls` | 1 | a | `a thumb stops at the other one, and minGap holds them apart` |  |
+| post-pickers-106 | `value_controls` | 1 | a | `an arrow a thumb cannot use against its partner keeps the ring on that thumb` |  |
+| post-pickers-107 | `value_controls` | 1 | a | `a press left of a coincident pair takes the lower thumb, and a press right takes the upper` |  |
+| post-pickers-108 | `value_controls` | 1 | a | `a drag keeps the thumb it started with, even dragged past the other one` |  |
+| post-pickers-109 | `value_controls` | 1 | a | `one commit per completed gesture, and it names the thumb that moved` |  |
+| post-pickers-110 | `value_controls` | 1 | a | `keyboard: each thumb is its own stop, and the arrows adjust the one holding the ring` | Roblox has no Tab traversal; each handle is Selectable and the ring is set through GuiService.SelectedObject. |
+| post-pickers-111 | `value_controls` | 1 | a | `gamepad: the arrows navigate until Activate engages, and Cancel gives them back` | Native selection moves between the handles; that move is live. |
+| post-pickers-112 | `value_controls` | 1 | a | `losing the input class mid-drag restores both numbers, and the later move and release commit nothing` | The class loss is a PreferredInput change. |
+| post-pickers-113 | `value_controls` | 1 | a | `losing the input class mid-drag restores both numbers, and the later move and release commit nothing` |  |
+| post-pickers-114 | `value_controls` | 1 | a | `an authored pair the wrong way round is a spec error, not a silent swap` |  |
+| post-pickers-115 | `value_controls` | 1 | a | `thumb none paints no handle and leaves every route open` |  |
+| post-pickers-116 | `value_controls` | 1 | a | `thumb auto hides the handle at rest and shows it on focus, hover, drag and touch` |  |
+| post-pickers-117 | `value_controls` | 1 | a | `thumb auto hides the handle at rest and shows it on focus, hover, drag and touch` |  |
+| post-pickers-118 | `value_controls` | 1 | a | `a custom knob is built once per thumb, is told its value and rides it` | The knob floor is a UISizeConstraint; the solved footprint is live. |
+| post-pickers-119 | `value_controls` | 1 | a | `a custom knob drops the theme slot and grows past the floor with its content` |  |
+| post-pickers-120 | `value_controls` | 1 | a | `a named rung paints a thinner track inside the whole target` | The thinner rail is the paint; the reserved target is the 44 px track. |
+| post-pickers-121 | `value_controls` | 1 | a | `thumb auto hides the handle at rest and shows it on focus, hover, drag and touch` |  |
+| post-pickers-122 | `value_controls` | 1 | a | `a rung thins a vertical track and the column keeps its travel` |  |
+| post-pickers-123 | `value_controls` | 1 | a | `an illegal pair arriving at run time keeps the last legal band and stays driveable` |  |
+| post-pickers-124 | `value_controls` | 1 | a | `an illegal pair arriving at run time keeps the last legal band and stays driveable` |  |
+| post-pickers-125 | `value_controls` | 1 | a | `an illegal pair arriving at run time keeps the last legal band and stays driveable` |  |
+| post-pickers-126 | `value_controls` | 1 | a | `the axis and the other construction words refuse a readable` |  |
+| post-pickers-127 | `value_controls` | 1 | a | `a knob is told its own thumb in a range, and each handle wears one` | Each handle wears its own knob; the travel measured from each drawn knob is live. |
+| post-pickers-128 | `value_controls` | 1 | a | `a thumbImage beside a thumbContent names the collision, and so does a track pair` |  |
+| post-pickers-129 | `value_controls` | 1 | a | `a keyboard Return on a handle does not latch the pad adjust mode` |  |
+| post-pickers-130 | `value_controls` | 1 | a | `an initial NaN, a bad type and a bad gap are build errors` |  |
+| post-pickers-131 | `value_controls` | 1 | a | `an initial NaN, a bad type and a bad gap are build errors` |  |
+| post-pickers-132 | `value_controls` | 1 | a | `a knob is told its own thumb in a range, and each handle wears one`; `building, driving and disposing a shaped slider leaves no connection behind` |  |
+| post-pickers-133 | `semantic_rows` | 2 | a | `a toggle settings row starts its content where a button row does, in every package` | Only the padding rules are compared; the icon and label columns are live. |
+| post-pickers-134 | `date_time_picker` | 1 | a | `counts leap years, clamps month arithmetic and rolls over years` |  |
+| post-pickers-135 | `date_time_picker` | 1 | a | `lays six weeks from the week start, and a date-only value survives any fixed offset` |  |
+| post-pickers-136 | `date_time_picker` | 1 | a | `writes and reads the numeric form in the locale's order; a non-date is refused, never moved` |  |
+| post-pickers-137 | `date_time_picker` | 1 | a | `the default clock reads the player's local wall clock, not UTC` |  |
+| post-pickers-138 | `date_time_picker` | 1 | a | `the calendar opens anchored on the chosen day's month; a pick commits once and closes` |  |
+| post-pickers-139 | `date_time_picker` | 1 | a | `the year and month menus open on the shown ones and honour min/max (owner: opened at 1926)` | Centring the selected year in a scrolled menu needs engine layout (needs-live dtp-menu-centred). |
+| post-pickers-140 | `date_time_picker` | 1 | a | `a refused pick paints nothing; a disabled or out-of-bounds day is focusable, inert and struck` |  |
+| post-pickers-141 | `date_time_picker` | 1 | a | `typed entry commits a date; a refused text stays with its error and commits nothing` | The anchored position is proven with synthetic Absolute* rectangles, and the icon's second press is proven as the modal's outside tap; real layout and hit-testing are needs-live (dtp-anchor-below, dtp-icon-toggle). |
+| post-pickers-142 | `date_time_picker` | 1 | a | `a typed range reads back its own words in every locale order; a draft's typed text only proposes` |  |
+| post-pickers-143 | `date_time_picker` | 1 | a | `keyboard and pad: the arrows walk the grid with its contribution attached, a row's end continues, L1/R1 page` |  |
+| post-pickers-144 | `date_time_picker` | 1 | a | `the grid is one selection group; the arrows walk days across months; grey days are no stop; paging stops at the bounds` | Roblox has no Tab focus traversal, so the Tab and Shift+Tab steps are not ported; the grid is one native SelectionGroup and its exits are proven through NextSelectionUp/Down and disabled InputContexts, not through engine navigation (needs-live dtp-native-navigation). |
+| post-pickers-145 | `date_time_picker` | 1 | a | `a draft on a TV: Down from any day leaves the months below; Up from the first row reaches the header` | The walk follows the native NextSelectionDown chain to the Hour field (time) or ResetAll (no time); the engine's own step from there to Apply is needs-live (dtp-native-navigation). |
+| post-pickers-146 | `date_time_picker` | 1 | a | `a pad sets a date and time: each pick commits, B keeps it and returns focus; a draft's B restores` |  |
+| post-pickers-147 | `date_time_picker` | 1 | a | `time: hour and minute fields step on the minute grid, AM/PM flips, and a touch list sets both` |  |
+| post-pickers-148 | `date_time_picker` | 1 | a | `the first pick anchors, an earlier second pick swaps, and onRangeCommit waits for both ends` | Paint is proven as tags plus the compiled StyleRule properties, not as rendered colours (needs-live dtp-paint). |
+| post-pickers-149 | `date_time_picker` | 1 | a | `presets clip to the bounds: outside is shown disabled, overlapping is clamped and enabled` |  |
+| post-pickers-150 | `date_time_picker` | 1 | a | `draft: picks and presets propose live, only Apply commits, Cancel restores, Reset all clears` | Footer order is proven by LayoutOrder, parents and the SpaceBetween flex, and chip size by the compact controlSize, not by measured rectangles. |
+| post-pickers-151 | `date_time_picker` | 1 | a | `a caller write during an open draft re-bases what Cancel restores` |  |
+| post-pickers-152 | `date_time_picker` | 1 | a | `a range's end drags across days and panes, crossing swaps, release commits once (owner)` | Drag positions come from synthetic cell rectangles and fired InputBegan/InputChanged/InputEnded events (needs-live dtp-range-drag). |
+| post-pickers-153 | `date_time_picker` | 1 | a | `a drafted range drags live but commits only on Apply` |  |
+| post-pickers-154 | `date_time_picker` | 1 | a | `the Pickers scenario's window applies a preset only on Apply, and a refusal changes nothing` | The gallery Pickers scenario is not on this branch; the spec builds the same Race day and Season window flow inline instead of running the gallery scenario. |
+| post-pickers-155 | `date_time_picker` | 1 | a | `a wide screen shows two consecutive months, and they stay consecutive through paging and bounds` | The width comes from a synthetic root AbsoluteSize, and Down leaving the months relies on native navigation (NextSelectionDown nil). |
+| post-pickers-156 | `date_time_picker` | 1 | a | `two time pickers on one page: Down from a picker's last week reaches ITS OWN hour field` |  |
+| post-pickers-157 | `date_time_picker` | 1 | a | `phone portrait and landscape: the calendar fits, every day keeps the floor, Apply is on screen` | Headless proves the route, the 44x44 cell sizes and the surface capped to the screen height; on-screen fit and reachability are needs-live (dtp-phone-fit). |
+| post-pickers-158 | `date_time_picker` | 1 | a | `a single date's panel hugs its six weeks: no room kept for an absent hint, caption or footer` | Proves automatic height, the absent or hidden hint, title and footer, and the 44 px header; the measured insets are needs-live (dtp-panel-hugs). |
+| post-pickers-159 | `date_time_picker` | 1 | a | `the week starts where the caller says; a compact touch field opens a sheet with Done, ten feet a centred sheet` | Pixel Quest's calendar icon check is replaced by the standard calendar asset on the Open icon; ten-foot is injected through GuiService:IsTenFootInterface (needs-live dtp-ten-foot). |
+| post-pickers-160 | `date_time_picker` | 1 | a | `refuses a malformed contract at construction and quarantines a late bad value` |  |
+| post-pickers-161 | `color_picker` | 1 | a | `parses #RGB, #RRGGBB and #RRGGBBAA (only with alpha) and formats engine bytes uppercase` |  |
+| post-pickers-162 | `color_picker` | 1 | a | `keeps a grey's hue (and a black's saturation) through the engine conversion` |  |
+| post-pickers-163 | `color_picker` | 1 | a | `a saturation round trip through the Sliders tab returns to the hue the player set` |  |
+| post-pickers-164 | `color_picker` | 1 | a | `switching the readout twenty times never moves canonical, and a hex commit is the only write` |  |
+| post-pickers-165 | `color_picker` | 1 | a | `a bare well is its swatch, named by its value; a labelled one is a form row` | The 44x44 floor is read from the well's Size property, not from a solved engine rect (live: color-placement-real-layout). |
+| post-pickers-166 | `color_picker` | 1 | a | `the well opens an anchored panel on a roomy pointer screen; a refused swatch never paints` |  |
+| post-pickers-167 | `color_picker` | 1 | a | `the panel never covers its well: below, else above, else beside, else shrunk` | Heights of Modes, Readout and the techniques are injected as AbsoluteSize; the engine's own layout of a tall Bricks technique is live (color-placement-real-layout). |
+| post-pickers-168 | `color_picker` | 1 | a | `the panel never covers its well: below, else above, else beside, else shrunk` | Measurements are injected; the native candidate has no host app-chrome inset band, so main's appChromeInsets = { top = 120 } variant has no native counterpart (live: color-placement-real-layout). |
+| post-pickers-169 | `color_picker` | 1 | a | `the panel keeps one height across every technique, on a pointer panel and a phone sheet` | Technique heights are injected; that the engine still reports AbsoluteSize for a hidden technique is live (color-hidden-technique-size). |
+| post-pickers-170 | `color_picker` | 1 | a | `the panel's height follows its room, never a height it once measured` | The room change is a ScreenGui AbsoluteSize change with injected content heights, not a real rotation. |
+| post-pickers-171 | `color_picker` | 1 | a | `an accepted swatch commits once, marks the cell, and the swatch grid lays out rows of eight` | The two-dimensional D-pad walk is the engine's selection over the wrapped layout; headless proves the 8-cell row width, wrap, order and selectable cells only (live: color-grid-wraps-two-dimensions). |
+| post-pickers-172 | `color_picker` | 1 | a | `saved colours: + proposes the current colour once; Edit removes by activate or Delete and hands the ring on` |  |
+| post-pickers-173 | `color_picker` | 1 | a | `refuses a saved-colour callback that is not a function` |  |
+| post-pickers-174 | `color_picker` | 1 | a | `a short swatch list keeps square target cells, and the default grid stays a hue per column` | Cell squareness is read from Size offsets, not solved rects. |
+| post-pickers-175 | `color_picker` | 1 | a | `without draft every change commits live and B or an outside tap only closes, keeping it` |  |
+| post-pickers-176 | `color_picker` | 1 | a | `draft: B and an outside tap discard, restoring the open-time colour; a caller write re-bases it` |  |
+| post-pickers-177 | `color_picker` | 1 | a | `draft: gestures propose live but commit nothing; Apply commits once and Cancel restores` |  |
+| post-pickers-178 | `color_picker` | 1 | a | `opens as a sheet with Done on a compact touch screen, and a centred sheet at ten feet with the plane` | The on-screen-keyboard re-measure (keyboardOcclusionRect) has no the native candidate counterpart and is not proven; the sheet's 'never moves while dragging' is proven on the Position property only. |
+| post-pickers-179 | `color_picker` | 1 | a | `a drag tracks 1:1 in saturation and value, keeps the hue, and commits once at release` |  |
+| post-pickers-180 | `color_picker` | 1 | a | `the native drag detector follows the plane through a tab round trip` |  |
+| post-pickers-181 | `color_picker` | 1 | a | `losing the pointer class mid-drag restores where the drag began` |  |
+| post-pickers-182 | `color_picker` | 1 | a | `phone portrait and landscape: every target keeps the floor and Apply stays in the panel` | Apply staying on screen and inside the sheet body is proven structurally (Apply outside the scrolling Body, route by orientation); the solved rects are live (color-phone-sheet-apply-on-screen). |
+| post-pickers-183 | `color_picker` | 1 | a | `on touch the preview leads the panel, and a drag shows the colour in a bubble above the finger` | The bubble is not clamped to the room above the plane (main's bubbleRoom); readability near the top edge is live (color-touch-bubble-room). |
+| post-pickers-184 | `color_picker` | 1 | a | `the right stick steers the plane only while it holds focus, and a live hint says so` | The owner-size leak check is replaced by the engine heartbeat listener count; camera sinking is proven as InputContext.Sink = true, the camera itself is live (color-stick-sinks-camera). |
+| post-pickers-185 | `color_picker` | 1 | a | `a committed line follows a commit, and a refusal changes nothing` | The gallery Pickers scenario itself is not ported to the native candidate; the test composes the same Trim well, team swatches, save cell, committed line and refusal switch in a screen. |
+| post-pickers-186 | `color_picker` | 1 | a | `alpha mounts opacity, writes #RRGGBBAA, and shows the checker under a translucent colour` |  |
+| post-pickers-187 | `color_picker` | 1 | a | `the Bricks tab names the chosen brick in a field above its grid` | 'Above' is proven by LayoutOrder in the Brick column, not by solved rects. |
+| post-pickers-188 | `color_picker` | 1 | a | `the plane is two exact layers, the strips show what they select, and the thumbs are two-tone rings` |  |
+| post-pickers-189 | `color_picker` | 1 | a | `empty shows the placeholder and the crossed plate; disabled keeps its colour and does not open` |  |
+| post-pickers-190 | `color_picker` | 1 | a | `refuses a malformed contract at construction and quarantines a late bad value` |  |
+
 ## Use the data
 
 - `totals` has the class counts before and after the new tests.

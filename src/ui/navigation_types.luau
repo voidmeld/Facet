@@ -12,12 +12,19 @@ export type Placement = "automatic" | "topBar" | "sidebar" | "bottomBar" | "bott
 export type Transition = ComposeTypes.TweenOptions
 export type SourceTransition = { seconds: Value<number>?, ease: ComposeTypes.Easing?, source: Value<GuiObject?>? }
 export type MenuTrigger = "activate" | "secondary" | "longPress" | "keyboard" | "gamepad"
+export type OptionAvatar = MenuAvatar
+export type OptionIndicator = {
+	status: Value<"neutral" | "info" | "success" | "warning" | "error" | "accent">?,
+	form: ("dot" | "ring" | "square" | "dash")?,
+	count: Value<number>?,
+}
 export type MenuItemBase = {
 	role: Value<"default" | "cancel" | "destructive" | "onIndicator">?,
 	id: string?,
 	label: Value<string>,
 	description: Value<string>?,
 	icon: Value<string>?,
+	meta: Value<string>?,
 	enabled: Value<boolean>?,
 	marked: Value<boolean>?,
 	dismiss: boolean?,
@@ -80,9 +87,13 @@ export type PickerOption<V = string> = {
 	description: Value<string>?,
 	icon: Value<string>?,
 	badge: Value<string | number>?,
+	meta: Value<string>?,
+	avatar: OptionAvatar?,
+	sectionTitle: Value<string>?,
+	indicator: OptionIndicator?,
 	enabled: Value<boolean>?,
 }
-export type PickerStyle = "automatic" | "menu" | "navigationLink" | "segmented" | "inline" | "radioGroup"
+export type PickerStyle = "automatic" | "menu" | "navigationLink" | "segmented" | "inline" | "radioGroup" | "cards"
 export type PickerCommon<V> = Types.GuiObjectProps & {
 	Style: Value<Enum.FrameStyle>?,
 	options: Value<{ PickerOption<V> }>,
@@ -98,6 +109,14 @@ export type PickerCommon<V> = Types.GuiObjectProps & {
 	iconOnly: Value<boolean>?,
 	textSize: Value<number>?,
 	isPresented: ComposeTypes.Cell<boolean>?,
+	requiredMark: ("required" | "optional")?,
+	hint: Value<string>?,
+	errorText: Value<string>?,
+	controlSize: Value<Types.ControlSize>?,
+	appearance: Value<string>?,
+	corners: ("pill" | "square")?,
+	maxHeight: number?,
+	indicatorPosition: ("leading" | "trailing")?,
 }
 export type SinglePickerSpec<V = string> = PickerCommon<V> & {
 	multiple: false?,

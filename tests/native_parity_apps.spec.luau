@@ -3973,7 +3973,7 @@ t.describe("native parity reference applications", function()
 			local names = controlNames()
 			local published: { string } = {}
 			for name in
-				string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function")
+				string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.(%u[%w_]*) : function")
 			do
 				if name ~= "fill" and name ~= "badged" then
 					table.insert(published, name)

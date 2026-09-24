@@ -180,6 +180,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		CollapsibleView = function()
 			return { expanded = Compose.cell(false), content = content }
 		end,
+		ColorPicker = function()
+			return { value = Compose.cell(require("@lune/roblox").Color3.new(1, 0, 0)) }
+		end,
 		ComboBox = function()
 			return {
 				value = Compose.cell(""),

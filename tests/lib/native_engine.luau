@@ -465,6 +465,11 @@ local function new(options: any?)
 	end
 	local heartbeat = signal()
 	local types = table.clone(Roblox)
+	types.BrickColor = setmetatable({
+		palette = function(index: number): any
+			return Roblox.BrickColor.palette(index + 1)
+		end,
+	}, { __index = Roblox.BrickColor })
 	local enumTypes = {}
 	types.Enum = setmetatable({}, {
 		__index = function(_, name)

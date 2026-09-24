@@ -8,6 +8,7 @@ local Content = require("./content_types")
 local Layout = require("./layout_types")
 local Overlay = require("./overlay_types")
 local Dates = require("./date_time_picker_types")
+local Colors = require("./color_picker_types")
 
 export type Controls = {
 	Screen: typeof(((nil :: unknown) :: Layout.LayoutControls).Screen),
@@ -65,6 +66,7 @@ export type Controls = {
 	NavBar: typeof(((nil :: unknown) :: Overlay.OverlayControls).NavBar),
 	Snackbar: typeof(((nil :: unknown) :: Overlay.OverlayControls).Snackbar),
 	DateTimePicker: typeof(((nil :: unknown) :: Dates.DateTimePickerControls).DateTimePicker),
+	ColorPicker: typeof(((nil :: unknown) :: Colors.ColorPickerControls).ColorPicker),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

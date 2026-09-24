@@ -39469,6 +39469,2929 @@
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "removal": "The presenter module and its disclosure seam are retired.",
       "family": "overlays"
+    },
+    {
+      "id": "post-pickers-001",
+      "group": "controls-text-input",
+      "title": "field chrome: absent means today: a field with no chrome keys mounts the exact tree it always did",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field chrome::a field with no chrome keys keeps its native TextBox root"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-002",
+      "group": "controls-text-input",
+      "title": "field chrome: the label: the label sits above its field, and a tap or a finger on it puts the caret in the field",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field chrome::the label sits above its field, and a tap or a finger on it puts the caret in the field"
+      ],
+      "family": "pickers",
+      "weaker": "The fake engine computes no layout; the rectangle is a live item in needs-live/port-pickers.json."
+    },
+    {
+      "id": "post-pickers-003",
+      "group": "controls-text-input",
+      "title": "field chrome: the label: a disabled field's label follows it: no press or hover affordance, live both ways",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field chrome::a disabled field's label follows it: no press or hover affordance, live both ways"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-004",
+      "group": "controls-text-input",
+      "title": "field chrome: the label: the label adds no focus stop, and its target never reaches the field's",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field chrome::the label adds no focus stop and reserves the touch floor in its own box"
+      ],
+      "family": "pickers",
+      "weaker": "Selectable flags replace the focus-order traversal; the hit-rectangle overlap is live."
+    },
+    {
+      "id": "post-pickers-005",
+      "group": "controls-text-input",
+      "title": "field chrome: the label: the required mark is part of the label's words, bound or static; `optional` paints no word",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field chrome::the required mark is part of the label's words, bound or static; optional paints no word"
+      ],
+      "family": "pickers",
+      "weaker": "The wrapped-title width check at 320 px is live."
+    },
+    {
+      "id": "post-pickers-006",
+      "group": "controls-text-input",
+      "title": "field chrome: one message line: an error replaces the hint, in the danger role, beside a mark, and the field holds still",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field message line::an error replaces the hint, in the danger role, beside a mark, and the field holds still"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-007",
+      "group": "controls-text-input",
+      "title": "field chrome: one message line: the error mark is floored at the icon rung, as tall as its line, and painted the message's colour",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field message line::the error mark is floored at the icon rung and painted the message's colour"
+      ],
+      "family": "pickers",
+      "weaker": "The mark height against its line is live; the colour is read from the compiled StyleSheet rules."
+    },
+    {
+      "id": "post-pickers-008",
+      "group": "controls-text-input",
+      "title": "field chrome: one message line: the caller's error outranks the numeric field's own rejection line",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field message line::the caller's error outranks the numeric field's own rejection line"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-009",
+      "group": "controls-text-input",
+      "title": "field chrome: accessories inside the plate: both accessories solve inside the plate, and the clear keeps its room between them",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field accessories::both accessories sit inside the plate, and the clear keeps its room between them"
+      ],
+      "family": "pickers",
+      "weaker": "LayoutOrder in one horizontal list replaces solved rectangles; containment is live."
+    },
+    {
+      "id": "post-pickers-010",
+      "group": "controls-text-input",
+      "title": "field chrome: accessories inside the plate: a static leading mark is not a stop; the clear and the trailing action are, in that order",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field accessories::a static leading mark is not a stop; the clear and the trailing action are, in that order"
+      ],
+      "family": "pickers",
+      "weaker": "Selectable nodes in LayoutOrder replace the focus-graph traversal."
+    },
+    {
+      "id": "post-pickers-011",
+      "group": "controls-text-input",
+      "title": "field chrome: accessories inside the plate: the trailing action fires on pointer, touch, keyboard and gamepad",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field accessories::the trailing action and the clear fire on activation without changing the other"
+      ],
+      "family": "pickers",
+      "weaker": "Only Activated is fired; per-input routing is the native Button and is live."
+    },
+    {
+      "id": "post-pickers-012",
+      "group": "controls-text-input",
+      "title": "field chrome: accessories inside the plate: the clear affordance is reachable on pointer, touch, keyboard and gamepad",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field accessories::the trailing action and the clear fire on activation without changing the other"
+      ],
+      "family": "pickers",
+      "weaker": "The clear is driven by Activated; the four input routes are native."
+    },
+    {
+      "id": "post-pickers-013",
+      "group": "controls-text-input",
+      "title": "field chrome: accessories inside the plate: a search field keeps its leading mark beside a trailing action, and refuses a second one",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field accessories::a search field keeps its leading mark beside a trailing action, and refuses a second one"
+      ],
+      "family": "pickers",
+      "weaker": "The icon inset against the plate is live."
+    },
+    {
+      "id": "post-pickers-014",
+      "group": "controls-text-input",
+      "title": "field chrome: the local vocabulary on a field: appearance paints the plate a published surface; a bound word repaints in place",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field vocabulary::appearance paints the plate a published surface; a bound word repaints in place"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-015",
+      "group": "controls-text-input",
+      "title": "field chrome: the local vocabulary on a field: corners ride the shipped modifier, and square is a radius of zero",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field vocabulary::corners ride a native UICorner, and square is a radius of zero"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-016",
+      "group": "controls-text-input",
+      "title": "field chrome: the local vocabulary on a field: a named rung shrinks the plate, reserves a whole target, and yields to an authored height",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field vocabulary::a named rung shrinks the plate, reserves a whole target, and the label still focuses"
+      ],
+      "family": "pickers",
+      "weaker": "Target height from Size offsets; the tap area is live."
+    },
+    {
+      "id": "post-pickers-017",
+      "group": "controls-text-input",
+      "title": "field chrome: the local vocabulary on a field: an unknown chrome word is a build error that names the key",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field vocabulary::an unknown chrome word is a build error that names the key"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-018",
+      "group": "controls-text-input",
+      "title": "field chrome: the local vocabulary on a field: closing the screen leaves no field node behind",
+      "mainSpecs": [
+        "field_chrome"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native field vocabulary::closing the screen leaves no field node or connection behind"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-019",
+      "group": "controls-text-input",
+      "title": "NumberInput: the preset is the presentation: it is the text engine with the number contract, and refuses a second presentation",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput preset::it is the text engine with the number contract, and refuses a second presentation"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-020",
+      "group": "controls-text-input",
+      "title": "NumberInput: the preset is the presentation: step must be finite and above zero, precision a whole count of places, units strings",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput preset::step must be finite and above zero, precision a whole count of places, units strings"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-021",
+      "group": "controls-text-input",
+      "title": "NumberInput: the draft grammar: an incomplete draft reverts in silence, and says so only when the field is required",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput draft grammar::an incomplete draft reverts in silence, and says so only when the field is required"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-022",
+      "group": "controls-text-input",
+      "title": "NumberInput: the draft grammar: the default parser is the strict grammar, not the language's own reader",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput draft grammar::the default parser is the strict grammar, not the language's own reader"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-023",
+      "group": "controls-text-input",
+      "title": "NumberInput: what a commit reports: a commit reports the NUMBER first, and the string is only how it is written",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput commit::a commit reports the number first, and the string is only how it is written"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-024",
+      "group": "controls-text-input",
+      "title": "NumberInput: what a commit reports: an out-of-range commit clamps and says `clamped` rather than refusing",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput commit::an out-of-range commit clamps and says clamped rather than refusing"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-025",
+      "group": "controls-text-input",
+      "title": "NumberInput: what a commit reports: precision rounds half away from zero, at commit and never while typing",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput commit::precision rounds half away from zero, at commit and never while typing"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-026",
+      "group": "controls-text-input",
+      "title": "NumberInput: what a commit reports: a callback that disposes the control mid-commit leaves nothing half-written",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput commit::a callback that disposes the control mid-commit leaves nothing half-written"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-027",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: a prefix and a suffix stand beside the editor and never enter the draft",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::a prefix and a suffix stand beside the editor and never enter the draft"
+      ],
+      "family": "pickers",
+      "weaker": "LayoutOrder replaces solved rectangles; the unit positions are live."
+    },
+    {
+      "id": "post-pickers-028",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: a step button moves the value by one step on pointer, touch, keyboard and gamepad",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::a step button moves the value by one step and commits with submit"
+      ],
+      "family": "pickers",
+      "weaker": "The press is fired through Activated; the four input routes are the native Button."
+    },
+    {
+      "id": "post-pickers-029",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: a press goes through the typed path's rounding and clamping, bounded or not",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::a press goes through the typed path's rounding and clamping, bounded or not"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-030",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: without a precision, presses land on the step's own places, never on float noise",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::without a precision, presses land on the step's own places, never on float noise"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-031",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: the step buttons are square targets that meet the touch floor and never share a pixel",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::the step buttons are square targets at the touch floor and separate stops"
+      ],
+      "family": "pickers",
+      "weaker": "Sizes are read from native Size; the hit rectangles are live."
+    },
+    {
+      "id": "post-pickers-032",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: the step buttons are ordinary focus stops, after the editor and its clear",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::the step buttons are ordinary focus stops after the editor and its clear, and claim no arrows"
+      ],
+      "family": "pickers",
+      "weaker": "LayoutOrder of selectable children replaces the focus-graph traversal."
+    },
+    {
+      "id": "post-pickers-033",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: at the end of its range, read-only or disabled, the button SAYS so and refuses on every input",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::at the end of its range, read-only or disabled, the button says so and refuses"
+      ],
+      "family": "pickers",
+      "weaker": "Refusal is fired through Activated only."
+    },
+    {
+      "id": "post-pickers-034",
+      "group": "controls-text-input",
+      "title": "NumberInput: units and step buttons: closing the screen releases the numeric field and its buttons",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput units and step buttons::closing the screen releases the numeric field and its buttons"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-035",
+      "group": "controls-text-input",
+      "title": "NumberInput: the arithmetic recipe: a field handed the recipe commits the answer, and never runs the text",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput commit::a field handed the arithmetic recipe commits the answer, and never runs the text"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-036",
+      "group": "controls-text-input",
+      "title": "NumberInput: the arithmetic recipe: four operators, parentheses, both spellings, and no division by zero",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_models::arithmetic recipe::four operators, parentheses, both spellings, and no division by zero"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-037",
+      "group": "controls-text-input",
+      "title": "NumberInput: the arithmetic recipe: it is TOTAL: length and nesting are bounded, so a hostile string answers nil",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_models::arithmetic recipe::it is total: length and nesting are bounded, so a hostile string answers nil"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-038",
+      "group": "controls-text-input",
+      "title": "NumberInput: scrub: a press that never promotes leaves the native tap and typing alone",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput scrub::a press that never promotes leaves the native tap and typing alone"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-039",
+      "group": "controls-text-input",
+      "title": "NumberInput: scrub: travel moves whole steps of the total, clamps, reports live and commits once at release",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput scrub::travel moves whole steps of the total, clamps, reports live and commits once at release"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-040",
+      "group": "controls-text-input",
+      "title": "NumberInput: scrub: a scrub lands on the step's own places, never on float noise",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput scrub::a scrub lands on the step's own places, never on float noise"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-041",
+      "group": "controls-text-input",
+      "title": "NumberInput: scrub: a scrub over a typed draft starts from the committed number and discards the draft",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput scrub::a scrub over a typed draft starts from the committed number and discards the draft"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-042",
+      "group": "controls-text-input",
+      "title": "NumberInput: scrub: cancel, class loss, disable and readOnly restore the snapshot without a commit",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput scrub::cancel, class loss, disable, readOnly and scrub off restore the snapshot without a commit"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-043",
+      "group": "controls-text-input",
+      "title": "NumberInput: scrub: a caller write mid-gesture ends it and the caller's number stands",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput scrub::a caller write mid-gesture ends it and the caller's number stands"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-044",
+      "group": "controls-text-input",
+      "title": "NumberInput: scrub: disposal mid-gesture restores the snapshot; an unscrubbable press is refused",
+      "mainSpecs": [
+        "number_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_number_input::native NumberInput scrub::disposal mid-gesture restores the snapshot; an unscrubbable field adds no listener"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-045",
+      "group": "menus-pickers",
+      "title": "Picker menu field: notation, message line and paint: the required mark rides the label and the error replaces the hint beside a danger trigger",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu field::the required mark rides the label and the error replaces the hint beside a danger trigger"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-046",
+      "group": "menus-pickers",
+      "title": "Picker menu field: notation, message line and paint: appearance maps onto the trigger's paint live, and a word outside the family is refused",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu field::the hint line belongs to the picker: disposal releases it for every style"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-047",
+      "group": "menus-pickers",
+      "title": "Picker menu field: notation, message line and paint: a named rung shrinks the trigger inside a whole reserved target, and corners reach it",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu field::a named rung shrinks the trigger, corners reach it, and it still opens"
+      ],
+      "family": "pickers",
+      "weaker": "The reserved target wrapper is not built for the trigger; the target is live."
+    },
+    {
+      "id": "post-pickers-048",
+      "group": "menus-pickers",
+      "title": "Picker message line: ownership: the hint line's owner is the picker's: dispose releases it",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu field::the hint line belongs to the picker: disposal releases it for every style"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-049",
+      "group": "menus-pickers",
+      "title": "Picker menu panel: maxHeight and the selected row: maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu panel::maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-050",
+      "group": "menus-pickers",
+      "title": "Picker menu panel: maxHeight and the selected row: the open popover declares no placement its parent ignores",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu field::a labelled menu picker stands its title above a trigger at the leading edge"
+      ],
+      "family": "pickers",
+      "weaker": "The retired placement warning channel does not exist; the field form is proven structurally instead."
+    },
+    {
+      "id": "post-pickers-051",
+      "group": "menus-pickers",
+      "title": "Picker menu panel: maxHeight and the selected row: opening lands on the selected row, visible inside the list, on every input",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu panel::opening lands on the selected row with gamepad or keyboard selection"
+      ],
+      "family": "pickers",
+      "weaker": "Scroll position of the chosen row is live."
+    },
+    {
+      "id": "post-pickers-052",
+      "group": "menus-pickers",
+      "title": "Picker menu rows: avatar, disabled and long labels: an option avatar's keys are closed: a misspelt one is refused by name",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu rows::an option avatar's keys are closed: a misspelt one is refused by name"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-053",
+      "group": "menus-pickers",
+      "title": "Picker menu rows: avatar, disabled and long labels: an avatar leads its row without a second stop or press, and a disabled row is unreachable",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu rows::an avatar leads its row without a second stop or press, and a disabled row is unreachable"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-054",
+      "group": "menus-pickers",
+      "title": "Picker menu rows: avatar, disabled and long labels: the popover is as wide as its widest row, avatar, icon, meta and badge counted",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu rows::an avatar leads its row without a second stop or press, and a disabled row is unreachable"
+      ],
+      "family": "pickers",
+      "weaker": "The panel width against its widest row is live."
+    },
+    {
+      "id": "post-pickers-055",
+      "group": "menus-pickers",
+      "title": "Picker menu rows: avatar, disabled and long labels: a long option label stays inside its panel",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu rows::an avatar leads its row without a second stop or press, and a disabled row is unreachable"
+      ],
+      "family": "pickers",
+      "weaker": "The long label containment is live."
+    },
+    {
+      "id": "post-pickers-056",
+      "group": "menus-pickers",
+      "title": "Picker segmented vocabulary and the radio mark: appearance paints the track filled, stroked or not at all, live, and refuses a menu word",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker segmented vocabulary and the radio mark::appearance paints the track filled, stroked or not at all, live, and refuses a menu word"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-057",
+      "group": "menus-pickers",
+      "title": "Picker segmented vocabulary and the radio mark: an automatic picker keeps its appearance intent across a live family switch",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker segmented vocabulary and the radio mark::an automatic picker keeps its appearance intent across a live family switch"
+      ],
+      "family": "pickers",
+      "weaker": "The family switch is driven by the measured width and the PreferredInput, not by an environment object."
+    },
+    {
+      "id": "post-pickers-058",
+      "group": "menus-pickers",
+      "title": "Picker segmented vocabulary and the radio mark: corners reach the track, its ends and the fill; a rung shrinks segments inside one reserved target",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker segmented vocabulary and the radio mark::corners reach the strip, and a rung shrinks the segments"
+      ],
+      "family": "pickers",
+      "weaker": "Hit-rectangle separation of segments is live."
+    },
+    {
+      "id": "post-pickers-059",
+      "group": "menus-pickers",
+      "title": "Picker segmented vocabulary and the radio mark: indicatorPosition moves the radio mark to either edge, and belongs to the radio group only",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker segmented vocabulary and the radio mark::indicatorPosition moves the radio mark to either edge, and belongs to the radio group only"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-060",
+      "group": "menus-pickers",
+      "title": "Picker cards: each option is a bordered card with its meta, the chosen one plated, on every input",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker cards::each option is a bordered card with its meta, the chosen one plated, on every input"
+      ],
+      "family": "pickers",
+      "weaker": "Selection is driven through Activated."
+    },
+    {
+      "id": "post-pickers-061",
+      "group": "menus-pickers",
+      "title": "Picker cards: choosing the chosen card again clears it only when the selection is not required",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker cards::choosing the chosen card again clears it only when the selection is not required"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-062",
+      "group": "menus-pickers",
+      "title": "Picker cards: a row of cards wraps on a narrow phone and long copy wraps inside its card",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker cards::a row of cards wraps and long copy wraps inside its card; cards take no appearance"
+      ],
+      "family": "pickers",
+      "weaker": "Wrapping on a narrow phone is live."
+    },
+    {
+      "id": "post-pickers-063",
+      "group": "menus-pickers",
+      "title": "Picker option indicator: follows the caller's live option record: status changes and a removed mark goes",
+      "mainSpecs": [
+        "picker_fields"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker option indicator and search rows::follows the caller's live option record: status changes and a removed mark goes"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-064",
+      "group": "pointer-touch-drag",
+      "title": "TextInput selectOnFocus on the native box: a pointer focus selects at its own release, after the engine's release writes",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press selectOnFocus::a pointer focus selects at its own release, after the engine's release writes"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-065",
+      "group": "pointer-touch-drag",
+      "title": "TextInput selectOnFocus on the native box: activation focus selects in Focused, and offsets are bytes",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press selectOnFocus::activation focus selects in Focused, and offsets are bytes"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-066",
+      "group": "pointer-touch-drag",
+      "title": "TextInput selectOnFocus on the native box: none (the default) writes nothing on any focus",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press selectOnFocus::none (the default) writes nothing on any focus"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-067",
+      "group": "pointer-touch-drag",
+      "title": "TextInput selectOnFocus on the native box: blur before release, recycle and disabled cancel a pending selection",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press selectOnFocus::blur before release, recycle and disabled cancel a pending selection"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-068",
+      "group": "pointer-touch-drag",
+      "title": "TextInput selectOnFocus on the native box: a touch on a field with nothing to select or scrub adds no listener",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press selectOnFocus::a touch on a field with nothing to select or scrub adds no listener"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-069",
+      "group": "pointer-touch-drag",
+      "title": "TextInput selectOnFocus on the native box: a policy change while focused applies at the next session",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press selectOnFocus::a policy change while focused applies at the next session"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-070",
+      "group": "pointer-touch-drag",
+      "title": "NumberInput scrub on the native box: a press under the slop is a native tap: focus and caret stay, nothing is promoted",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press scrub::a press under the slop is a native tap: focus and caret stay, nothing is promoted"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-071",
+      "group": "pointer-touch-drag",
+      "title": "NumberInput scrub on the native box: past the slop a horizontal drag releases focus and reports the total travel once to its end",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press scrub::past the slop a horizontal drag releases focus and reports the total travel once to its end"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-072",
+      "group": "pointer-touch-drag",
+      "title": "NumberInput scrub on the native box: a vertical drag or a refused promotion stays native for the rest of the press",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press scrub::a vertical drag or a refused promotion stays native for the rest of the press"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-073",
+      "group": "pointer-touch-drag",
+      "title": "NumberInput scrub on the native box: Escape cancels, a recycle cancels, and a second finger never joins the first",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press scrub::Escape cancels, a recycle cancels, and a second finger never joins the first"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-074",
+      "group": "pointer-touch-drag",
+      "title": "NumberInput scrub on the native box: a mouse press whose release never came does not block the next scrub",
+      "mainSpecs": [
+        "native_text_press"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_text_press::native text press scrub::a mouse press whose release never came does not block the next scrub"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-075",
+      "group": "controls-actions",
+      "title": "Removable Chip: edit mode (owner ruling 2026-09-22): a tag selects with no mark; editing shows the mark in its plate and activation removes, via <input>",
+      "mainSpecs": [
+        "chip"
+      ],
+      "mainCases": 4,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_chip_edit::native Chip edit mode::a tag selects with no mark; editing shows the mark in its plate and activation removes, via pointer",
+        "native_chip_edit::native Chip edit mode::a tag selects with no mark; editing shows the mark in its plate and activation removes, via touch",
+        "native_chip_edit::native Chip edit mode::a tag selects with no mark; editing shows the mark in its plate and activation removes, via keyboard",
+        "native_chip_edit::native Chip edit mode::a tag selects with no mark; editing shows the mark in its plate and activation removes, via gamepad"
+      ],
+      "family": "pickers",
+      "weaker": "Mark containment inside the plate is live."
+    },
+    {
+      "id": "post-pickers-076",
+      "group": "controls-actions",
+      "title": "Removable Chip: edit mode (owner ruling 2026-09-22): Delete and Backspace remove the focused tag only while editing",
+      "mainSpecs": [
+        "chip"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_chip_edit::native Chip edit mode::Delete and Backspace remove the focused tag only while editing"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-077",
+      "group": "controls-actions",
+      "title": "Removable Chip: edit mode (owner ruling 2026-09-22): one plate in skinned themes: the mark is text inside the tag, never its own button",
+      "mainSpecs": [
+        "chip"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_chip_edit::native Chip edit mode::one plate in skinned themes: the mark is text inside the tag, never its own button"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-078",
+      "group": "controls-actions",
+      "title": "Removable Chip: edit mode (owner ruling 2026-09-22): a selectable tag that can be removed must say when it is editing",
+      "mainSpecs": [
+        "chip"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_chip_edit::native Chip edit mode::a selectable tag that can be removed must say when it is editing"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-079",
+      "group": "controls-actions",
+      "title": "Removable Chip: edit mode (owner ruling 2026-09-22): Delete or Backspace on the last of N tags removes exactly one and lands on the new last",
+      "mainSpecs": [
+        "chip"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_chip_edit::native Chip edit mode::Delete or Backspace on the last of N tags removes exactly one and lands on the new last"
+      ],
+      "family": "pickers",
+      "weaker": "The held key is modelled with IsKeyDown; the engine delivery is live."
+    },
+    {
+      "id": "post-pickers-080",
+      "group": "controls-actions",
+      "title": "Removable Chip: edit mode (owner ruling 2026-09-22): does not repeat a held removal across an input-class change and respects inherited disabled",
+      "mainSpecs": [
+        "chip"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_chip_edit::native Chip edit mode::a held removal does not repeat after an input change, and inherited disabled refuses it"
+      ],
+      "family": "pickers",
+      "weaker": "The input-class change is modelled by a frame with the key still held."
+    },
+    {
+      "id": "post-pickers-081",
+      "group": "menus-pickers",
+      "title": "Picker search: the chosen row paints no wash, so its label keeps the panel colour: a searchable list's selected row carries no onSelected tint (owner: black on ",
+      "mainSpecs": [
+        "picker_style"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker option indicator and search rows::a searchable list's chosen row paints no wash and wears a check instead"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-082",
+      "group": "menus-pickers",
+      "title": "Picker value alignment: at a regular width the title stands above a trigger that hugs its value at the leading edge",
+      "mainSpecs": [
+        "picker_style"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu field::a labelled menu picker stands its title above a trigger at the leading edge"
+      ],
+      "family": "pickers",
+      "weaker": "The leading-edge position is structural; the rectangles are live."
+    },
+    {
+      "id": "post-pickers-083",
+      "group": "menus-pickers",
+      "title": "Picker style: a navigation link keeps its one-line row: at a regular width the title and value share one line when they fit",
+      "mainSpecs": [
+        "picker_style"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker option indicator and search rows::a navigation link keeps its title and value in one row"
+      ],
+      "family": "pickers",
+      "weaker": "One-line fit at a regular width is live."
+    },
+    {
+      "id": "post-pickers-084",
+      "group": "menus-pickers",
+      "title": "Picker style: badge and sectionTitle reach the menu engine: an automatic picker that resolves the menu renders an option's badge and its section heading",
+      "mainSpecs": [
+        "picker_style"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu rows::badge, meta and sectionTitle reach the menu engine from an automatic picker"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-085",
+      "group": "menus-pickers",
+      "title": "Picker sweep: style x theme x text preference x viewport: a menu whose rows scroll is widened by the scroll-bar reserve",
+      "mainSpecs": [
+        "picker_sweep"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_fields::native Picker menu panel::maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused"
+      ],
+      "family": "pickers",
+      "weaker": "The scroll-bar reserve width is live."
+    },
+    {
+      "id": "post-pickers-086",
+      "group": "controls-text-input",
+      "title": "TextInput: readOnly: a read-only field keeps its stop, caret and contrast, refuses every edit and commits nothing",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::a read-only field keeps its stop and contrast, refuses every edit and commits nothing"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-087",
+      "group": "controls-text-input",
+      "title": "TextInput: readOnly: a function readOnly flips live on the same editor, keeping the draft and the edit",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::a function readOnly flips live on the same editor, keeping the draft and the edit"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-088",
+      "group": "controls-text-input",
+      "title": "TextInput: readOnly: enabled and editable compose onto TextEditable in either order, and a reused field recovers",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::enabled and readOnly compose onto TextEditable in either order and recover"
+      ],
+      "family": "pickers",
+      "weaker": "The composition is proven through the control, not through the retired screen_props adapter."
+    },
+    {
+      "id": "post-pickers-089",
+      "group": "controls-text-input",
+      "title": "TextInput: readOnly: readOnly refuses anything but a boolean",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::readOnly refuses anything but a boolean"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-090",
+      "group": "controls-text-input",
+      "title": "TextInput: selectOnFocus: the policy lands on the same editor, live, and an illegal live word keeps the last legal one",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::the selectOnFocus policy lands on the same editor, live, and an illegal live word keeps the last"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-091",
+      "group": "controls-text-input",
+      "title": "TextInput: selectOnFocus: an unknown initial word fails before mount",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::an unknown initial selectOnFocus word fails before mount"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-092",
+      "group": "controls-text-input",
+      "title": "TextInput: visibleLines: the box is the count of lines it was told; one line is shorter and still multiline",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::the box is the count of lines it was told; one line is shorter and still multiline"
+      ],
+      "family": "pickers",
+      "weaker": "Viewport heights come from the typography metric; rendered line boxes are live."
+    },
+    {
+      "id": "post-pickers-093",
+      "group": "controls-text-input",
+      "title": "TextInput: visibleLines: past the count the box holds still while the editor grows inside it, on the same editor",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::past the count the box holds still while the editor grows inside it, on the same editor"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-094",
+      "group": "controls-text-input",
+      "title": "TextInput: visibleLines: an authored height wins",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::an authored root size wins over the line count"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-095",
+      "group": "controls-text-input",
+      "title": "TextInput: visibleLines: a line count is a multiline fact and a whole number of at least one",
+      "mainSpecs": [
+        "text_input"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::a line count is a multiline fact and a whole number of at least one"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-096",
+      "group": "paint-theming",
+      "title": "Toggle switch paint: a switch, bare or in a settings row, wears no surface plate",
+      "mainSpecs": [
+        "toggle_presentations"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_toggle_row::native Toggle rows::a switch, bare or in a settings row, wears no plate and no control art"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-097",
+      "group": "paint-theming",
+      "title": "Toggle switch paint: a toggle row starts its content where a button row does, in every package",
+      "mainSpecs": [
+        "toggle_presentations"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_toggle_row::native Toggle rows::a toggle settings row starts its content where a button row does, in every package"
+      ],
+      "family": "pickers",
+      "weaker": "Padding rules are compared in every package sheet; the solved positions are live."
+    },
+    {
+      "id": "post-pickers-098",
+      "group": "controls-values",
+      "title": "Slider axis: a vertical track runs bottom to top: the fill grows from the BOTTOM edge and the thumb climbs as the value rises",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider axis::a vertical track fills from the bottom edge and the thumb climbs as the value rises"
+      ],
+      "family": "pickers",
+      "weaker": "Fill and thumb scales replace solved rectangles; the rendered geometry is live."
+    },
+    {
+      "id": "post-pickers-099",
+      "group": "controls-values",
+      "title": "Slider axis: a vertical track runs bottom to top: Up/Down adjust it and Left/Right do not, because the AXIS is what was authored",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider axis::Up and Down adjust a vertical track and Left and Right do not"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-100",
+      "group": "controls-values",
+      "title": "Slider axis: the press that lands focus is not a value step: Up onto a vertical slider moves the ring only; the next Up steps it",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider axis::the arrow that lands the ring is not a value step; the next arrow is"
+      ],
+      "family": "pickers",
+      "weaker": "The held key is modelled with IsKeyDown; the engine delivery is live."
+    },
+    {
+      "id": "post-pickers-101",
+      "group": "controls-values",
+      "title": "Slider rotation: the painted angle and the pointer share one conversion: every eighth of a turn reads the same value the upright track would",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider rotation::every eighth of a turn reads the value the upright track would"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-102",
+      "group": "controls-values",
+      "title": "Slider rotation: the painted angle and the pointer share one conversion: a press on a SCROLLED track reads the painted position, not the layout one",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider rotation::a press on a scrolled track reads the painted position"
+      ],
+      "family": "pickers",
+      "weaker": "The scrolled track is modelled by moving AbsolutePosition."
+    },
+    {
+      "id": "post-pickers-103",
+      "group": "controls-values",
+      "title": "Slider rotation: the painted angle and the pointer share one conversion: an upright slider takes the untouched path: zero degrees costs no conversion",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider rotation::a bound angle turns the paint live and the label and readout stay upright"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-104",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: both handles are targets that meet the touch floor, and the fill spans between them",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::both handles are touch-floor targets and the fill spans between them"
+      ],
+      "family": "pickers",
+      "weaker": "The target size is the handle Size; the hit rectangle is live."
+    },
+    {
+      "id": "post-pickers-105",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: a thumb stops at the other one, and `minGap` holds them apart",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::a thumb stops at the other one, and minGap holds them apart"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-106",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: an arrow a thumb cannot use against its partner keeps the ring on that thumb",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::an arrow a thumb cannot use against its partner keeps the ring on that thumb"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-107",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: a press LEFT of a coincident pair takes the lower thumb, and a press right takes the upper",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::a press left of a coincident pair takes the lower thumb, and a press right takes the upper"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-108",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: a drag keeps the thumb it started with, even dragged past the other one",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::a drag keeps the thumb it started with, even dragged past the other one"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-109",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: ONE commit per completed gesture, and it names the thumb that moved",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::one commit per completed gesture, and it names the thumb that moved"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-110",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: keyboard: each thumb is its own Tab stop, and the arrows adjust the one holding the ring",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::keyboard: each thumb is its own stop, and the arrows adjust the one holding the ring"
+      ],
+      "family": "pickers",
+      "weaker": "Roblox has no Tab traversal; each handle is Selectable and the ring is set through GuiService.SelectedObject."
+    },
+    {
+      "id": "post-pickers-111",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: gamepad: Left/Right reach the other thumb until Activate engages, and Cancel gives them back",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::gamepad: the arrows navigate until Activate engages, and Cancel gives them back"
+      ],
+      "family": "pickers",
+      "weaker": "Native selection moves between the handles; that move is live."
+    },
+    {
+      "id": "post-pickers-112",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: losing the pointer class mid-drag restores BOTH numbers, not just the one that moved",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::losing the input class mid-drag restores both numbers, and the later move and release commit nothing"
+      ],
+      "family": "pickers",
+      "weaker": "The class loss is a PreferredInput change."
+    },
+    {
+      "id": "post-pickers-113",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: a REAL capability loss mid-drag restores the pair, and the later move and release commit nothing",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::losing the input class mid-drag restores both numbers, and the later move and release commit nothing"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-114",
+      "group": "controls-values",
+      "title": "Slider range: two thumbs, one track, and they never cross: an authored pair the wrong way round is a spec error, not a silent swap",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::an authored pair the wrong way round is a spec error, not a silent swap"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-115",
+      "group": "controls-values",
+      "title": "Slider thumb modes and the custom knob: `thumb = \"none\"` paints no handle and leaves every route open",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::thumb none paints no handle and leaves every route open"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-116",
+      "group": "controls-values",
+      "title": "Slider thumb modes and the custom knob: `thumb = \"auto\"` keeps the handle out at rest and brings it back on focus",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::thumb auto hides the handle at rest and shows it on focus, hover, drag and touch"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-117",
+      "group": "controls-values",
+      "title": "Slider thumb modes and the custom knob: `thumb = \"auto\"` on a TOUCH-primary surface keeps a handle to grab",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::thumb auto hides the handle at rest and shows it on focus, hover, drag and touch"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-118",
+      "group": "controls-values",
+      "title": "Slider thumb modes and the custom knob: a custom knob is built once per thumb and solves at the control's own footprint",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::a custom knob is built once per thumb, is told its value and rides it"
+      ],
+      "family": "pickers",
+      "weaker": "The knob floor is a UISizeConstraint; the solved footprint is live."
+    },
+    {
+      "id": "post-pickers-119",
+      "group": "controls-values",
+      "title": "Slider thumb modes and the custom knob: a custom knob drops the theme's own slot, so no package paints a circle behind it",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::a custom knob drops the theme slot and grows past the floor with its content"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-120",
+      "group": "controls-values",
+      "title": "Slider controlSize: the plate shrinks and the target does not: a named rung paints a thinner track inside a whole reserved target",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider controlSize::a named rung paints a thinner track inside the whole target"
+      ],
+      "family": "pickers",
+      "weaker": "The thinner rail is the paint; the reserved target is the 44 px track."
+    },
+    {
+      "id": "post-pickers-121",
+      "group": "controls-values",
+      "title": "Slider `thumb = \"auto\"`: the hover route is wired, not just declared: the handle appears under the pointer and goes again when it leaves",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::thumb auto hides the handle at rest and shows it on focus, hover, drag and touch"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-122",
+      "group": "controls-values",
+      "title": "Slider `controlSize` on a vertical track: a rung thins the track and the column keeps its travel",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider controlSize::a rung thins a vertical track and the column keeps its travel"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-123",
+      "group": "controls-values",
+      "title": "Slider range: an illegal pair arriving at RUNTIME is quarantined, never fatal: a reversed pair, a scalar, a nil and a pair narrower than its own gap all keep th",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::an illegal pair arriving at run time keeps the last legal band and stays driveable"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-124",
+      "group": "controls-values",
+      "title": "Slider range: an illegal pair arriving at RUNTIME is quarantined, never fatal: and the control is still DRIVEABLE afterwards, from the pointer",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::an illegal pair arriving at run time keeps the last legal band and stays driveable"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-125",
+      "group": "controls-values",
+      "title": "Slider range: an illegal pair arriving at RUNTIME is quarantined, never fatal: an authored pair narrower than its own gap is a build error",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::an illegal pair arriving at run time keeps the last legal band and stays driveable"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-126",
+      "group": "controls-values",
+      "title": "Slider: the words that decide what it IS are refused when bound: a bound axis names itself rather than freezing on its first reading",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider axis::the axis and the other construction words refuse a readable"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-127",
+      "group": "controls-values",
+      "title": "Slider range: each handle's travel is priced off its OWN art: two different-sized knobs both stop at the track's end",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::a knob is told its own thumb in a range, and each handle wears one"
+      ],
+      "family": "pickers",
+      "weaker": "Each handle wears its own knob; the travel measured from each drawn knob is live."
+    },
+    {
+      "id": "post-pickers-128",
+      "group": "controls-values",
+      "title": "Slider: two answers to one question are refused: a thumbImage beside a thumbContent names the collision",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::a thumbImage beside a thumbContent names the collision, and so does a track pair"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-129",
+      "group": "controls-values",
+      "title": "Slider range adjust mode: only a pad may enter it: a keyboard Return on a handle does not latch a mode a keyboard never needs",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::a keyboard Return on a handle does not latch the pad adjust mode"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-130",
+      "group": "controls-values",
+      "title": "Slider range: legality at build, and lifetimes: an initial NaN, a bad type and a bad gap are build errors, never a seeded fallback",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::an initial NaN, a bad type and a bad gap are build errors"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-131",
+      "group": "controls-values",
+      "title": "Slider range: legality at build, and lifetimes: a runtime NaN keeps the last legal band, and a legal pair afterwards paints and drives again",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider range::an initial NaN, a bad type and a bad gap are build errors"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-132",
+      "group": "controls-values",
+      "title": "Slider range: legality at build, and lifetimes: a knob is told its own thumb, and building, driving and disposing leaves the owner as it was",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_slider_shapes::native Slider thumb modes and custom art::a knob is told its own thumb in a range, and each handle wears one",
+        "native_slider_shapes::native Slider controlSize::building, driving and disposing a shaped slider leaves no connection behind"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-133",
+      "group": "layout-geometry",
+      "title": "semantic control rows: stacks Button, Toggle and Slider rows on one icon and label column in <theme>",
+      "mainSpecs": [
+        "semantic_rows"
+      ],
+      "mainCases": 2,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_toggle_row::native Toggle rows::a toggle settings row starts its content where a button row does, in every package"
+      ],
+      "family": "pickers",
+      "weaker": "Only the padding rules are compared; the icon and label columns are live."
+    },
+    {
+      "id": "post-pickers-134",
+      "group": "public-surface-api",
+      "title": "civilDate: the calendar model: counts leap years, clamps month arithmetic and rolls over years",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_models::civilDate model::counts leap years, clamps month arithmetic and rolls over years"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-135",
+      "group": "public-surface-api",
+      "title": "civilDate: the calendar model: lays six weeks from the week start, and a date-only value survives any fixed offset",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_models::civilDate model::lays six weeks from the week start, and a date-only value survives any fixed offset"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-136",
+      "group": "public-surface-api",
+      "title": "civilDate: the calendar model: writes and reads the numeric form in the locale's order; a non-date is refused, never moved",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_models::civilDate model::writes and reads the numeric form in the locale's order; a non-date is refused, never moved"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-137",
+      "group": "public-surface-api",
+      "title": "civilDate: the player's clock: the default clock reads the player's local wall clock, not UTC",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_picker_models::civilDate model::the default clock reads the player's local wall clock, not UTC"
+      ],
+      "family": "pickers"
+    },
+    {
+      "id": "post-pickers-138",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: the calendar opens anchored on the chosen day's month; a pick commits once and closes",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::the calendar opens anchored on the chosen day's month; a pick commits once and closes"
+      ]
+    },
+    {
+      "id": "post-pickers-139",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: the year and month menus open on the shown ones and honour min/max (owner: opened at 1926)",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::the year and month menus open on the shown ones and honour min/max (owner: opened at 1926)"
+      ],
+      "weaker": "Centring the selected year in a scrolled menu needs engine layout (needs-live dtp-menu-centred)."
+    },
+    {
+      "id": "post-pickers-140",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: a refused pick paints nothing; a disabled or out-of-bounds day is focusable, inert and struck",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::a refused pick paints nothing; a disabled or out-of-bounds day is focusable, inert and struck"
+      ]
+    },
+    {
+      "id": "post-pickers-141",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: typed entry commits a date; a refused text stays with its error and commits nothing",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::typed entry commits a date; a refused text stays with its error and commits nothing"
+      ],
+      "weaker": "The anchored position is proven with synthetic Absolute* rectangles, and the icon's second press is proven as the modal's outside tap; real layout and hit-testing are needs-live (dtp-anchor-below, dtp-icon-toggle)."
+    },
+    {
+      "id": "post-pickers-142",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: a typed range reads back its own words in every locale order; a draft's typed text only proposes",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::a typed range reads back its own words in every locale order; a draft's typed text only proposes"
+      ]
+    },
+    {
+      "id": "post-pickers-143",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: keyboard and pad: the arrows walk the grid with its contribution attached, a row's end continues, L1/R1 page",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::keyboard and pad: the arrows walk the grid with its contribution attached, a row's end continues, L1/R1 page"
+      ]
+    },
+    {
+      "id": "post-pickers-144",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: the grid is one Tab stop; the arrows walk days across months; grey days are no stop; paging stops at the bounds",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::the grid is one selection group; the arrows walk days across months; grey days are no stop; paging stops at the bounds"
+      ],
+      "weaker": "Roblox has no Tab focus traversal, so the Tab and Shift+Tab steps are not ported; the grid is one native SelectionGroup and its exits are proven through NextSelectionUp/Down and disabled InputContexts, not through engine navigation (needs-live dtp-native-navigation)."
+    },
+    {
+      "id": "post-pickers-145",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: a draft on a TV: Down from any day leaves the months for Apply; Up from the first row reaches the header",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::a draft on a TV: Down from any day leaves the months below; Up from the first row reaches the header"
+      ],
+      "weaker": "The walk follows the native NextSelectionDown chain to the Hour field (time) or ResetAll (no time); the engine's own step from there to Apply is needs-live (dtp-native-navigation)."
+    },
+    {
+      "id": "post-pickers-146",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: a pad sets a date and time: each pick commits, B keeps it and returns focus; a draft's B restores",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::a pad sets a date and time: each pick commits, B keeps it and returns focus; a draft's B restores"
+      ]
+    },
+    {
+      "id": "post-pickers-147",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: a single date: time: hour and minute fields step on the minute grid, AM/PM flips, and a touch list sets both",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: a single date::time: hour and minute fields step on the minute grid, AM/PM flips, and a touch list sets both"
+      ]
+    },
+    {
+      "id": "post-pickers-148",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: ranges, presets and drafts: the first pick anchors, an earlier second pick swaps, and onRangeCommit waits for both ends",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: ranges, presets and drafts::the first pick anchors, an earlier second pick swaps, and onRangeCommit waits for both ends"
+      ],
+      "weaker": "Paint is proven as tags plus the compiled StyleRule properties, not as rendered colours (needs-live dtp-paint)."
+    },
+    {
+      "id": "post-pickers-149",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: ranges, presets and drafts: presets clip to the bounds: outside is shown disabled, overlapping is clamped and enabled",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: ranges, presets and drafts::presets clip to the bounds: outside is shown disabled, overlapping is clamped and enabled"
+      ]
+    },
+    {
+      "id": "post-pickers-150",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: ranges, presets and drafts: draft: picks and presets propose live, only Apply commits, Cancel restores, Reset all clears",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: ranges, presets and drafts::draft: picks and presets propose live, only Apply commits, Cancel restores, Reset all clears"
+      ],
+      "weaker": "Footer order is proven by LayoutOrder, parents and the SpaceBetween flex, and chip size by the compact controlSize, not by measured rectangles."
+    },
+    {
+      "id": "post-pickers-151",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: ranges, presets and drafts: a caller write during an open draft re-bases what Cancel restores",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: ranges, presets and drafts::a caller write during an open draft re-bases what Cancel restores"
+      ]
+    },
+    {
+      "id": "post-pickers-152",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: ranges, presets and drafts: a range's end drags across days and panes, crossing swaps, release commits once (owner)",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: ranges, presets and drafts::a range's end drags across days and panes, crossing swaps, release commits once (owner)"
+      ],
+      "weaker": "Drag positions come from synthetic cell rectangles and fired InputBegan/InputChanged/InputEnded events (needs-live dtp-range-drag)."
+    },
+    {
+      "id": "post-pickers-153",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: ranges, presets and drafts: a drafted range drags live but commits only on Apply",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: ranges, presets and drafts::a drafted range drags live but commits only on Apply"
+      ]
+    },
+    {
+      "id": "post-pickers-154",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: the gallery tab: the Pickers scenario's window applies a preset only on Apply, and a refusal changes nothing",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: the gallery tab::the Pickers scenario's window applies a preset only on Apply, and a refusal changes nothing"
+      ],
+      "weaker": "The gallery Pickers scenario is not on this branch; the spec builds the same Race day and Season window flow inline instead of running the gallery scenario."
+    },
+    {
+      "id": "post-pickers-155",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: layout, routes and refusals: a wide screen shows two consecutive months, and they stay consecutive through paging and bounds",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: layout, routes and refusals::a wide screen shows two consecutive months, and they stay consecutive through paging and bounds"
+      ],
+      "weaker": "The width comes from a synthetic root AbsoluteSize, and Down leaving the months relies on native navigation (NextSelectionDown nil)."
+    },
+    {
+      "id": "post-pickers-156",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: layout, routes and refusals: two time pickers on one page: Down from a picker's last week reaches ITS OWN hour field",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: layout, routes and refusals::two time pickers on one page: Down from a picker's last week reaches ITS OWN hour field"
+      ]
+    },
+    {
+      "id": "post-pickers-157",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: layout, routes and refusals: phone portrait and landscape: the calendar fits, every day keeps the floor, Apply is on screen",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: layout, routes and refusals::phone portrait and landscape: the calendar fits, every day keeps the floor, Apply is on screen"
+      ],
+      "weaker": "Headless proves the route, the 44x44 cell sizes and the surface capped to the screen height; on-screen fit and reachability are needs-live (dtp-phone-fit)."
+    },
+    {
+      "id": "post-pickers-158",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: layout, routes and refusals: a single date's panel hugs its six weeks: no room kept for an absent hint, caption or footer",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: layout, routes and refusals::a single date's panel hugs its six weeks: no room kept for an absent hint, caption or footer"
+      ],
+      "weaker": "Proves automatic height, the absent or hidden hint, title and footer, and the 44 px header; the measured insets are needs-live (dtp-panel-hugs)."
+    },
+    {
+      "id": "post-pickers-159",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: layout, routes and refusals: the week starts where the caller says; a compact touch field opens a sheet with Done, ten feet a centred sheet",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: layout, routes and refusals::the week starts where the caller says; a compact touch field opens a sheet with Done, ten feet a centred sheet"
+      ],
+      "weaker": "Pixel Quest's calendar icon check is replaced by the standard calendar asset on the Open icon; ten-foot is injected through GuiService:IsTenFootInterface (needs-live dtp-ten-foot)."
+    },
+    {
+      "id": "post-pickers-160",
+      "group": "menus-pickers",
+      "title": "DateTimePicker: layout, routes and refusals: refuses a malformed contract at construction and quarantines a late bad value",
+      "mainSpecs": [
+        "date_time_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_date_time_picker::DateTimePicker: layout, routes and refusals::refuses a malformed contract at construction and quarantines a late bad value"
+      ]
+    },
+    {
+      "id": "post-pickers-161",
+      "group": "menus-pickers",
+      "title": "ColorPicker: colour values: parses #RGB, #RRGGBB and #RRGGBBAA (only with alpha) and formats engine bytes uppercase",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker colour values::parses #RGB, #RRGGBB and #RRGGBBAA (only with alpha) and formats engine bytes uppercase"
+      ]
+    },
+    {
+      "id": "post-pickers-162",
+      "group": "menus-pickers",
+      "title": "ColorPicker: colour values: keeps a grey's hue (and a black's saturation) through the engine conversion",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker colour values::keeps a grey's hue (and a black's saturation) through the engine conversion"
+      ]
+    },
+    {
+      "id": "post-pickers-163",
+      "group": "menus-pickers",
+      "title": "ColorPicker: colour values: a saturation round trip through the Sliders tab returns to the hue the player set",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker colour values::a saturation round trip through the Sliders tab returns to the hue the player set"
+      ]
+    },
+    {
+      "id": "post-pickers-164",
+      "group": "menus-pickers",
+      "title": "ColorPicker: colour values: switching the readout twenty times never moves canonical, and a hex commit is the only write",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker colour values::switching the readout twenty times never moves canonical, and a hex commit is the only write"
+      ]
+    },
+    {
+      "id": "post-pickers-165",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: a bare well is its swatch, named by its value; a labelled one is a form row",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::a bare well is its swatch, named by its value; a labelled one is a form row"
+      ],
+      "weaker": "The 44x44 floor is read from the well's Size property, not from a solved engine rect (live: color-placement-real-layout)."
+    },
+    {
+      "id": "post-pickers-166",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: the well opens an anchored panel on a roomy pointer screen; a refused swatch never paints",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::the well opens an anchored panel on a roomy pointer screen; a refused swatch never paints"
+      ]
+    },
+    {
+      "id": "post-pickers-167",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: a tall technique fits the room around the well: the panel never covers it",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::the panel never covers its well: below, else above, else beside, else shrunk"
+      ],
+      "weaker": "Heights of Modes, Readout and the techniques are injected as AbsoluteSize; the engine's own layout of a tall Bricks technique is live (color-placement-real-layout)."
+    },
+    {
+      "id": "post-pickers-168",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: the panel never covers its well: below, else above, else beside, else shrunk (owner 2026-09-23)",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::the panel never covers its well: below, else above, else beside, else shrunk"
+      ],
+      "weaker": "Measurements are injected; the native candidate has no host app-chrome inset band, so main's appChromeInsets = { top = 120 } variant has no native counterpart (live: color-placement-real-layout)."
+    },
+    {
+      "id": "post-pickers-169",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: the panel keeps one height across every technique, on a pointer panel and a phone sheet",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::the panel keeps one height across every technique, on a pointer panel and a phone sheet"
+      ],
+      "weaker": "Technique heights are injected; that the engine still reports AbsoluteSize for a hidden technique is live (color-hidden-technique-size)."
+    },
+    {
+      "id": "post-pickers-170",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: the panel's height follows its room, never a height it once measured (owner 2026-09-23)",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::the panel's height follows its room, never a height it once measured"
+      ],
+      "weaker": "The room change is a ScreenGui AbsoluteSize change with injected content heights, not a real rotation."
+    },
+    {
+      "id": "post-pickers-171",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: an accepted swatch commits once, marks the cell, and the swatch grid walks in two dimensions",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::an accepted swatch commits once, marks the cell, and the swatch grid lays out rows of eight"
+      ],
+      "weaker": "The two-dimensional D-pad walk is the engine's selection over the wrapped layout; headless proves the 8-cell row width, wrap, order and selectable cells only (live: color-grid-wraps-two-dimensions)."
+    },
+    {
+      "id": "post-pickers-172",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: saved colours: + proposes the current colour once; Edit removes by activate or Delete and hands the ring on",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::saved colours: + proposes the current colour once; Edit removes by activate or Delete and hands the ring on"
+      ]
+    },
+    {
+      "id": "post-pickers-173",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: refuses a saved-colour callback that is not a function",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::refuses a saved-colour callback that is not a function"
+      ]
+    },
+    {
+      "id": "post-pickers-174",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: a short swatch list keeps square target cells, and the default grid stays a hue per column",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::a short swatch list keeps square target cells, and the default grid stays a hue per column"
+      ],
+      "weaker": "Cell squareness is read from Size offsets, not solved rects."
+    },
+    {
+      "id": "post-pickers-175",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: without draft every change commits live and B or an outside tap only closes, keeping it",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::without draft every change commits live and B or an outside tap only closes, keeping it"
+      ]
+    },
+    {
+      "id": "post-pickers-176",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: draft: B and an outside tap discard, restoring the open-time colour; a caller write re-bases it",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::draft: B and an outside tap discard, restoring the open-time colour; a caller write re-bases it"
+      ]
+    },
+    {
+      "id": "post-pickers-177",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: draft: gestures propose live but commit nothing; Apply commits once and Cancel restores",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::draft: gestures propose live but commit nothing; Apply commits once and Cancel restores"
+      ]
+    },
+    {
+      "id": "post-pickers-178",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the well and its panel: opens as a hug sheet with Done on a compact touch screen, and a centred sheet at ten feet with the plane",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker well and panel::opens as a sheet with Done on a compact touch screen, and a centred sheet at ten feet with the plane"
+      ],
+      "weaker": "The on-screen-keyboard re-measure (keyboardOcclusionRect) has no the native candidate counterpart and is not proven; the sheet's 'never moves while dragging' is proven on the Position property only."
+    },
+    {
+      "id": "post-pickers-179",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the spectrum plane: a drag tracks 1:1 in saturation and value, keeps the hue, and commits once at release",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker spectrum plane::a drag tracks 1:1 in saturation and value, keeps the hue, and commits once at release"
+      ]
+    },
+    {
+      "id": "post-pickers-180",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the spectrum plane: the native drag detector follows the plane through a tab round trip",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker spectrum plane::the native drag detector follows the plane through a tab round trip"
+      ]
+    },
+    {
+      "id": "post-pickers-181",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the spectrum plane: losing the pointer class mid-drag restores where the drag began",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker spectrum plane::losing the pointer class mid-drag restores where the drag began"
+      ]
+    },
+    {
+      "id": "post-pickers-182",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the spectrum plane: phone portrait and landscape: every target keeps the floor and Apply stays on screen",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker spectrum plane::phone portrait and landscape: every target keeps the floor and Apply stays in the panel"
+      ],
+      "weaker": "Apply staying on screen and inside the sheet body is proven structurally (Apply outside the scrolling Body, route by orientation); the solved rects are live (color-phone-sheet-apply-on-screen)."
+    },
+    {
+      "id": "post-pickers-183",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the spectrum plane: on touch the preview leads the panel, and a drag shows the colour in a bubble above the finger",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker spectrum plane::on touch the preview leads the panel, and a drag shows the colour in a bubble above the finger"
+      ],
+      "weaker": "The bubble is not clamped to the room above the plane (main's bubbleRoom); readability near the top edge is live (color-touch-bubble-room)."
+    },
+    {
+      "id": "post-pickers-184",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the spectrum plane: the right stick steers the plane only while it holds focus, and a live hint says so",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker spectrum plane::the right stick steers the plane only while it holds focus, and a live hint says so"
+      ],
+      "weaker": "The owner-size leak check is replaced by the engine heartbeat listener count; camera sinking is proven as InputContext.Sink = true, the camera itself is live (color-stick-sinks-camera)."
+    },
+    {
+      "id": "post-pickers-185",
+      "group": "menus-pickers",
+      "title": "ColorPicker: the gallery tab: the Pickers scenario's committed line follows a commit, and a refusal changes nothing",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker composed in a screen::a committed line follows a commit, and a refusal changes nothing"
+      ],
+      "weaker": "The gallery Pickers scenario itself is not ported to the native candidate; the test composes the same Trim well, team swatches, save cell, committed line and refusal switch in a screen."
+    },
+    {
+      "id": "post-pickers-186",
+      "group": "menus-pickers",
+      "title": "ColorPicker: alpha, empty, disabled and refusals: alpha mounts opacity, writes #RRGGBBAA, and shows the checker under a translucent colour",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker alpha, empty, disabled and refusals::alpha mounts opacity, writes #RRGGBBAA, and shows the checker under a translucent colour"
+      ]
+    },
+    {
+      "id": "post-pickers-187",
+      "group": "menus-pickers",
+      "title": "ColorPicker: alpha, empty, disabled and refusals: the Bricks tab names the chosen brick in a field above its grid",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker alpha, empty, disabled and refusals::the Bricks tab names the chosen brick in a field above its grid"
+      ],
+      "weaker": "'Above' is proven by LayoutOrder in the Brick column, not by solved rects."
+    },
+    {
+      "id": "post-pickers-188",
+      "group": "menus-pickers",
+      "title": "ColorPicker: alpha, empty, disabled and refusals: the plane is two exact layers, the strips show what they select, and the thumbs are two-tone rings",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker alpha, empty, disabled and refusals::the plane is two exact layers, the strips show what they select, and the thumbs are two-tone rings"
+      ]
+    },
+    {
+      "id": "post-pickers-189",
+      "group": "menus-pickers",
+      "title": "ColorPicker: alpha, empty, disabled and refusals: empty shows the placeholder and the crossed plate; disabled keeps its colour and does not open",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker alpha, empty, disabled and refusals::empty shows the placeholder and the crossed plate; disabled keeps its colour and does not open"
+      ]
+    },
+    {
+      "id": "post-pickers-190",
+      "group": "menus-pickers",
+      "title": "ColorPicker: alpha, empty, disabled and refusals: refuses a malformed contract at construction and quarantines a late bad value",
+      "mainSpecs": [
+        "color_picker"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "pickers",
+      "candidateCases": [
+        "native_color_picker::native ColorPicker alpha, empty, disabled and refusals::refuses a malformed contract at construction and quarantines a late bad value"
+      ]
     }
   ],
   "bugs": [
@@ -39995,6 +42918,59 @@
         "overlays-snackbar-carve",
         "overlays-snackbar-paint-order",
         "overlays-snackbar-widths"
+      ]
+    },
+    "pickers": {
+      "mainCommit": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
+      "contracts": 190,
+      "mainCases": 194,
+      "mainCasesByClass": {
+        "a": 194
+      },
+      "needsLive": [
+        "chip-edit-live",
+        "color-drag-detector-coordinates",
+        "color-grid-wraps-two-dimensions",
+        "color-hidden-technique-size",
+        "color-phone-sheet-apply-on-screen",
+        "color-placement-real-layout",
+        "color-plane-no-banding",
+        "color-ring-contrast",
+        "color-stick-sinks-camera",
+        "color-ten-foot-center",
+        "color-touch-bubble-room",
+        "dtp-anchor-below",
+        "dtp-grid-layout",
+        "dtp-icon-toggle",
+        "dtp-menu-centred",
+        "dtp-native-navigation",
+        "dtp-paint",
+        "dtp-panel-hugs",
+        "dtp-phone-fit",
+        "dtp-range-drag",
+        "dtp-ten-foot",
+        "fields-accessories",
+        "fields-control-size",
+        "fields-error-still",
+        "fields-label-above",
+        "fields-select-on-focus",
+        "fields-visible-lines",
+        "number-scrub-live",
+        "number-step-buttons",
+        "number-units",
+        "picker-cards-live",
+        "picker-field-live",
+        "picker-menu-scroll-live",
+        "picker-segmented-live",
+        "pickers-avatar-row-press",
+        "slider-axis-live",
+        "slider-label-shrinks-live",
+        "slider-landing-live",
+        "slider-range-live",
+        "slider-rotation-live",
+        "slider-thumb-auto-live",
+        "toggle-row-align"
       ]
     }
   }

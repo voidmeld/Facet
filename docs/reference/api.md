@@ -560,6 +560,148 @@ UI.NumberInput "Laps" {
 }
 ```
 
+### ColorPicker
+
+`UI.ColorPicker(spec)` returns a Frame. The player uses it to choose any
+colour, for example the paint of a kart. For a few named colours, use
+`UI.Picker`. A fixed palette also fits `modes = { "swatches" }`.
+
+```luau
+local paint = Compose.cell(Color3.fromRGB(230, 57, 70))
+UI.ColorPicker "KartPaint" {
+    label = "Kart paint",
+    value = paint,
+    onChange = function(color)
+        paint:set(color)
+    end,
+    onCommit = function(color)
+        print("save", color)
+    end,
+}
+```
+
+- `value`: a Color3, or a readable of one. It is `nil` only with
+  `allowEmpty = true`. Then the plate has a cross and the text is
+  `placeholder`.
+- `onChange(color)`: receives each proposal. It is necessary unless `value` is
+  a writable cell or `readOnly` is true. With `allowEmpty`, a discarded draft
+  that opened empty proposes `nil`.
+- `onCommit(color)`: runs once at the end of each gesture.
+- `alpha` and `onAlphaChange(alpha)`: an opacity from 0 to 1. They add the
+  `Opacity` slider, and the text becomes `#RRGGBBAA`.
+- `modes`: the techniques in tab order. Each is `swatches`, `spectrum`,
+  `sliders` or `brick`. The default is the first three. Set it at construction.
+- `swatches`: a list of Color3 values or `{ color, label? }` items, or a
+  readable of one. The label or the hex text is the key of an item. Without
+  it, the control shows a generated grid of 48 colours.
+- `onSaveSwatch(color)` and `onRemoveSwatch({ color, label?, key })`: saved
+  colours. See below.
+- `style`: `automatic` (the default) or `inline`. Set it at construction.
+  `automatic` is a well that opens a panel. `inline` shows the panel in place.
+- `draft`: adds Cancel and Apply.
+- `isPresented`, `onPresentedChange(next)` and `onDismiss(reason)`: the open
+  state of the panel. The reason is `activate`, `outside`, `cancel`,
+  `anchorLost` or `apply`. Without `isPresented`, the control keeps its own
+  open state.
+- `enabled` and `readOnly`: booleans or readables. A disabled well keeps its
+  colour and does not open.
+- The field chrome keys: `label`, `requiredMark`, `hint`, `errorText`,
+  `controlSize`, `appearance` and `corners`. See
+  [Field chrome](#field-chrome).
+
+A value that is not legal at construction causes an error. A value that
+becomes illegal later is not painted. The control keeps the last legal colour
+and adds a line to the `diagnostics` attribute.
+
+#### Proposals and commits
+
+The colour belongs to you. Each change sends a proposal to `onChange`. The
+control shows only the colour that you then hold. If you refuse a change,
+nothing paints.
+
+A gesture is a drag of the plane, a slider drag or step, a stick session, a
+swatch press or a field commit. Without `draft`, each gesture commits once. B,
+Escape, a tap outside and Done close the panel and keep the colour.
+
+With `draft = true`, only Apply commits. Each other way out proposes the
+colour that the panel opened with. Cancel does this too. If you write the
+value while the panel is open, your value becomes the value that Cancel
+restores. Apply has the `facet-accent` tag.
+
+#### The well and the panel
+
+A well with a `label` is a form row. The `Well` button holds `Title`, the
+`Swatch`, the `Value` text and `Chevron`. A well without a label is the
+swatch alone, 44 by 44 pixels. The `label` attribute of the well names the
+colour, for example "Kart paint, #E63946".
+
+The panel opens below the well. If there is not sufficient room below, it
+opens above. If neither side has room, it opens beside the well. Otherwise it
+takes the larger side, and its `Body` ScrollingFrame scrolls. The panel never
+covers the well. On a touch screen narrower than 600 pixels, the panel is a
+sheet at the bottom of the screen with a Done button. On a ten-foot screen,
+the panel is a sheet at the center of the screen. The `placement` attribute is
+`bottom`, `top`, `right`, `left`, `sheet` or `center`.
+
+The panel holds these parts in order:
+
+1. `Modes`: a `UI.Picker` of the techniques. It is present only with two or
+   more modes.
+2. `Body`: the `Technique` frame. Each technique stays mounted. The inactive
+   techniques are not visible. The frame is as tall as the tallest technique,
+   so the panel keeps one height when the tab changes.
+3. `Opacity`: present only with `alpha`.
+4. `Readout`: the `Preview` swatch, the `Format` picker (RGB, HSV and Hex) and
+   the fields. On a touch screen, the readout comes before the body, so the
+   finger does not cover it.
+5. `Actions`: Cancel and Apply, or Done on a sheet.
+
+#### Techniques
+
+- `swatches`: the `Swatches` grid of 44 by 44 cells, at most 8 in a row. A
+  press on a cell proposes its colour. The chosen cell shows `Check`.
+- `spectrum`: the `Plane`, the `StickHint` and the `Hue` slider. The plane is
+  two native layers. `Hue` has a white-to-hue UIGradient across. `Value` has
+  a black UIGradient that fades in downward. A UIDragDetector on `Surface`
+  sets saturation and brightness 1:1. The hue track is a rainbow UIGradient.
+- `sliders`: the `Hue`, `Saturation` and `Brightness` sliders.
+- `brick`: the 128 engine BrickColors in the `BrickGrid`, and the name of the
+  chosen brick in `NameField` above the grid.
+
+The thumbs are rings with a white band between two dark lines. The opacity
+track shows the colour over a checker. If the preferred input changes during
+a drag of the plane, the colour returns to the start of the drag.
+
+On a touch screen, a bubble of the colour shows above the finger during a
+drag of the plane or a strip. On a gamepad, the right stick moves the plane
+while `Surface` has the selection. The stick input action sinks the stick, so
+a camera does not turn. The D-pad still moves the selection. `StickHint`
+shows while the plane has the selection.
+
+The fields commit typed values. `Hex` accepts `#RGB` and `#RRGGBB`. With
+`alpha`, it also accepts `#RRGGBBAA`. A hex text that is not legal stays in
+the field with its error, and nothing commits. A change of the readout format
+never changes the colour. A grey keeps the hue that the player set.
+
+There is no eyedropper, because Roblox cannot read a screen pixel. Put your
+own Button beside the well, and call `onChange` with the colour that it
+sampled.
+
+#### Saved colours
+
+The control keeps no colours of its own. `swatches` stays yours.
+
+- With `onSaveSwatch`, the grid ends with a `Save` cell named "Save colour".
+  It proposes the current colour. It is disabled when the list has the colour.
+- With `onRemoveSwatch`, an `Edit` button toggles editing. While editing, a
+  cell shows `Remove`. A press on a cell proposes its removal. Delete,
+  Backspace or ButtonX on the selected cell does the same. Then the selection
+  moves to the cell that takes its place.
+
+The root Frame has these attributes: `value`, `text`, `hue`, `saturation`,
+`brightness`, `mode`, `format`, `presented`, `placement`, `hexError`,
+`columns`, `editing` and `diagnostics`. `ref` receives the root Frame.
+
 ### DateTimePicker
 
 `UI.DateTimePicker(spec)` returns a Frame. The player uses it to choose a
@@ -894,7 +1036,8 @@ Picker requires a writable `selected` and `options`. Each option has `value` and
 array or a readable.
 
 The styles are `automatic`, `segmented`, `inline`, `radioGroup`,
-`navigationLink` and `menu`. The `automatic` style follows the options, the
+`navigationLink`, `menu` and `cards`. The `automatic` style never chooses
+`cards`. The `automatic` style follows the options, the
 measured width and the native PreferredInput:
 
 - If you supply `query`, it uses the navigation-link presentation.
@@ -913,6 +1056,43 @@ edge of the row and the value on the trailing edge.
 writes `selected`, and then calls `onChange(next)`. An optional writable `query`
 filters the labels. The other options include `label`, `placeholder`, `axis`,
 `sizing`, `iconOnly`, `textSize`, `isPresented` and `enabled`.
+
+Picker is a field. These options apply:
+
+- `requiredMark`, `hint` and `errorText`: as on [TextInput](#field-chrome). The
+  message line shows under the picker in each style. An error adds the
+  `facet-invalid` tag to a menu trigger. The picker does not move.
+- `controlSize`: the height of the menu trigger, the segments and the rows.
+- `appearance`: for `menu` and `navigationLink`, `standard`, `contrast` (the
+  emphasis plate) or `utility`. For `segmented`, `filled` (the default plate),
+  `stroke` (the `facet-segmented-stroke` tag) or `utility` (no plate).
+  `automatic` takes all five words and maps them onto the style on screen.
+  `inline`, `radioGroup` and `cards` refuse `appearance`. A readable word that
+  is not in the family causes an error, and the last correct paint stays.
+- `corners`: `pill` or `square`, on the menu trigger or the segmented strip.
+- `maxHeight`: for `menu`, `navigationLink` and `automatic`, a finite number of
+  pixels above zero. It caps the open panel. The panel always shows one row.
+- `indicatorPosition`: for `radioGroup` only, `leading` (the default) or
+  `trailing`. It puts the radio mark on that edge of each row.
+
+A labelled `menu` picker shows its title above a trigger at the leading edge.
+A labelled `navigationLink` shows the title and the chosen value in one row
+button. A searchable list marks the chosen row with a check and paints no
+selection plate. Opening a menu puts the selection on the chosen row.
+
+The `cards` style shows each option as a card with the `facet-card-option`
+tag: the icon, the label, the description, `meta` and `badge`. The chosen card
+has the emphasis plate. With `axis = "x"`, the cards wrap onto more lines.
+With `required = false`, activating the chosen card again sets `selected` to
+`nil`.
+
+Options also take `meta` (secondary text), `sectionTitle` (a caption heading
+above the option in menus and in stacked rows), `avatar = { name, image?,
+userId? }` (an Avatar at the leading edge of a menu row, which adds no stop)
+and `indicator = { status, form?, count? }` (a StatusIndicator that follows
+the live option record). A menu row also shows `badge` as a `Badge` with a
+`Count`. Menu items take the same `badge`, `meta`, `avatar` and `sectionTitle`
+fields, and Menu takes `maxHeight`.
 
 ### ComboBox
 

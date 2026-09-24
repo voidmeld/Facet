@@ -252,7 +252,16 @@ local lifetime = Compose.createRootOwner(function()
 			end
 		end
 		actions.avatarContent = function(sceneRuntime, target)
-			return scenes.avatar(sceneRuntime, target, model.angle, model.palette, model.hat, motionPolicy, active)
+			return scenes.avatar(
+				sceneRuntime,
+				target,
+				model.angle,
+				model.palette,
+				model.hat,
+				motionPolicy,
+				active,
+				model.hatTint
+			)
 		end
 		return actions
 	end

@@ -15,10 +15,11 @@ styling. `Host` is the runtime's native constructor table.
   saved table has sortable columns, selection, drag ordering, a session column
   and notes that commit on Return or focus loss and restore on Escape.
 - **Avatar:** an animated R15 explorer with a procedural fallback, palette and
-  hat choices, rotation, shared turn increments, auto-spin, reset confirmation
-  and a summary sheet with retained detents. `UI.NumberInput` accepts an exact
-  angle or a sum, such as `90+45`, with `Facet.recipes.arithmetic.parse`. The
-  preview and the settings share a row when space permits and wrap otherwise.
+  hat choices, a `UI.ColorPicker` for the hat colour, rotation, shared turn
+  increments, auto-spin, reset confirmation and a summary sheet with retained
+  detents. `UI.NumberInput` accepts an exact angle or a sum, such as `90+45`,
+  with `Facet.recipes.arithmetic.parse`. The preview and the settings share a
+  row when space permits and wrap otherwise.
 - **Chat:** editable prompts, persistent messages, streaming local replies,
   Stop, message removal with Undo, Clear, suggested prompts in a `UI.Grid` and
   optional end following. `UI.Vote` records the feedback for a reply. An affixed

@@ -1592,6 +1592,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		p.Selectable = function(use: ComposeTypes.Use)
 			return (spec.selected ~= nil or removable) and enabled(spec, use)
 		end
+		if p.haptic == nil and spec.selected ~= nil then
+			p.haptic = true
+		end
 		if spec.leading or spec.trailing or removable then
 			p.Text = ""
 			local contents: { ComposeTypes.Child } = {}

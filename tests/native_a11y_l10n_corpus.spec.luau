@@ -298,6 +298,15 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 			end,
 		}
 	end,
+	ColorPicker = function()
+		return {
+			value = Compose.cell(require("@lune/roblox").Color3.new(1, 0, 0)),
+			onChange = function() end,
+			label = "Paint",
+			style = "inline",
+			modes = { "swatches", "spectrum", "sliders" },
+		}
+	end,
 	ShortcutHint = function()
 		return { keys = { { "Ctrl", "K" } } }
 	end,

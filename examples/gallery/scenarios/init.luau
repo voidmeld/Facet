@@ -31,6 +31,7 @@ local names = {
 	"overlays",
 	"page_view",
 	"paging",
+	"pickers",
 	"preferred_transparency",
 	"progress_ring",
 	"radial_menu",

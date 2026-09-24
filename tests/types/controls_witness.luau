@@ -112,6 +112,26 @@ local cardProps: Facet.CardSpec = {
 }
 local card: Frame = UI.Card(cardProps)
 local sealed: Frame = UI.badged(UI.Button({ label = "Inbox" }), 3)
+local raceDay = Compose.cell({ year = 2026, month = 10, day = 4 } :: Facet.CivilDate?)
+local datePicker: GuiObject = UI.DateTimePicker({
+	label = "Race day",
+	value = raceDay,
+	onChange = function(next: Facet.CivilDate?)
+		raceDay:set(next)
+	end,
+	min = { year = 2026, month = 1, day = 1 },
+})
+local startPaint: Color3? = Color3.fromRGB(230, 57, 70)
+local paint: Facet.Cell<Color3?> = Compose.cell(startPaint)
+local colorProps: Facet.ColorPickerProps = {
+	label = "Kart paint",
+	value = paint,
+	onChange = function(next: Color3)
+		paint:set(next)
+	end,
+}
+local colorPicker: Frame = UI.ColorPicker(colorProps)
+local civilDay: Facet.CivilDate? = Facet.civilDate.parse("09/03/2026")
 local dialogOpen = Compose.cell(false)
 local dialogProps: Facet.DialogSpec = {
 	isPresented = dialogOpen,
@@ -254,6 +274,8 @@ local mounted: { GuiObject } = {
 	vote,
 	card,
 	sealed,
+	datePicker,
+	colorPicker,
 	dialog,
 	popover,
 	notice,
@@ -280,4 +302,5 @@ local mounted: { GuiObject } = {
 	tableView,
 	actions,
 }
+local _civil = civilDay
 return mounted
