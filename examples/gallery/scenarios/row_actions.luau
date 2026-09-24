@@ -56,15 +56,16 @@ return {
 		local Compose, UI = ctx.Compose, ctx.UI
 		local selected = Compose.cell("list")
 		local tabs, surfaces = {}, {}
-		for _, kind in { "list", "table", "virtual" } do
+		for _, entry in { { "list", "List" }, { "table", "Table" }, { "virtual", "Virtual list" } } do
+			local kind, label = entry[1], entry[2]
 			table.insert(tabs, {
 				id = kind,
-				label = kind,
+				label = label,
 				content = function()
 					local rows = table.clone(SEED)
 					local built = build(ctx, {
 						name = "Mail_" .. kind,
-						title = "Mail: " .. kind,
+						title = "Mail",
 						rows = rows,
 						count = #rows,
 						actions = true,

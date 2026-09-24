@@ -346,7 +346,7 @@ function example.build(ctx: any)
 			end
 		end
 		local board = Host.Frame "board" {
-			Size = UDim2.new(1, 0, 0, 0),
+			Size = UDim2.fromOffset(COLS * 48 + (COLS - 1) * 4, 0),
 			BackgroundTransparency = 1,
 			AutomaticSize = Enum.AutomaticSize.Y,
 			Host.UIGridLayout({
@@ -475,6 +475,7 @@ function example.build(ctx: any)
 					Host.UIListLayout({
 						FillDirection = Enum.FillDirection.Vertical,
 						SortOrder = Enum.SortOrder.LayoutOrder,
+						HorizontalAlignment = Enum.HorizontalAlignment.Center,
 						Padding = UDim.new(0, 8),
 					}),
 					UI.Label "Title" {
@@ -486,7 +487,7 @@ function example.build(ctx: any)
 						textRole = "title",
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
+						TextXAlignment = Enum.TextXAlignment.Center,
 					},
 					UI.Label "Status" {
 						BackgroundTransparency = 1,
@@ -508,7 +509,7 @@ function example.build(ctx: any)
 						textRole = "caption",
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
-						TextXAlignment = Enum.TextXAlignment.Left,
+						TextXAlignment = Enum.TextXAlignment.Center,
 					},
 					keyboard,
 					UI.Button "Restart" {
