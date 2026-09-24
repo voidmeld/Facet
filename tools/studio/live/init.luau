@@ -404,7 +404,7 @@ end
 function live.record(tag: string, suites: { string }?): string
 	local lines = {}
 	for _, suite in suites or { "layout_geometry", "gallery", "needs_live" } do
-		local json = live.run(suite, { keepGallery = suite == "gallery" })
+		local json = live.run(suite, { keepGallery = suite ~= "layout_geometry" })
 		live.save(`{suite}-{tag}`, json)
 		table.insert(lines, live.summary(json))
 	end
