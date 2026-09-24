@@ -74,7 +74,7 @@ local lifetime = Compose.createRootOwner(function()
 	local stopWorld = runtime.mount(function()
 		modeMotion = runtime.tween(function(use)
 			return if use(mode) == "Screen" then 1 else 0
-		end, { seconds = 0.48 })
+		end, { seconds = 0.6, ease = Compose.easing.inOutCubic })
 		cameraMotion = runtime.spring(function(use)
 			return use(cameraGoal)
 		end, { period = 0.65, damping = 1 })
@@ -140,7 +140,7 @@ local lifetime = Compose.createRootOwner(function()
 							then Color3.fromRGB(120, 214, 182)
 							else Color3.fromRGB(170, 150, 255),
 						Brightness = function(use)
-							return if use(dark) then 1.6 else 0.5
+							return if use(dark) then 1.6 else 0.25
 						end,
 						Range = 22,
 						Shadows = false,
@@ -179,7 +179,13 @@ local lifetime = Compose.createRootOwner(function()
 					CFrame = CFrame.new(side * 20, 8, 9),
 					Color = Color3.fromRGB(148, 128, 232),
 					Material = Enum.Material.Neon,
-					Host.PointLight({ Color = Color3.fromRGB(140, 119, 227), Brightness = 2, Range = 32 }),
+					Host.PointLight({
+						Color = Color3.fromRGB(140, 119, 227),
+						Brightness = function(use)
+							return if use(dark) then 2 else 0.6
+						end,
+						Range = 32,
+					}),
 				}
 			)
 		end
@@ -234,7 +240,9 @@ local lifetime = Compose.createRootOwner(function()
 				SizingMode = Enum.SurfaceGuiSizingMode.FixedSize,
 				CanvasSize = Vector2.new(screens.CANVAS.w, screens.CANVAS.h),
 				LightInfluence = 0,
-				Brightness = 1.3,
+				Brightness = function(use)
+					return if use(dark) then 1.3 else 1.1
+				end,
 				MaxDistance = 100,
 				ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 				Enabled = function(use)
@@ -242,9 +250,7 @@ local lifetime = Compose.createRootOwner(function()
 				end,
 				sheet,
 				Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
-				Compose.show(function(use)
-					return use(modeProgress) < 1
-				end, views[name]),
+				views[name](),
 			})
 		end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	end
@@ -267,19 +273,14 @@ local lifetime = Compose.createRootOwner(function()
 			end,
 			sheet,
 			Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
-			Compose.show(
-				function(use)
-					return use(modeProgress) > 0
-				end,
-				desktop.create(
-					Facet,
-					runtime,
-					views,
-					model,
-					modeProgress,
-					{ theme = package, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
-				)
-			),
+			desktop.create(
+				Facet,
+				runtime,
+				views,
+				model,
+				modeProgress,
+				{ theme = package, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
+			)(),
 		}
 	end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	local viewport = Facet.Roblox.createViewport(camera)
@@ -320,6 +321,20 @@ local lifetime = Compose.createRootOwner(function()
 	end)
 	entrance:set(1)
 	frameCamera()
+	Host.BindableFunction "VirtualMonitorsAPI" {
+		Parent = workspace,
+		OnInvoke = Compose.static(function(command, argument)
+			if command == "mode" and (argument == "Screen" or argument == "Spatial") then
+				model.modeChosen = true
+				mode:set(argument)
+			elseif command == "dark" then
+				dark:set(argument == true)
+			elseif command == "focus" then
+				model.focus(argument)
+			end
+			return { mode = mode:peek(), dark = dark:peek(), focused = model.focused:peek() }
+		end),
+	}
 end, runtime.reactor)
 script.Destroying:Connect(function()
 	lifetime.dispose()
