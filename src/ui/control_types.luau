@@ -13,6 +13,7 @@ export type Controls = {
 	ZStack: typeof(((nil :: unknown) :: Layout.LayoutControls).ZStack),
 	ScrollView: typeof(((nil :: unknown) :: Layout.LayoutControls).ScrollView),
 	Grid: typeof(((nil :: unknown) :: Layout.LayoutControls).Grid),
+	ErrorBoundary: typeof(((nil :: unknown) :: Layout.LayoutControls).ErrorBoundary),
 	fill: typeof(((nil :: unknown) :: Layout.LayoutControls).fill),
 	Button: typeof(((nil :: unknown) :: Inputs.InputControls).Button),
 	Toggle: typeof(((nil :: unknown) :: Inputs.InputControls).Toggle),

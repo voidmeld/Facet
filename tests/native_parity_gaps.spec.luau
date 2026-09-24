@@ -229,6 +229,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		Stage = function()
 			return {}
 		end,
+		ErrorBoundary = function()
+			return { view = content, fallback = content }
+		end,
 		StatusIndicator = function()
 			return { status = "info" }
 		end,
@@ -283,7 +286,7 @@ t.describe("native parity gaps", function()
 			end
 		end
 		table.sort(names)
-		t.expect(#names).toBe(41)
+		t.expect(#names).toBe(42)
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()

@@ -68,6 +68,7 @@ export type ScreenProps = LayoutTypes.ScreenProps
 export type ZStackProps = LayoutTypes.ZStackProps
 export type ScrollViewProps = LayoutTypes.ScrollViewProps
 export type GridProps = LayoutTypes.GridProps
+export type ErrorBoundaryProps = LayoutTypes.ErrorBoundaryProps
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
