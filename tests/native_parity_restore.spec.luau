@@ -620,3 +620,158 @@ t.describe("native parity restore: Table multi-select keys", function()
 		w.stop()
 	end)
 end)
+
+t.describe("native parity restore: RowActions outside tap", function()
+	local function rowsWorld(options: { [string]: any }?): (World, { [string]: any })
+		local settings: { [string]: any } = options or {}
+		local state: { [string]: any } = {
+			open = { a = Compose.cell(nil), b = Compose.cell(nil) },
+			coordinator = Compose.cell(nil),
+			fired = {},
+			outside = 0,
+		}
+		local w = world(function(UI, Host)
+			local function row(name: string)
+				return UI.RowActions({
+					Name = name,
+					open = state.open[name],
+					onOpenChange = settings.onOpenChange,
+					coordinator = state.coordinator,
+					content = function()
+						return Host.TextButton "Content" { Text = name }
+					end,
+					trailing = {
+						{
+							id = "Delete",
+							label = "Delete",
+							role = settings.role,
+							onActivate = function()
+								table.insert(state.fired, name)
+							end,
+						},
+					},
+				})
+			end
+			return Host.Frame "List" {
+				row("a"),
+				row("b"),
+				Host.TextButton "Outside" {
+					Text = "Outside",
+					Activated = function()
+						state.outside += 1
+					end,
+				},
+			}
+		end, { reducedMotion = settings.reducedMotion ~= false })
+		local V2 = w.engine.types.Vector2
+		local a, b = find(w.screen, "a"), find(w.screen, "b")
+		a.AbsolutePosition, a.AbsoluteSize = V2.new(0, 0), V2.new(300, 44)
+		b.AbsolutePosition, b.AbsoluteSize = V2.new(0, 44), V2.new(300, 44)
+		return w, state
+	end
+	local function press(w: World, x: number, y: number, kind: string?, processed: boolean?)
+		local E = w.engine.types.Enum
+		w.input.InputBegan.fire({
+			UserInputType = (E.UserInputType :: any)[kind or "MouseButton1"],
+			UserInputState = E.UserInputState.Begin,
+			Position = w.engine.types.Vector3.new(x, y, 0),
+		}, processed == true)
+	end
+	local function catchers(w: World): number
+		local count = 0
+		for _, node in w.screen:GetDescendants() do
+			if node:IsA("GuiObject") and node.Active and node.Size.X.Scale >= 1 and node.Size.Y.Scale >= 1 then
+				count += 1
+			end
+		end
+		return count
+	end
+
+	t.it("closes an open tray on a tap outside the row and never swallows that tap", function()
+		local w, state = rowsWorld()
+		local before = catchers(w)
+		state.open.a:set("trailing")
+		t.expect(catchers(w)).toBe(before)
+		press(w, 150, 400, "MouseButton1", true)
+		t.expect(state.open.a:peek()).toBeNil()
+		find(w.screen, "Outside").Activated.fire()
+		t.expect(state.outside).toBe(1)
+		t.expect(#state.fired).toBe(0)
+		state.open.a:set("trailing")
+		press(w, 150, 400, "Touch")
+		t.expect(state.open.a:peek()).toBeNil()
+		w.stop()
+	end)
+
+	t.it("closes the open row when another row is pressed and keeps it open for a press inside it", function()
+		local w, state = rowsWorld()
+		state.open.a:set("trailing")
+		press(w, 280, 20)
+		t.expect(state.open.a:peek()).toBe("trailing")
+		press(w, 100, 60)
+		t.expect(state.open.a:peek()).toBeNil()
+		t.expect(state.open.b:peek()).toBeNil()
+		w.stop()
+	end)
+
+	t.it("ignores a press while no tray is open, a keyboard press and a secondary button", function()
+		local requests: { any } = {}
+		local w, state = rowsWorld({
+			onOpenChange = function(edge)
+				table.insert(requests, edge or "closed")
+			end,
+		})
+		press(w, 150, 400)
+		t.expect(#requests).toBe(0)
+		state.open.a:set("trailing")
+		press(w, 150, 400, "Keyboard")
+		press(w, 150, 400, "MouseButton2")
+		t.expect(#requests).toBe(0)
+		press(w, 150, 400)
+		t.expect(requests).toEqual({ "closed" })
+		t.expect(state.open.a:peek()).toBe("trailing")
+		w.stop()
+	end)
+
+	t.it("lets a commit in flight finish once when an outside tap arrives", function()
+		local w, state = rowsWorld({ role = "destructive", reducedMotion = false })
+		state.open.a:set("trailing")
+		w.engine.heartbeat.fire(0.3)
+		find(find(w.screen, "a"), "Delete").Activated.fire()
+		t.expect(state.fired).toEqual({})
+		press(w, 150, 400)
+		find(w.screen, "Outside").Activated.fire()
+		t.expect(state.outside).toBe(1)
+		w.engine.heartbeat.fire(0.3)
+		t.expect(state.fired).toEqual({ "a" })
+		w.stop()
+	end)
+
+	t.it("adds the top bar inset when the screen ignores it", function()
+		local w, state = rowsWorld()
+		w.screen.IgnoreGuiInset = true
+		w.gui.GetGuiInset = function()
+			return w.engine.types.Vector2.new(0, 58), w.engine.types.Vector2.zero
+		end
+		local a = find(w.screen, "a")
+		a.AbsolutePosition = w.engine.types.Vector2.new(0, 58)
+		state.open.a:set("trailing")
+		press(w, 100, 10)
+		t.expect(state.open.a:peek()).toBe("trailing")
+		press(w, 100, 60)
+		t.expect(state.open.a:peek()).toBeNil()
+		w.stop()
+	end)
+
+	t.it("releases its input listener with the row", function()
+		local w, state = rowsWorld()
+		local before = w.input.InputBegan.count()
+		state.open.a:set("trailing")
+		t.expect(w.input.InputBegan.count()).toBe(before + 1)
+		state.open.a:set(nil)
+		t.expect(w.input.InputBegan.count()).toBe(before)
+		state.open.a:set("trailing")
+		w.stop()
+		t.expect(w.input.InputBegan.count()).toBe(0)
+	end)
+end)
