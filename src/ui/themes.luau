@@ -788,7 +788,7 @@ function themes.createStyleSheet(
 		local value = read(preferredTransparency, use)
 		return if type(value) == "number" then math.clamp(value, 0, 1) else 1
 	end
-	local previousSeconds: number?, defaultTiming: TweenInfo? = nil, nil
+	local defaultTimings: { [number]: TweenInfo } = {}
 	local function timingFor(package: ThemeTypes.ThemePackage, use: Compose.Use): TweenInfo
 		local explicit = read(settings.transition, use)
 		local seconds
@@ -801,11 +801,13 @@ function themes.createStyleSheet(
 					and package.metrics.motion.normal
 				or 0.2
 		end
-		if seconds ~= previousSeconds then
-			previousSeconds = seconds
-			defaultTiming = types.TweenInfo.new(seconds, types.Enum.EasingStyle.Quad, types.Enum.EasingDirection.Out)
+		local cached: TweenInfo? = defaultTimings[seconds]
+		if cached then
+			return cached
 		end
-		return defaultTiming :: TweenInfo
+		local timing = types.TweenInfo.new(seconds, types.Enum.EasingStyle.Quad, types.Enum.EasingDirection.Out)
+		defaultTimings[seconds] = timing
+		return timing
 	end
 	local definitions: { [string]: NativeRule } = {}
 	type CompiledRules = {
@@ -871,6 +873,29 @@ function themes.createStyleSheet(
 		timing: TweenInfo?,
 	}
 	local mounted: { [string]: MountedRule } = {}
+	local transitionTables: { [ThemeTypes.RuleProperties]: { [TweenInfo]: { [string]: TweenInfo } } } = setmetatable(
+		{},
+		{ __mode = "k" }
+	) :: any
+	local function transitionsFor(properties: ThemeTypes.RuleProperties, timing: TweenInfo): { [string]: TweenInfo }
+		local byTiming = transitionTables[properties]
+		if byTiming == nil then
+			byTiming = setmetatable({}, { __mode = "k" }) :: any
+			transitionTables[properties] = byTiming
+		end
+		local transitions = byTiming[timing]
+		if transitions == nil then
+			local built: { [string]: TweenInfo } = {}
+			for property, value in properties do
+				if typeof(value) == "Color3" or string.find(property, "Transparency$") then
+					built[property] = timing
+				end
+			end
+			byTiming[timing] = built
+			transitions = built
+		end
+		return transitions :: { [string]: TweenInfo }
+	end
 	local function apply(record: MountedRule, definition: NativeRule, timing: TweenInfo)
 		local properties = definition.properties
 		local propertiesChanged = record.properties == nil
@@ -878,13 +903,9 @@ function themes.createStyleSheet(
 		if not propertiesChanged and record.timing == timing then
 			return
 		end
-		local transitions: { [string]: TweenInfo } = {}
-		for property, value in properties do
-			if typeof(value) == "Color3" or string.find(property, "Transparency$") then
-				transitions[property] = timing
-			end
-		end
-		local timingChanged = record.transitions == nil or not sameProperties(record.transitions, transitions)
+		local transitions = transitionsFor(properties, timing)
+		local timingChanged = record.transitions ~= transitions
+			and (record.transitions == nil or not sameProperties(record.transitions :: any, transitions))
 		if timingChanged then
 			record.node:SetPropertyTransitions(transitions)
 			record.transitions = transitions
