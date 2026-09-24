@@ -384,7 +384,7 @@
     "row-actions": {
       "mainCases": 264,
       "a": 149,
-      "aWeaker": 101,
+      "aWeaker": 19,
       "b": 0,
       "c": 112,
       "d": 3,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1568
+    "coveredButWeaker": 1486
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2530,9 +2530,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
-        "native_gallery_collections::native gallery collections::uses mail table activation editing and native row reorder with independent state"
-      ],
-      "weaker": "Covered on generic tables and the mail scenario, not the playlist; the automatic Edit toggle on touch is not asserted."
+        "native_gallery_collections::native gallery collections::uses mail table activation editing and native row reorder with independent state",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-38 selects playlist rows additively by touch and reorders by a touch handle drag"
+      ]
     },
     {
       "id": "apps2-39",
@@ -2545,9 +2545,10 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
-        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input"
+        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-39 grabs, steps and drops a playlist row by gamepad and reaches a swiped tray's Remove"
       ],
-      "weaker": "Not on the playlist; the tray-reachability by Tab is asserted only as focused destructive input."
+      "weaker": "The pad walk from the rating strip into a revealed tray and Tab order use native GuiService geometric navigation. The headless engine cannot solve that walk."
     },
     {
       "id": "apps2-40",
@@ -2561,9 +2562,9 @@
       "candidateCases": [
         "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows",
         "native_gallery_workflows::native gallery workflows::swipes the native mail list and deletes exactly the chosen message",
-        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination"
-      ],
-      "weaker": "Playlist reorder/remove/restore are driven through built.reorder/removeTrack/restore functions rather than gestures; swipe actions are verified on the mail scenario."
+        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-40 reorders, swipes Top and Remove, plays on a plain tap and restores the playlist"
+      ]
     },
     {
       "id": "apps2-41",
@@ -5837,9 +5838,9 @@
       "class": "a",
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::NVM-8 conversation menus stream progress and expose destructive touch actions",
-        "native_virtual_monitors::native virtual monitors::restores editable streaming drafts and fresh sends with persistent responsive chat prompts"
-      ],
-      "weaker": "Main asserted the progress fill width grows as the reply streams and that Clear is offered from Send's split menu; candidate asserts ReplyProgress exists and Clear from the Conversation menu (Send's menu offers Fresh)."
+        "native_virtual_monitors::native virtual monitors::restores editable streaming drafts and fresh sends with persistent responsive chat prompts",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-265 grows the reply progress, swipes a message away and clears from Send's split menu"
+      ]
     },
     {
       "id": "apps2-266",
@@ -9948,9 +9949,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
         "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_rows::native parity weaker rows::collections-11 reorders list rows by pointer both ways and leaves plain rows to native panning"
       ],
-      "weaker": "The candidate reorders only through the Move handle's UIDragDetector. No test asserts that a plain non-reorderable list has no handle, or that touch on the row body pans natively."
+      "weaker": "A touch on the row body must pan the native ScrollingFrame. The headless test proves only that no UIDragDetector exists outside the Move handle; the engine owns the pan."
     },
     {
       "id": "collections-12",
@@ -10510,9 +10512,11 @@
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
-        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal"
+        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
+        "native_parity_weaker_rows::native parity weaker rows::collections-53 passes through without actions, reveals only filled edges and tracks the tray",
+        "native_parity_weaker_rows::native parity weaker rows::collections-53 animates a reveal over frames, snaps under reduced motion and leaks nothing"
       ],
-      "weaker": "NC18 asserts the tray width tracking a 12 px drag and an icon image. NC20 asserts TextBounds enlarging and shrinking the tray. No test asserts no-action passthrough, a label-only action, _open on an empty edge, or fra..."
+      "weaker": "Tray button width re-derivation after a preferred text size change needs the engine to recompute TextBounds. TextBounds-driven tray growth is asserted in native_collections."
     },
     {
       "id": "collections-54",
@@ -10562,9 +10566,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
-        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination"
-      ],
-      "weaker": "Pointer activation of a tray button is asserted (NC17). Touch is the same GuiButton.Activated path, and no touch-specific test exists."
+        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
+        "native_parity_weaker_rows::native parity weaker rows::collections-57 runs a tray action once from touch, keyboard and gamepad and closes the tray"
+      ]
     },
     {
       "id": "collections-58",
@@ -10616,9 +10620,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
-        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route"
-      ],
-      "weaker": "No test asserts that the minus is absent when editing is never wired, or that the minus label mirrors the destructive action's label."
+        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
+        "native_parity_weaker_rows::native parity weaker rows::collections-61 shows the minus only while editing a destructive row and deletes once from it"
+      ]
     },
     {
       "id": "collections-62",
@@ -10666,9 +10670,9 @@
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
-        "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys"
-      ],
-      "weaker": "The hosted engine is gone. The same RowActions control composes into rows (NC17), but the gesture tests run on a standalone RowActions."
+        "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
+        "native_parity_weaker_rows::native parity weaker rows::collections-65 slides, opens, commits, closes and coordinates swipes on real table rows"
+      ]
     },
     {
       "id": "collections-66",
@@ -10691,9 +10695,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input"
-      ],
-      "weaker": "Asserted on a standalone RowActions only. There is no test for Table editing forwarded into row actions."
+        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
+        "native_parity_weaker_rows::native parity weaker rows::collections-67 forwards table editing into hosted rows and deletes the row its minus belongs to"
+      ]
     },
     {
       "id": "collections-68",
@@ -10817,9 +10821,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination"
-      ],
-      "weaker": "Asserted with a manual coordinator:set, not with two real rows."
+        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
+        "native_parity_weaker_rows::native parity weaker rows::collections-76 lets one of two real list rows stay open and releases the claim on removal"
+      ]
     },
     {
       "id": "collections-77",
@@ -11003,9 +11007,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal"
-      ],
-      "weaker": "Only a second activation during a pending departure is asserted, not close() during the commit."
+        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
+        "native_parity_weaker_rows::native parity weaker rows::collections-88 keeps an irrevocable commit running through close attempts and new gestures"
+      ]
     },
     {
       "id": "collections-89",
@@ -11389,9 +11393,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet"
-      ],
-      "weaker": "For the pinned row, only Move.Interactable=false is asserted, not that the order is unchanged after a drag. Protected delete asserts Interactable=false and the row count."
+        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
+        "native_parity_weaker_rows::native parity weaker rows::collections-116 refuses locked selection, pinned movement and protected deletion in the run sheet"
+      ]
     },
     {
       "id": "collections-117",
@@ -11441,9 +11445,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "Only multi range selection. No single-mode refusal assertion."
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_rows::native parity weaker rows::collections-120 refuses unselectable rows in single mode, refuses pinned grabs and keeps absent predicates open"
+      ]
     },
     {
       "id": "collections-121",
@@ -11478,9 +11482,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
-        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet"
-      ],
-      "weaker": "Asserted on a standalone RowActions (per-action enabled=false replaces rowDeletable), not through Table.rowActions or VirtualList rows. For 'still flags/archives', the per-action scope is not asserted."
+        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
+        "native_parity_weaker_rows::native parity weaker rows::collections-122 protects deletion on every route through table and list hosts but keeps other actions"
+      ]
     },
     {
       "id": "collections-123",
@@ -11836,9 +11840,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
-        "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows"
-      ],
-      "weaker": "The system-interrupt (WindowFocusReleased) and screen-dismiss teardown are not asserted, nor is the absence of Move on non-reorderable tables."
+        "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
+        "native_parity_weaker_rows::native parity weaker rows::collections-145 keeps the dragged row in place, drags single or block rows and ignores no-op drops",
+        "native_parity_weaker_rows::native parity weaker rows::collections-145 cancels a table drag on focus loss or dismissal and gives non-reorderable tables no drag"
+      ]
     },
     {
       "id": "collections-146",
@@ -12122,9 +12127,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet"
-      ],
-      "weaker": "Only indirect: RunSheet finds a 'delete' action inside a Table row."
+        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
+        "native_parity_weaker_rows::native parity weaker rows::collections-168 wraps only table rows whose callback returns actions"
+      ]
     },
     {
       "id": "collections-169",
@@ -13726,9 +13731,10 @@
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
         "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "Only NC17 composes RowActions inside a VirtualList row. The other behaviors are asserted on a standalone RowActions."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_rows::native parity weaker rows::collections-281 locks, coordinates, releases, fires once and follows reactive actions inside list rows",
+        "native_parity_weaker_rows::native parity weaker rows::collections-281 keeps a model-owned open row slid when virtualization remounts it"
+      ]
     },
     {
       "id": "collections-282",
@@ -13775,9 +13781,9 @@
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
         "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
-        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal"
-      ],
-      "weaker": "The 'row is reusable after commit' half fails: see the kept-row bug."
+        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
+        "native_parity_weaker_rows::native parity weaker rows::collections-284 measures, taps once, hands off with motion and collapses only the committed list row"
+      ]
     },
     {
       "id": "collections-285",
@@ -14897,9 +14903,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::removes keyed chips toward the next then previous native target and caller fallback"
-      ],
-      "weaker": "Remove is fired via Activated only; body inertness and per-input paths not asserted."
+        "native_inputs::native input controls::removes keyed chips toward the next then previous native target and caller fallback",
+        "native_parity_weaker_rows::native parity weaker rows::inputs-58 keeps a removable chip body inert and removes once through every input"
+      ]
     },
     {
       "id": "inputs-59",
@@ -34425,6 +34431,14 @@
       "file": "src/ui/collection_snap.luau",
       "title": "A flick without a pointer press (wheel, trackpad or engine momentum) started from a stale offset. A fast flick up from row 8 went to the top, and a flick down after a snap did not advance. A scroll from rest now starts at the resting offset.",
       "fixedBy": "native_parity_weaker_scrolling::native parity weaker scrolling::collections-125 snap resolves nearest, flick, fling, end and fitting content boundaries"
+    },
+    {
+      "id": "WA4",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collection_row_actions.luau",
+      "title": "A row stayed open and kept the shared open-row claim when the actions of its open side became empty. When the actions came back, the tray opened again without a swipe. The row now closes when its open side has no actions.",
+      "fixedBy": "native_parity_weaker_rows::native parity weaker rows::collections-281 locks, coordinates, releases, fires once and follows reactive actions inside list rows"
     }
   ]
 }
