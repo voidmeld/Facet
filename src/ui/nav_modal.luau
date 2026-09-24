@@ -170,8 +170,18 @@ return function(ctx: Types.Context): Nav.Surfaces
 		)
 		if gui then
 			local mounted = ctx.observe(root, "Parent")
+			local rootInteractive = ctx.observe(root, "Interactable")
+			local panelInteractive = ctx.observe(panel, "Interactable")
 			Compose.watch(function(use: Core.Use)
-				if use(mounted) and focusIn(use) and not within(gui.SelectedObject, root) then
+				if not use(rootInteractive) or not use(panelInteractive) then
+					if within(gui.SelectedObject, root) then
+						gui.SelectedObject = if previous
+								and previous.Parent ~= nil
+								and not within(previous, root)
+							then previous
+							else nil
+					end
+				elseif use(mounted) and focusIn(use) and not within(gui.SelectedObject, root) then
 					gui.SelectedObject = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
 				end
 			end)

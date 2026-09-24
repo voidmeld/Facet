@@ -57,11 +57,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local opacity = runtime.tween(function(use: Core.Use)
 			return if use(mounted) and use(state).top then 1 else 0
 		end, transition)
+		local function still(use: Core.Use): boolean
+			return use(reduced) or read(ctx.config.reducedMotion, use) == true
+		end
 		properties.GroupTransparency = function(use: Core.Use)
-			return if use(reduced) or read(ctx.config.reducedMotion, use) then 0 else 1 - use(opacity)
+			return if still(use) then 0 else 1 - use(opacity)
 		end
 		properties.Visible = function(use: Core.Use)
-			return use(state).top or not use(reduced) and use(opacity) > 0
+			return use(state).top or not still(use) and use(opacity) > 0
 		end
 		properties.Interactable = function(use: Core.Use)
 			return use(state).top
