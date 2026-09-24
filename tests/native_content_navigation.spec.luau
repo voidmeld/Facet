@@ -164,13 +164,15 @@ t.describe("native content navigation deltas", function()
 		local chosen = world.find("y2026", panel)
 		t.expect(world.gui.SelectedObject).toBe(chosen)
 		local rows = panel:FindFirstChild("MenuRows", true)
-		rows.AbsolutePosition = Vector2.new(0, 0)
-		chosen.AbsolutePosition = Vector2.new(0, 100 * 44 + 8)
-		chosen.AbsoluteSize = Vector2.new(220, 44)
-		rows.AbsoluteSize = Vector2.new(220, 201 * 44 + 16)
+		for _, row in rows:GetChildren() do
+			if row:IsA("GuiObject") then
+				row.AbsoluteSize = Vector2.new(220, 44)
+			end
+		end
+		rows.AbsoluteSize = Vector2.new(220, 201 * 52)
 		panel.AbsoluteSize = Vector2.new(220, 400)
 		local center = panel.CanvasPosition.Y + 400 / 2
-		t.expect(math.abs(center - (100 * 44 + 8 + 22)) <= 1).toBe(true)
+		t.expect(math.abs(center - (100 * 52 + 22)) <= 1).toBe(true)
 		world.stop()
 		local checked = Compose.cell(true)
 		local toggles = menuWorld({
@@ -196,16 +198,18 @@ t.describe("native content navigation deltas", function()
 		local chosen = world.find("y2026", panel)
 		local rows = panel:FindFirstChild("MenuRows", true)
 		local layout = rows:FindFirstChildWhichIsA("UIListLayout")
-		rows.AbsolutePosition = Vector2.new(0, 0)
-		chosen.AbsolutePosition = Vector2.new(0, 132)
 		chosen.AbsoluteSize = Vector2.new(220, 44)
-		rows.AbsoluteSize = Vector2.new(220, 201 * 44 + 16)
+		rows.AbsoluteSize = Vector2.new(220, 201 * 52)
 		panel.AbsoluteSize = Vector2.new(220, 400)
-		t.expect(panel.CanvasPosition.Y).toBe(0)
-		chosen.AbsolutePosition = Vector2.new(0, 100 * 44 + 8)
-		layout.AbsoluteContentSize = Vector2.new(220, 201 * 44 + 16)
+		t.expect(panel.CanvasPosition.Y).toBe(100 * 8 + 22 - 200)
+		for _, row in rows:GetChildren() do
+			if row:IsA("GuiObject") then
+				row.AbsoluteSize = Vector2.new(220, 44)
+			end
+		end
+		layout.AbsoluteContentSize = Vector2.new(220, 201 * 52)
 		local center = panel.CanvasPosition.Y + 400 / 2
-		t.expect(math.abs(center - (100 * 44 + 8 + 22)) <= 1).toBe(true)
+		t.expect(math.abs(center - (100 * 52 + 22)) <= 1).toBe(true)
 		world.stop()
 	end)
 

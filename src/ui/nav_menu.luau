@@ -660,7 +660,18 @@ return function(
 			if row == nil or not row:IsA("GuiObject") or window <= 0 or canvas <= 0 then
 				return
 			end
-			local offset = row.AbsolutePosition.Y - rows.AbsolutePosition.Y
+			local gap = if rowLayout then rowLayout.Padding.Offset else 0
+			local offset = 0
+			for _, sibling in rows:GetChildren() do
+				if
+					sibling ~= row
+					and sibling:IsA("GuiObject")
+					and sibling.Visible
+					and sibling.LayoutOrder < (row :: GuiObject).LayoutOrder
+				then
+					offset += sibling.AbsoluteSize.Y + gap
+				end
+			end
 			local target = math.clamp(offset + row.AbsoluteSize.Y / 2 - window / 2, 0, math.max(0, canvas - window))
 			panel.CanvasPosition = V2.new(panel.CanvasPosition.X, target)
 			centered = level
