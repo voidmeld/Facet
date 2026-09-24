@@ -45,6 +45,7 @@ local names = {
 	"sponsor_toast",
 	"status_family",
 	"status_indicator",
+	"steps",
 	"table_virtualized",
 	"text_controls",
 	"text_degrade",

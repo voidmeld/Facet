@@ -109,6 +109,7 @@ controls(runtime).Slider : function
 controls(runtime).SplitButton : function
 controls(runtime).Stage : function
 controls(runtime).StatusIndicator : function
+controls(runtime).StepIndicator : function
 controls(runtime).Stepper : function
 controls(runtime).TabView : function
 controls(runtime).Table : function
@@ -168,6 +169,8 @@ type SliderProps
 type SplitButtonSpec
 type StageProps
 type StatusIndicatorProps
+type Step
+type StepIndicatorSpec
 type StepperProps
 type Tab
 type TabViewSpec

@@ -25,6 +25,7 @@ surface only when the existing surface cannot express the task clearly.
 | Navigate a hierarchy | NavigationStack. |
 | Step through peer pages | PageView. |
 | Select a page of numbered results | Pagination. |
+| Show the progress of a workflow | StepIndicator. |
 | Compare sortable columns | Table. |
 | Show large scrolling data | VirtualList or VirtualGrid. |
 | Add operations for one row | RowActions. |

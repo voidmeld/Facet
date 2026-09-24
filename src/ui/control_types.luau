@@ -43,6 +43,7 @@ export type Controls = {
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
 	Pagination: typeof(((nil :: unknown) :: Content.ContentControls).Pagination),
+	StepIndicator: typeof(((nil :: unknown) :: Content.ContentControls).StepIndicator),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

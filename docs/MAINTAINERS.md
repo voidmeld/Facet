@@ -40,7 +40,7 @@ modules. A directory with a trailing slash owns each module in it.
 | **radial** | `src/ui/nav_radial.luau`, `src/ui/nav_radial_geometry.luau`, `src/ui/radial_types.luau` | The radial menu and its geometry. | None. Reach it through `Facet.controls`. |
 | **collections** | `src/ui/collections.luau`, `src/ui/collection_policy.luau`, `src/ui/collection_selection.luau`, `src/ui/collection_reorder.luau`, `src/ui/collection_snap.luau`, `src/ui/collection_row_actions.luau`, `src/ui/collection_table.luau`, `src/ui/collection_types.luau` | Keyed and virtual collections, selection, reorder, snap, row actions and tables. | None. Reach it through `Facet.controls`. |
 | **media** | `src/ui/media.luau`, `src/ui/media_types.luau` | Labels, badges, status, progress, skeletons, images, avatars and stages. | None. Reach it through `Facet.controls`. |
-| **content** | `src/ui/pagination.luau`, `src/ui/pagination_window.luau`, `src/ui/content_values.luau`, `src/ui/content_types.luau` | Pagination, and the checks that keep the last legal value. | None. Reach it through `Facet.controls`. |
+| **content** | `src/ui/pagination.luau`, `src/ui/pagination_window.luau`, `src/ui/step_indicator.luau`, `src/ui/content_values.luau`, `src/ui/content_types.luau` | Pagination, step indicators, and the checks that keep the last legal value. | None. Reach it through `Facet.controls`. |
 | **themes** | `src/ui/themes.luau`, `src/ui/theme_types.luau`, `src/ui/icons.luau` | Theme packages, their compilation to native StyleSheets, chrome skins and the standard icons. | `Facet.themes` |
 
 ## Proof
@@ -63,7 +63,7 @@ covers the library root. To see the number of specs for each area, run
 | **radial** | `tests/radial_geometry.spec.luau`, `tests/native_collections.spec.luau` | `radial_menu` | [Adding a control](extending/new-control.md) |
 | **collections** | `tests/native_collections.spec.luau` | `collections`, `table_virtualized`, `row_actions` | [Adding a control](extending/new-control.md) |
 | **media** | `tests/native_themes_media.spec.luau` | `async_images`, `avatar`, `badge` | [Mounting into native targets](extending/new-render-target.md) |
-| **content** | `tests/native_pagination.spec.luau` | `paging` | [Adding a control](extending/new-control.md) |
+| **content** | `tests/native_pagination.spec.luau` | `paging`, `steps` | [Adding a control](extending/new-control.md) |
 | **themes** | `tests/native_themes_media.spec.luau`, `tests/native_inputs.spec.luau` | `all_controls` | [Adding a theme package](extending/new-theme.md) and [Adding artwork to a control](extending/skinned-control.md) |
 
 ## Repository

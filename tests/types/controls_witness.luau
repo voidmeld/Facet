@@ -77,6 +77,18 @@ local paginationProps: Facet.PaginationSpec = {
 	end,
 }
 local pagination: Frame = UI.Pagination(paginationProps)
+local stepCell = Compose.cell("a")
+local stepList: { Facet.Step } = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } }
+local stepProps: Facet.StepIndicatorSpec = {
+	steps = stepList,
+	current = function(use: Use): string?
+		return use(stepCell)
+	end,
+	onSelect = function(id: string)
+		stepCell:set(id)
+	end,
+}
+local stepIndicator: Frame = UI.StepIndicator(stepProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -172,6 +184,7 @@ local mounted: { GuiObject } = {
 	avatars,
 	stage,
 	pagination,
+	stepIndicator,
 	menu,
 	split,
 	picker,

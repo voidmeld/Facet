@@ -333,6 +333,13 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 	Pagination = function()
 		return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
 	end,
+	StepIndicator = function()
+		return {
+			steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+			current = "a",
+			onSelect = function() end,
+		}
+	end,
 	Menu = function()
 		return {
 			label = "Options",

@@ -214,6 +214,13 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		Pagination = function()
 			return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
 		end,
+		StepIndicator = function()
+			return {
+				steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+				current = "a",
+				onSelect = function() end,
+			}
+		end,
 		StatusIndicator = function()
 			return { status = "info" }
 		end,
@@ -266,7 +273,7 @@ t.describe("native parity gaps", function()
 			table.insert(names, name :: string)
 		end
 		table.sort(names)
-		t.expect(#names).toBe(36)
+		t.expect(#names).toBe(37)
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()

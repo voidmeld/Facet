@@ -34341,6 +34341,211 @@
         "native_pagination::native Pagination::follows an accepted page in the Paging scenario context and changes nothing on a refusal"
       ],
       "family": "content-navigation"
+    },
+    {
+      "id": "post-step-01",
+      "group": "navigation-containers",
+      "title": "Only navigable, enabled steps with onSelect are Buttons; the rest are content",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::makes only navigable, enabled steps with onSelect into Buttons and the rest into content"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-02",
+      "group": "navigation-containers",
+      "title": "current alone moves the underline and the summary; a refused selection changes nothing",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::moves the underline and the summary only with current, and a refused selection changes nothing"
+      ],
+      "weaker": "The cell rectangles are injected AbsolutePosition and AbsoluteSize values.",
+      "needsLive": "steps-underline",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-03",
+      "group": "layout-geometry",
+      "title": "The row's cells share one height and a top edge, so the underline stays on one line",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::stretches the row cells to one height on one top edge"
+      ],
+      "weaker": "The native ItemLineAlignment, VerticalAlignment and underline anchor are asserted; the solved heights need Studio.",
+      "needsLive": "steps-underline",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-04",
+      "group": "navigation-containers",
+      "title": "An errored or completed current step keeps its own cue and state word",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::keeps the own cue and state word of an errored or completed current step"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-05",
+      "group": "text-measure-fit",
+      "title": "The number marker stays a circle at the largest text size",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::keeps the number marker a circle when the text grows"
+      ],
+      "weaker": "The number TextBounds are injected; the largest player text size needs Studio.",
+      "needsLive": "steps-circle",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-06",
+      "group": "navigation-containers",
+      "title": "A missing current is unavailable, never guessed; empty and repopulated lists rebuild cleanly",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::never guesses a missing current and rebuilds empty and repopulated lists"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-07",
+      "group": "navigation-containers",
+      "title": "A reorder keeps each step's node and the underline follows the current step's solved rect",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::keeps each step node across a reorder and renumbers it"
+      ],
+      "weaker": "The underline follow is asserted in the current-step case from injected rectangles.",
+      "needsLive": "steps-underline",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-08",
+      "group": "error-handling",
+      "title": "Conflicts are refused at construction and the last legal snapshot stays later",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::refuses conflicts at construction and keeps the last legal snapshot later"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-09",
+      "group": "navigation-containers",
+      "title": "A narrow width shows Step n of m and a list that selects through the same path",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::shows Step n of m and a list that selects through the same path when the width is narrow"
+      ],
+      "weaker": "The list is a UI.Menu anchored to the Steps trigger, not a UI.Popover; Popover is not a control of this family.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-10",
+      "group": "text-measure-fit",
+      "title": "hug sizing follows its offer both ways: narrow to the summary and wide back to the row",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::follows its offer both ways between the row and the summary, for fill and hug"
+      ],
+      "weaker": "Label widths are injected TextBounds on the measure labels.",
+      "needsLive": "steps-fit",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-11",
+      "group": "layout-geometry",
+      "title": "A hugging parent settles on the same form a filling one shows at that width",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "needsLive": "steps-fit",
+      "nativeMechanism": "Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-12",
+      "group": "lifetime-ownership",
+      "title": "A callback that removes the control leaves nothing open",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::leaves nothing open when a callback removes the control"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-step-13",
+      "group": "gallery-examples",
+      "title": "The Steps scenario: a row selection moves the narrow summary too; refusing changes neither",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_step_indicator::native StepIndicator::moves the narrow summary with a row selection in the Steps scenario and refuses both"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
     }
   ],
   "bugs": [
@@ -34764,18 +34969,21 @@
     "content-navigation": {
       "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
-      "contracts": 18,
-      "mainCases": 18,
+      "contracts": 31,
+      "mainCases": 31,
       "mainCasesByClass": {
-        "a": 17,
-        "b": 1
+        "a": 29,
+        "b": 2
       },
       "needsLive": [
         "pagination-arrows-still",
         "pagination-fit",
         "pagination-hug",
         "pagination-neighbours",
-        "pagination-targets"
+        "pagination-targets",
+        "steps-circle",
+        "steps-fit",
+        "steps-underline"
       ]
     }
   }

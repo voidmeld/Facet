@@ -808,7 +808,7 @@ Some cases were added on `main` after the baseline. Each family records them her
 
 ### Content and navigation
 
-`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 18 contracts and 18 main cases (a: 17, b: 1). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 31 contracts and 31 main cases (a: 29, b: 2). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
 
 | Contract | Main spec | Main cases | Class | Candidate cases | Note |
 |---|---|---:|---|---|---|
@@ -830,6 +830,19 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-pagination-16 | `pagination` | 1 | a | `leaves no stop inside the row when the count drops to zero` | The landing on a live neighbour is native selection. |
 | post-pagination-17 | `pagination` | 1 | a | `stays safe when a callback changes the count and removes the control` |  |
 | post-pagination-18 | `pagination` | 1 | a | `follows an accepted page in the Paging scenario context and changes nothing on a refusal` |  |
+| post-step-01 | `step_indicator` | 1 | a | `makes only navigable, enabled steps with onSelect into Buttons and the rest into content` |  |
+| post-step-02 | `step_indicator` | 1 | a | `moves the underline and the summary only with current, and a refused selection changes nothing` | The cell rectangles are injected AbsolutePosition and AbsoluteSize values. |
+| post-step-03 | `step_indicator` | 1 | a | `stretches the row cells to one height on one top edge` | The native ItemLineAlignment, VerticalAlignment and underline anchor are asserted; the solved heights need Studio. |
+| post-step-04 | `step_indicator` | 1 | a | `keeps the own cue and state word of an errored or completed current step` |  |
+| post-step-05 | `step_indicator` | 1 | a | `keeps the number marker a circle when the text grows` | The number TextBounds are injected; the largest player text size needs Studio. |
+| post-step-06 | `step_indicator` | 1 | a | `never guesses a missing current and rebuilds empty and repopulated lists` |  |
+| post-step-07 | `step_indicator` | 1 | a | `keeps each step node across a reorder and renumbers it` | The underline follow is asserted in the current-step case from injected rectangles. |
+| post-step-08 | `step_indicator` | 1 | a | `refuses conflicts at construction and keeps the last legal snapshot later` |  |
+| post-step-09 | `step_indicator` | 1 | a | `shows Step n of m and a list that selects through the same path when the width is narrow` | The list is a UI.Menu anchored to the Steps trigger, not a UI.Popover; Popover is not a control of this family. |
+| post-step-10 | `step_indicator` | 1 | a | `follows its offer both ways between the row and the summary, for fill and hug` | Label widths are injected TextBounds on the measure labels. |
+| post-step-11 | `step_indicator` | 1 | b | - | Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize. |
+| post-step-12 | `step_indicator` | 1 | a | `leaves nothing open when a callback removes the control` |  |
+| post-step-13 | `step_indicator` | 1 | a | `moves the narrow summary with a row selection in the Steps scenario and refuses both` |  |
 
 ## Use the data
 
