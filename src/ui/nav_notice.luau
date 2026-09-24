@@ -379,6 +379,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			table.insert(primary, ctx.row({ spec.leading }, { Name = "Leading" }))
 		end
 		local center: Instance? = spec.center
+		local titleMeasure: TextLabel? = nil
 		if center == nil and spec.title ~= nil then
 			local title = spec.title
 			local label = ctx.text({
@@ -393,6 +394,18 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			})
 			label:AddTag("facet-type-" .. (spec.titleSize or "title"))
 			center = label
+			local measure = ctx.text({
+				Name = "TitleMeasure",
+				Text = function(use: ComposeTypes.Use)
+					return read(title, use) or ""
+				end,
+				Visible = false,
+				TextWrapped = false,
+				Size = D2.fromOffset(0, 0),
+				AutomaticSize = E.AutomaticSize.XY,
+			})
+			measure:AddTag("facet-type-" .. (spec.titleSize or "title"))
+			titleMeasure = measure
 		end
 		local centerProps: Types.FrameNativeProps = {
 			Name = "Center",
@@ -411,6 +424,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		)
 		if center then
 			table.insert(centerProps, center)
+		end
+		if titleMeasure then
+			table.insert(centerProps, titleMeasure)
 		end
 		local centerFrame = Host.Frame(centerProps)
 		table.insert(primary, centerFrame)
@@ -482,6 +498,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			local sides = ctx.observe(trailingFrame, "AbsoluteSize")
 			local main = ctx.observe(primaryFrame, "AbsoluteSize")
 			local middle = ctx.observe(centerFrame, "AbsoluteSize")
+			local natural = if titleMeasure then ctx.observe(titleMeasure, "TextBounds") else nil
 			Compose.watch(function(use: ComposeTypes.Use)
 				local width = use(box).X
 				if width <= 0 then
@@ -489,7 +506,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end
 				local fixed = use(main).X - use(middle).X
 				local room = width - fixed - use(sides).X - gap(use)
-				local floor = math.min(ctx.metric("controls.popup.panelWidth", use), width - fixed)
+				local wanted = if natural then use(natural).X else ctx.metric("controls.popup.panelWidth", use)
+				local floor = math.min(wanted, width - fixed)
 				local next = room < floor
 				if next ~= stacked:peek() then
 					stacked:set(next)

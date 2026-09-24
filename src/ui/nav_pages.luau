@@ -954,7 +954,26 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			local measure = use(offsets)[list[#list]]
 			return if measure then measure(use) else 0
 		end
-		local root = Host.Frame(ctx.props(spec, { "path", "root", "destinations", "backLabel", "transition" }, {
+		local root: Frame
+		local backdrop: ComposeTypes.Cell<Color3?> = Compose.cell(nil :: Color3?)
+		local moving = Compose.formula(function(use: ComposeTypes.Use): boolean
+			return frontOffset(use) > 0 or use(leaving) ~= nil
+		end)
+		Compose.watch(function(use: ComposeTypes.Use)
+			if not use(moving) then
+				return
+			end
+			local at: Instance? = root and root.Parent
+			while at do
+				if at:IsA("GuiObject") and (at:GetStyled("BackgroundTransparency") :: number) < 1 then
+					backdrop:set(at:GetStyled("BackgroundColor3") :: Color3)
+					return
+				end
+				at = at.Parent
+			end
+			backdrop:set(nil)
+		end)
+		root = Host.Frame(ctx.props(spec, { "path", "root", "destinations", "backLabel", "transition" }, {
 			Name = "NavigationStack",
 			BackgroundTransparency = 1,
 			Size = D2.fromScale(1, 1),
@@ -1092,7 +1111,17 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					else
 						panel = Host.Frame({
 							Name = entry.id,
-							BackgroundTransparency = 1,
+							BackgroundTransparency = function(use: ComposeTypes.Use)
+								return if use(moving)
+										and use(backdrop) ~= nil
+										and placement(use) ~= "rest"
+									then 0
+									else 1
+							end,
+							BackgroundColor3 = function(use: ComposeTypes.Use)
+								return use(backdrop) or ctx.types.Color3.new(0, 0, 0)
+							end,
+							BorderSizePixel = 0,
 							Size = D2.fromScale(1, 1),
 							Position = function(use: ComposeTypes.Use)
 								local place, moved = placement(use)

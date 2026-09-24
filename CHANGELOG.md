@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- A `radioGroup` Picker puts the radio mark in its own slot in the content row of each option. Before this change, the theme padding moved the label under the mark.
+- A horizontal segmented Picker track is one control height tall. The segments fill the track inside a 3 pixel inset. The `.facet-segment::UICorner` rule sets the segment radius to the track radius minus the inset. Before this change, the selected segment was taller than the track.
+- NavBar keeps the title and the trailing node on one row when the full title fits. Before this change, a bar narrower than about 360 pixels plus the trailing node always used two rows.
+- The theme has a `:Press` rule for each control family that has a `:Hover` rule: segments, choices, tabs, calendar days and the quiet and menu destructive rows. A current segment or choice keeps its selected paint while pressed. Before this change, a pressed control showed its base paint between the highlight and the selected paint.
+- During a NavigationStack push or pop, both pages are opaque with the background color of the nearest opaque container. The covered page is dimmed by a separate shade. Before this change, the transparent pages showed through each other.
+- The Virtual Monitors header shows the overflow menu as an icon button with the accessible name "Menu".
+
 ## 0.12.0 — Compose and native engine cutover
 
 - Facet now exports `Compose`, `Roblox`, `controls(runtime, options)`, and `themes`. Applications create the Compose Roblox runtime and native `Host` tree directly. This is a breaking cutover with no compatibility APIs.

@@ -232,7 +232,12 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						align = "center",
 						UI.HStack(chrome),
 						UI.Menu "ActionsMenu" {
-							label = "Menu",
+							trigger = UI.Button "MenuButton" {
+								icon = "more",
+								name = "Menu",
+								shape = "circle",
+								appearance = "utility",
+							},
 							Visible = function(use)
 								return not wide(use)
 							end,
