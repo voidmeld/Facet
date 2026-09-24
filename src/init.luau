@@ -119,7 +119,7 @@ export type Facet = {
 }
 
 local VERSION = "0.12.0"
-local COMPOSE_COMMIT = "eb5a381212aba43d9dde5c55859d9c4cda108042"
+local COMPOSE_COMMIT = "869d26020a304ff8c3e5e18ff0eaf803b875a083"
 local USED = {
 	"boundary",
 	"cell",

@@ -145,7 +145,6 @@ return function(ctx: Types.Context): Nav.Surfaces
 		local owner = assert(Compose.currentOwner())
 		type Pending = {
 			completed: ComposeTypes.Readable<boolean>,
-			done: ComposeTypes.Cell<boolean>,
 			scope: ComposeTypes.Owner?,
 		}
 		local pending: ComposeTypes.Cell<Pending?> = Compose.cell(nil :: Pending?)
@@ -159,7 +158,6 @@ return function(ctx: Types.Context): Nav.Surfaces
 			if entry and use(entry.completed) then
 				pending:set(nil)
 				release(entry)
-				entry.done:set(true)
 			end
 		end)
 		Compose.cleanup(function()
@@ -170,9 +168,8 @@ return function(ctx: Types.Context): Nav.Surfaces
 			scope: ComposeTypes.Owner?
 		): ComposeTypes.Exiting
 			release(pending:peek())
-			local done = Compose.cell(false)
-			pending:set({ completed = completed, done = done, scope = scope })
-			return { completed = done }
+			pending:set({ completed = completed, scope = scope })
+			return { completed = completed }
 		end
 		return {
 			exit = function()

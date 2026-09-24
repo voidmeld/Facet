@@ -126,7 +126,8 @@ local function presence<T>(condition: Types.Source<T>, builder: Builder, options
 				return
 			end
 
-			stopWatchingExit = owner.watch(function(watchUse)
+			local exited = false
+			local stop = owner.watch(function(watchUse)
 				if not watchUse((running :: Exiting).completed) then
 					return
 				end
@@ -135,9 +136,15 @@ local function presence<T>(condition: Types.Source<T>, builder: Builder, options
 					return
 				end
 				leaving = nil
+				exited = true
 				forgetExit()
 				finished.dispose()
 			end)
+			if exited then
+				stop()
+			else
+				stopWatchingExit = stop
+			end
 		end)
 	end
 end
