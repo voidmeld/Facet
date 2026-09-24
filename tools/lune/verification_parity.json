@@ -341,7 +341,7 @@
     "tables-rows": {
       "mainCases": 156,
       "a": 97,
-      "aWeaker": 43,
+      "aWeaker": 9,
       "b": 1,
       "c": 58,
       "d": 0,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1653
+    "coveredButWeaker": 1619
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -4393,9 +4393,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings"
-      ],
-      "weaker": "Keyboard route is covered (SelectionGained + NarrowColumn -> 152); the gamepad route relies on the same action's DPad bindings and is never pressed; the playlist hint line and a pointer drag in the playlist itself are..."
+        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-168 pointer keyboard and gamepad resize the same playlist column and the readout follows"
+      ]
     },
     {
       "id": "apps2-169",
@@ -4434,9 +4434,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings"
-      ],
-      "weaker": "'no sort returns the source array untouched' is not asserted."
+        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-171 the playlist ships unsorted and the Name heading cycles a sort the filter composes with"
+      ]
     },
     {
       "id": "apps2-172",
@@ -4470,9 +4470,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings",
-        "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows"
-      ],
-      "weaker": "Restore is asserted to restore a rating, not to set sort back to nil."
+        "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-173 a manual reorder bakes the sort, a refused or empty reorder keeps it, and Restore clears it"
+      ]
     },
     {
       "id": "apps2-174",
@@ -4505,9 +4505,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-175 the resize grip keeps one trailing edge and sizes its target per input paradigm"
       ],
-      "weaker": "Main pinned the visible grip to the theme's small spacing in every paradigm with a separate 44x44 hit floor; candidate asserts 12px (pointer) and 44px (touch) grip widths."
+      "weaker": "On touch, the grip is 44 px wide but only as tall as the header band, which is 40 px by default. Main required a 44 x 44 hit area. api.md does not promise a 44 px header on touch, and an existing test (native_collections, adapts table row and header height) pins the touch header at 40 px, so the test does not assert a 44 px height. The visible grip at the theme small spacing step is deleted design: the grip is transparent."
     },
     {
       "id": "apps2-176",
@@ -9521,9 +9522,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input"
-      ],
-      "weaker": "Authored env override is gone; pinned height precedence not asserted."
+        "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input",
+        "native_parity_weaker_tables::native parity weaker tables::apps-242 touch and gamepad table rows clear the 44 floor with no wiring and a pinned height wins"
+      ]
     },
     {
       "id": "apps-243",
@@ -10275,9 +10276,9 @@
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
         "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
-        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "NC7 and NC15 assert cell retention across sort, resize and collapse. For 'releases action rows', only the Table census through conformance (no rowActions) is checked."
+        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_weaker_tables::native parity weaker tables::collections-36 Table keeps cell state, windows large data, prunes selection and releases action rows"
+      ]
     },
     {
       "id": "collections-37",
@@ -10289,9 +10290,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "One NarrowColumn press is asserted (160 to 152). No test asserts WidenColumn, that SelectionLost releases the grip, the minWidth clamp from keys, or that no key is bound while focus is off a resizable column."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_tables::native parity weaker tables::collections-37 a focused grip widens narrows clamps and releases its keys"
+      ]
     },
     {
       "id": "collections-38",
@@ -11644,9 +11645,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input",
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms"
+        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_weaker_tables::native parity weaker tables::collections-133 fill and fixed columns align in every row, rows take variable heights, dispose frees"
       ],
-      "weaker": "No test compares header cell and body cell spans."
+      "weaker": "The test asserts the declared header and cell spans for a fill and a fixed column in every row, variable row heights, and a clean dispose. The fake engine has no layout solver, so the solved pixel X and width of each header cell against its body cells are not asserted."
     },
     {
       "id": "collections-134",
@@ -11659,9 +11661,10 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span"
+        "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span",
+        "native_parity_weaker_tables::native parity weaker tables::collections-134 the header follows the reorder and edit gutters so columns stay aligned"
       ],
-      "weaker": "The fake engine has no layout solver. The test compares the declared header and cell origins, widths and flex settings, not solved pixels.",
+      "weaker": "The test asserts the declared header origin and width against the declared row cell span with the reorder gutter, the row-action edit gutter, and a horizontal scroll. The solved pixels are not asserted because the fake engine has no layout solver. The separate selection-circle gutter is deleted design.",
       "apiPromise": "src collection_table.luau: header Position = reorderGutter - CanvasPosition.X; width minus disclosureWidth",
       "gap": {
         "description": "Untested alignment in edit (reorderable) mode and with the disclosure column.",
@@ -11715,9 +11718,9 @@
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
         "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
         "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
-        "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys"
-      ],
-      "weaker": "Single-mode replacement on a Table is only implied by the RunSheet test. Keyboard selection relies on native activation."
+        "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
+        "native_parity_weaker_tables::native parity weaker tables::collections-137 single replaces, multi toggles additively and keyboard focus walks and selects"
+      ]
     },
     {
       "id": "collections-138",
@@ -11792,9 +11795,9 @@
         "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_collections::Compose native collections::lets domain callbacks reject table selection, sorting and resize requests"
-      ],
-      "weaker": "Only the ascending sort is asserted. The descending toggle and the resulting row order are not asserted (a probe confirmed they work). Coercion of numeric values is not asserted."
+        "native_collections::Compose native collections::lets domain callbacks reject table selection, sorting and resize requests",
+        "native_parity_weaker_tables::native parity weaker tables::collections-142 columns own value and render cells, coerce numbers and cycle the header sort"
+      ]
     },
     {
       "id": "collections-143",
@@ -11817,9 +11820,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions"
-      ],
-      "weaker": "Gap is asserted on VirtualGrid, not on Table, and not with the drop indicator."
+        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
+        "native_parity_weaker_tables::native parity weaker tables::collections-144 a Table row gap spaces the rows and the drop line follows the gap"
+      ]
     },
     {
       "id": "collections-145",
@@ -11908,9 +11911,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "Only the maxWidth clamp is asserted. There is no minWidth clamp and no assertion that a non-resizable column has no grip."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_tables::native parity weaker tables::collections-151 only resizable columns grow a grip that resizes and clamps both bounds"
+      ]
     },
     {
       "id": "collections-152",
@@ -12070,9 +12073,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "There is no Table gap test."
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_tables::native parity weaker tables::collections-164 a numeric Table gap drives row pitch and the drop slot arithmetic"
+      ]
     },
     {
       "id": "collections-165",
@@ -12592,9 +12595,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state"
+        "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
+        "native_parity_weaker_tables::native parity weaker tables::collections-203 every collapsed width carries a More disclosure on each row that opens"
       ],
-      "weaker": "One collapse width only."
+      "weaker": "The test asserts that at every width from 20 to 460 with committed widths, when a header column collapses each row carries a More disclosure and the header and cells agree, and that the disclosure opens with the hidden value. The absolute touch height of the disclosure button is not asserted because the fake engine has no layout solver."
     },
     {
       "id": "collections-204",
@@ -12640,9 +12644,10 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages"
+        "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages",
+        "native_parity_weaker_tables::native parity weaker tables::collections-207 header and body cells span the same columns in every shape and shipped package"
       ],
-      "weaker": "The fake engine has no layout solver. The test compares the declared column span under two packages, not solved X positions.",
+      "weaker": "The test asserts the declared header and cell spans in the viewport, block, reorder and collapsed shapes under the neutral package and every shippable reference package. The solved X positions are not asserted because the fake engine has no layout solver.",
       "apiPromise": "api.md Table column widths; header and body share columnFrame (collection_table.luau)",
       "gap": {
         "description": "No span comparison exists under any package.",
@@ -14163,9 +14168,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "Keyboard/gamepad reorder is a Table/VirtualList feature now, not a presenter navigateIntercept; covered in collections tests only."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_tables::native parity weaker tables::inputs-06 a gamepad grab moves a row with the D-pad and drops it with A"
+      ]
     },
     {
       "id": "inputs-07",
@@ -34395,6 +34400,22 @@
       "file": "docs/guide/README.md",
       "title": "The guide index linked one of the seven extension playbooks",
       "fixedBy": "native_parity_apps::Public surface, catalog and theme corpus::documents every Facet.themes export and every capability in the guide catalog"
+    },
+    {
+      "id": "WA1",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/gallery/examples/02_playlist_table.luau",
+      "title": "The Rating column showed a resize grip and took resize keys, but the readout said that Rating is locked. The column now sets resizable = false.",
+      "fixedBy": "native_parity_weaker_tables::native parity weaker tables::apps2-168 pointer keyboard and gamepad resize the same playlist column and the readout follows"
+    },
+    {
+      "id": "WA2",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collection_table.luau",
+      "title": "With editing on and a destructive row action, the row cells moved right by the edit gutter, but the header did not. The Table now adds the widest row edit gutter to the header position and width, the collapse room and the canvas width.",
+      "fixedBy": "native_parity_weaker_tables::native parity weaker tables::collections-134 the header follows the reorder and edit gutters so columns stay aligned"
     }
   ]
 }
