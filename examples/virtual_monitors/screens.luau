@@ -260,6 +260,16 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				about:set(true)
 			end)
 		)
+		local player = actions.player
+		table.insert(
+			actionsRow,
+			UI.Avatar "Profile" {
+				name = if player then player.DisplayName else "You",
+				userId = if player and player.UserId > 0 then player.UserId else nil,
+				presence = "online",
+				diameter = 36,
+			}
+		)
 		local chrome = scrollRow("Chrome", actionsRow, {
 			Position = D2.new(0.3, 0, 0, 8),
 			Size = D2.new(0.7, -16, 0, 42),
@@ -661,6 +671,48 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					if actions.gameContent then actions.gameContent(current) else nil,
 					{ Size = D2.new(1, 0, 0, 180) }
 				),
+				row("PlayRow", {
+					UI.SplitButton "Play" {
+						label = "Play",
+						menuLabel = "More ways to play",
+						onActivate = function()
+							model.launch:set({ id = selected.id, mode = "Joining a public server" })
+						end,
+						items = {
+							{
+								id = "Friends",
+								label = if #selected.friends > 0
+									then `Join friends ({#selected.friends})`
+									else "Join friends",
+								enabled = #selected.friends > 0,
+								onSelect = function()
+									model.launch:set({ id = selected.id, mode = "Joining your friends" })
+								end,
+							},
+							{
+								id = "Private",
+								label = "Start a private server",
+								onSelect = function()
+									model.launch:set({ id = selected.id, mode = "Starting a private server" })
+								end,
+							},
+						},
+					},
+					text(
+						"LaunchStatus",
+						function(use)
+							local launch = use(model.launch)
+							return if launch and launch.id == selected.id then `{launch.mode}… (simulated)` else ""
+						end,
+						15,
+						{
+							Size = D2.new(1, -200, 0, 20),
+							AutomaticSize = E.AutomaticSize.None,
+							TextYAlignment = E.TextYAlignment.Center,
+						},
+						"facet-secondary"
+					),
+				}, { Size = D2.new(1, 0, 0, 44) }),
 				text("Description", selected.description, 18),
 				row("Creator", {
 					UI.AsyncImage "CreatorAvatar" {
@@ -793,30 +845,38 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		local function compact(use)
 			return use(dimensions).X < 620
 		end
-		local function filtersStacked(use)
-			return use(dimensions).X < 288
-		end
 		local function heroHeight(use)
 			return if not compact(use) and use(dimensions).Y >= 682 then 292 else 0
 		end
-		local function filterHeight(use)
-			return if filtersStacked(use) then 96 else 44
-		end
 		local function searchHeight(use)
-			return if compact(use) then filterHeight(use) + 52 else 44
+			return if compact(use) then 96 else 44
 		end
 		local function headerHeight(use)
-			return if compact(use) then searchHeight(use) + 54 else searchHeight(use) + 106
+			return searchHeight(use) + 106
 		end
 		local function feedY(use)
 			return headerHeight(use) + heroHeight(use)
 		end
-		local genreOptions = { { value = "all", label = "All genres" } }
+		local genreOptions = { { value = "all", label = "All" } }
 		for _, name in require("./catalog").genres do
 			table.insert(genreOptions, { value = name, label = name })
 		end
+		local focusSearch = Host.InputAction "FocusSearch" {
+			Type = E.InputActionType.Bool,
+			Enabled = function(use)
+				return if actions.spatial then use(model.mode) == "Spatial" else use(model.mode) == "Screen"
+			end,
+			Released = function()
+				local editor = body:FindFirstChild("Editor", true)
+				if editor and editor:IsA("TextBox") then
+					editor:CaptureFocus()
+				end
+			end,
+			Host.InputBinding({ KeyCode = E.KeyCode.Slash }),
+		}
 		runtime.mountFragment(function()
 			return {
+				Host.InputContext "DiscoverShortcuts" { focusSearch },
 				Host.Frame "SearchControls" {
 					BackgroundTransparency = 1,
 					Size = function(use)
@@ -867,20 +927,23 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						AutomaticSize = E.AutomaticSize.None,
 						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 					},
+					UI.ShortcutHint "SearchShortcut" {
+						action = focusSearch,
+						LayoutOrder = 2,
+						Visible = function(use)
+							return not compact(use) and not use(touchEnabled)
+						end,
+					},
 					Host.Frame "SortControl" {
 						LayoutOrder = function(use)
-							return if compact(use) then 1 else 2
+							return if compact(use) then 1 else 3
 						end,
 						BackgroundTransparency = 1,
 						Size = function(use)
-							return if compact(use) then D2.new(1, 0, 0, filterHeight(use)) else D2.fromOffset(180, 44)
+							return if compact(use) then D2.new(1, 0, 0, 44) else D2.fromOffset(180, 44)
 						end,
 						Host.UIListLayout({
-							FillDirection = function(use)
-								return if filtersStacked(use)
-									then E.FillDirection.Vertical
-									else E.FillDirection.Horizontal
-							end,
+							FillDirection = E.FillDirection.Horizontal,
 							SortOrder = E.SortOrder.LayoutOrder,
 							Padding = D.new(0, 8),
 						}),
@@ -896,50 +959,38 @@ function screens.create(Facet: any, runtime: any, actions: any)
 								{ value = "playing", label = "Most playing" },
 							},
 							style = "menu",
-							Size = function(use)
-								return if filtersStacked(use) then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
-							end,
+							Size = D2.fromOffset(0, 44),
 							AutomaticSize = E.AutomaticSize.None,
 							Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 						},
-						Compose.show(compact, function()
-							return UI.Picker "Genre" {
-								LayoutOrder = 2,
-								selected = model.genre,
-								onChange = function(value)
-									model.genre:set(value)
-								end,
-								options = genreOptions,
-								style = "menu",
-								Size = function(use)
-									return if filtersStacked(use) then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
-								end,
-								AutomaticSize = E.AutomaticSize.None,
-								Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-							}
-						end),
 					},
 				},
-				Compose.keyed({
-					from = function(use)
-						return if compact(use) then {} else { if use(dimensions).X >= 900 then "segmented" else "menu" }
-					end,
-					render = function(current)
-						return UI.Picker "Genre" {
-							selected = model.genre,
-							onChange = function(value)
-								model.genre:set(value)
-							end,
-							options = genreOptions,
-							style = current:peek(),
-							Position = function(use)
-								return D2.fromOffset(0, searchHeight(use) + 8)
-							end,
-							Size = D2.new(1, 0, 0, 44),
-							AutomaticSize = E.AutomaticSize.None,
-						}
-					end,
-				}),
+				(function()
+					local chips = {}
+					for index, option in genreOptions do
+						local value = option.value
+						table.insert(
+							chips,
+							UI.Chip({
+								Name = "Genre_" .. value,
+								LayoutOrder = index,
+								label = option.label,
+								selected = function(use)
+									return use(model.genre) == value
+								end,
+								onToggle = function()
+									model.genre:set(value)
+								end,
+							})
+						)
+					end
+					return scrollRow("Genres", chips, {
+						Position = function(use)
+							return D2.fromOffset(0, searchHeight(use) + 8)
+						end,
+						Size = D2.new(1, 0, 0, 44),
+					})
+				end)(),
 				(function()
 					local shelves = row("Shelves", {
 						button("Browse", "Browse", function()

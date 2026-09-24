@@ -197,6 +197,7 @@ local lifetime = Compose.createRootOwner(function()
 			model = model,
 			spatial = spatial,
 			theme = package,
+			player = players.LocalPlayer,
 			reducedMotion = reducedMotion,
 			pressHaptic = pressHaptic,
 		}
