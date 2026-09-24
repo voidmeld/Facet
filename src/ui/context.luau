@@ -73,7 +73,7 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 			end
 			value = (value :: { [string]: unknown })[key]
 		end
-		return if type(value) == "number" then value else nil
+		return if type(value) == "number" and value == value and math.abs(value) ~= math.huge then value else nil
 	end
 	function ctx.metric(path: string, use: Compose.Use?): number
 		local package = ctx.read(config.theme, use)

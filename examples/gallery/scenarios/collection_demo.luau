@@ -449,6 +449,10 @@ return function(ctx: any, options: any)
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
 				UI.Label "Title" {
 					LayoutOrder = 1,
+					Visible = function(use)
+						local viewport = ctx.viewport and use(ctx.viewport)
+						return viewport == nil or viewport.height <= 0 or viewport.height >= 480
+					end,
 					Text = options.title,
 					textRole = "title",
 					TextWrapped = true,

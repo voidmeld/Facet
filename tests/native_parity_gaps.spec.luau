@@ -737,6 +737,137 @@ t.describe("native parity gaps", function()
 		runtime:dispose()
 	end)
 
+	t.it(
+		"estimates table rows from a regular control height that falls back when the theme metric is missing or not finite",
+		function()
+			local empty = Facet.themes.neutralPackage()
+			empty.metrics.controlSizes = {} :: any
+			local nan = Facet.themes.neutralPackage()
+			nan.metrics.controlSizes.regular.height = 0 / 0
+			local huge = Facet.themes.neutralPackage()
+			huge.metrics.controlSizes.regular.height = math.huge
+			local short = Facet.themes.neutralPackage()
+			short.metrics.controlSizes.regular.height = 30
+			for _, case in
+				{
+					{ theme = empty, row = 44 },
+					{ theme = nan, row = 44 },
+					{ theme = huge, row = 44 },
+					{ theme = short, row = 40 },
+				}
+			do
+				local controls = {} :: { [string]: any }
+				local w = world(function(UI)
+					return UI.Table({
+						from = records(3),
+						key = function(item)
+							return item.id
+						end,
+						controls = controls,
+						columns = { { id = "label", width = 100 } },
+					})
+				end, { theme = case.theme })
+				local body = find(w.screen, "Body")
+				body.AbsoluteWindowSize = w.engine.types.Vector2.new(300, 300)
+				t.expect(controls.placementOf(2).offset).toBe(case.row)
+				t.expect(controls.placementOf(3).offset).toBe(case.row * 2)
+				w.stop()
+			end
+		end
+	)
+
+	t.it("refuses picker selection and disclosure toggling while disabled and resumes when enabled", function()
+		local selected, changes = Compose.cell("a"), 0
+		local pickerEnabled, groupEnabled = Compose.cell(false), Compose.cell(false)
+		local expanded, toggles = Compose.cell(false), 0
+		local w = world(function(UI, Host)
+			return Host.Frame({
+				UI.Picker({
+					selected = selected,
+					style = "segmented",
+					enabled = pickerEnabled,
+					options = { { value = "a", label = "A" }, { value = "b", label = "B" } },
+					onChange = function()
+						changes += 1
+					end,
+				}),
+				UI.DisclosureGroup({
+					label = "Advanced",
+					expanded = expanded,
+					enabled = groupEnabled,
+					onToggle = function()
+						toggles += 1
+					end,
+					content = function()
+						return Host.Frame("Body")({})
+					end,
+				}),
+			})
+		end)
+		local picker = find(w.screen, "Picker")
+		local option = find(picker, "b")
+		t.expect(option.Interactable).toBe(false)
+		option.Activated.fire()
+		t.expect(selected:peek()).toBe("a")
+		t.expect(changes).toBe(0)
+		local header = find(find(w.screen, "DisclosureGroup"), "Header")
+		t.expect(header.Interactable).toBe(false)
+		t.expect(header.Selectable).toBe(false)
+		header.Activated.fire()
+		t.expect(expanded:peek()).toBe(false)
+		t.expect(toggles).toBe(0)
+		t.expect(find(w.screen, "Body")).toBe(nil)
+		pickerEnabled:set(true)
+		groupEnabled:set(true)
+		t.expect(find(picker, "b").Interactable).toBe(true)
+		find(picker, "b").Activated.fire()
+		t.expect(selected:peek()).toBe("b")
+		t.expect(changes).toBe(1)
+		t.expect(header.Interactable).toBe(true)
+		header.Activated.fire()
+		t.expect(expanded:peek()).toBe(true)
+		t.expect(toggles).toBe(1)
+		t.expect(find(w.screen, "Body") ~= nil).toBe(true)
+		w.stop()
+	end)
+
+	t.it("keeps the value when custom combo box validation unmounts the control", function()
+		local value, text, changes = Compose.cell("a"), Compose.cell("Alpha"), 0
+		local stopRef: { stop: () -> () } = {
+			stop = function() end,
+		}
+		local failure: string? = nil
+		local w = world(function(UI)
+			return UI.ComboBox({
+				value = value,
+				text = text,
+				commitOnFocusLost = true,
+				options = { { value = "a", label = "Alpha" } },
+				acceptCustom = function()
+					stopRef.stop()
+					return true
+				end,
+				onChange = function()
+					changes += 1
+				end,
+			})
+		end)
+		stopRef.stop = w.stop
+		local editor = find(w.screen, "Editor")
+		local ok, message = pcall(function()
+			editor:CaptureFocus()
+			editor.Text = "Custom"
+			editor:ReleaseFocus(true)
+		end)
+		if not ok then
+			failure = tostring(message)
+		end
+		t.expect(failure).toBe(nil)
+		t.expect(value:peek()).toBe("a")
+		t.expect(changes).toBe(0)
+		t.expect(editor.Parent).toBe(nil)
+	end)
+
 	t.it("keeps the changelog release heading equal to Facet.VERSION", function()
 		local changelog = fs.readFile("CHANGELOG.md")
 		local heading = string.match(changelog, "\n## (%d+%.%d+%.%d+)")
