@@ -45,7 +45,7 @@ local KEYS = {
 local PLACEMENTS = table.freeze({ automatic = true, bottom = true, side = true, center = true })
 local HANDLE = 20
 local SHEET = table.freeze({ enter = 0.3, exit = 0.2 })
-local SETTLE_LIMIT = 12
+local SETTLE_LIMIT = 20
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
@@ -746,6 +746,40 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end)
 		if frames and not ready:peek() then
 			local panelSize = ctx.observe(panel, "AbsoluteSize")
+			local function textExtent(): number
+				local total = 0
+				for _, node in panel:GetDescendants() do
+					if node:IsA("TextLabel") or node:IsA("TextButton") or node:IsA("TextBox") then
+						total += node.TextBounds.X + node.TextBounds.Y * 4096
+					end
+				end
+				return total
+			end
+			local fontsReady = Compose.cell(true)
+			local provider = ctx.config.services and ctx.config.services.ContentProvider
+			if provider and task then
+				fontsReady:set(false)
+				local owner = assert(Compose.currentOwner())
+				local thread = task.defer(function()
+					local texts: { Instance } = {}
+					for _, node in panel:GetDescendants() do
+						if node:IsA("TextLabel") or node:IsA("TextButton") or node:IsA("TextBox") then
+							table.insert(texts, node)
+						end
+					end
+					pcall(function()
+						provider:PreloadAsync(texts)
+					end)
+					if not owner.isDisposed() then
+						fontsReady:set(true)
+					end
+				end)
+				Compose.cleanup(function()
+					if coroutine.status(thread) == "suspended" then
+						pcall(task.cancel, thread)
+					end
+				end)
+			end
 			local started = Compose.cell(false)
 			local clock = runtime.tween(function(use: ComposeTypes.Use): number
 				return if use(started) then 1 else 0
@@ -760,15 +794,16 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end
 				local signature = if measured:peek()
 					then string.format(
-						"%d %d %d %d %d",
+						"%d %d %d %d %d %d",
 						extent:peek().X,
 						extent:peek().Y,
 						panelSize:peek().X,
 						contentSize:peek().Y,
-						room.pinned:peek()
+						room.pinned:peek(),
+						textExtent()
 					)
 					else nil
-				if finished or (signature ~= nil and signature == previous) then
+				if finished or (fontsReady:peek() and signature ~= nil and signature == previous) then
 					ready:set(true)
 				end
 				previous = signature

@@ -92,7 +92,8 @@ the details and starts a launch), `Invoke("close")`, `Invoke("summary", boolean)
 sheet), `Invoke("about", boolean)` and `Invoke("status", boolean)` (the About
 dialog and the presence popover of the selected app in the current mode),
 `Invoke("appearance", boolean)` and `Invoke("tips", boolean)` (the Avatar
-Appearance disclosure and Tips) and `Invoke("chat", text)`.
+Appearance disclosure and Tips), `Invoke("motion", boolean)` (pushes or pops
+the Avatar "Motion & turning" page) and `Invoke("chat", text)`.
 
 Automated behavior coverage lives in `tests/native_virtual_monitors.spec.luau`.
 `tests/native_virtual_monitors_coverage.spec.luau` mounts the three apps and the

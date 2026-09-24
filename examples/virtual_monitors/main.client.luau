@@ -428,6 +428,8 @@ local lifetime = Compose.createRootOwner(function()
 				model.avatarSettingsExpanded:set(argument == true)
 			elseif command == "tips" then
 				model.avatarTipsExpanded:set(argument == true)
+			elseif command == "motion" then
+				model.avatarPath:set(if argument == true then { { id = "motion", value = true } } else {})
 			elseif command == "chat" then
 				model.prompt(argument)
 				model.chat.send()
