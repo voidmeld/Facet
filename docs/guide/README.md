@@ -54,6 +54,7 @@ to select a control. Then read the exact contract of that control in the
 | Inline disclosure and larger content presentation | `UI.DisclosureGroup`, `UI.CollapsibleView` |
 | Contextual teaching | `UI.Callout` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
+| Browsable items with artwork and revealed actions | `UI.Card` |
 | Sorting, selection, resizing and row reorder | `UI.Table` |
 | Row swipe and context actions | `UI.RowActions` |
 | Text and compact status | `UI.Label`, `UI.Badge`, `UI.StatusIndicator` |

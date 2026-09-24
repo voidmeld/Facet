@@ -29,6 +29,7 @@ surface only when the existing surface cannot express the task clearly.
 | Show the progress of a workflow | StepIndicator. |
 | Compare sortable columns | Table. |
 | Show large scrolling data | VirtualList or VirtualGrid. |
+| Show a browsable item with a picture and actions | Card, in a VirtualGrid for many items. |
 | Add operations for one row | RowActions. |
 
 ## Compose in the existing screen

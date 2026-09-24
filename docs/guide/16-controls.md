@@ -12,7 +12,7 @@ callbacks.
 | Choices | Picker, ComboBox |
 | Navigation | TabView, NavigationStack, PageView, Pagination, StepIndicator |
 | Presentation | Alert, Sheet, DisclosureGroup, CollapsibleView, Callout |
-| Data | VirtualList, VirtualGrid, Table, RowActions |
+| Data | VirtualList, VirtualGrid, Table, RowActions, Card |
 | Information | Label, Badge, StatusIndicator, ProgressView, Skeleton, ShortcutHint |
 | Media | AsyncImage, Avatar, AvatarGroup, Stage |
 

@@ -100,6 +100,17 @@ local voteProps: Facet.VoteSpec = {
 	end,
 }
 local vote: Frame = UI.Vote(voteProps)
+local cardControls: Facet.CardControls = {}
+local cardProps: Facet.CardSpec = {
+	image = "rbxassetid://1",
+	title = text,
+	caption = "Friends playing",
+	onActivate = nothing,
+	primaryAction = { label = "Play", onActivate = nothing },
+	menu = { items = { { id = "hide", label = "Not interested", onSelect = nothing } } },
+	controls = cardControls,
+}
+local card: Frame = UI.Card(cardProps)
 local items = { { id = "save", label = "Save", onSelect = nothing } }
 local menu: GuiObject = UI.Menu({ items = items })
 local split: GuiObject = UI.SplitButton({ label = "Save", onActivate = nothing, items = items })
@@ -197,6 +208,7 @@ local mounted: { GuiObject } = {
 	pagination,
 	stepIndicator,
 	vote,
+	card,
 	menu,
 	split,
 	picker,

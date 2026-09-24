@@ -10,6 +10,7 @@ local names = {
 	"callout",
 	"canvas_group",
 	"card_rail",
+	"cards",
 	"collapsible_view",
 	"collections",
 	"component_motion",

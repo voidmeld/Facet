@@ -34686,6 +34686,565 @@
       ],
       "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "family": "content-navigation"
+    },
+    {
+      "id": "post-card-01",
+      "group": "error-handling",
+      "title": "Malformed specs are refused before anything is built",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::refuses malformed specs before building anything"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-02",
+      "group": "controls-actions",
+      "title": "Body, primary and More are sibling targets: one press runs exactly one intent",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps body, primary and More as sibling targets so one press runs one intent"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-03",
+      "group": "controls-actions",
+      "title": "An informational body has no activation target, and actions still work",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::gives an informational body no activation target and keeps its actions at rest"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-04",
+      "group": "controls-actions",
+      "title": "Disabled cards and busy actions keep their controls own semantics",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the semantics of disabled cards and busy actions"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-05",
+      "group": "error-handling",
+      "title": "An invalid late title or image keeps the last legal paint and recovers",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the last legal paint for an invalid late title or image and recovers"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-06",
+      "group": "lifetime-ownership",
+      "title": "A callback that removes its own card leaves nothing behind",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::leaves nothing behind when a callback removes its own card"
+      ],
+      "weaker": "Main checked the presenter focus scope name; the native case checks that the card and its Cancel context are gone.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-07",
+      "group": "controls-actions",
+      "title": "automatic: pointer within reveals; siblings and the card envelope never move",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals on a pointer within and keeps the action plate in the card's layout"
+      ],
+      "weaker": "The plate stays visible, laid out and ordered after the body, and the root Size never changes; the solved rectangles need Studio.",
+      "needsLive": "card-envelope",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-08",
+      "group": "layout-geometry",
+      "title": "The envelope height is measured at rest, before anything reveals",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::measures the envelope height at rest, before anything reveals"
+      ],
+      "weaker": "The root AbsoluteSize is injected.",
+      "needsLive": "card-envelope",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-09",
+      "group": "focus-selection",
+      "title": "Hidden actions are out of the focus order at rest",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps hidden actions out of reach at rest and lets a selected body reveal them"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-10",
+      "group": "focus-selection",
+      "title": "Focus within reveals; pointer departure never hides focused content; focus departure does",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals on focus within, keeps it when the pointer leaves and ends it when focus leaves"
+      ],
+      "weaker": "The Tab walk is native selection; the case moves GuiService.SelectedObject.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-11",
+      "group": "controls-actions",
+      "title": "An open menu holds the reveal across its portal and releases it on close",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::holds the reveal while its menu is open and releases it when the menu closes"
+      ],
+      "weaker": "The pad route (ButtonY opens the menu from a selected More and B returns selection to it) is the Menu control route and is not repeated here.",
+      "needsLive": "card-pad",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-12",
+      "group": "controls-actions",
+      "title": "A press held on an action keeps the reveal after the pointer leaves",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the reveal while a press is held on an action after the pointer leaves"
+      ],
+      "weaker": "The press is the native GuiState of the action Button, set directly.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-13",
+      "group": "adaptive-environment",
+      "title": "Touch-only keeps actions at rest and the first tap does the body promised action",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the actions at rest while touch is present and runs the body on the first tap"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-14",
+      "group": "controls-actions",
+      "title": "Hidden actions take no tap, and a press cut off by disabling never fires on release",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::takes no tap on hidden actions and never fires a press cut off by disabling"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-15",
+      "group": "motion",
+      "title": "A rapid reversal retargets the fade from where it is, never from rest",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::retargets the fade from where it is on a rapid reversal"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-16",
+      "group": "controls-actions",
+      "title": "always reserves the action row in the card own layout",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals the action row at rest with reveal always"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-17",
+      "group": "text-measure-fit",
+      "title": "A live theme and text change while revealed re-measures without moving siblings",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::follows a live change of the measured envelope while revealed"
+      ],
+      "weaker": "The measured root height is injected; a real theme and text change needs Studio.",
+      "needsLive": "card-envelope",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-18",
+      "group": "motion",
+      "title": "Hover, painted focus and a held press all lift the card; disengaging lands it",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::lifts the card with a raised shadow for hover, selection and a held press and lands it after"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-19",
+      "group": "motion",
+      "title": "A card with no body action lifts without a shadow",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::lifts a card with no body action without a shadow"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-20",
+      "group": "motion",
+      "title": "A grid cell stop wears its card lift, so the ring marks the lifted card",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::puts the card lift on its grid browse stop so the selection ring marks the lifted card"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-21",
+      "group": "motion",
+      "title": "Reduced motion keeps only the raised shadow, and ten feet leaves the scale to the focus lift",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps only the raised shadow under reduced motion"
+      ],
+      "weaker": "The ten-foot half is retired: the native architecture deleted the viewing-distance profile and its tenFootFocusScale, so no focus lift competes with the card scale.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-22",
+      "group": "collections-virtual",
+      "title": "The grid Hit is the browse stop: its ring reveals that card alone",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::reveals only the card whose grid browse stop is selected and moves with the selection"
+      ],
+      "weaker": "A parked focus without a painted ring does not exist natively: a pointer session has no GuiService.SelectedObject.",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-23",
+      "group": "focus-selection",
+      "title": "Activate enters the actions at the first action; arrows stay inside; Cancel restores the stop",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::enters the actions at the first action, traps the selection and restores the stop on Cancel"
+      ],
+      "weaker": "The trap is the native SelectionGroup with Stop behavior on all four sides; the engine moves the selection, so arrow presses are a live check.",
+      "needsLive": "card-pad",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-24",
+      "group": "lifetime-ownership",
+      "title": "Removing, scrolling away or replacing an entered card leaves no trap, menu or ref behind",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::leaves no trap, menu or controls behind when an entered card is removed or replaced"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-25",
+      "group": "lifetime-ownership",
+      "title": "Scrolling an entered card out of the window recycles it without stranding its trap",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::recycles an entered card scrolled out of the window without stranding its trap"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-26",
+      "group": "collections-virtual",
+      "title": "Two grids with identical keys keep separate cards and entries",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps separate cards and entries in two grids with identical keys"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-27",
+      "group": "gallery-examples",
+      "title": "The gallery Cards scenario: its lines hold each card and its plate, and its step enters",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped"
+      ],
+      "weaker": "The scenario step enters and Play runs; that each line holds its card and plate needs the native layout.",
+      "needsLive": "card-grid",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-28",
+      "group": "layout-geometry",
+      "title": "A lifted, ringed card in every corner cell stays inside the grid that clips it",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped"
+      ],
+      "weaker": "The half-gutter padding, lane width, canvas extent and both scroll ends are asserted; the lifted footprint against the clip is a live check.",
+      "needsLive": "card-grid",
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-card-29",
+      "group": "collections-virtual",
+      "title": "A thousand items keep the mounted cards, refs and owners bounded",
+      "mainSpecs": [
+        "card"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_card::native Card::keeps the mounted cards and their controls bounded across a thousand items"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-01",
+      "group": "collections-virtual",
+      "title": "VirtualGrid content extent includes half a gutter at each end (virtual_grid extent index)",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-02",
+      "group": "collections-virtual",
+      "title": "VirtualGrid window and band follow the edged index",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-03",
+      "group": "collections-virtual",
+      "title": "A short last line keeps its lanes inside the half-gutter edges",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-04",
+      "group": "collections-virtual",
+      "title": "Column arithmetic subtracts both half-gutter edges",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-05",
+      "group": "collections-virtual",
+      "title": "Canvas height and band offset include the leading edge",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-06",
+      "group": "collections-virtual",
+      "title": "dump reports the lane width inside the edges",
+      "mainSpecs": [
+        "virtual_grid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
+    },
+    {
+      "id": "post-grid-07",
+      "group": "collections-virtual",
+      "title": "A horizontal grid keeps its edges on the x axis",
+      "mainSpecs": [
+        "virtual_hgrid"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "candidateCases": [
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
+      ],
+      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "family": "content-navigation"
     }
   ],
   "bugs": [
@@ -35109,13 +35668,16 @@
     "content-navigation": {
       "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
       "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
-      "contracts": 40,
-      "mainCases": 40,
+      "contracts": 76,
+      "mainCases": 76,
       "mainCasesByClass": {
-        "a": 38,
+        "a": 74,
         "b": 2
       },
       "needsLive": [
+        "card-envelope",
+        "card-grid",
+        "card-pad",
         "pagination-arrows-still",
         "pagination-fit",
         "pagination-hug",

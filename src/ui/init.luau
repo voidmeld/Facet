@@ -17,6 +17,7 @@ return function(Compose: Types.ComposeModule, runtime: Types.Runtime, options: T
 	require("@self/pagination")(ctx, UI)
 	require("@self/step_indicator")(ctx, UI)
 	require("@self/vote")(ctx, UI)
+	require("@self/card")(ctx, UI)
 	table.freeze(UI)
 	return UI
 end

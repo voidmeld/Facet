@@ -592,7 +592,7 @@ render owner.
 | `mode` | `windowed`; `all` deliberately mounts the entire collection. |
 | `direction` | `vertical`; `horizontal` changes the scrolling axis. |
 | `itemSize` | `40`, the estimated main-axis extent. |
-| `gap`, `crossGap` | `0`; the cross gap defaults to the gap. |
+| `gap`, `crossGap` | `0`; the cross gap defaults to the gap. A VirtualGrid keeps half of each gap (rounded up) at its outer edges, as a `UIPadding` on its `Items` frame and in its canvas extent. Thus content that paints past its cell, such as a lifted Card, is not cut by the scroll clip. |
 | `columns` | The grid column count, default `1`; can be reactive. |
 | `overscan` | `2`. |
 | `measure` | `false`; set to observe the rendered native `AbsoluteSize`. |
@@ -649,6 +649,93 @@ local list = UI.VirtualList {
             onActivate = function() inspect(current:peek().id) end,
             Size = UDim2.new(1, 0, 0, 52),
         }
+    end,
+}
+```
+
+### Card
+
+Card shows one item of a browsable collection: artwork, a title and an
+optional caption, with a primary action and a More menu that show on
+engagement. It requires `image` and `title` (nonempty strings or readables).
+The other options are `caption`, `imageAspectRatio` (default `16/9`),
+`imageFraming` (`fit` or `crop`), `onActivate`, `primaryAction = { label,
+icon?, onActivate, enabled?, busy? }`, `menu = { items, label? }`, `reveal`
+(`automatic` or `always`), `browseTarget`, `enabled` and `controls`.
+
+Use a Card for a game, a track or a kart, where the picture helps the player
+choose. For rows of text, use VirtualList or Table.
+
+- With `onActivate`, the body is a Button. Without it, the body is plain
+  artwork and text. The primary action is a Button. `menu` is a Menu behind a
+  More trigger (`menu.label`, default "More"). The body, the primary action
+  and More are sibling targets under a root that is not a Button. Thus a press
+  runs exactly one of them. `enabled = false` applies to all three.
+- A late value of `title` or `image` that is empty or of the wrong type keeps
+  the last legal paint, with a warning and a diagnostic line.
+- `always` keeps the action plate visible. `automatic` (the default) shows it
+  at rest when the session has touch (`TouchEnabled` or a touch
+  `PreferredInput`), and otherwise while the card is engaged. The card is
+  engaged while the pointer is in it, the selection is in it, a press is held
+  on one of its actions, its menu is open, its actions are entered, or the
+  `browseTarget` is selected. A card with no body action and no
+  `browseTarget` has no stop of its own, so it shows its actions at rest.
+- The plate is a CanvasGroup below the body in the card's own layout. It is
+  always laid out, so the card size never changes and the siblings never move.
+  At rest it is transparent and not `Interactable`, so its actions take no
+  press and no selection. The fade uses a Compose tween, so a quick reversal
+  continues from the current value. Reduced motion shows and hides it
+  immediately.
+- While engaged, the card's `UIScale` named `Lift` rises to 1.04 on a spring,
+  and a body Button shows its `UIShadow` named `LiftShadow`. A card with no
+  body action has no shadow. The scale is paint only. Keep gutters of at least
+  the scaled growth around each card. Reduced motion keeps only the shadow.
+  When a `browseTarget` exists, the card puts a `UIScale` named `CardLift` with
+  the same scale on it, so the selection ring grows with the card.
+
+`browseTarget` is a function that returns the browse stop of the card, such
+as the `RowHit` of a VirtualGrid cell. `controls` is an optional table. The
+card sets `enterActions()`, `leaveActions()`, `diagnostics()` and the readables
+`engaged`, `revealed`, `scale` and `revealExtent` (`{ body }`, the measured
+root height). `enterActions()` holds the reveal and selects the first eligible
+action. It returns false for a disabled or unmounted card, or when no action
+is eligible. It never runs the primary action. While the actions are entered,
+the action row is a `SelectionGroup` whose selection behavior is `Stop` on all
+four sides. Escape or ButtonB leaves the actions and selects the browse stop.
+The menu closes first when it is open. A press outside the card also leaves.
+When the card is removed or recycled, it releases the entry.
+
+The root has the attributes `FacetReveal`, `FacetRevealed`, `FacetEngaged`,
+`FacetHovered`, `FacetFocusWithin`, `FacetPressing`, `FacetBrowsing`,
+`FacetEntered`, `FacetMenuOpen` and `FacetBody` (`button` or `informational`).
+
+```luau
+local controls = {}
+local cards = {}
+UI.VirtualGrid {
+    from = games,
+    key = "id",
+    columns = 3,
+    itemSize = 320,
+    measure = true,
+    gap = 16,
+    onActivate = function(_item, key) local entry = controls[key]; if entry then entry.enterActions() end end,
+    render = function(current, _placement, key)
+        controls[key] = {}
+        local card = UI.Card {
+            image = art,
+            title = function(use) return use(current).title end,
+            controls = controls[key],
+            browseTarget = function()
+                local node = cards[key]
+                return node and node.Parent and node.Parent:FindFirstChild("RowHit")
+            end,
+            primaryAction = { label = "Play", onActivate = function() play(key) end },
+            menu = { items = { { id = "hide", label = "Not interested", onSelect = function() hide(key) end } } },
+        }
+        cards[key] = card
+        Compose.cleanup(function() cards[key], controls[key] = nil, nil end)
+        return card
     end,
 }
 ```

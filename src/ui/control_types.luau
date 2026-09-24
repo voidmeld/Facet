@@ -45,6 +45,7 @@ export type Controls = {
 	Pagination: typeof(((nil :: unknown) :: Content.ContentControls).Pagination),
 	StepIndicator: typeof(((nil :: unknown) :: Content.ContentControls).StepIndicator),
 	Vote: typeof(((nil :: unknown) :: Content.ContentControls).Vote),
+	Card: typeof(((nil :: unknown) :: Content.ContentControls).Card),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

@@ -808,7 +808,7 @@ Some cases were added on `main` after the baseline. Each family records them her
 
 ### Content and navigation
 
-`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 40 contracts and 40 main cases (a: 38, b: 2). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
+`main` added these cases after the baseline, up to `bc9a56a6`. They cover the content and navigation controls. The family has 76 contracts and 76 main cases (a: 74, b: 2). A case in `needsLive` also needs a live Studio check. The candidate specs are `native_pagination`, `native_step_indicator`, `native_vote`, `native_card` and `native_content_navigation`.
 
 | Contract | Main spec | Main cases | Class | Candidate cases | Note |
 |---|---|---:|---|---|---|
@@ -852,6 +852,42 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-vote-07 | `vote` | 1 | a | `refuses to become interactive without onChange` | The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard. |
 | post-vote-08 | `vote` | 1 | a | `keeps two votes and a chip as separate targets at the floor, with a disclosed summary` | Minimum target constraints and separate nodes are asserted; overlap of hit rectangles needs the native layout. |
 | post-vote-09 | `vote` | 1 | a | `repaints the Choices vote only from its caller's value and follows the summary` |  |
+| post-card-01 | `card` | 1 | a | `refuses malformed specs before building anything` |  |
+| post-card-02 | `card` | 1 | a | `keeps body, primary and More as sibling targets so one press runs one intent` |  |
+| post-card-03 | `card` | 1 | a | `gives an informational body no activation target and keeps its actions at rest` |  |
+| post-card-04 | `card` | 1 | a | `keeps the semantics of disabled cards and busy actions` |  |
+| post-card-05 | `card` | 1 | a | `keeps the last legal paint for an invalid late title or image and recovers` |  |
+| post-card-06 | `card` | 1 | a | `leaves nothing behind when a callback removes its own card` | Main checked the presenter focus scope name; the native case checks that the card and its Cancel context are gone. |
+| post-card-07 | `card` | 1 | a | `reveals on a pointer within and keeps the action plate in the card's layout` | The plate stays visible, laid out and ordered after the body, and the root Size never changes; the solved rectangles need Studio. |
+| post-card-08 | `card` | 1 | a | `measures the envelope height at rest, before anything reveals` | The root AbsoluteSize is injected. |
+| post-card-09 | `card` | 1 | a | `keeps hidden actions out of reach at rest and lets a selected body reveal them` |  |
+| post-card-10 | `card` | 1 | a | `reveals on focus within, keeps it when the pointer leaves and ends it when focus leaves` | The Tab walk is native selection; the case moves GuiService.SelectedObject. |
+| post-card-11 | `card` | 1 | a | `holds the reveal while its menu is open and releases it when the menu closes` | The pad route (ButtonY opens the menu from a selected More and B returns selection to it) is the Menu control route and is not repeated here. |
+| post-card-12 | `card` | 1 | a | `keeps the reveal while a press is held on an action after the pointer leaves` | The press is the native GuiState of the action Button, set directly. |
+| post-card-13 | `card` | 1 | a | `keeps the actions at rest while touch is present and runs the body on the first tap` |  |
+| post-card-14 | `card` | 1 | a | `takes no tap on hidden actions and never fires a press cut off by disabling` |  |
+| post-card-15 | `card` | 1 | a | `retargets the fade from where it is on a rapid reversal` |  |
+| post-card-16 | `card` | 1 | a | `reveals the action row at rest with reveal always` |  |
+| post-card-17 | `card` | 1 | a | `follows a live change of the measured envelope while revealed` | The measured root height is injected; a real theme and text change needs Studio. |
+| post-card-18 | `card` | 1 | a | `lifts the card with a raised shadow for hover, selection and a held press and lands it after` |  |
+| post-card-19 | `card` | 1 | a | `lifts a card with no body action without a shadow` |  |
+| post-card-20 | `card` | 1 | a | `puts the card lift on its grid browse stop so the selection ring marks the lifted card` |  |
+| post-card-21 | `card` | 1 | a | `keeps only the raised shadow under reduced motion` | The ten-foot half is retired: the native architecture deleted the viewing-distance profile and its tenFootFocusScale, so no focus lift competes with the card scale. |
+| post-card-22 | `card` | 1 | a | `reveals only the card whose grid browse stop is selected and moves with the selection` | A parked focus without a painted ring does not exist natively: a pointer session has no GuiService.SelectedObject. |
+| post-card-23 | `card` | 1 | a | `enters the actions at the first action, traps the selection and restores the stop on Cancel` | The trap is the native SelectionGroup with Stop behavior on all four sides; the engine moves the selection, so arrow presses are a live check. |
+| post-card-24 | `card` | 1 | a | `leaves no trap, menu or controls behind when an entered card is removed or replaced` |  |
+| post-card-25 | `card` | 1 | a | `recycles an entered card scrolled out of the window without stranding its trap` |  |
+| post-card-26 | `card` | 1 | a | `keeps separate cards and entries in two grids with identical keys` |  |
+| post-card-27 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The scenario step enters and Play runs; that each line holds its card and plate needs the native layout. |
+| post-card-28 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The half-gutter padding, lane width, canvas extent and both scroll ends are asserted; the lifted footprint against the clip is a live check. |
+| post-card-29 | `card` | 1 | a | `keeps the mounted cards and their controls bounded across a thousand items` |  |
+| post-grid-01 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-02 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-03 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-04 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-05 | `virtual_grid` | 1 | a | `collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent` |  |
+| post-grid-06 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
+| post-grid-07 | `virtual_hgrid` | 1 | a | `collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent` |  |
 
 ## Use the data
 

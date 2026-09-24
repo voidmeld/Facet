@@ -22,6 +22,8 @@
 - `UI.Pagination` selects a page of numbered results. The caller owns `page`, and a press proposes one page through `onChange`. The window shows the boundary pages, the current page and its neighbours. It drops the farthest pages when the measured width is too small, and then shows "Page n of m". The selection moves to the current page when a selected page leaves the window or a selected arrow becomes disabled.
 - `UI.StepIndicator` shows the state of each workflow step. `current` alone sets the underline and the summary. Only navigable, enabled steps with `onSelect` are Buttons. When the measured width is too small, the row changes to "Step n of m" and a Steps menu.
 - `UI.Vote` shows up, down or none over the caller's value in the segmented strip paint. A press proposes the next value, and a press on the chosen side proposes `none`. A read-only vote shows the choice with no Button.
+- `UI.Card` shows an item with artwork and a title, and reveals a primary action and a More menu on engagement. The action plate is always laid out, so the card and its siblings never move. An engaged card lifts to 1.04 with a raised shadow. In a VirtualGrid, `browseTarget` and `controls.enterActions()` make the cell the browse stop and let a gamepad enter the actions.
+- `UI.VirtualGrid` keeps half of each gap at its outer edges, so a lifted card in a corner cell is not cut by the scroll clip. The lanes are narrower by one cross gap and the canvas is longer by one gap.
 - The type check raises the analyzer's `LuauTarjanChildLimit` to 40000. The public `Facet` type with the added controls is larger than the default limit of 10000.
 
 ## Pre-0.12.0 development history

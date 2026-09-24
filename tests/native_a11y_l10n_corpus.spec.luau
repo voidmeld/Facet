@@ -333,6 +333,14 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 	Pagination = function()
 		return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
 	end,
+	Card = function()
+		return {
+			image = "rbxassetid://1",
+			title = "Card",
+			onActivate = function() end,
+			primaryAction = { label = "Play", onActivate = function() end },
+		}
+	end,
 	Vote = function()
 		return { value = Compose.cell("none"), onChange = function() end }
 	end,
