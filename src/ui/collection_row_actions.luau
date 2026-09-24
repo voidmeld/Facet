@@ -71,10 +71,15 @@ return function(ctx: Types.Context, UI: Controls): ()
 		end
 		if spec.coordinator then
 			Compose.watch(function(use: ComposeTypes.Use)
+				if read(open, use) ~= nil and spec.coordinator:peek() ~= rowToken then
+					spec.coordinator:set(rowToken)
+				end
+			end)
+			Compose.watch(function(use: ComposeTypes.Use)
 				local active = use(spec.coordinator)
 				if active ~= rowToken then
 					menuOpen:set(false)
-					if read(open, use) ~= nil then
+					if read(open) ~= nil then
 						setOpen(nil)
 					end
 				end
@@ -106,6 +111,27 @@ return function(ctx: Types.Context, UI: Controls): ()
 				action.onActivate()
 			end
 		end
+		local frames = assert(runtime.host.frames)
+		local stopSettle: (() -> ())?
+		local function settle(): ()
+			if stopSettle then
+				return
+			end
+			stopSettle = frames.onFrame(function()
+				if stopSettle then
+					stopSettle()
+					stopSettle = nil
+				end
+				committing:set(nil)
+				fired = false
+			end)
+		end
+		Compose.cleanup(function()
+			if stopSettle then
+				stopSettle()
+				stopSettle = nil
+			end
+		end)
 		local function execute(action: RowAction, edge: string?): ()
 			if committing:peek() or read(spec.enabled) == false or read(action.enabled) == false then
 				return
@@ -121,6 +147,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				if reduced() then
 					fired = true
 					invoke(action)
+					settle()
 				else
 					departure:restart()
 				end
@@ -134,6 +161,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				if commit then
 					fired = true
 					invoke(commit.action)
+					settle()
 				end
 			end
 		end)
@@ -257,10 +285,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 				local fullSwipe = if type(spec.fullSwipe) == "table"
 					then spec.fullSwipe[edge] ~= false
 					else spec.fullSwipe ~= false
-				if fullSwipe and #available > 0 and math.abs(value) >= dimensions:peek().X * 0.7 then
+				local width = dimensions:peek().X
+				if fullSwipe and #available > 0 and width > 0 and math.abs(value) >= width * 0.7 then
 					execute(available[1], edge)
 				elseif
 					#available > 0
+					and value ~= 0
 					and (
 						math.abs(value) >= bandWidth(edge) * 0.5
 						or (math.abs(velocity) > 600 and velocity * value > 0 and now() - previousTime < 0.1)
@@ -399,10 +429,14 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local selected: ComposeTypes.Cell<GuiObject?> = if gui
 			then ctx.observe(gui, "SelectedObject")
 			else Compose.cell(nil :: GuiObject?)
+		local function scope(): Instance
+			local host = root.Parent
+			return if host and host:GetAttribute("FacetCollectionRow") == true then host else root
+		end
 		local function eligible(use: ComposeTypes.Use): boolean
 			local node = read(selected, use)
 			return node ~= nil
-				and node:IsDescendantOf(root)
+				and node:IsDescendantOf(scope())
 				and read(spec.enabled, use) ~= false
 				and read(committing, use) == nil
 				and not (node:IsA("TextBox") and node:IsFocused())
@@ -491,7 +525,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end
 			if edge ~= nil then
 				local current = gui.SelectedObject
-				if current and current:IsDescendantOf(root) then
+				if current and current:IsDescendantOf(scope()) then
 					previousSelection = current
 					local trayNode = root:FindFirstChild(edge)
 					if trayNode then

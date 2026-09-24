@@ -160,7 +160,8 @@ The pointer callbacks are `onPointerDown`, `onPointerUp` and `onPointerCancel`.
 
 `value` is a boolean source. `onChange(next)` requests a new value. Without it,
 the control updates the writable cell. `presentation` is `switch`, `checkbox` or
-`button`. The checkbox presentation supports `mixed`. `indicatorPosition` is
+`button`. The checkbox presentation supports `mixed`. A read-only `value` or
+`mixed` source requires `onChange`. `indicatorPosition` is
 `leading` or `trailing`. The label, row, hint, enabled and common button styling
 options apply.
 
@@ -199,7 +200,9 @@ Keyboard and gamepad adjustment use the input actions of the control.
 ### Rating and LevelPicker
 
 Both take a numeric `value`, a positive integer `count` (default `5`),
-`allowZero` (default true), `readOnly`, `enabled` and `onChange`.
+`allowZero` (default true), `readOnly`, `enabled` and `onChange`. The
+`value` and `semanticValue` attributes stay in the range from the minimum to
+`count`, also when the model holds a value outside it.
 
 - Rating supports `glyphs = { filled, empty }` and `starSize`.
 - LevelPicker supports `segment` (`bar`, `glyph` or `image`), `segmentSize`,
@@ -229,6 +232,14 @@ Items have a stable `id` and a `label`. They have optional `icon`, `enabled`,
 `hidden`, `children` and `onSelect`. Checked and selected items bind their
 writable state. Native input actions supply opening and Back behavior. Nested
 menus keep the control-specific navigation of the menu.
+
+- `triggers` limits the routes that open the menu. The routes are `activate`,
+  `secondary`, `longPress`, `keyboard` and `gamepad`. The default is all five.
+- `presentation` is `automatic`, `menu` or `sheet`. `backLabel` sets the text
+  of the Back row.
+- When the player navigates by selection, an open menu selects its first
+  enabled item. Back and Left close one level and return the selection to the
+  item that opened it.
 
 SplitButton combines a primary `label` and `onActivate` action with the
 secondary `items` of the menu. Use it when the secondary operations supplement
@@ -442,6 +453,9 @@ Optional collection focus uses `focus`, `initialFocus`, `autoFocus`,
 - `selectable(item)`, `reorderable`, `movable(item)`, `dragLabel` and
   `onReorder(keys, insertionSlot)` use the same zero-based insertion contract
   among the remaining rows as Table.
+- A keyboard or gamepad move steps along the scrolling axis. A vertical
+  collection uses Up and Down. A horizontal collection uses Left and Right.
+- A reorder that would move a row that is not movable does not occur.
 
 Native properties and children stay available.
 
@@ -509,11 +523,16 @@ follow options also apply.
 
 `actionWidth` has a minimum default of `88`. Native label bounds can make the
 action tray larger. Full swipe is on by default. You can set it for each edge.
-A shared `coordinator` cell lets only one row be open.
+A row with no measured width does not open or run an action from a swipe.
+A shared `coordinator` cell lets only one row be open. When a row opens,
+through a gesture or a write to its `open` cell, the other rows close.
 
 Native swipe, context, and keyboard and gamepad actions reach the same
-commands. A destructive action runs exactly once, after its Compose departure
-animation. If the owner is removed, an unfinished departure is cancelled.
+commands. In a collection row, these actions also apply when the row itself
+has the selection. A destructive action runs exactly once, after its Compose
+departure animation. If the owner is removed, an unfinished departure is
+cancelled. If the owner keeps the row, the row returns to its full height on
+the next frame, and the action can run again.
 `reducedMotion`, `enabled` and `editing` stay explicit control options.
 
 ## Media and status
@@ -523,7 +542,7 @@ animation. If the owner is removed, an unfinished departure is cancelled.
 | `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Returns a TextLabel. |
 | `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
 | `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max` and `diameter`. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
-| `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
+| `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. The endLabel shows after the value. With a label, a bar shows the value and the endLabel on the label row. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
 | `Skeleton` | A loading placeholder with a configurable form and line count. |
 | `AsyncImage` | An image or source, an optional resource or loader, a placeholder, a failure label and a status callback. `imageProperties` forwards native properties and children to the inner ImageLabel. |
 | `Avatar` | `name`; image, userId or resource; loader and onStatus; presence online, away, busy or offline; presence label and mark; diameter or controlSize; standard or icon form; optional activation. |

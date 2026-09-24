@@ -257,6 +257,7 @@ return function(
 			return math.clamp(widest + 48, 220, 400)
 		end
 		local panel = Host.ScrollingFrame "MenuPanel" {
+			Selectable = false,
 			Size = D2.fromOffset(280, 0),
 			BorderSizePixel = 0,
 			AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -724,13 +725,14 @@ return function(
 			end
 			return result
 		end)
+		local declaredIndicator, declaredAxis, declaredSizing = read(spec.indicator), read(spec.axis), read(spec.sizing)
 		assert(
-			spec.indicator == nil or table.find({ "automatic", "pill", "underline", "none" }, read(spec.indicator)),
+			declaredIndicator == nil or table.find({ "automatic", "pill", "underline", "none" }, declaredIndicator),
 			"Invalid Picker.indicator"
 		)
-		assert(spec.axis == nil or table.find({ "x", "y" }, read(spec.axis)), "Picker.axis must be x or y")
+		assert(declaredAxis == nil or table.find({ "x", "y" }, declaredAxis), "Picker.axis must be x or y")
 		assert(
-			spec.sizing == nil or table.find({ "fill", "hug" }, read(spec.sizing)),
+			declaredSizing == nil or table.find({ "fill", "hug" }, declaredSizing),
 			"Picker.sizing must be fill or hug"
 		)
 		local style = spec.style or "automatic"

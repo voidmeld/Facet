@@ -431,10 +431,16 @@ return function<V, K>(
 			local move = use(moving)
 			return move ~= nil and move.keyboard
 		end
-		ctx.action(root, "ReorderUp", { E.KeyCode.Up, E.KeyCode.DPadUp }, keyboardActive, function()
+		local earlier = if horizontal
+			then { E.KeyCode.Left, E.KeyCode.DPadLeft }
+			else { E.KeyCode.Up, E.KeyCode.DPadUp }
+		local later = if horizontal
+			then { E.KeyCode.Right, E.KeyCode.DPadRight }
+			else { E.KeyCode.Down, E.KeyCode.DPadDown }
+		ctx.action(root, "ReorderUp", earlier, keyboardActive, function()
 			step(-1)
 		end, { priority = 400 })
-		ctx.action(root, "ReorderDown", { E.KeyCode.Down, E.KeyCode.DPadDown }, keyboardActive, function()
+		ctx.action(root, "ReorderDown", later, keyboardActive, function()
 			step(1)
 		end, { priority = 400 })
 		ctx.action(root, "ReorderCancel", { E.KeyCode.Escape, E.KeyCode.ButtonB }, function(use: ComposeTypes.Use)

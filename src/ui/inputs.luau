@@ -831,6 +831,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 	UI.Toggle = ctx.construct(function(spec: InputTypes.ToggleImplementationProps): TextButton
 		assert(type(read(spec.value)) == "boolean", "Facet.Toggle: value must be boolean")
 		assert(writable(spec.value) or spec.onChange, "Facet.Toggle: read-only value requires onChange")
+		assert(
+			spec.mixed == nil or writable(spec.mixed) or spec.onChange,
+			"Facet.Toggle: read-only mixed requires onChange"
+		)
 		local presentation = spec.presentation or "switch"
 		assert(
 			presentation == "switch" or presentation == "checkbox" or presentation == "button",
@@ -1942,12 +1946,15 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end
 		end
 		root = ctx.styled(Host.TextButton(p), if rating then "rating" else "level-picker")
+		local function published(use: ComposeTypes.Use): number
+			return math.clamp(read(spec.value, use), minimum, count)
+		end
 		attributes(root, {
-			value = spec.value,
+			value = published,
 			minimum = minimum,
 			maximum = count,
 			semanticValue = function(use: ComposeTypes.Use)
-				return `{read(spec.value, use)} of {minimum} to {count}`
+				return `{published(use)} of {minimum} to {count}`
 			end,
 		})
 		runtime.connect(root, "InputBegan", function()
