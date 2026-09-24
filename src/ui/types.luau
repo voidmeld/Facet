@@ -162,6 +162,8 @@ export type Context = {
 	controlSize: (Value<ControlSize>?, "height" | "paddingX" | "iconSize", Use?) -> number,
 	observe: Observe,
 	observeStyled: Observe,
+	shiftRoute: (Instance, () -> ()) -> (),
+	shiftActivation: (Instance, InputObject?) -> (() -> ())?,
 	playWhileShown: (Playback, Instance) -> (),
 	props: <P>(P, { string } | { [string]: boolean }?, unknown?) -> P,
 	construct: <F>(string, F) -> F & ((string) -> F),

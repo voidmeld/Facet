@@ -63,6 +63,21 @@ function studio_tree.entries(mode: string?): { FileEntry }
 
 		addTree(entries, "examples/reference", "ReplicatedStorage.FacetReference", "Folder")
 		addTree(entries, "tools/studio/live", "ReplicatedStorage.FacetLive", "ModuleScript")
+		table.insert(entries, {
+			path = "ReplicatedStorage.FacetConsumerScreen",
+			className = "ModuleScript",
+			file = "examples/consumer/src/screen.luau",
+		})
+		table.insert(entries, { path = "ReplicatedStorage.VirtualMonitors", className = "Folder", file = "" })
+		for _, name in fs.readDir("examples/virtual_monitors") do
+			if name:match("%.luau$") and not name:match("%.client%.luau$") and not name:match("%.spec%.luau$") then
+				table.insert(entries, {
+					path = "ReplicatedStorage.VirtualMonitors." .. name:gsub("%.luau$", ""),
+					className = "ModuleScript",
+					file = "examples/virtual_monitors/" .. name,
+				})
+			end
+		end
 	end
 	return entries
 end

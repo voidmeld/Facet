@@ -35,9 +35,12 @@ function lab.build(ctx, modules)
 	end
 	local samples, frameSamples, elapsed, iterations, queue = {}, {}, 0, 0, {}
 	local clean, cleanSamples = Compose.cell(false), false
-	local function reset()
+	local function resetSamples()
 		samples, frameSamples, elapsed, iterations = {}, {}, 0, 0
 		cleanSamples = clean:peek()
+	end
+	local function reset()
+		resetSamples()
 		sequence:update(function(value)
 			return value + 1
 		end)
@@ -396,12 +399,12 @@ function lab.build(ctx, modules)
 			capture = capture,
 			clean = function(value)
 				clean:set(value == true)
-				reset()
+				resetSamples()
 			end,
 			theme = function(name)
 				assert(ctx.setTheme, "this place has no theme packages")
 				ctx.setTheme(name)
-				reset()
+				resetSamples()
 			end,
 			sweep = sweep,
 			ramp = ramp,

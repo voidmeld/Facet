@@ -268,20 +268,26 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				}
 			end
 			local content = spec.content()
+			local function cap(use: ComposeTypes.Use): Vector2
+				local box = safe(use)
+				local width = math.min(spec.maxWidth or math.huge, box.w)
+				local height = math.min(spec.maxHeight or math.huge, box.h)
+				return V2.new(math.max(0, width - 2 * PADDING), math.max(0, height - 2 * PADDING))
+			end
 			local limit = Host.UISizeConstraint({
-				MaxSize = function(use: ComposeTypes.Use)
-					local box = safe(use)
-					local width = math.min(spec.maxWidth or math.huge, box.w)
-					local height = math.min(spec.maxHeight or math.huge, box.h)
-					return V2.new(math.max(0, width - 2 * PADDING), math.max(0, height - 2 * PADDING))
-				end,
+				MaxSize = cap,
 			})
+			local list = Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder })
+			local laidOut = ctx.observe(list, "AbsoluteContentSize")
 			local bodyProps: Types.ScrollingFrameNativeProps = {
 				Name = "Body",
 				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
-				Size = D2.fromOffset(0, 0),
-				AutomaticSize = E.AutomaticSize.XY,
+				Size = function(use: ComposeTypes.Use)
+					local extent = use(laidOut) :: Vector2
+					return D2.fromOffset(0, math.min(extent.Y, cap(use).Y))
+				end,
+				AutomaticSize = E.AutomaticSize.X,
 				CanvasSize = D2.fromOffset(0, 0),
 				AutomaticCanvasSize = E.AutomaticSize.Y,
 				ScrollingDirection = E.ScrollingDirection.Y,
@@ -289,7 +295,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				VerticalScrollBarInset = E.ScrollBarInset.ScrollBar,
 				Selectable = false,
 			}
-			table.insert(bodyProps, Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }))
+			table.insert(bodyProps, list)
 			table.insert(bodyProps, limit)
 			table.insert(bodyProps, content)
 			local body = Host.ScrollingFrame(bodyProps)

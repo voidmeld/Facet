@@ -127,6 +127,40 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		return value
 	end
 	ctx.observe = (observe :: unknown) :: Shared.Observe
+	local shiftRoutes: { [Instance]: () -> () } = setmetatable({}, { __mode = "k" }) :: any
+	function ctx.shiftRoute(root: Instance, handler: () -> ()): ()
+		shiftRoutes[root] = handler
+		Compose.cleanup(function()
+			if shiftRoutes[root] == handler then
+				shiftRoutes[root] = nil
+			end
+		end)
+	end
+	function ctx.shiftActivation(node: Instance, input: InputObject?): (() -> ())?
+		local service = config.userInputService
+		if
+			not service
+			or not (type(input) == "table" or (typeof(input) == "Instance" and (input :: Instance):IsA("InputObject")))
+			or (input :: InputObject).KeyCode ~= Enum.KeyCode.Return
+		then
+			return nil
+		end
+		local ok, shifted = pcall(function()
+			return service:IsKeyDown(Enum.KeyCode.LeftShift) or service:IsKeyDown(Enum.KeyCode.RightShift)
+		end)
+		if not ok or not shifted then
+			return nil
+		end
+		local at: Instance? = node
+		while at do
+			local handler = shiftRoutes[at]
+			if handler then
+				return handler
+			end
+			at = at.Parent
+		end
+		return nil
+	end
 
 	function ctx.playWhileShown(timeline: Shared.Playback, node: Instance)
 		local owner = assert(Compose.currentOwner(), "Facet playWhileShown requires a Compose owner")

@@ -187,7 +187,7 @@ add("tab-head-accessory-above-rail", { "navigation-5-34" }, function(t)
 		return UI.TabView({
 			selection = Compose.cell("one"),
 			style = "sidebarAdaptable",
-			sidebarPreference = "sidebar",
+			placement = "sidebar",
 			tabs = {
 				{
 					id = "one",
@@ -223,8 +223,14 @@ add("tab-head-accessory-above-rail", { "navigation-5-34" }, function(t)
 	local h, s, f, root = t.rect(head), t.rect(tabs), t.rect(foot), t.rect(stage)
 	t.check("head sits above the strip", h.b <= s.y + 0.5, { head = h.b, strip = s.y })
 	t.check("head height is measured", h.h > 0, h.h)
-	t.near("head shares the rail width", h.w, s.w, 0.5)
-	t.near("head shares the rail x", h.x, s.x, 0.5)
+	local railWidth = math.clamp(math.floor(root.w * 0.2), 200, 280)
+	t.near("head spans the rail width", h.w, railWidth, 0.5)
+	t.near("head starts at the rail edge", h.x, root.x, 0.5)
+	t.check(
+		"the strip sits inside the rail",
+		s.x >= root.x - 0.5 and s.r <= root.x + railWidth + 0.5,
+		{ strip = s, railWidth = railWidth }
+	)
 	t.check("head inside the TabView", h.x >= root.x - 0.5 and h.y >= root.y - 0.5, h)
 	t.near("foot is pinned to the rail bottom", f.b, root.b, 0.5)
 	t.check("strip ends above the foot", s.b <= f.y + 0.5, { strip = s.b, foot = f.y })
@@ -438,7 +444,8 @@ add("grid-cell-width-arithmetic", { "collections-226" }, function(t)
 		end, { size = Vector2.new(400, 300) })
 		local grid = t.find(stage, "Grid")
 		local window = grid.AbsoluteWindowSize.X
-		local expected = (window - (columns - 1) * 10) / columns
+		local edge = math.ceil(10 / 2)
+		local expected = (window - 2 * edge - (columns - 1) * 10) / columns
 		local first, second = t.find(grid, "Cell1"), t.find(grid, "Cell2")
 		if not (first and second) then
 			t.check(`{columns} columns cells mounted`, false)
@@ -447,6 +454,7 @@ add("grid-cell-width-arithmetic", { "collections-226" }, function(t)
 		end
 		local a, b = t.rect(first), t.rect(second)
 		t.near(`{columns} columns cell width`, a.w, expected, 1)
+		t.near(`{columns} columns first cell keeps half a gap at the edge`, a.x - grid.AbsolutePosition.X, edge, 1)
 		t.near(`{columns} columns cross gap`, b.x - a.r, 10, 1)
 		t.near(`{columns} columns cell height`, a.h, 60, 1)
 		local below = t.find(grid, "Cell" .. tostring(columns + 1))
