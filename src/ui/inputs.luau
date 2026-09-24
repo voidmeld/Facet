@@ -1157,17 +1157,19 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		end
 		local p = props(spec, textKeys, {
 			Size = function(use: ComposeTypes.Use)
-				return D2.fromOffset(
-					240,
-					if use(validationMessage) ~= "" then math.max(44, use(textHeight) + use(messageHeight) + 16) else 44
-				)
+				local message = if use(validationMessage) ~= "" then use(messageHeight) else 0
+				local minimum = if spec.multiline == true then 96 else 44
+				return D2.new(1, 0, 0, math.max(minimum, use(textHeight) + message + 16))
 			end,
 			Text = read(spec.value),
 			PlaceholderText = spec.placeholder or "",
 			ClearTextOnFocus = false,
 			MultiLine = spec.multiline == true,
+			TextWrapped = spec.multiline == true,
 			TextXAlignment = E.TextXAlignment.Left,
-			TextYAlignment = if mayReject then E.TextYAlignment.Top else E.TextYAlignment.Center,
+			TextYAlignment = if mayReject or spec.multiline == true
+				then E.TextYAlignment.Top
+				else E.TextYAlignment.Center,
 			TextEditable = function(use: ComposeTypes.Use)
 				return enabled(spec, use)
 			end,
@@ -1260,6 +1262,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			)
 		end
 		node = ctx.styled(ctx.styled(ctx.styled(Host.TextBox(p), "text"), "field"), "text-input")
+		if spec.multiline == true and not messageNode then
+			local bounds = ctx.observe(node, "TextBounds")
+			Compose.watch(function(use: ComposeTypes.Use)
+				textHeight:set(use(bounds).Y)
+			end)
+		end
 		if messageNode then
 			local bounds, messageBounds = ctx.observe(node, "TextBounds"), ctx.observe(messageNode, "TextBounds")
 			Compose.watch(function(use: ComposeTypes.Use)

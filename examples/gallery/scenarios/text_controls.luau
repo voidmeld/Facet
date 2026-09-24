@@ -56,15 +56,26 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-				UI.Button "Enable" {
-					label = function(use)
-						return if use(enabled) then "Disable fields" else "Enable fields"
-					end,
-					onActivate = function()
-						enabled:set(not enabled:peek())
-					end,
+				Host.Frame "Toolbar" {
+					BackgroundTransparency = 1,
+					Size = UDim2.new(1, 0, 0, 0),
+					AutomaticSize = Enum.AutomaticSize.Y,
+					Host.UIListLayout({
+						FillDirection = Enum.FillDirection.Horizontal,
+						SortOrder = Enum.SortOrder.LayoutOrder,
+						Padding = UDim.new(0, 8),
+					}),
+					UI.Button "Enable" {
+						LayoutOrder = 1,
+						label = function(use)
+							return if use(enabled) then "Disable fields" else "Enable fields"
+						end,
+						onActivate = function()
+							enabled:set(not enabled:peek())
+						end,
+					},
+					UI.Button "Reset" { LayoutOrder = 2, label = "Reset", appearance = "utility", onActivate = reset },
 				},
-				UI.Button "Reset" { label = "Reset", onActivate = reset },
 				UI.Label({
 
 					BackgroundTransparency = 1,
