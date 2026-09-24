@@ -155,6 +155,16 @@ t.describe("Facet on the consumer's Compose instance", function()
 		t.expect(string.find(message, "Facet UI.Label", 1, true) ~= nil).toBe(true)
 		t.expect(string.find(message, "'text'", 1, true) ~= nil).toBe(true)
 		t.expect(string.find(message, "Facet.bind", 1, true) ~= nil).toBe(true)
+		local nested = failure(function()
+			runtime.mount(function()
+				return UI.Menu({
+					label = "Menu",
+					items = { { id = "a", label = "A", checked = Core.cell(false) } },
+				})
+			end, engine.new("ScreenGui"))
+		end)
+		t.expect(string.find(nested, "Facet UI.Menu", 1, true) ~= nil).toBe(true)
+		t.expect(string.find(nested, "'items.checked'", 1, true) ~= nil).toBe(true)
 		local native = Facet.Compose.cell("Native")
 		local stop, node = runtime.mount(function()
 			return UI.Label({ text = native })
