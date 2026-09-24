@@ -302,6 +302,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 					Name = "Sort",
 					Size = D2.fromScale(1, 1),
 					AutomaticSize = E.AutomaticSize.None,
+					appearance = "utility",
+					TextXAlignment = E.TextXAlignment.Left,
 					label = function(use: ComposeTypes.Use)
 						local value, order = use(current), read(sort, use)
 						local suffix = if order and order.column == value.id

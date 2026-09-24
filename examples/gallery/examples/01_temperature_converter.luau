@@ -66,7 +66,7 @@ function example.build(ctx: any)
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					Text = "Fahrenheit → Celsius",
-					TextSize = 28,
+					textRole = "title",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -79,7 +79,6 @@ function example.build(ctx: any)
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					Text = "Enter a temperature in °F:",
-					TextSize = 16,
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -101,7 +100,6 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					TextSize = 16,
 					Text = function(use)
 						local c = use(liveCelsius)
 						return if c == nil
@@ -119,7 +117,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					TextSize = 22,
+					textRole = "heading",
 					Text = function(use)
 						local c = use(celsius)
 						return if c == nil then "Result: —" else string.format("Result: %g °C", c)

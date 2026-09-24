@@ -186,10 +186,11 @@ return function<V, K>(
 			Name = "Move",
 			Size = D2.new(0, 56, 1, 0),
 			AutomaticSize = E.AutomaticSize.None,
+			appearance = "utility",
 			label = "",
 			ctx.icon(function(use: ComposeTypes.Use)
 				local move = use(moving)
-				return if move and move.key == key then "checkmark" else "chevron.up.chevron.down"
+				return if move and move.key == key then "checkmark" else "menu"
 			end, {
 				Name = "ReorderIcon",
 				AnchorPoint = V2.new(0.5, 0.5),

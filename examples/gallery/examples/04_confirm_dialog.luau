@@ -77,7 +77,7 @@ function example.build(ctx: any)
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					TextSize = 28,
+					textRole = "title",
 					Text = function(use)
 						return if use(hasSave) then "Save Slot 1 — Rally Stage 3, 42%" else "Save Slot 1 — empty"
 					end,
@@ -93,7 +93,6 @@ function example.build(ctx: any)
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					Text = outcome,
-					TextSize = 16,
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
