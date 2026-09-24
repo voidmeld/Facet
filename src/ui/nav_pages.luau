@@ -357,12 +357,30 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							select(tab.id)
 						end,
 					})
+					button:AddTag("facet-tab-item")
+					Compose.watch(function(use: Core.Use)
+						local current = use(spec.selection) == tab.id
+						local place = use(placement)
+						local filled = current
+							and read(spec.indicator, use) ~= "none"
+							and (place == "sidebar" or string.find(place, "bottom") ~= nil)
+						local tags: { [string]: boolean } =
+							{ ["facet-tab-current"] = current, ["facet-tab-filled"] = filled }
+						for name, active in tags do
+							if active then
+								button:AddTag(name)
+							elseif button:HasTag(name) then
+								button:RemoveTag(name)
+							end
+						end
+					end)
 					surfaces.attach(button, {
 						Host.UISizeConstraint({ MinSize = V2.new(44, 44) }),
 						Compose.show(function(use: Core.Use)
 							return use(spec.selection) == tab.id
 								and read(spec.indicator, use) ~= "none"
 								and read(spec.indicator, use) ~= "pill"
+								and use(placement) == "topBar"
 						end, function()
 							return ctx.styled(
 								Host.Frame "SelectionIndicator" {
