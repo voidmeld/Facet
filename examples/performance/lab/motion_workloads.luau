@@ -164,6 +164,20 @@ function motion.create(ctx, name, _dataset)
 			frame()
 			return { mutate = mutate, motion = os.clock() - started }
 		end
+		state.springValues, state.springsMoving = {}, nil
+		function state.afterRun()
+			local moving = 0
+			for index, spring in state.springs do
+				local value = spring:peek()
+				if state.springValues[index] ~= nil and value ~= state.springValues[index] then
+					moving += 1
+				end
+				state.springValues[index] = value
+			end
+			if state.n > 1 then
+				state.springsMoving = math.min(state.springsMoving or moving, moving)
+			end
+		end
 		return state
 	end
 	assert(name == "control-motion" or name == "control-motion-census", "unknown motion workload")

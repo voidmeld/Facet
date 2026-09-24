@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import importlib.util
 import json
 from functools import lru_cache
 import os
@@ -225,69 +226,162 @@ def validate_suite(suite, selected):
     return failures
 
 
+WORKING = ("affected", "fast", "full", "release")
+COMPLETE = ("full", "release")
+RELEASE = ("release",)
+PERF_GATE_STUDIO = ("studio", "native-reference", "theme-cost", "large-text", "device-matrix")
+
+
+def producer(name, command, tiers, environment="deterministic", replaces=()):
+    return {"id": name, "command": command, "tiers": tiers, "environment": environment, "replaces": list(replaces)}
+
+
+def producers_for(tier):
+    catalog = [
+        producer("vendor", ["python3", "tools/sync_compose.py", "--check"], WORKING),
+        producer("verification-selftest", ["python3", "tools/lune/native_verify_selftest.py"], WORKING, replaces=["verify-selftest"]),
+        producer("comments", ["python3", "tools/strip_comments.py", "--check"], WORKING, replaces=["check_comment_codes"]),
+        producer("comments-selftest", ["python3", "-m", "unittest", "discover", "-s", "tools/tests", "-p", "test_strip_comments.py"], WORKING, replaces=["check_comment_codes-selftest"]),
+        producer("format", ["stylua", "--check", "src", "tests", "tools", "bench", "examples"], WORKING, replaces=["stylua-check-check-src-tests-tools-bench-examples", "stylua-check-check-src-tests-tools-examples"]),
+        producer("suite", ["lune", "run", "tools/lune/native_verify_suite", tier], WORKING, replaces=["suite", "check_registration_cli", "corpus_cli"]),
+        producer("no-fusion", ["python3", "tools/check_no_fusion.py"], WORKING, replaces=["check_no_fusion"]),
+        producer("no-fusion-selftest", ["python3", "tools/check_no_fusion.py", "--selftest"], WORKING, replaces=["check_no_fusion-selftest"]),
+        producer("experiment-markers", ["lune", "run", "tools/lune/check_experiment_markers_cli"], WORKING, replaces=["check_experiment_markers"]),
+        producer("experiment-markers-selftest", ["lune", "run", "tools/lune/check_experiment_markers_cli", "--selftest"], WORKING),
+        producer("screen-key-bindings", ["python3", "tools/check_no_screen_key_bindings.py"], WORKING, replaces=["check_no_screen_key_bindings"]),
+        producer("screen-key-bindings-selftest", ["python3", "tools/check_no_screen_key_bindings.py", "--selftest"], WORKING, replaces=["check_no_screen_key_bindings-selftest"]),
+        producer("doctor", ["bash", "tools/doctor.sh"], COMPLETE, replaces=["doctor"]),
+        producer("links", ["lune", "run", "tools/lune/check_links_cli"], COMPLETE, replaces=["check_links_cli"]),
+        producer("links-selftest", ["lune", "run", "tools/lune/check_links_cli", "--selftest"], COMPLETE, replaces=["check_links_cli-selftest"]),
+        producer("doc-style", ["python3", "tools/check_doc_style.py"], COMPLETE, replaces=["check_doc_style"]),
+        producer("doc-style-selftest", ["python3", "tools/check_doc_style.py", "--selftest"], COMPLETE, replaces=["check_doc_style-selftest"]),
+        producer("maintainer-map", ["lune", "run", "tools/lune/check_maintainer_map_cli"], COMPLETE, replaces=["check_maintainer_map_cli"]),
+        producer("maintainer-map-selftest", ["lune", "run", "tools/lune/check_maintainer_map_cli", "--selftest"], COMPLETE, replaces=["check_maintainer_map_cli-selftest"]),
+        producer("brand-drift", ["python3", "tools/check_brand_drift.py"], COMPLETE, replaces=["check_brand_drift"]),
+        producer("brand-drift-selftest", ["python3", "tools/check_brand_drift.py", "--selftest"], COMPLETE, replaces=["check_brand_drift-selftest"]),
+        producer("brand-drift-skip-builds", ["python3", "tools/check_brand_drift.py", "--skip-builds"], COMPLETE, replaces=["check_brand_drift-skip-builds"]),
+        producer("call-shape-drift", ["python3", "tools/check_call_shape_drift.py"], COMPLETE, replaces=["check_call_shape_drift", "check_docs_cli"]),
+        producer("call-shape-drift-selftest", ["python3", "tools/check_call_shape_drift.py", "--selftest"], COMPLETE, replaces=["check_call_shape_drift-selftest"]),
+        producer("theme-drift", ["python3", "tools/check_theme_drift.py"], COMPLETE, replaces=["check_theme_drift_cli"]),
+        producer("theme-drift-selftest", ["python3", "tools/check_theme_drift.py", "--selftest"], COMPLETE),
+        producer("live-evidence", ["python3", "tools/check_live_evidence.py"], COMPLETE, "studio", replaces=["check_device_captures", "check_eq6_evidence", "check_matrix_rows", "check_row_actions_matrix", "check_traversal_evidence", "check_xp_matrix"]),
+        producer("live-evidence-selftest", ["python3", "tools/check_live_evidence.py", "--selftest"], COMPLETE, replaces=["check_device_sweep-selftest"]),
+        producer("source-size", ["python3", "tools/check_source_size.py"], COMPLETE, replaces=["check_source_size"]),
+        producer("types", ["python3", "tools/check_types.py"], COMPLETE, replaces=["check_types"]),
+        producer("types-selftest", ["python3", "tools/check_types.py", "--selftest"], COMPLETE, replaces=["check_types-selftest"]),
+        producer("package-selftest", ["python3", "tools/package.py", "--selftest"], COMPLETE, "package", replaces=["package-selftest"]),
+        producer("word-data", ["python3", "tools/build_word_lists.py", "--check"], COMPLETE, replaces=["build_word_lists-check"]),
+        producer("word-data-selftest", ["python3", "tools/build_word_lists.py", "--selftest"], COMPLETE, replaces=["build_word_lists-selftest"]),
+        producer("public-allowlist", ["python3", "tools/check_public_allowlist.py"], COMPLETE, replaces=["check_public_allowlist"]),
+        producer("public-allowlist-selftest", ["python3", "tools/check_public_allowlist.py", "--selftest"], COMPLETE),
+        producer("public-surface", ["lune", "run", "tools/lune/check_public_surface"], COMPLETE, replaces=["check_public_surface"]),
+        producer("public-surface-selftest", ["lune", "run", "tools/lune/check_public_surface", "--selftest"], COMPLETE),
+        producer("standalone-builds", ["bash", "tools/build_places.sh"], COMPLETE, replaces=["build_places"]),
+        producer("reference-builds", ["bash", "tools/build_reference_places.sh"], COMPLETE, replaces=["build_reference_places"]),
+        producer("consumer-build", ["rojo", "build", "examples/consumer/default.project.json", "-o", "artifacts/verify/native/consumer.rbxl"], COMPLETE),
+        producer("theme-builds", ["bash", "tools/build_themes.sh"], COMPLETE, replaces=["build_themes"]),
+        producer("gallery-build", ["rojo", "build", "examples/showcase.project.json", "-o", "artifacts/verify/native/gallery.rbxl"], COMPLETE),
+        producer("monitors-build", ["rojo", "build", "examples/virtual_monitors/default.project.json", "-o", "artifacts/verify/native/virtual-monitors.rbxl"], COMPLETE),
+        producer("performance-build", ["rojo", "build", "examples/performance.project.json", "-o", "artifacts/verify/native/performance.rbxl"], COMPLETE),
+        producer("model-build", ["bash", "tools/build_model.sh"], COMPLETE, "package", replaces=["build_model"]),
+        producer("package-build", ["bash", "tools/package.sh", "build"], COMPLETE, "package"),
+        producer("package-status", ["bash", "tools/package.sh", "status"], COMPLETE, "package"),
+        producer("package-verify", ["bash", "tools/package.sh", "verify"], COMPLETE, "package", replaces=["package-verify"]),
+        producer("package-canary", ["lune", "run", "tools/lune/package_canary"], COMPLETE, "package"),
+        producer("package-purity", ["python3", "tools/check_library_purity.py"], COMPLETE, "package", replaces=["check_library_purity"]),
+        producer("theme-artifacts", ["python3", "tools/check_theme_artifacts.py", "--selftest"], COMPLETE),
+        producer("bench", ["bash", "tools/bench.sh"], COMPLETE, "perf"),
+        producer("perf", ["bash", "tools/perf.sh"], COMPLETE, "perf"),
+        producer("perf-budgets", ["python3", "tools/check_perf_budgets.py"], COMPLETE, "perf", replaces=["check_perf_budgets"]),
+        producer("perf-metrics", ["python3", "tools/check_perf_metrics.py"], COMPLETE, "perf", replaces=["check_perf_metrics"]),
+        producer("perf-scenes", ["python3", "tools/check_perf_scenes.py"], COMPLETE, "perf", replaces=["check_perf_scenes"]),
+        producer("perf-scenes-themes", ["python3", "tools/check_perf_scenes.py", "--themes"], COMPLETE, "perf", replaces=["check_perf_scenes-themes"]),
+        producer("perf-captures", ["python3", "tools/check_perf_captures.py"], COMPLETE, "device", replaces=["check_perf_captures"]),
+        producer("perf-place", ["python3", "tools/check_perf_place.py", "--no-build"], COMPLETE, "studio", replaces=["check_perf_place"]),
+        producer("perf-gate-evidence-budgets", ["python3", "tools/check_perf_gate_evidence.py", "budgets"], COMPLETE, "perf", replaces=["check_perf_gate_evidence-budgets"]),
+        producer("perf-gate-evidence-headless-linkage", ["python3", "tools/check_perf_gate_evidence.py", "headless-linkage"], COMPLETE, "perf", replaces=["check_perf_gate_evidence-headless-linkage"]),
+        producer("perf-gate-evidence-perf-gate", ["python3", "tools/check_perf_gate_evidence.py", "perf-gate"], COMPLETE, "perf", replaces=["check_perf_gate_evidence-perf-gate"]),
+    ]
+    catalog += [
+        producer(f"perf-gate-evidence-{mode}", ["python3", "tools/check_perf_gate_evidence.py", mode], COMPLETE, "studio", replaces=[f"check_perf_gate_evidence-{mode}"])
+        for mode in PERF_GATE_STUDIO
+    ]
+    catalog += [
+        producer("prove-perf-gate", ["lune", "run", "tools/lune/prove_perf_gate"], RELEASE, "perf"),
+        producer("perf-gate-evidence-falsifiable", ["python3", "tools/check_perf_gate_evidence.py", "falsifiable"], RELEASE, "perf", replaces=["check_perf_gate_evidence-falsifiable"]),
+    ]
+    return [entry for entry in catalog if tier in entry["tiers"]]
+
+
+def producer_status(exit_code, environment, reference_host=False):
+    if exit_code == 0:
+        return "PASS"
+    if exit_code == 2 and environment in ("studio", "device"):
+        return "FAIL_ENVIRONMENT"
+    if exit_code == 2 and environment == "perf" and not reference_host:
+        return "FAIL_ENVIRONMENT"
+    return "FAIL"
+
+
+def status_blocks(status, tier):
+    return status == "FAIL" or (status == "FAIL_ENVIRONMENT" and tier == "release")
+
+
+def git_output(*args):
+    result = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True, check=False)
+    return (getattr(result, "stdout", "") or "").strip()
+
+
+def package_source_hash():
+    path = ROOT / "tools/package.py"
+    if not path.is_file():
+        return None
+    loader = importlib.util.spec_from_file_location("facet_package", path)
+    module = importlib.util.module_from_spec(loader)
+    loader.loader.exec_module(module)
+    return module.source_hash()
+
+
 def run():
     parser = argparse.ArgumentParser(description="Verify the native Compose/Roblox Facet architecture.")
-    parser.add_argument("tier", choices=("affected", "fast", "full", "release"), nargs="?", default="full")
+    parser.add_argument("tier", choices=WORKING, nargs="?", default="full")
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--explain", action="store_true")
     parser.add_argument("--rerun")
+    parser.add_argument("--reference-host", action="store_true", help="treat host timing failures as failures; use on the host that recorded the budgets")
     args = parser.parse_args()
+    started_at = time.time()
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    gate_commit = git_output("rev-parse", "HEAD")
+    gate_dirty = git_output("status", "--porcelain") != ""
+    gate_source = package_source_hash()
     records, selected, missing_coverage = inventory()
     architecture_failures = architecture()
     (ARTIFACTS / "coverage.json").write_text(json.dumps({"schema": "facet-native-coverage/1", "specs": records, "unresolved": missing_coverage}, indent=2) + "\n")
     (ARTIFACTS / "specs.json").write_text(json.dumps(selected) + "\n")
-    commands = [
-        ("vendor", ["python3", "tools/sync_compose.py", "--check"]),
-        ("verification-selftest", ["python3", "tools/lune/native_verify_selftest.py"]),
-        ("comments", ["python3", "tools/strip_comments.py", "--check"]),
-        ("comments-selftest", ["python3", "-m", "unittest", "discover", "-s", "tools/tests", "-p", "test_strip_comments.py"]),
-        ("format", ["stylua", "--check", "src", "tests", "tools", "bench", "examples"]),
-        ("suite", ["lune", "run", "tools/lune/native_verify_suite", args.tier]),
-    ]
-    if args.tier in ("full", "release"):
-        commands.extend([
-            ("links", ["lune", "run", "tools/lune/check_links_cli"]),
-            ("links-selftest", ["lune", "run", "tools/lune/check_links_cli", "--selftest"]),
-            ("source-size", ["python3", "tools/check_source_size.py"]),
-            ("types", ["python3", "tools/check_types.py"]),
-            ("types-selftest", ["python3", "tools/check_types.py", "--selftest"]),
-            ("package-selftest", ["python3", "tools/package.py", "--selftest"]),
-            ("word-data", ["python3", "tools/build_word_lists.py", "--check"]),
-            ("word-data-selftest", ["python3", "tools/build_word_lists.py", "--selftest"]),
-            ("public-allowlist", ["python3", "tools/check_public_allowlist.py"]),
-            ("public-allowlist-selftest", ["python3", "tools/check_public_allowlist.py", "--selftest"]),
-            ("standalone-builds", ["bash", "tools/build_places.sh"]),
-            ("reference-builds", ["bash", "tools/build_reference_places.sh"]),
-            ("consumer-build", ["rojo", "build", "examples/consumer/default.project.json", "-o", "artifacts/verify/native/consumer.rbxl"]),
-            ("theme-builds", ["bash", "tools/build_themes.sh"]),
-            ("gallery-build", ["rojo", "build", "examples/showcase.project.json", "-o", "artifacts/verify/native/gallery.rbxl"]),
-            ("monitors-build", ["rojo", "build", "examples/virtual_monitors/default.project.json", "-o", "artifacts/verify/native/virtual-monitors.rbxl"]),
-            ("performance-build", ["rojo", "build", "examples/performance.project.json", "-o", "artifacts/verify/native/performance.rbxl"]),
-            ("package-build", ["bash", "tools/package.sh", "build"]),
-            ("package-status", ["bash", "tools/package.sh", "status"]),
-            ("package-canary", ["lune", "run", "tools/lune/package_canary"]),
-            ("package-purity", ["python3", "tools/check_library_purity.py"]),
-            ("theme-artifacts", ["python3", "tools/check_theme_artifacts.py", "--selftest"]),
-        ])
-    if args.tier in ("full", "release"):
-        commands.extend([("bench", ["bash", "tools/bench.sh"]), ("perf", ["bash", "tools/perf.sh"]), ("perf-budgets", ["python3", "tools/check_perf_budgets.py"]), ("perf-metrics", ["python3", "tools/check_perf_metrics.py"])])
-    if args.rerun and args.rerun not in {"architecture", "coverage", *[name for name, _ in commands]}:
+    catalog = producers_for(args.tier)
+    if args.rerun and args.rerun not in {"architecture", "coverage", *[entry["id"] for entry in catalog]}:
         parser.error(f"unknown producer: {args.rerun}")
-    producers = [{"id": "architecture", "exitCode": int(bool(architecture_failures)), "findings": architecture_failures}, {"id": "coverage", "exitCode": int(bool(missing_coverage)), "findings": missing_coverage}]
-    print(f"Facet native architecture verification: {args.tier}; {len(selected)} executable specs. Historical solver/renderer suite is not a native suite verdict.", flush=True)
-    print("Historical parity: NOT ESTABLISHED. Spec mappings are bookkeeping, not assertion-level equivalence; see docs/guide/18-verification-scope.md.", flush=True)
+    producers = [
+        {"id": "architecture", "exitCode": int(bool(architecture_failures)), "status": "FAIL" if architecture_failures else "PASS", "environment": "deterministic", "replaces": ["check_boundary"], "findings": architecture_failures},
+        {"id": "coverage", "exitCode": int(bool(missing_coverage)), "status": "FAIL" if missing_coverage else "PASS", "environment": "deterministic", "replaces": [], "findings": missing_coverage},
+    ]
+    print(f"Facet native architecture verification: {args.tier}; {len(selected)} executable specs; {len(catalog) + 3} producers selected.", flush=True)
+    print("Historical parity: NOT ESTABLISHED. See docs/guide/20-verification-parity.md for the producer and assertion comparison with main.", flush=True)
     if args.explain:
-        print("This runner executes each selected command afresh; it does not reuse the main verification graph or its cached evidence.", flush=True)
-        for name, command in commands:
-            print(f"  {name}: {' '.join(command)}", flush=True)
+        print(f"Selection: every producer whose tiers include '{args.tier}'. Each command runs afresh; no stored result is reused.", flush=True)
+        print("Status: exit 0 is PASS. Exit 2 from a studio or device producer is FAIL_ENVIRONMENT: the live evidence is not recorded. Exit 2 from a perf producer is FAIL_ENVIRONMENT: a host timing budget failed; --reference-host makes it FAIL. FAIL_ENVIRONMENT is reported in full and blocks release.", flush=True)
+        for entry in catalog:
+            replaces = f" replaces {', '.join(entry['replaces'])}" if entry["replaces"] else ""
+            print(f"  {entry['id']} [{entry['environment']}; tiers {'/'.join(entry['tiers'])}]{replaces}: {' '.join(entry['command'])}", flush=True)
     if args.tier in ("affected", "fast"):
         print("Working tier only: not full verification.", flush=True)
-    for producer in producers:
-        print(f"{producer['id']}: {'FAIL' if producer['exitCode'] else 'PASS'} ({len(producer['findings'])} findings)", flush=True)
-        for finding in producer["findings"][:15]:
+    for entry in producers:
+        print(f"{entry['id']}: {entry['status']} ({len(entry['findings'])} findings)", flush=True)
+        for finding in entry["findings"][:15]:
             print(f"  {finding}", flush=True)
-    for name, command in commands:
+    for entry in catalog:
+        name, command = entry["id"], entry["command"]
         if args.rerun and args.rerun != name:
             continue
         print(f"{name}: RUN {' '.join(command)}", flush=True)
@@ -296,11 +390,12 @@ def run():
             (ARTIFACTS / "suite.json").unlink(missing_ok=True)
         with (ARTIFACTS / f"{name}.log").open("w") as output:
             result = subprocess.run(command, cwd=ROOT, stdout=output, stderr=subprocess.STDOUT, check=False)
-        producers.append({"id": name, "exitCode": result.returncode, "seconds": time.monotonic() - started, "log": f"artifacts/verify/native/{name}.log"})
-        print(f"{name}: {'PASS' if result.returncode == 0 else 'FAIL'} ({time.monotonic() - started:.1f}s)", flush=True)
+        status = producer_status(result.returncode, entry["environment"], args.reference_host)
+        producers.append({"id": name, "exitCode": result.returncode, "status": status, "environment": entry["environment"], "replaces": entry["replaces"], "seconds": time.monotonic() - started, "log": f"artifacts/verify/native/{name}.log"})
+        print(f"{name}: {status} ({time.monotonic() - started:.1f}s)", flush=True)
         if result.returncode:
             print((ARTIFACTS / f"{name}.log").read_text()[-5000:], flush=True)
-    if any(producer["id"] == "suite" for producer in producers):
+    if any(entry["id"] == "suite" for entry in producers):
         suite_path = ARTIFACTS / "suite.json"
         case_failures = []
         passed_cases = set()
@@ -312,16 +407,54 @@ def run():
             case_failures.append("suite produced no current-run result file")
         for record in records:
             replacement = record.get("replacement") or {}
-            required = mapped_cases(replacement)
-            for case in required:
+            for case in mapped_cases(replacement):
                 if case not in passed_cases:
                     case_failures.append(f"{record['spec']}: mapped replacement case did not pass: {case}")
-        producers.append({"id": "replacement-cases", "exitCode": int(bool(case_failures)), "findings": case_failures})
+        producers.append({"id": "replacement-cases", "exitCode": int(bool(case_failures)), "status": "FAIL" if case_failures else "PASS", "environment": "deterministic", "replaces": ["check_manifest_integrity"], "findings": case_failures})
         print(f"replacement-cases: {'FAIL' if case_failures else 'PASS'} ({len(case_failures)} findings)", flush=True)
-    ok = all(producer["exitCode"] == 0 for producer in producers)
-    report = {"schema": "facet-native-verification/1", "tier": args.tier, "completeTier": not bool(args.rerun), "ok": ok, "coverage": "coverage.json", "historicalParity": "not-established", "producers": producers, "studioEvidence": "External live Studio gallery and virtual monitors checks are required; these builds do not assert visual parity."}
+    ok = not any(status_blocks(entry["status"], args.tier) for entry in producers)
+    complete = not bool(args.rerun)
+    counts = {}
+    for entry in producers:
+        counts[entry["status"]] = counts.get(entry["status"], 0) + 1
+    status = ("PASS" if ok else "FAIL") if args.tier in COMPLETE else ("PASS_PARTIAL" if ok else "FAIL")
+    if not complete and status == "PASS":
+        status = "INCOMPLETE"
+    report = {
+        "schema": "facet-native-verification/1",
+        "tier": args.tier,
+        "completeTier": complete,
+        "ok": ok,
+        "status": status,
+        "statusCounts": counts,
+        "coverage": "coverage.json",
+        "historicalParity": "not-established",
+        "producers": producers,
+        "studioEvidence": "External live Studio gallery and virtual monitors checks are required; these builds do not assert visual parity.",
+    }
     (ARTIFACTS / "report.json").write_text(json.dumps(report, indent=2) + "\n")
-    print(f"native {args.tier}: {'PASS' if ok else 'FAIL'}; artifacts/verify/native/report.json", flush=True)
+    run_record = {
+        "schema": "facet-verify-run/1",
+        "gateEvidence": {
+            "schema": "facet-release-gate/1",
+            "tier": args.tier,
+            "status": status,
+            "commit": gate_commit,
+            "treeDirty": gate_dirty,
+            "sourceHash": gate_source,
+            "completedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        },
+        "tier": args.tier,
+        "status": status,
+        "durationMs": int((time.time() - started_at) * 1000),
+        "producers": [{"id": entry["id"], "status": entry["status"], "exitCode": entry["exitCode"], "environment": entry["environment"]} for entry in producers],
+    }
+    if complete:
+        (ROOT / "artifacts/verify").mkdir(parents=True, exist_ok=True)
+        (ROOT / f"artifacts/verify/latest-{args.tier}.json").write_text(json.dumps(run_record, indent=2) + "\n")
+    summary = ", ".join(f"{count} {name}" for name, count in sorted(counts.items()))
+    print(f"producers: {len(producers)} selected; {summary}", flush=True)
+    print(f"native {args.tier}: {status}; artifacts/verify/native/report.json", flush=True)
     return 0 if ok else 1
 
 

@@ -290,7 +290,7 @@
       "samples": 120,
       "warmup": 30,
       "original": "Basebutton;6donut/compass items;setup3ticks;open2ticks/close2ticks",
-      "native": "Native RadialMenu controlledcell",
+      "native": "Native RadialMenu controlledcell; untimed afterRun settles the exit motion so each sample opens a closed menu",
       "boundary": "Native radial geometry/input hardware blind",
       "remaining": [],
       "witness": "native_perf::native benchmark workload contract::runs and tears down controlled workload radial-menu-open-close",

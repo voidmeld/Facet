@@ -224,8 +224,46 @@ function workloads.create(ctx, name, dataset)
 		end
 		return Host.Frame(children)
 	end
+	local surfaces = {
+		alert = { panel = "AlertPanel", items = { Delete = true, Keep = true, Cancel = true } },
+		picker = {
+			panel = "MenuPanel",
+			items = { ["1"] = true, ["2"] = true, ["3"] = true, ["4"] = true, ["5"] = true, ["6"] = true },
+		},
+		radial = {
+			panel = "RadialPanel",
+			items = {
+				["Sector-1"] = true,
+				["Sector-2"] = true,
+				["Sector-3"] = true,
+				["Sector-4"] = true,
+				["Sector-5"] = true,
+				["Sector-6"] = true,
+			},
+		},
+	}
+	local function presentedSurface()
+		if not (ctx.frame and ctx.target and state.surface) then
+			return nil
+		end
+		return ctx.target:FindFirstChild(state.surface.panel, true)
+	end
 	local function transient(kind)
 		state.presented, state.selected = Compose.cell(false), Compose.cell("1")
+		state.surface = surfaces[kind]
+		state.presentation = kind
+		state.opens, state.closes, state.settled, state.surfaceItems, state.settleFrames = 0, 0, 0, 0, 0
+		state.afterRun = function()
+			local frames = 0
+			while presentedSurface() and frames < 60 do
+				ctx.frame()
+				frames += 1
+			end
+			state.settleFrames = math.max(state.settleFrames, frames)
+			if ctx.frame and ctx.target and presentedSurface() == nil then
+				state.settled += 1
+			end
+		end
 		local options = {}
 		for index = 1, 6 do
 			options[index] = {
@@ -794,11 +832,25 @@ function workloads.create(ctx, name, dataset)
 					ctx.frame()
 				end
 			end
+			local surface = presentedSurface()
+			if surface then
+				state.opens += 1
+				if state.surfaceItems == 0 then
+					for _, node in surface:GetDescendants() do
+						if state.surface.items[node.Name] then
+							state.surfaceItems += 1
+						end
+					end
+				end
+			end
 			state.presented:set(false)
 			if ctx.frame then
 				for _ = 1, ticks do
 					ctx.frame()
 				end
+			end
+			if surface and presentedSurface() == nil then
+				state.closes += 1
 			end
 		elseif name == "adaptive-navigation-images" then
 			local started = os.clock()

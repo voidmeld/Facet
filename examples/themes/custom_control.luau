@@ -116,19 +116,35 @@ function custom_control.resolve(snapshot: any, package: any?, themeName: string?
 	}
 end
 
-function custom_control.blueprint(UI: any, resolved: any, id: string?): any
-	local name = id or "Gauge"
-	return UI.VStack({
-		id = name,
-		gap = "xs",
-		width = UI.fill(),
-
-		UI.Text({ id = name .. "Label", text = "Custom gauge (demo:gauge)", textSize = "caption" }),
-		UI.Box({
-			id = name .. "Track",
-			surface = "control",
-			width = UI.fill(),
-			height = { type = "fixed", px = resolved.height },
+function custom_control.blueprint(Facet: any, runtime: any, resolved: any, opts: any?): any
+	local Host = runtime.constructors
+	local o: any = opts or {}
+	local types: any = o.types or { UDim = UDim, UDim2 = UDim2, Color3 = Color3, Enum = Enum }
+	local UI = Facet.controls(runtime, { types = o.types })
+	local name: string = o.id or "Gauge"
+	local tint = resolved.tint
+	return Host.Frame(name)({
+		Size = types.UDim2.fromScale(1, 0),
+		AutomaticSize = types.Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		Host.UIListLayout({
+			SortOrder = types.Enum.SortOrder.LayoutOrder,
+			Padding = types.UDim.new(0, 4),
+		}),
+		UI.Label(name .. "Label")({
+			text = "Custom gauge (demo:gauge)",
+			textRole = "caption",
+			LayoutOrder = 1,
+		}),
+		Host.Frame(name .. "Track")({
+			LayoutOrder = 2,
+			Size = types.UDim2.new(1, 0, 0, resolved.height),
+			BackgroundColor3 = types.Color3.new(tint.r, tint.g, tint.b),
+			Host.UICorner({ CornerRadius = types.UDim.new(0, math.floor(resolved.height / 2)) }),
+			Host.UIPadding({
+				PaddingLeft = types.UDim.new(0, resolved.paddingX),
+				PaddingRight = types.UDim.new(0, resolved.paddingX),
+			}),
 		}),
 	})
 end

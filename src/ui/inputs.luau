@@ -1655,6 +1655,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			} :: Shared.FrameNativeProps),
 			"slider-track"
 		)
+		local trackLabel = (if spec.row then spec.row.title else nil) or spec.label
+		if trackLabel ~= nil then
+			attributes(track, {
+				AccessibleLabel = (function(use: ComposeTypes.Use): string
+					return read(trackLabel, use) or ""
+				end) :: Shared.Value<Shared.AttributeValue?>,
+			})
+		end
 		local fill = assert(track:FindFirstChild("Fill"))
 		assert(fill:IsA("Frame"))
 		ctx.skin(fill, "barFill")

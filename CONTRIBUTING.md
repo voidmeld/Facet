@@ -30,6 +30,15 @@ directives and notices.
    including the unmapped legacy behavioral coverage. A passing subset from a
    new runner is not full parity.
 
+Each run writes `artifacts/verify/latest-<tier>.json`. Use `--explain` to see
+each selected producer, its tiers and the main producer it replaces. A studio,
+device or timing producer that exits 2 reports `FAIL_ENVIRONMENT`: its evidence
+is not recorded, or a host timing budget failed. The `full` tier reports it and
+continues. The `release` tier stops on it. `tools/package.sh publish` accepts
+only a clean, passing `artifacts/verify/latest-release.json` for the same source.
+The [producer comparison](docs/guide/20-verification-parity.md#producers) lists
+each main producer and its native status.
+
 The [verification scope audit](docs/guide/18-verification-scope.md) records the
 substantial reduction from main and the unresolved coverage work. At this time,
 a native `full` run is a complete run of the candidate's checks. It is not

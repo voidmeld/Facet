@@ -811,6 +811,10 @@ function example.build(ctx: any)
 							label = function(use)
 								return use(label) .. use(mark)
 							end,
+							name = function(use)
+								local letter = use(label)
+								return if letter ~= "" then `Row {r}, column {c}, {letter}` else `Row {r}, column {c}`
+							end,
 							BackgroundColor3 = function(use)
 								local palette = {
 									idle = Color3.fromRGB(62, 70, 82),

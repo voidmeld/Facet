@@ -45,6 +45,98 @@ local requirements = {
 	["theme-swap-metrics"] = "UI-PERF-002",
 	["virtual-list-scroll"] = "UI-RUNTIME-002",
 }
+local metricProperties = {
+	CornerRadius = true,
+	FontFace = true,
+	LineHeight = true,
+	PaddingBottom = true,
+	PaddingLeft = true,
+	PaddingRight = true,
+	PaddingTop = true,
+	Size = true,
+	TextSize = true,
+	Thickness = true,
+}
+local function ruleSnapshot(root)
+	local rules = {}
+	for _, node in root:GetDescendants() do
+		if node.ClassName == "StyleRule" then
+			rules[`{node.Selector}#{node.Priority}`] = node:GetProperties()
+		end
+	end
+	return rules
+end
+local function imageSnapshot(root)
+	local images = {}
+	for _, node in root:GetDescendants() do
+		if (node.ClassName == "ImageLabel" or node.ClassName == "ImageButton") and node.Image ~= "" then
+			images[node] = `{node.Image}|{node.Visible}|{node.ImageTransparency}`
+		end
+	end
+	return images
+end
+local function imageChanges(before, after)
+	local changes = 0
+	for node, image in after do
+		if before[node] ~= image then
+			changes += 1
+		end
+	end
+	for node in before do
+		if after[node] == nil then
+			changes += 1
+		end
+	end
+	return changes
+end
+local function themeSwap(state)
+	local before, images = ruleSnapshot(state.target), imageSnapshot(state.target)
+	local first = state.workload.themeControls[2]
+	state.workload.step()
+	local after = ruleSnapshot(state.target)
+	local paint, metric, rules = 0, 0, 0
+	for key, properties in after do
+		rules += 1
+		local previous = before[key] or {}
+		for property, value in properties do
+			if tostring(previous[property]) ~= tostring(value) then
+				if metricProperties[property] then
+					metric += 1
+				else
+					paint += 1
+				end
+			end
+		end
+	end
+	return {
+		measured = true,
+		basis = "StyleRule property differential and skin image census; Engine geometry is not solved headlessly.",
+		rules = rules,
+		paintChanges = paint,
+		metricChanges = metric,
+		imageChanges = imageChanges(images, imageSnapshot(state.target)),
+		controlsRetained = state.workload.themeControls[2] == first and not first:isDestroyed(),
+	}
+end
+local function segmentedFlip(state)
+	local function probe()
+		local size, segments = nil, 0
+		for _, node in state.target:GetDescendants() do
+			local textual = node.ClassName == "TextLabel" or node.ClassName == "TextButton"
+			if textual and (node.Text == "Easy" or node.Text == "Normal" or node.Text == "Hard") then
+				segments += 1
+				if node.Text == "Normal" then
+					size = node.TextSize
+				end
+			end
+		end
+		return size, segments
+	end
+	local before, segments = probe()
+	state.workload.step()
+	local after = probe()
+	return { segments = segments, textSizeBefore = before, textSizeAfter = after }
+end
 local scenes = {}
 for _, name in workloads.ORDER do
 	local counts = sampling[name] or { 240, 60 }
@@ -104,7 +196,25 @@ for _, name in workloads.ORDER do
 			state.dispose()
 		end,
 		extras = function(state)
+			local w = state.workload
 			return {
+				dragMoves = w.dragMoves,
+				drops = w.drops,
+				tagsPerPass = w.tagCount,
+				opens = w.opens,
+				closes = w.closes,
+				settled = w.settled,
+				settleFrames = w.settleFrames,
+				surfaceItems = w.surfaceItems,
+				presentation = w.presentation,
+				springs = if w.springs then #w.springs else nil,
+				springsMoving = w.springsMoving,
+				beatCallbacks = w.beatCallbacks,
+				rekeys = w.rekeys,
+				flips = w.flips,
+				pulses = w.pulses,
+				pops = w.pops,
+				segmented = if name == "picker-segmented-textsize" then segmentedFlip(state) else nil,
 				workloadVersion = workloads.VERSION,
 				datasetVersion = dataset.VERSION,
 				logicalRows = if state.workload.rows then #state.workload.rows:peek() else nil,
@@ -117,12 +227,7 @@ for _, name in workloads.ORDER do
 				shakesSeen = state.workload.shakesSeen,
 				popsSeen = state.workload.popsSeen,
 				beats = state.workload.beats,
-				themeSwap = if string.sub(name, 1, 11) == "theme-swap-"
-					then {
-						measured = false,
-						reason = "Native StyleSheet property and art changes are timed; Engine geometry, paint resolution and asset loading are not measured headlessly.",
-					}
-					else nil,
+				themeSwap = if string.sub(name, 1, 11) == "theme-swap-" then themeSwap(state) else nil,
 				geometryMeasured = false,
 				activationCount = if state.workload.boosts then state.workload.boosts:peek() else nil,
 				activationText = if state.workload.boostText then state.workload.boostText.Text else nil,

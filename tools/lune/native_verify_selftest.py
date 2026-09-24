@@ -166,6 +166,51 @@ return require("./actual")''')
         self.assertTrue(any("renderer.luau" in issue for issue in failures))
         self.assertTrue(any("removed Facet scaffolding API" in issue for issue in failures))
 
+    def test_missing_live_evidence_is_reported_in_full_and_blocks_release(self):
+        self.assertEqual(verify.producer_status(2, "studio"), "FAIL_ENVIRONMENT")
+        self.assertEqual(verify.producer_status(2, "device"), "FAIL_ENVIRONMENT")
+        self.assertEqual(verify.producer_status(2, "deterministic"), "FAIL")
+        self.assertEqual(verify.producer_status(1, "studio"), "FAIL")
+        self.assertEqual(verify.producer_status(2, "perf"), "FAIL_ENVIRONMENT")
+        self.assertEqual(verify.producer_status(2, "perf", reference_host=True), "FAIL")
+        self.assertEqual(verify.producer_status(1, "perf"), "FAIL")
+        self.assertFalse(verify.status_blocks("FAIL_ENVIRONMENT", "full"))
+        self.assertTrue(verify.status_blocks("FAIL_ENVIRONMENT", "release"))
+        self.assertTrue(verify.status_blocks("FAIL", "full"))
+
+    def test_release_selects_the_falsification_after_the_full_producers(self):
+        full = [entry["id"] for entry in verify.producers_for("full")]
+        release = [entry["id"] for entry in verify.producers_for("release")]
+        self.assertNotIn("prove-perf-gate", full)
+        self.assertEqual(release[: len(full)], full)
+        self.assertEqual(release[len(full):], ["prove-perf-gate", "perf-gate-evidence-falsifiable"])
+        fast = {entry["id"] for entry in verify.producers_for("fast")}
+        self.assertNotIn("perf", fast)
+
+    def test_release_run_writes_package_gate_evidence(self):
+        artifacts = self.root / "artifacts/verify/native"
+
+        def execute(command, **kwargs):
+            if command[:2] == ["git", "rev-parse"]:
+                return type("Result", (), {"returncode": 0, "stdout": "c" * 40})()
+            if command[:2] == ["git", "status"]:
+                return type("Result", (), {"returncode": 0, "stdout": ""})()
+            if command[:3] == ["lune", "run", "tools/lune/native_verify_suite"]:
+                (artifacts / "suite.json").write_text(json.dumps({"cases": [{"id": "native_sample::sample", "spec": "native_sample", "status": "pass"}], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}))
+            code = 2 if command == ["python3", "tools/check_perf_gate_evidence.py", "studio"] else 0
+            return type("Result", (), {"returncode": code, "stdout": ""})()
+
+        for tier, expected in (("full", 0), ("release", 1)):
+            with self.subTest(tier=tier), patch.object(verify, "ARTIFACTS", artifacts), patch.object(verify, "inventory", return_value=([], ["native_sample"], [])), patch.object(verify, "architecture", return_value=[]), patch.object(verify, "package_source_hash", return_value="s" * 64), patch.object(verify.subprocess, "run", side_effect=execute), patch.object(verify.sys, "argv", ["native_verify.py", tier]):
+                self.assertEqual(verify.run(), expected)
+                gate = json.loads((self.root / f"artifacts/verify/latest-{tier}.json").read_text())["gateEvidence"]
+                self.assertEqual(gate["schema"], "facet-release-gate/1")
+                self.assertEqual(gate["tier"], tier)
+                self.assertEqual(gate["status"], "PASS" if expected == 0 else "FAIL")
+                self.assertEqual(gate["commit"], "c" * 40)
+                self.assertIs(gate["treeDirty"], False)
+                self.assertEqual(gate["sourceHash"], "s" * 64)
+
 
 if __name__ == "__main__":
     unittest.main()

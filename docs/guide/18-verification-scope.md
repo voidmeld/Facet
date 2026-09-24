@@ -1,7 +1,7 @@
 # Verification scope during the native cutover
 
-The native verification of PR22 is substantially smaller than the verification
-on main. A passing native `full` run is not evidence of equivalent historical
+The verification for the native cutover is substantially smaller than the
+verification on main. A passing native `full` run is not evidence of equivalent historical
 coverage. It means only that the commands that the current runner selects
 passed. Do not infer a performance improvement from the shorter verification
 time.
@@ -9,8 +9,8 @@ time.
 ## Measured comparison
 
 The baseline is commit `a8c8895673c0745506908b66dc89f8cead6b66f3`. This is the
-commit immediately before the native cutover. The candidate audited on
-2026-09-23 was `e12f9d40`.
+commit immediately before the native cutover. The audited candidate was
+`e12f9d40`.
 
 | Inventory | Baseline | Candidate before restoring checks |
 |---|---:|---:|
@@ -102,6 +102,9 @@ The previous Ubuntu CI lane moved to macOS ARM after host-dependent failures of
 timing thresholds. That is a change of measurement environment. It does not
 prove that the Ubuntu regression was resolved. Keep this distinction when you
 compare performance reports and when you decide which platforms CI must cover.
+CI runs the full tier on Ubuntu again, beside the ARM runner. On Ubuntu, a
+failed timing budget is reported as `FAIL_ENVIRONMENT` and does not stop the
+run. Timing budgets stop the run only on the reference host.
 
 See [Contributing](../../CONTRIBUTING.md) to run the current tier, and
 [device verification](11-device-verification.md) for the limits of headless

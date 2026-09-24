@@ -405,6 +405,9 @@ local function build(ctx: any)
 				AutomaticSize = Enum.AutomaticSize.None,
 				Size = UDim2.new(1, 0, 1, 0),
 				label = fallbackLabel,
+				name = function(use)
+					return assets.match3Tiles[use(kind)].name
+				end,
 				selected = picked,
 				TextSize = 16,
 				Host.UIStroke "Selection" {

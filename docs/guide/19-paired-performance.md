@@ -18,7 +18,7 @@ property.
 
 ## Host
 
-- CPU: Apple M2 Max, 12 cores (`sysctl machdep.cpu.brand_string hw.ncpu`).
+- CPU: `Apple M2 Max`, 12 cores (`sysctl machdep.cpu.brand_string hw.ncpu`).
 - Memory: 32 GB.
 - OS: macOS 27.0, build 26A428. Lune 0.10.4 and StyLua 2.5.2, from
   `rokit.toml`.
