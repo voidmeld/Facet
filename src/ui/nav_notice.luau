@@ -413,17 +413,42 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					current = layer
 					local origin = ctx.observe(layer, "AbsolutePosition")
 					local height = ctx.observe(layer, "AbsoluteSize")
-					Compose.watch(function(use: ComposeTypes.Use)
-						use(height)
-						local box = use(extent)
+					local function publish()
+						local box = root.AbsoluteSize
 						local paints = box.X > 0 and box.Y > 0 and root.Visible
+						local top = root.AbsolutePosition.Y - (layer :: GuiBase2d).AbsolutePosition.Y
 						reservations.set(
 							layer,
 							token,
 							"top",
-							if paints then use(at).Y - use(origin).Y else nil,
+							if paints then top else nil,
 							if paints then box.Y else nil
 						)
+					end
+					local services = ctx.config.services
+					local frames = services and services.RunService
+					Compose.watch(function(use: ComposeTypes.Use)
+						use(height)
+						use(at)
+						use(origin)
+						use(extent)
+						publish()
+						if frames then
+							local connection: RBXScriptConnection? = nil
+							connection = frames.Heartbeat:Connect(function()
+								if connection then
+									connection:Disconnect()
+									connection = nil
+									publish()
+								end
+							end)
+							Compose.cleanup(function()
+								if connection then
+									connection:Disconnect()
+									connection = nil
+								end
+							end)
+						end
 					end)
 				end)
 			end

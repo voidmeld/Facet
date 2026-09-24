@@ -471,6 +471,15 @@ return function(
 		}))
 		root = card
 		local extent = ctx.observe(card, "AbsoluteSize")
+		if (spec :: { [string]: unknown }).Position == nil then
+			runtime.decorate(card, {
+				Position = function(use: ComposeTypes.Use): UDim2
+					local factor = math.max(use(scale), 0.001)
+					local grown = use(extent) * (1 - 1 / factor) / 2
+					return D2.fromOffset(-grown.X, -grown.Y)
+				end,
+			})
+		end
 		Compose.watch(function(use: ComposeTypes.Use)
 			local painted = liftScale.Scale
 			cardWidth:set(math.round(use(extent).X / (if painted > 0 then painted else 1)))

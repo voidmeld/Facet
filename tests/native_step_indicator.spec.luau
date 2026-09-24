@@ -139,6 +139,17 @@ t.describe("native StepIndicator", function()
 		world.stop()
 	end)
 
+	t.it("sizes the number circle from the styled text size before the text bounds report", function()
+		local world = mount({ steps = workflow(), current = "ship" })
+		local pay = cell(world, "pay")
+		local cue = pay:FindFirstChild("Cue")
+		local number = pay:FindFirstChild("Number", true)
+		number.TextSize = 16
+		t.expect(cue.Size.X.Offset).toBe(24)
+		t.expect(cue.Size.Y.Offset).toBe(24)
+		world.stop()
+	end)
+
 	t.it("never guesses a missing current and rebuilds empty and repopulated lists", function()
 		local steps = Compose.cell(workflow())
 		local current = Compose.cell("gone" :: string?)

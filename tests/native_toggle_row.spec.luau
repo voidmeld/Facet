@@ -115,6 +115,8 @@ t.describe("native Toggle rows", function()
 			local bl, br = padding(package, ".facet-button::UIPadding")
 			local tl, tr = padding(package, ".facet-toggle-settings::UIPadding")
 			expect(`{package.identity.id}: {tl} {tr}`).toBe(`{package.identity.id}: {bl} {br}`)
+			local sl, sr = padding(package, ".facet-slider-settings::UIPadding")
+			expect(`{package.identity.id}: {sl} {sr}`).toBe(`{package.identity.id}: {bl} {br}`)
 		end
 		local screen, stop = mount(nil, function(UI)
 			return UI.Toggle("Row")({
@@ -130,5 +132,26 @@ t.describe("native Toggle rows", function()
 		end)
 		expect(find(plain, "Plain"):HasTag("facet-toggle-settings")).toBe(false)
 		stopPlain()
+	end)
+
+	t.it("a toggle settings row puts its icon first and its switch last, like a button row", function()
+		local screen, stop = mount(nil, function(UI)
+			return UI.Toggle("Row")({
+				label = "Driving assistance",
+				value = Compose.cell(true),
+				row = { description = "Keep the car stable", icon = "settings" },
+			})
+		end)
+		local content = find(find(screen, "Row"), "Content")
+		local order = {}
+		for _, child in content:GetChildren() do
+			if child:IsA("GuiObject") then
+				order[child.LayoutOrder] = child
+			end
+		end
+		expect(order[1].Name).toBe("LeadingIcon")
+		expect(order[3]:HasTag("facet-toggle-indicator")).toBe(true)
+		expect(order[2]:FindFirstChildWhichIsA("UIFlexItem") ~= nil).toBe(true)
+		stop()
 	end)
 end)

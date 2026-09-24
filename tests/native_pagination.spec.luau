@@ -208,6 +208,7 @@ t.describe("native Pagination", function()
 			t.expect(text(wideRoot)).toBe("previous 1 … 4999 [5000] 5001 … 9999 next")
 			t.expect(wide.find("Slot-5000").Size.X.Offset >= 44).toBe(true)
 			t.expect(wide.find("Slot-5000").Size.X.Offset).toBe(56)
+			t.expect(wide.find("Page-5000"):FindFirstChild("SlotLimit").MaxSize.X).toBe(56)
 			wide.stop()
 			local expected = {
 				[360] = "previous 1 … 4999 [5000] 5001 next",
@@ -316,12 +317,16 @@ t.describe("native Pagination", function()
 	t.it("leaves no stop inside the row when the count drops to zero", function()
 		local count = Compose.cell(3)
 		local world, root = mount((controlled(2, { pageCount = count })))
+		world.resize(world.find("Before"), 80, 44)
+		world.resize(world.find("After"), 80, 44)
 		world.gui.SelectedObject = world.find("Page-3")
 		count:set(0)
 		t.expect(text(root)).toBe("No pages")
 		for _, node in root:GetDescendants() do
 			t.expect(node:IsA("GuiButton")).toBe(false)
 		end
+		local selected = world.gui.SelectedObject
+		t.expect(selected ~= nil and (selected.Name == "Before" or selected.Name == "After")).toBe(true)
 		world.stop()
 	end)
 

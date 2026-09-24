@@ -63,22 +63,10 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 			)
 			return if value == "center" then 0.5 elseif value == "end" then 1 else 0
 		end
-		local placed = (setmetatable({}, { __mode = "k" }) :: unknown) :: { [GuiObject]: boolean }
-		local function align(node: GuiObject, use: ComposeTypes.Use?)
-			local x, y = fraction(read(spec.alignH, use)), fraction(read(spec.alignV, use))
-			node.AnchorPoint = V2.new(x, y)
-			node.Position = D2.fromScale(x, y)
-		end
-		if aligned then
-			Compose.watch(function(use: ComposeTypes.Use)
-				local x, y = read(spec.alignH, use), read(spec.alignV, use)
-				if x == nil and y == nil then
-					return
-				end
-				for node in placed do
-					align(node, use)
-				end
-			end)
+		local placed = (setmetatable({}, { __mode = "k" }) :: unknown) :: { [GuiObject]: ComposeTypes.Cell<Vector2> }
+		local members = Compose.cell(0)
+		local function hugs(value: Layout.Extent?): boolean
+			return value == nil or value == "hug"
 		end
 		local native: Engine.FrameNativeProps = {
 			BackgroundTransparency = 1,
@@ -86,15 +74,47 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 			Size = size,
 			AutomaticSize = automatic,
 		}
-		return Host.Frame(kit.assemble(native, properties, { kit.insets(spec.padding) }, children, function(node, index)
-			if node.ZIndex == 1 then
-				node.ZIndex = index
-			end
-			if aligned then
-				placed[node] = true
-				align(node)
-			end
-		end))
+		local frame =
+			Host.Frame(kit.assemble(native, properties, { kit.insets(spec.padding) }, children, function(node, index)
+				if node.ZIndex == 1 then
+					node.ZIndex = index
+				end
+				if aligned then
+					placed[node] = ctx.observe(node, "AbsoluteSize")
+					members:update(function(count: number): number
+						return count + 1
+					end)
+				end
+			end))
+		if aligned then
+			Compose.watch(function(use: ComposeTypes.Use)
+				use(members)
+				local x, y = fraction(read(spec.alignH, use)), fraction(read(spec.alignV, use))
+				local wide, tall = hugs(read(spec.width, use)), hugs(read(spec.height, use))
+				local nodes: { GuiObject } = {}
+				local extents: { [GuiObject]: Vector2 } = {}
+				local widest, tallest = 0, 0
+				for node, observed in placed do
+					if node.Parent == frame then
+						local extent = use(observed)
+						table.insert(nodes, node)
+						extents[node] = extent
+						widest, tallest = math.max(widest, extent.X), math.max(tallest, extent.Y)
+					end
+				end
+				for _, node in nodes do
+					local extent = extents[node]
+					node.AnchorPoint = V2.new(if wide then 0 else x, if tall then 0 else y)
+					node.Position = D2.new(
+						if wide then 0 else x,
+						if wide then math.floor(x * (widest - extent.X) + 0.5) else 0,
+						if tall then 0 else y,
+						if tall then math.floor(y * (tallest - extent.Y) + 0.5) else 0
+					)
+				end
+			end)
+		end
+		return frame
 	end)
 
 	UI.ScrollView = ctx.construct("ScrollView", function(spec: Layout.ScrollViewProps): ScrollingFrame
