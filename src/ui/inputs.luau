@@ -303,7 +303,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local iconState: ComposeTypes.Cell<ThemeTypes.SkinState>?
 		if spec.icon or spec.trailingIcon then
 			local initial: ThemeTypes.SkinState = "default"
-			iconState = Compose.cell(initial)
+			iconState = Compose.cell(initial) :: ComposeTypes.Cell<ThemeTypes.SkinState>
 		end
 		local held, repeated, elapsed = false, false, 0
 		local repeatDelay, repeatInterval = spec.repeatDelay or 0.4, spec.repeatInterval or 0.1

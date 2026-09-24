@@ -58,7 +58,7 @@ def generate(definitions, schema):
         ordered.append(name)
     for name in CLASSES:
         visit(name)
-    result = ['--!strict', 'local Compose = require("../vendor/compose/core")', '', 'export type Value<T> = T | Compose.Source<T> | Compose.Cell<T> | Compose.Formula<T>', 'export type StaticValue = typeof(Compose.static(nil))', 'export type Constructor<P, N> = ((P) -> N) & ((string) -> (P) -> N)', 'export type AttributeValue = string | boolean | number | UDim | UDim2 | BrickColor | Color3 | Vector2 | Vector3 | CFrame | NumberSequence | ColorSequence | NumberRange | Rect | Font', 'export type Attributes = { [string]: Value<AttributeValue?> }', '']
+    result = ['--!strict', 'local Compose = require("../vendor/compose/core")', '', 'export type Value<T> = Compose.Given<T>', 'export type StaticValue = typeof(Compose.static(nil))', 'export type Constructor<P, N> = ((P) -> N) & ((string) -> (P) -> N)', 'export type AttributeValue = string | boolean | number | UDim | UDim2 | BrickColor | Color3 | Vector2 | Vector3 | CFrame | NumberSequence | ColorSequence | NumberRange | Rect | Font', 'export type Attributes = { [string]: Value<AttributeValue?> }', '']
     def is_instance(name):
         while name in entries:
             if name == 'Instance':

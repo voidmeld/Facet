@@ -11,7 +11,7 @@ copy.
 **Origin.** [voidmeld/compose](https://github.com/voidmeld/compose), official base
 `5f6bf7d081bab39971b116e47d6eb9ccf5877282`, `src/core` and `src/roblox`.
 The current snapshot uses local repair commit
-`974b7527709a4db61024cc8994cdce30adc49790` based on that revision. This candidate
+`cbab6e0f828b68faaf676ee718cb0036c20ed935` based on that revision. This candidate
 is **LOCAL/UNPUBLISHED**; the official repository is not claimed to serve it.
 Its runtime change rearms failed reactive consumers for a later dependency update.
 

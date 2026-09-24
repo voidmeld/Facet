@@ -1,7 +1,7 @@
 --!strict
 local Compose = require("../vendor/compose/core")
 
-export type Value<T> = T | Compose.Source<T> | Compose.Cell<T> | Compose.Formula<T>
+export type Value<T> = Compose.Given<T>
 export type StaticValue = typeof(Compose.static(nil))
 export type Constructor<P, N> = ((P) -> N) & ((string) -> (P) -> N)
 export type AttributeValue =

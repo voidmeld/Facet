@@ -50,6 +50,7 @@ export type Cell<T> = Types.Cell<T>
 export type Formula<T> = Types.Formula<T>
 export type Body<T> = Types.Body<T>
 export type Source<T> = Types.Source<T>
+export type Given<T> = Types.Given<T>
 export type Equals<T> = Types.Equals<T>
 export type Reactor = reactorModule.Reactor
 export type AccumulatorOptions<T, E> = AccumulatorModule.Options<T, E>

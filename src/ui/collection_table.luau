@@ -95,7 +95,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local input = ctx.config.userInputService
 		local preferredInput: ComposeTypes.Readable<Enum.PreferredInput?> = if input
 			then ctx.observe(input, "PreferredInput")
-			else Compose.cell(nil :: Enum.PreferredInput?)
+			else (Compose.cell(nil :: Enum.PreferredInput?) :: ComposeTypes.Readable<Enum.PreferredInput?>)
 		local minimumRow = Compose.formula(function(use: ComposeTypes.Use)
 			if spec.itemSize ~= nil then
 				return read(spec.itemSize, use)
