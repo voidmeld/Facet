@@ -130,6 +130,26 @@ local function V2(world: World, x: number, y: number): any
 end
 
 t.describe("native parity controls", function()
+	t.it("aligns icon button content by the declared text alignment and centers it by default", function()
+		local alignment = Compose.cell(nil :: any)
+		local world = setup(function(UI, Host)
+			return Host.Frame("Buttons")({
+				UI.Button("Plain")({ label = "Plain", icon = "person" }),
+				UI.Button("Aligned")({ label = "Aligned", icon = "person", TextXAlignment = alignment }),
+			})
+		end)
+		local E = world.engine.types.Enum
+		local function layoutOf(name: string): any
+			return find(find(world.node, name), "Content"):FindFirstChildWhichIsA("UIListLayout")
+		end
+		t.expect(layoutOf("Plain").HorizontalAlignment).toBe(E.HorizontalAlignment.Center)
+		alignment:set(E.TextXAlignment.Left)
+		t.expect(layoutOf("Aligned").HorizontalAlignment).toBe(E.HorizontalAlignment.Left)
+		alignment:set(E.TextXAlignment.Right)
+		t.expect(layoutOf("Aligned").HorizontalAlignment).toBe(E.HorizontalAlignment.Right)
+		world.stop()
+	end)
+
 	t.it("repaints a chip in place, refuses incomplete chips and honors live and inherited disabled", function()
 		local selected, enabled, removed = Compose.cell(false), Compose.cell(true), 0
 		local removable = Compose.cell(false)
