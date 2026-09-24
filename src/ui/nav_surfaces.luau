@@ -275,23 +275,27 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				if spec.icon or spec.severity == "critical" or spec.error then
 					table.insert(
 						contents,
-						ctx.icon(spec.icon or "status.warning", { Name = "AlertIcon", Size = D2.fromOffset(24, 24) })
+						ctx.icon(spec.icon or "status.warning", { Name = "AlertIcon", Size = D2.fromOffset(28, 28) })
 					)
 				end
 				local title = body(spec.title, payload) or (spec.error and "Something went wrong")
 				if title then
+					local titleOrder = #contents + 1
 					table.insert(
 						contents,
 						Compose.show(function(use: Core.Use)
 							return string.find(tostring(read(title, use)), "%S") ~= nil
 						end, function()
-							return ctx.text({
+							local heading = ctx.text({
 								Name = "Title",
 								Text = title,
 								TextWrapped = true,
+								LayoutOrder = titleOrder,
 								Size = D2.new(1, 0, 0, 0),
 								AutomaticSize = E.AutomaticSize.Y,
 							})
+							heading:AddTag("facet-type-heading")
+							return heading
 						end)
 					)
 				end
@@ -299,13 +303,16 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				if message then
 					table.insert(
 						contents,
-						ctx.text({
-							Name = "Message",
-							Text = message,
-							TextWrapped = true,
-							Size = D2.new(1, 0, 0, 0),
-							AutomaticSize = E.AutomaticSize.Y,
-						})
+						ctx.styled(
+							ctx.text({
+								Name = "Message",
+								Text = message,
+								TextWrapped = true,
+								Size = D2.new(1, 0, 0, 0),
+								AutomaticSize = E.AutomaticSize.Y,
+							}),
+							"secondary"
+						)
 					)
 				end
 				if spec.content then
