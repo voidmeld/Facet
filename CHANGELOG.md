@@ -19,7 +19,7 @@
 - The getting-started guide shows how to test a screen headlessly with the fake native engine. Guides and tutorial examples use `text` for `UI.Label`.
 - `Facet.bind(Compose, Roblox)` returns a Facet table whose controls and themes use the Compose instance that you give. A game that already uses Compose keeps one reactive graph. The controls in `src/ui` use the pinned copy only for types. `Facet.COMPOSE_COMMIT` names the tested Compose commit. `bind` names a missing Compose function. A control names itself when a runtime or a readable from a different Compose instance reaches it. Before this change, such a control failed with a Compose owner error, or did not update.
 - The public-surface snapshot lists the `RadialItem` and `RadialMenuSpec` types.
-- Facet pins official Compose commit `cbab6e0`. Compose cells are now readables for typing, and a native property accepts a `Compose.Given` value. The generated engine types name one alias for each native value type, so strict type checking stays within the analyzer limits.
+- Facet pins official Compose commit `cbab6e0`. Compose cells are now readables for typing, and a native property accepts a `Compose.Given` value. The generated engine types name one alias for each native value type, so strict type checking stays within the analyzer limits. VirtualGrid focus follows the row placements, because this Compose publishes a collection status only when its summary changes. Badge validates its label in the bindings themselves, so a rejected label does not stop later valid labels.
 
 ## Pre-0.12.0 development history
 
