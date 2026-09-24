@@ -235,7 +235,9 @@ Other producer differences:
 
 ## Defects found
 
-Each item describes a test that fails today. The audit did not fix them.
+Each item describes a test that failed at the recheck commit. The audit did
+not fix them. [Fixed after the audit](#fixed-after-the-audit) names the test
+that now covers each one.
 
 | ID | File | Defect | Failing test |
 |---|---|---|---|
@@ -252,6 +254,26 @@ Each item describes a test that fails today. The audit did not fix them.
 | E1 | `examples/gallery/examples/05_word_game.luau` | Word-game keys and the active row no longer show state by paint | Mount the word game and guess RULES against REACT. Expect key_R and key_U to carry different surfaces, and the active row to carry an outline. Actual: the surface formulas are computed and never applied. |
 | E2 | `examples/gallery/examples/02_playlist_table.luau` | Playlist plays a track on one click; its hint says double-click | Mount the playlist and fire one RowHit.Activated with MouseButton1. Expect selection only. Actual: nowPlaying changes. |
 | E3 | `examples/themes/ornate_gauge.luau, examples/themes/custom_control.luau` | Theme fixtures call deleted constructors | Call each fixture blueprint with Facet.controls(runtime). Expect a mounted view. Actual: UI.ZStack, UI.HStack and UI.VStack are nil. docs/guide/13-theme-catalog.md still calls them tested fixtures. |
+
+### Fixed after the audit
+
+Each fix has a headless test. The test failed before the fix.
+
+| ID | Fix | Test |
+|---|---|---|
+| B1 | Arrow and D-pad focus wrap at the two ends when `wrapFocus` is set. A list wraps only along its scrolling axis. | native_collections: wraps arrow and D-pad focus at both ends when wrapFocus is set |
+| B2 | A full swipe commits or opens a tray only after the row has a measured width. | native_collections: never commits or opens a full swipe on an unmeasured row |
+| B3 | When the owner sets `open` after a destructive action, the row restores and accepts input again. | native_collections: restores a kept row after a destructive action so it can commit again |
+| B4 | A number commit stops when a callback disables the input. | native_inputs: does not commit a number TextInput that its parse callback disables |
+| B5 | `onPointerCancel` alone connects the pointer listeners. | native_inputs: reports a pointer cancel when onPointerCancel is the only pointer option |
+| B6 | Control motion follows `GuiService.ReducedMotionEnabled` or the factory option. | native_inputs: follows GuiService.ReducedMotionEnabled for pop, validation pulse and busy dots |
+| B7 | A readable `follow` changes the policy. Unknown values cause an error. | native_collections: follows a readable follow policy while the viewport stays at the end |
+| B8 | `api.md` states the Frame root of a Label with an icon. | native_themes_media: returns the Label root that api.md states, with and without an icon |
+| B9 | The value readout and `endLabel` show together. | native_themes_media: shows the showValue readout beside a ProgressView endLabel |
+| B10 | Button `corners` accepts a readable. | native_inputs: accepts a readable Button corners value and follows it |
+| E1 | Word-game keys and tiles use theme status tags. An accent outline marks the active row. | native_games: paints key and tile state through theme status tags and outlines the active row |
+| E2 | With a selection, one click selects. A double click, Return, a gamepad press or a touch tap activates. | native_gallery: selects a playlist row on one click and plays it on a double click or Return |
+| E3 | The ornate gauge and custom control fixtures use the current controls and read the theme package. | native_themes_media: mounts the namespaced control fixtures with the current controls |
 
 ### Fixed during the audit
 
