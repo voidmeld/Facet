@@ -4,8 +4,14 @@ local Players = game:GetService("Players")
 
 local cases = {}
 
-local function add(id: string, contracts: { string }, setup: (any) -> any, steps: { [string]: (any, any) -> () })
-	table.insert(cases, { id = id, contracts = contracts, setup = setup, steps = steps })
+local function add(
+	id: string,
+	contracts: { string },
+	setup: (any) -> any,
+	steps: { [string]: (any, any) -> () },
+	keepGallery: boolean?
+)
+	table.insert(cases, { id = id, contracts = contracts, setup = setup, steps = steps, keepGallery = keepGallery })
 end
 
 local function watchSelection(value: any)
@@ -139,7 +145,7 @@ end, {
 		t.check("one DPadDown selects the collections tab", selectedName() == "collections", selectedName())
 		GuiService.SelectedObject = nil
 	end,
-})
+}, true)
 
 add("power-off-traversal", { "mech2-25" }, function(t)
 	local value = {}
@@ -344,25 +350,28 @@ local function panelOf(value: any): Instance?
 end
 
 add("sheet-traps-and-orders-selection", { "apps-160", "apps-181" }, function(t)
-	local value = modalFixture(t, true, { { id = "ok", label = "OK" } })
+	local value = modalFixture(t, false, { { id = "ok", label = "OK" } })
+	value.alert:set(false)
+	t.settle(6)
 	GuiService.SelectedObject = t.find(value.stage, "Background")
-	t.settle(10)
+	t.settle(4)
+	value.sheet:set(true)
+	t.settle(20)
 	value.panel = panelOf(value)
 	t.note("selection after present", selectedName())
+	t.check(
+		"presenting the sheet selects the first selectable in document order",
+		selectedName() == "Grabber",
+		selectedName()
+	)
 	table.clear(value.visited)
 	return value
 end, {
 	afterDown = function(t, value)
 		t.note("Down visits", table.clone(value.visited))
-		local order = {}
-		for _, name in value.visited do
-			if name == "First" or name == "Second" or name == "Third" then
-				table.insert(order, name)
-			end
-		end
 		t.check(
-			"Down visits First, Second, Third in order",
-			table.concat(order, ",") == "First,Second,Third",
+			"Down walks the sheet in document order",
+			table.concat(value.visited, ",") == "DragHandle,Close,SheetContent,First,Second,Third",
 			value.visited
 		)
 		t.check("Down stops at Third", selectedName() == "Third", selectedName())
@@ -410,12 +419,22 @@ add("alert-selection-stays-inside", { "mech2-104", "navigation-1-14", "mech1-120
 end, {
 	afterDown = function(t, value)
 		t.note("Down visits", table.clone(value.visited))
-		t.check("Down moves to another alert action", #value.visited >= 1, value.visited)
+		t.check("Down at the last action stays on Stay", selectedName() == "stay", value.visited)
 		t.check("two Downs stay inside the alert", within(GuiService.SelectedObject, value.panel), selectedName())
 		table.clear(value.visited)
 	end,
 	afterUp = function(t, value)
 		t.note("Up visits", table.clone(value.visited))
+		t.check(
+			"the first Up from Stay reaches the stacked destructive action",
+			value.visited[1] == "leave",
+			value.visited
+		)
+		t.check(
+			"Up walks the stacked actions and stops at the top action",
+			table.concat(value.visited, ",") == "leave,save" and selectedName() == "save",
+			value.visited
+		)
 		t.check("Up stays inside the alert", within(GuiService.SelectedObject, value.panel), selectedName())
 		value.connection:Disconnect()
 		GuiService.SelectedObject = nil
@@ -459,7 +478,7 @@ end, {
 	end,
 })
 
-add("return-and-space-activate-once", { "apps-162" }, function(t)
+add("return-and-space-activate-once", { "apps-162", "apps-163" }, function(t)
 	local value = { count = 0 }
 	local stage = t.mount(function(UI, _, Compose)
 		value.enabled = Compose.cell(true)
@@ -507,7 +526,18 @@ add("shift-return-opens-row-menu", { "collections-84" }, function(t)
 		}
 	end, { frames = 10 })
 	value.stage = stage
-	GuiService.SelectedObject = t.find(stage, "Content")
+	local content
+	for _, node in stage:GetDescendants() do
+		if node.Name == "Content" and node:IsA("GuiButton") then
+			content = node
+		end
+	end
+	GuiService.SelectedObject = content
+	t.check(
+		"the row content button is selected",
+		GuiService.SelectedObject == content and content ~= nil,
+		selectedName()
+	)
 	return value
 end, {
 	afterShiftReturn = function(t, value)

@@ -311,7 +311,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				spec.onChange(id)
 			end
 		end
-		local bar = Host.ScrollingFrame "Tabs" {
+		local bar = ctx.scrollStop(Host.ScrollingFrame "Tabs" {
 			ZIndex = 2,
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
@@ -464,7 +464,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					return button
 				end,
 			}),
-		}
+		})
 		local barSize, barPosition = ctx.observe(bar, "AbsoluteSize"), ctx.observe(bar, "AbsolutePosition")
 		Compose.watch(function(use: ComposeTypes.Use)
 			local selected = use(spec.selection)

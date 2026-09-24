@@ -125,4 +125,20 @@ t.describe("native reference applications", function()
 		end
 		stop()
 	end)
+	t.it("keeps each notice line inside the screen width with a fixed box", function()
+		for _, module in { glade, cartwheel, sipworks, foyer } do
+			local _, root, stop = world(module)
+			local notice
+			for _, node in root:GetDescendants() do
+				if node.ClassName == "TextLabel" and node.Position.Y.Offset == -60 and node.Position.X.Offset == 16 then
+					notice = node
+				end
+			end
+			t.expect(notice ~= nil).toBe(true)
+			t.expect(notice.Size.X.Scale).toBe(1)
+			t.expect(notice.Size.X.Offset).toBe(-32)
+			t.expect(notice.AutomaticSize.Name).toBe("None")
+			stop()
+		end
+	end)
 end)

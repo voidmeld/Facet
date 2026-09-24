@@ -175,6 +175,14 @@ function layoutKit.attach(ctx: Shared.Context): Kit
 						then Enum.ItemLineAlignment.Stretch
 						else Enum.ItemLineAlignment.Automatic
 				end, flow.align)
+				local cross = derive(function(use)
+					return if align(use) == "stretch" then Enum.UIFlexAlignment.Fill else Enum.UIFlexAlignment.None
+				end, flow.align)
+				if vertical then
+					native.HorizontalFlex = cross
+				else
+					native.VerticalFlex = cross
+				end
 			end
 		end
 		if flow.distribute ~= nil then

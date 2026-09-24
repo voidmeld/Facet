@@ -83,6 +83,7 @@ local function new(options: any?)
 			AbsoluteContentSize = Roblox.Vector2.zero,
 			AbsolutePosition = Roblox.Vector2.zero,
 			AbsoluteWindowSize = Roblox.Vector2.zero,
+			AbsoluteCanvasSize = Roblox.Vector2.zero,
 			CanvasPosition = Roblox.Vector2.zero,
 		}
 		if className == "UIShadow" then
@@ -415,6 +416,17 @@ local function new(options: any?)
 					if not shown then
 						table.insert(rejectedSelections, value)
 						return
+					end
+					if options and options.selectionNeedsPlayerGui then
+						local ancestor = value.Parent
+						while ancestor and ancestor.ClassName ~= "PlayerGui" do
+							ancestor = ancestor.Parent
+						end
+						if not ancestor then
+							error(
+								`Cannot set GuiService.SelectedObject to {value.Name} because it is not a descendant of a PlayerGui`
+							)
+						end
 					end
 				end
 				if key == "Parent" then

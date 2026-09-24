@@ -113,7 +113,11 @@ return function(ctx: Types.Context, UI: Controls): ()
 			if spec.header == false then
 				return 0
 			end
+			local kind = if preferredInput then use(preferredInput) else nil
 			local size = read(spec.headerHeight, use) or 40
+			if kind == E.PreferredInput.Touch or kind == E.PreferredInput.Gamepad then
+				size = math.max(size, 44)
+			end
 			for _, column in read(spec.columns, use) do
 				size = math.max(size, use(headerMeasures)[column.id] or 0)
 			end

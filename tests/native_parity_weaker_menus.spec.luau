@@ -652,6 +652,39 @@ t.describe("native parity weaker menus", function()
 		world.stop()
 	end)
 
+	t.it("leaves the segmented strip when the measured labels do not fit the width", function()
+		local long = {
+			{ value = "a", label = "Automatic transmission mode" },
+			{ value = "b", label = "Manual transmission override" },
+			{ value = "c", label = "Sequential paddle shift gear" },
+			{ value = "d", label = "Assisted launch control mode" },
+		}
+		local world = setup(function(UI, Host)
+			return Host.Frame({ UI.Picker "Gears" { selected = Compose.cell("a"), options = long } })
+		end)
+		local Enum = world.engine.types.Enum
+		world.input.PreferredInput = Enum.PreferredInput.Touch
+		local picker = find(world.root, "Gears")
+		picker.AbsoluteSize = V2(world, 400, 44)
+		local measure = find(picker, "LabelMeasure")
+		t.expect(measure ~= nil).toBe(true)
+		t.expect(measure.Visible).toBe(false)
+		t.expect(measure.Text).toBe(
+			"Automatic transmission modeManual transmission overrideSequential paddle shift gearAssisted launch control mode"
+		)
+		local function presentation(): any
+			return picker:FindFirstChild("Presentation")
+		end
+		measure.TextBounds = V2(world, 200, 18)
+		t.expect(presentation():HasTag("facet-segmented")).toBe(true)
+		measure.TextBounds = V2(world, 791, 18)
+		t.expect(presentation():HasTag("facet-segmented")).toBe(false)
+		t.expect(find(presentation(), "Trigger") ~= nil).toBe(true)
+		picker.AbsoluteSize = V2(world, 920, 44)
+		t.expect(presentation():HasTag("facet-segmented")).toBe(true)
+		world.stop()
+	end)
+
 	t.it(
 		"opens the row menu from ButtonX and Menu, lists leading then trailing actions and scopes it to the selected row",
 		function()

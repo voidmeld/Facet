@@ -830,6 +830,21 @@ return function(
 			local preferred = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
 			local opened = spec.isPresented or Compose.cell(false)
 			local width = Compose.cell(0)
+			local measure = ctx.text({
+				Name = "LabelMeasure",
+				Text = function(use: ComposeTypes.Use)
+					local labels = {}
+					for _, option in read(spec.options, use) do
+						table.insert(labels, tostring(read(option.label, use) or ""))
+					end
+					return table.concat(labels, "")
+				end,
+				TextSize = spec.textSize,
+				TextWrapped = false,
+				Visible = false,
+			})
+			measure:AddTag("facet-type-control")
+			local labelBounds = ctx.observe(measure, "TextBounds")
 
 			local resolved = Compose.formula(function(use: ComposeTypes.Use): Nav.PickerStyle
 				if spec.query then
@@ -844,7 +859,8 @@ return function(
 						described = true
 					end
 				end
-				if count <= 4 and not described and (available == 0 or available >= 360) then
+				local needed = use(labelBounds).X + count * 24 + math.max(0, count - 1) * 4 + 6
+				if count <= 4 and not described and (available == 0 or (available >= 360 and needed <= available)) then
 					return "segmented"
 				end
 				local kind = use(preferred)
@@ -927,6 +943,7 @@ return function(
 					end,
 				})
 			)
+			table.insert(props, measure)
 			local container = Host.Frame(props)
 			local measured = ctx.observe(container, "AbsoluteSize")
 			Compose.watch(function(use: ComposeTypes.Use)

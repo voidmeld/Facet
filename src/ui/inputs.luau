@@ -316,6 +316,11 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.Button: repeat timings must be finite and positive"
 		)
 		local function activate(...)
+			local route = if node then ctx.shiftActivation(node, (...)) else nil
+			if route and enabled(spec) and ctx.available(node) then
+				route()
+				return
+			end
 			if enabled(spec) and node and ctx.available(node) and spec.onActivate then
 				if popTimeline and popReduced and not held and not popReduced() then
 					popStart:set(popScale:peek())

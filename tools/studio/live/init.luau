@@ -107,6 +107,20 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 			RunService.RenderStepped:Wait()
 		end
 	end
+	function t.stable(node: any, frames: number?, limit: number?): number
+		local last, calm, waited = nil, 0, 0
+		while waited < (limit or 120) do
+			RunService.RenderStepped:Wait()
+			waited += 1
+			local now = if node and node.Parent then `{node.AbsolutePosition}{node.AbsoluteSize}` else ""
+			calm = if now == last then calm + 1 else 0
+			last = now
+			if calm >= (frames or 4) then
+				break
+			end
+		end
+		return waited
+	end
 	function t.find(root: Instance, name: string): any
 		if root.Name == name then
 			return root
@@ -160,14 +174,25 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 		local Host = runtime.constructors
 		local package = config.theme or themes[1].package
 		local root
+		local emulate = config.size ~= nil and config.emulate ~= false
 		local stop = runtime.mount(function()
+			local overlay = if emulate
+				then Host.Frame "Screen" { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, ZIndex = 1000 }
+				else nil
 			local theme = Compose.cell(package)
 			local palette = Compose.cell(config.palette or package.style.defaultTheme)
-			local viewport = Facet.Roblox.createViewport(workspace.CurrentCamera)
+			local viewport = if emulate
+				then Compose.formula(function(use)
+					local size = config.size
+					local value = if Compose.isReadable(size) then use(size) else size
+					return { width = value.X, height = value.Y }
+				end)
+				else Facet.Roblox.createViewport(workspace.CurrentCamera)
 			local UI = Facet.controls(runtime, {
 				viewport = viewport,
 				theme = theme,
 				reducedMotion = config.reducedMotion ~= false,
+				overlayParent = overlay,
 			})
 			local sheet = Facet.themes.createStyleSheet(runtime, theme, { theme = palette, transition = false })
 			local stage = Host.Frame "Stage" {
@@ -184,6 +209,7 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 					runtime = runtime,
 					viewport = viewport,
 					theme = theme,
+					palette = palette,
 					types = {
 						UDim = UDim,
 						UDim2 = UDim2,
@@ -193,6 +219,10 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 						CFrame = CFrame,
 						Rect = Rect,
 						Enum = Enum,
+						Font = Font,
+						NumberRange = NumberRange,
+						BrickColor = BrickColor,
+						TweenInfo = TweenInfo,
 						Path2DControlPoint = Path2DControlPoint,
 						NumberSequence = NumberSequence,
 						NumberSequenceKeypoint = NumberSequenceKeypoint,
@@ -202,6 +232,9 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 					},
 				}),
 			}
+			if overlay then
+				overlay.Parent = stage
+			end
 			root = stage
 			return Host.ScreenGui "FacetLive" {
 				ResetOnSpawn = false,
@@ -237,7 +270,117 @@ local function newCase(Facet: any, themes: { any }, record: { [string]: any })
 			runService = RunService,
 			inputTarget = Players.LocalPlayer:WaitForChild("PlayerGui"),
 			worldTarget = workspace,
+			load = function(kind: string, name: string)
+				local source = if kind == "example"
+					then storage:WaitForChild("FacetExamples")
+					elseif kind == "reference" then storage:WaitForChild("FacetReference")
+					else storage:WaitForChild("FacetScenarios")
+				return (require :: any)(source:WaitForChild(name))
+			end,
 		}
+	end
+	function t.clipped(node: any): { x: number, y: number, w: number, h: number, r: number, b: number }?
+		local box = t.rect(node)
+		local x, y, r, b = box.x, box.y, box.r, box.b
+		local at = node.Parent
+		while at and at:IsA("GuiObject") do
+			if at.ClipsDescendants or at:IsA("ScrollingFrame") then
+				local clip = t.rect(at)
+				x, y = math.max(x, clip.x), math.max(y, clip.y)
+				r, b = math.min(r, clip.r), math.min(b, clip.b)
+			end
+			at = at.Parent
+		end
+		if r - x < 0.5 or b - y < 0.5 then
+			return nil
+		end
+		return { x = x, y = y, w = r - x, h = b - y, r = r, b = b }
+	end
+	function t.offenders(root: Instance, bounds: any, options: { [string]: any }?): { [string]: any }
+		local config = options or {}
+		local limit = if typeof(bounds) == "Instance" then t.rect(bounds) else bounds
+		local margin = config.margin or 0.5
+		local out = { lateral = {}, vertical = {}, clipped = {} }
+		for _, node in root:GetDescendants() do
+			if
+				node:IsA("GuiObject")
+				and t.visible(node)
+				and node.AbsoluteSize.X > 0.5
+				and node.AbsoluteSize.Y > 0.5
+			then
+				local seen = t.clipped(node)
+				if seen then
+					if seen.x < limit.x - margin or seen.r > limit.r + margin then
+						table.insert(out.lateral, { node.Name, seen.x, seen.r })
+					end
+					if seen.y < limit.y - margin or seen.b > limit.b + margin then
+						table.insert(out.vertical, { node.Name, seen.y, seen.b })
+					end
+					if
+						(node:IsA("TextLabel") or node:IsA("TextButton") or node:IsA("TextBox"))
+						and node.ContentText ~= ""
+						and not node.TextScaled
+						and (node.TextBounds.X > node.AbsoluteSize.X + 0.5 or node.TextBounds.Y > node.AbsoluteSize.Y + 0.5 or (not node.TextFits and node:GetStyled(
+							"TextWrapped"
+						) == true))
+						and node:GetStyled("TextTruncate") == Enum.TextTruncate.None
+					then
+						table.insert(out.clipped, { node.Name, node.ContentText, node.TextBounds, node.AbsoluteSize })
+					end
+				end
+			end
+		end
+		return out
+	end
+	function t.gallery(options: { [string]: any }?): (any, any)
+		local config = options or {}
+		local context
+		local stage = t.mount(function(UI, Host, Compose, env)
+			local screen = (require :: any)(storage:WaitForChild("Gallery"):WaitForChild("screen"))
+			local folder = storage:FindFirstChild("FacetThemes")
+			local packages = screen.themePackages(
+				Facet.themes,
+				if folder then folder:GetChildren() else {},
+				function(module)
+					return (require :: any)(module)
+				end
+			)
+			packages.Neutral = env.theme:peek()
+			context = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = env.runtime,
+				Host = Host,
+				viewport = env.viewport,
+				types = env.types,
+				worldTarget = workspace,
+				selection = Compose.cell(config.demo or "all-controls"),
+				demos = screen.list(),
+				inputTarget = Players.LocalPlayer:WaitForChild("PlayerGui"),
+				guiService = GuiService,
+				runService = RunService,
+				theme = env.theme,
+				themeMode = env.palette,
+				packages = packages,
+				load = function(kind, name)
+					local source = if kind == "example"
+						then storage:WaitForChild("FacetExamples")
+						elseif kind == "reference" then storage:WaitForChild("FacetReference")
+						else storage:WaitForChild("FacetScenarios")
+					return (require :: any)(source:WaitForChild(name))
+				end,
+			}
+			screen.configure(context)
+			context.UI = UI
+			context.show = function(id: string): any
+				return screen.dispatch(context, "show", id)
+			end
+			context.dispatch = function(command: string, argument: any): any
+				return screen.dispatch(context, command, argument)
+			end
+			return screen.build(context)
+		end, { size = config.size, theme = config.theme, frames = config.frames or 20 })
+		return stage, context
 	end
 	function t.scenario(name: string): any
 		return (require :: any)(storage:WaitForChild("FacetScenarios"):WaitForChild(name))
@@ -282,7 +425,7 @@ function live.run(suite: string, options: { [string]: any }?): string
 	local results = {}
 	local passed, failed = 0, 0
 	for _, case in live.cases(suite) do
-		if config.only and not string.find(case.id, config.only, 1, true) then
+		if not case.run or (config.only and not string.find(case.id, config.only, 1, true)) then
 			continue
 		end
 		local record = { id = case.id, contracts = case.contracts or {}, checks = {}, notes = {} }
@@ -338,6 +481,25 @@ function live.begin(suite: string, id: string): string
 	assert(chosen and chosen.setup, "no interactive case " .. id)
 	local record = { id = chosen.id, contracts = chosen.contracts or {}, checks = {}, notes = {}, steps = {} }
 	local t = newCase(Facet, themeModules(Facet), record)
+	if not chosen.keepGallery then
+		local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+		local hidden = {}
+		for _, gui in playerGui:GetChildren() do
+			if gui:IsA("ScreenGui") and string.sub(gui.Name, 1, 12) == "FacetGallery" and gui.Enabled then
+				gui.Enabled = false
+				table.insert(hidden, gui)
+			end
+		end
+		t.cleanup = (function(inner)
+			return function()
+				inner()
+				for _, gui in hidden do
+					gui.Enabled = true
+				end
+				table.clear(hidden)
+			end
+		end)(t.cleanup)
+	end
 	local value = chosen.setup(t)
 	shared.FacetLiveHold = { cleanup = t.cleanup, value = value }
 	shared.FacetLiveSession = { suite = suite, case = chosen, record = record, t = t, value = value }

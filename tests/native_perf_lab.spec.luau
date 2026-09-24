@@ -90,6 +90,27 @@ t.describe("native performance lab", function()
 		world.dispose()
 		t.expect(world.engine.heartbeat.count()).toBe(0)
 	end)
+	t.it("keeps the mounted workload when the capture mode or the theme changes", function()
+		local world, probe = fixture()
+		world.setTheme = function() end
+		probe.select("dense-scroll-native", 300)
+		local active = probe.state().active
+		for _ = 1, 5 do
+			world.engine.heartbeat.fire(1 / 60)
+		end
+		t.expect(probe.state().ready).toBe(true)
+		probe.clean(true)
+		t.expect(probe.state().active).toBe(active)
+		t.expect(probe.state().ready).toBe(true)
+		probe.theme("facet-neutral")
+		t.expect(probe.state().active).toBe(active)
+		probe.step(1 / 60)
+		t.expect(probe.state().iterations).toBe(1)
+		probe.select("dense-scroll-native", 300)
+		t.expect(probe.state().active ~= active).toBe(true)
+		world.dispose()
+	end)
+
 	t.it("exports conditioned captures and refuses missing or relabelled device facts", function()
 		local world, probe = fixture()
 		probe.select("dense-scroll", 100)

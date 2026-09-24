@@ -314,6 +314,81 @@ t.describe("native parity weaker focus", function()
 		world.stop()
 	end)
 
+	t.it("makes the alert message and the tab strip a selection stop only when they scroll", function()
+		local world = setup(function(UI, Host)
+			return Host.Frame({
+				UI.Alert({
+					isPresented = Compose.cell(true),
+					title = "Leave?",
+					message = "The match is still running.",
+					actions = { { id = "Stay", label = "Stay", role = "cancel" } },
+				}),
+				UI.TabView({
+					selection = Compose.cell("a"),
+					tabs = {
+						{
+							id = "a",
+							label = "Alpha",
+							content = function()
+								return Host.Frame({})
+							end,
+						},
+						{
+							id = "b",
+							label = "Beta",
+							content = function()
+								return Host.Frame({})
+							end,
+						},
+					},
+				}),
+			})
+		end)
+		local V2 = world.engine.types.Vector2
+		for _, name in { "AlertMessage", "Tabs" } do
+			local region = find(world.screen, name)
+			t.expect(region ~= nil).toBe(true)
+			region.AbsoluteWindowSize = V2.new(300, 200)
+			region.AbsoluteCanvasSize = V2.new(300, 120)
+			t.expect(region.Selectable).toBe(false)
+			region.AbsoluteCanvasSize = V2.new(300, 480)
+			t.expect(region.Selectable).toBe(true)
+			region.AbsoluteCanvasSize = V2.new(300, 200)
+			t.expect(region.Selectable).toBe(false)
+		end
+		world.stop()
+	end)
+
+	t.it("selects inside a modal only once its screen reaches a PlayerGui", function()
+		local engine: any = engineLib.new({ selectionNeedsPlayerGui = true })
+		local runtime = Facet.Roblox.createRuntime(engine)
+		local gui = engine.new("GuiService")
+		local UI = Facet.controls(runtime, { types = engine.types, services = { GuiService = gui } } :: any)
+		local playerGui = engine.new("PlayerGui")
+		local other = engine.new("ScreenGui")
+		other.Parent = playerGui
+		local elsewhere = engine.new("TextButton")
+		elsewhere.Selectable = true
+		elsewhere.Parent = other
+		gui.SelectedObject = elsewhere
+		local holder = engine.new("Folder")
+		local stop, screen = runtime.mount(function()
+			return runtime.constructors.ScreenGui({
+				UI.Alert({
+					isPresented = Compose.cell(true),
+					title = "Leave?",
+					actions = { { id = "Stay", label = "Stay" } },
+				}),
+			})
+		end, holder)
+		t.expect(find(screen, "AlertPanel") ~= nil).toBe(true)
+		t.expect(gui.SelectedObject).toBe(elsewhere)
+		screen.Parent = playerGui
+		t.expect(gui.SelectedObject ~= nil and gui.SelectedObject.Name == "Stay").toBe(true)
+		stop()
+		runtime:dispose()
+	end)
+
 	t.it("groups modal selection and enters at the first selectable control in document order", function()
 		local presented = Compose.cell(false)
 		local world = setup(function(UI, Host, engine)

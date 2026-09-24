@@ -32,30 +32,22 @@ local function scenario(t: any, name: string, size: Vector2?): (any, any)
 end
 
 local function alertCase(t: any, where: string, size: Vector2, message: string, actions: { any }, theme: any?)
-	t.mount(function(UI, _, Compose)
+	local stage = t.mount(function(UI, _, Compose)
 		return UI.Alert({
 			isPresented = Compose.cell(true),
 			title = "Replace the save?",
 			message = message,
 			actions = actions,
 		})
-	end, { size = size, theme = theme, frames = 14 })
-	local gui = Players.LocalPlayer.PlayerGui
-	local panel = visibleNamed(t, gui, "AlertPanel")
+	end, { size = size, theme = theme, frames = 4 })
+	local panel = visibleNamed(t, stage, "AlertPanel")
 	if not panel then
 		t.check(where .. " alert shown", false)
 		return nil
 	end
+	t.stable(panel)
 	local p = t.rect(panel)
-	local layer = panel:FindFirstAncestorWhichIsA("LayerCollector")
-	t.inside(where .. " card inside the screen", p, layer.AbsolutePosition and {
-		x = layer.AbsolutePosition.X,
-		y = layer.AbsolutePosition.Y,
-		r = layer.AbsolutePosition.X + layer.AbsoluteSize.X,
-		b = layer.AbsolutePosition.Y + layer.AbsoluteSize.Y,
-		w = 0,
-		h = 0,
-	}, 1)
+	t.inside(where .. " card inside the screen", p, stage, 1)
 	local buttons = {}
 	for _, node in panel:GetDescendants() do
 		if node:IsA("GuiButton") and t.visible(node) and node.Name ~= "AlertMessage" then
@@ -197,6 +189,7 @@ add("toggle-sizes-around-label", { "mech3-14" }, function(t)
 				local where = `{theme.name} {presentation} {position}`
 				local toggle = t.find(stage, "Toggle")
 				local indicator = t.find(toggle, "Indicator")
+				t.stable(toggle)
 				local before, bounds = toggle.AbsoluteSize.X, toggle.TextBounds.X
 				if indicator then
 					local i, g = t.rect(indicator), t.rect(toggle)
@@ -210,13 +203,23 @@ add("toggle-sizes-around-label", { "mech3-14" }, function(t)
 					t.check(where .. " indicator found", false)
 				end
 				label:set("Night vision assistance")
-				t.settle(8)
-				t.near(
-					where .. " toggle grows by the text difference",
-					toggle.AbsoluteSize.X - before,
-					toggle.TextBounds.X - bounds,
-					2
+				t.stable(toggle)
+				local grown = t.rect(toggle)
+				local mark = if indicator then t.rect(indicator) else nil
+				t.check(
+					where .. " toggle grows with the longer label",
+					grown.w > before,
+					{ before = before, after = grown.w }
 				)
+				if mark then
+					t.inside(where .. " indicator inside the grown toggle", mark, grown, 1)
+					t.check(
+						where .. " grown toggle holds the label and the indicator",
+						grown.w >= toggle.TextBounds.X + mark.w + 8 - 1,
+						{ toggle = grown.w, text = toggle.TextBounds.X, indicator = mark.w }
+					)
+				end
+				t.check(where .. " longer label fits", t.fits(toggle), toggle.TextBounds)
 				t.cleanup()
 			end
 		end
@@ -252,33 +255,57 @@ add("step-and-clear-targets", { "mech1-88" }, function(t)
 end)
 
 add("picker-long-labels", { "apps-237" }, function(t)
-	for _, width in { 360, 380, 400 } do
-		local stage = t.mount(function(UI, _, Compose)
-			return UI.Picker "Auto" {
-				selected = Compose.cell("a"),
-				Size = UDim2.fromOffset(width, 0),
-				AutomaticSize = Enum.AutomaticSize.Y,
-				options = {
-					{ value = "a", label = "Automatic transmission mode" },
-					{ value = "b", label = "Manual transmission override" },
-					{ value = "c", label = "Sequential paddle shift gear" },
-					{ value = "d", label = "Assisted launch control mode" },
-				},
-			}
-		end, { size = Vector2.new(width, 300) })
-		local picker = t.find(stage, "Auto")
-		local clipped, segments = 0, 0
-		for _, node in picker:GetDescendants() do
-			if (node:IsA("TextButton") or node:IsA("TextLabel")) and t.visible(node) and node.Text ~= "" then
-				segments += 1
-				if not t.fits(node) then
-					clipped += 1
+	local sets = {
+		long = {
+			{ value = "a", label = "Automatic transmission mode" },
+			{ value = "b", label = "Manual transmission override" },
+			{ value = "c", label = "Sequential paddle shift gear" },
+			{ value = "d", label = "Assisted launch control mode" },
+		},
+		short = {
+			{ value = "a", label = "Auto" },
+			{ value = "b", label = "Manual" },
+			{ value = "c", label = "Paddle" },
+			{ value = "d", label = "Launch" },
+		},
+	}
+	for name, options in sets do
+		for _, width in { 360, 380, 400 } do
+			local stage = t.mount(function(UI, _, Compose)
+				return UI.Picker "Auto" {
+					selected = Compose.cell("a"),
+					Size = UDim2.fromOffset(width, 0),
+					AutomaticSize = Enum.AutomaticSize.Y,
+					options = options,
+				}
+			end, { size = Vector2.new(width, 300) })
+			local picker = t.find(stage, "Auto")
+			t.stable(picker)
+			local presentation = picker:FindFirstChild("Presentation")
+			local segmented = presentation ~= nil and presentation:HasTag("facet-segmented")
+			local clipped, labels = 0, 0
+			for _, node in picker:GetDescendants() do
+				if (node:IsA("TextButton") or node:IsA("TextLabel")) and t.visible(node) and node.Text ~= "" then
+					labels += 1
+					if not t.fits(node) then
+						clipped += 1
+					end
 				end
 			end
+			t.note(`{name} {width} segmented`, segmented)
+			t.check(
+				`{name} {width} no label clips`,
+				clipped == 0 and labels > 0,
+				{ clipped = clipped, labels = labels }
+			)
+			t.check(
+				`{name} {width} presentation follows the label fit`,
+				segmented == (name == "short"),
+				{ segmented = segmented }
+			)
+			t.inside(`{name} {width} picker inside its width`, picker, stage, 1)
+			t.cleanup()
 		end
-		t.note(`{width} presentation`, picker:GetAttribute("Presentation") or picker:GetAttribute("style"))
-		t.check(`{width} no label clips`, clipped == 0, { clipped = clipped, labels = segments })
-		t.cleanup()
 	end
 end)
 
@@ -442,32 +469,79 @@ add("skinned-checkbox-stroke", { "themes-P2-22" }, function(t)
 	neutral.chrome.toggleTrack = { kind = "nineSlice", asset = "boxArt" }
 	neutral.chrome.panel = { kind = "nineSlice", asset = "boxArt" }
 	local skinned = assert(t.Facet.themes.define(neutral))
+	local function rules(stage: Instance): { [string]: StyleRule }
+		local found = {}
+		local gui = stage:FindFirstAncestorWhichIsA("LayerCollector")
+		local sheet = gui and gui:FindFirstChildWhichIsA("StyleSheet")
+		for _, node in if sheet then sheet:GetDescendants() else {} do
+			if node:IsA("StyleRule") then
+				found[node.Selector] = node
+			end
+		end
+		return found
+	end
 	for _, entry in
 		{
 			{ name = "skinned", package = skinned, hidden = true },
 			{ name = "plain", package = t.themes[1].package, hidden = false },
 		}
 	do
-		local stage = t.mount(function(UI, _, Compose)
-			return UI.Toggle "Box" { value = Compose.cell(true), label = "Box", presentation = "checkbox" }
-		end, { theme = entry.package, size = Vector2.new(300, 200) })
+		local stage = t.mount(function(UI, Host, Compose)
+			return Host.Frame {
+				Size = UDim2.fromOffset(400, 300),
+				BackgroundTransparency = 1,
+				Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder }),
+				UI.Toggle "Box" { value = Compose.cell(true), label = "Box", presentation = "checkbox" },
+				UI.Menu "Actions" {
+					label = "Actions",
+					isPresented = Compose.cell(true),
+					items = { { id = "a", label = "Archive", onSelect = function() end } },
+				},
+			}
+		end, { theme = entry.package, size = Vector2.new(400, 300), frames = 20 })
 		local indicator = t.find(stage, "Indicator")
-		local stroke = indicator and indicator:FindFirstChildWhichIsA("UIStroke", true)
-		local transparency = if stroke then (stroke :: any):GetStyled("Transparency") else nil
-		t.note(entry.name .. " stroke", {
-			found = stroke ~= nil,
-			transparency = transparency,
-			skinned = indicator and indicator:HasTag("facet-skinned"),
-		})
-		if entry.hidden then
-			t.check("skinned checkbox has no visible outline", stroke == nil or transparency == 1, transparency)
-		else
+		local found = rules(stage)
+		local base = found[".facet-toggle-checkbox::UIStroke"]
+		local over = found[".facet-toggle-checkbox.facet-skinned::UIStroke"]
+		local menuOver = found[".facet-menu.facet-skinned::UIStroke"]
+		t.check(entry.name .. " checkbox indicator found", indicator ~= nil)
+		t.check(
+			entry.name .. " base stroke rule shows an outline",
+			base ~= nil and (base:GetProperty("Transparency") :: number) < 1,
+			base and base:GetProperties()
+		)
+		t.check(
+			entry.name .. " skinned stroke rule hides the outline at a higher priority",
+			base ~= nil and over ~= nil and over.Priority > base.Priority and over:GetProperty("Transparency") == 1,
+			{ base = base and base.Priority, skinned = over and over.Priority }
+		)
+		t.check(
+			entry.name .. " skinned menu stroke rule hides the hairline",
+			menuOver ~= nil and menuOver:GetProperty("Transparency") == 1
+		)
+		if indicator then
 			t.check(
-				"plain checkbox shows its outline",
-				stroke ~= nil and transparency ~= nil and transparency < 1,
-				transparency
+				entry.name .. " indicator carries the checkbox tag",
+				indicator:HasTag("facet-toggle-checkbox"),
+				indicator:GetTags()
+			)
+			t.check(
+				entry.name .. " indicator is skinned only with art",
+				indicator:HasTag("facet-skinned") == entry.hidden,
+				indicator:GetTags()
 			)
 		end
+		local panel
+		for _, node in stage:GetDescendants() do
+			if node:IsA("GuiObject") and node:HasTag("facet-menu") and t.visible(node) then
+				panel = node
+			end
+		end
+		t.check(
+			entry.name .. " open menu panel is skinned only with art",
+			panel ~= nil and panel:HasTag("facet-skinned") == entry.hidden,
+			panel and panel:GetTags()
+		)
 		t.cleanup()
 	end
 end)

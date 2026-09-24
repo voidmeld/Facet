@@ -497,6 +497,7 @@ function Cartwheel.build(ctx)
 				TextWrapped = true,
 				Position = D2.new(0, 16, 1, -60),
 				Size = D2.new(1, -32, 0, 56),
+				AutomaticSize = ctx.types.Enum.AutomaticSize.None,
 			}),
 			UI.Sheet "BrewDetail" {
 				title = "Brew",

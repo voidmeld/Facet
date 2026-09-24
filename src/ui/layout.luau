@@ -159,7 +159,7 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 				local height = read(spec.cellHeight, use)
 				return D2.new(
 					1 / count,
-					-math.round(gap * (count - 1) / count),
+					-math.ceil(gap * (count - 1) / count),
 					0,
 					if height == nil then ctx.controlSize(ctx.config.controlSize, "height", use) else height
 				)

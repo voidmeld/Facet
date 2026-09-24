@@ -405,7 +405,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end)
 				local actionBar = Host.Frame(actionProps)
 				local actionSize = ctx.observe(actionBar, "AbsoluteSize")
-				local scroll = Host.ScrollingFrame "AlertMessage" {
+				local scroll = ctx.scrollStop(Host.ScrollingFrame "AlertMessage" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					CanvasSize = D2.fromOffset(0, 0),
@@ -428,7 +428,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					end,
 					lists.list({}, true) :: Instance,
 					contentRoot :: Instance,
-				}
+				})
 				local layout: GuiObject
 				if fullScreen then
 					runtime.decorate(actionBar, { AnchorPoint = V2.new(0, 1), Position = D2.fromScale(0, 1) })
@@ -1041,7 +1041,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				ctx.modalPortal(panel, spec.anchor)
 				ctx.styled(panel, "panel")
 				surfaces.skin(panel)
-				local layer = assert(spec.anchor:FindFirstAncestorWhichIsA("LayerCollector"))
+				local layer: GuiBase2d = ctx.config.overlayParent :: GuiBase2d?
+					or assert(spec.anchor:FindFirstAncestorWhichIsA("LayerCollector"))
 				local extent = ctx.observe(layer, "AbsoluteSize")
 				local origin = ctx.observe(layer, "AbsolutePosition")
 				local measured = ctx.observe(panel, "AbsoluteSize")

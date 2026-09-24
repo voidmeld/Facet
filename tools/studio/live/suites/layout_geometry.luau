@@ -187,7 +187,7 @@ add("tab-head-accessory-above-rail", { "navigation-5-34" }, function(t)
 		return UI.TabView({
 			selection = Compose.cell("one"),
 			style = "sidebarAdaptable",
-			sidebarPreference = "sidebar",
+			placement = "sidebar",
 			tabs = {
 				{
 					id = "one",
@@ -223,8 +223,14 @@ add("tab-head-accessory-above-rail", { "navigation-5-34" }, function(t)
 	local h, s, f, root = t.rect(head), t.rect(tabs), t.rect(foot), t.rect(stage)
 	t.check("head sits above the strip", h.b <= s.y + 0.5, { head = h.b, strip = s.y })
 	t.check("head height is measured", h.h > 0, h.h)
-	t.near("head shares the rail width", h.w, s.w, 0.5)
-	t.near("head shares the rail x", h.x, s.x, 0.5)
+	local railWidth = math.clamp(math.floor(root.w * 0.2), 200, 280)
+	t.near("head spans the rail width", h.w, railWidth, 0.5)
+	t.near("head starts at the rail edge", h.x, root.x, 0.5)
+	t.check(
+		"the strip sits inside the rail",
+		s.x >= root.x - 0.5 and s.r <= root.x + railWidth + 0.5,
+		{ strip = s, railWidth = railWidth }
+	)
 	t.check("head inside the TabView", h.x >= root.x - 0.5 and h.y >= root.y - 0.5, h)
 	t.near("foot is pinned to the rail bottom", f.b, root.b, 0.5)
 	t.check("strip ends above the foot", s.b <= f.y + 0.5, { strip = s.b, foot = f.y })
