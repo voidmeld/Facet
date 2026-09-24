@@ -316,6 +316,16 @@ local function new(options: any?)
 					defaults:Destroy()
 				end
 			end,
+			connectionCount = function()
+				local count = 0
+				for _, event in signals do
+					count += event.count()
+				end
+				for _, event in changed do
+					count += event.count()
+				end
+				return count
+			end,
 			isDestroyed = function()
 				return destroyed == true
 			end,
@@ -473,6 +483,17 @@ local function new(options: any?)
 			UDim = Roblox.UDim.new,
 			UDim2 = Roblox.UDim2.new,
 		},
+		census = function()
+			assert(not options or options.recordCreated ~= false, "census requires recording all created instances")
+			local live, connections = 0, heartbeat.count()
+			for _, node in made do
+				if not node:isDestroyed() then
+					live += 1
+				end
+				connections += node:connectionCount()
+			end
+			return { live = live, connections = connections }
+		end,
 		made = made,
 		types = types,
 	}

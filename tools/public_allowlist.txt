@@ -67,3 +67,10 @@ docs/plans/
 !*.pem
 !*id_rsa*
 !*.keychain
+
+# Native-cutover evidence linked by PR22; retained for verification review.
+artifacts/compose-simplification/final-full-report.json
+artifacts/compose-simplification/final-performance.json
+artifacts/compose-simplification/final-readiness.json
+artifacts/compose-simplification/gap-closure-live.json
+artifacts/compose-simplification/verification.md

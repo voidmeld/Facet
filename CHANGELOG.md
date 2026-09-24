@@ -9,7 +9,12 @@
 - Verification records which old mechanism tests were retired and which control behaviors have replacement evidence. The generated Compose vendor remains unchanged.
 - Removed first-party explanatory code comments. Compiler directives and legal notices remain.
 
-## Unreleased — interaction and theme hardening
+## Pre-0.12.0 development history
+
+The entries below retain their original labels and describe the former API.
+The 0.12.0 entry above and the current API reference supersede that authoring model.
+
+### Unreleased — interaction and theme hardening
 
 - Tab bookmarks follow real navigation, including shoulder entry, while explicit focus requests keep their destination.
 - All plain Chips reserve disjoint effective targets. Toggle accepts bound width for wrapping content-sized settings; display-only switch labels clamp at zero space.
@@ -24,7 +29,7 @@
 All notable changes to Facet are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and Facet's version
 numbers follow the policy in
-[`CONTRIBUTING.md` §6](CONTRIBUTING.md#6-versioning-and-deprecation): while the
+[the versioning policy](CONTRIBUTING.md#versioning): while the
 library is pre-1.0, a minor bump may change public behavior, and every retiring
 surface is documented in its breaking release. The 0.12.0 cutover removes old
 surfaces immediately.
@@ -258,7 +263,7 @@ Compose owner. Present with `app.mount`, `app.presentModal`,
 
 This lands before 0.11.0's first publish, so the surfaces below are removed
 directly rather than deprecated for a minor version
-([`CONTRIBUTING.md` §6](CONTRIBUTING.md#6-versioning-and-deprecation)). Each row
+([the versioning policy](CONTRIBUTING.md#versioning)). Each row
 names what moved and why a caller breaks.
 
 | Removed | Use instead | Why a caller breaks |
@@ -1076,7 +1081,7 @@ Focus and enablement:
   input class, and takes no pointer, touch, drag or secondary action. `tint` on
   the same containers is the continuous colour their subtree paints with. Both are
   reactive, and a change re-solves in place rather than rebuilding.
-  See [Inherited properties](docs/reference/api.md#inherited-properties-enabled-and-tint).
+  The pre-0.12.0 API reference documented these inherited properties.
 - **A themed disabled state, `facet-state-disabled`**, and what it paints is
   exactly one rule. The engine's `:NonInteractable` state exists only on the
   classes it considers interactable, so Facet Neutral and every theme package
@@ -1088,7 +1093,7 @@ Focus and enablement:
   it permanently. A `tint` that declares its own `transparency` claims that
   property and outranks the dim. A presented surface (modal, toast, menu, popover,
   anchored sheet) is its own root and inherits neither channel. All four limits
-  are stated in [api.md](docs/reference/api.md#inherited-properties-enabled-and-tint).
+  were stated in the pre-0.12.0 API reference.
 - **A Roblox Package distribution channel.** Facet is now published as one Roblox
   Package asset, which is the recommended install for creators who work in Studio
   without a file sync. The asset id does not exist yet; it is recorded in
@@ -1177,7 +1182,7 @@ The version this tree reports as `Facet.VERSION`. It has not been published, so
 the deprecation window begins at its first release. Until then the register below
 is the record of every behavior change riding this version. Recording the change
 is what makes a breaking change legal before a version's first publish
-([`CONTRIBUTING.md` §6](CONTRIBUTING.md#6-versioning-and-deprecation)).
+([the versioning policy](CONTRIBUTING.md#versioning)).
 
 ### Added
 

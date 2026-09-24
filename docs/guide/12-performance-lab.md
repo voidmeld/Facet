@@ -12,3 +12,9 @@ performance scenarios for live geometry and input-to-visible work.
 Keep checked-in baselines intact. Report preexisting failures separately from
 regressions. The old baseline already failed typing-storm on this host; that fact
 is not permission to reset a threshold or omit the workload.
+
+CI runs the full timing gate on the pinned `macos-15` ARM runner. Host CPU and
+architecture affect these wall-clock measurements; compare captured timings with
+their host context. Changing a runner does not establish a runtime speedup.
+Budgets and workloads remain checked in, and every full run generates its own
+performance report before validating that report.

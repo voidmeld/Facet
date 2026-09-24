@@ -352,11 +352,10 @@ and answered.
 **Applies to:**
 [`docs/guide/14-choosing-a-ui-library.md`](docs/guide/14-choosing-a-ui-library.md).
 
-That chapter cites the documentation of other Roblox user-interface libraries in
-short, attributed quotations, each with a live link and the date it was read, for
-the purpose of comparing them with Facet. No third-party source code is
-reproduced. Every product named there is a trademark of its owner, and Facet is
-not affiliated with, endorsed by, or sponsored by any of them.
+Earlier versions of that chapter cited other Roblox UI libraries through short,
+attributed quotations. The current chapter describes Facet’s abstraction boundary
+and contains no third-party quotations or source code. Historical copies retain
+their attributions; product names remain trademarks of their owners.
 
 ## 5. Toolchain, used but not redistributed
 

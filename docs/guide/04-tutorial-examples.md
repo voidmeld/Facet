@@ -8,11 +8,22 @@ The gallery is the control and composition browser. It includes input, selection
 
 A scenario obtains the caller's runtime, controls and Host constructors. It does not create an application facade or require a private Facet implementation. A nested native Frame or layout is ordinary composition, not another render target.
 
+Build and launch the gallery from the repository root:
+
+```sh
+rojo build examples/showcase.project.json -o artifacts/gallery.rbxl
+open -a RobloxStudio artifacts/gallery.rbxl
+```
+
+Press Play. Gallery settings select the theme, palette, motion preference and
+viewing-distance preview. The preview scales controls; use Studio emulators for
+actual viewport and input checks.
+
 ## Virtual monitors
 
 The virtual monitors showcase uses the same composition path for its UI and embedded scenes. Discover exercises a filterable/sortable catalog and saved state; Avatar exercises controls and 3D content; Assistant exercises streaming conversation and end-following. Spatial and flat modes rearrange native targets while durable state remains in the model.
 
-Use the actual showcase for regression work. Verify filtering and sorting after scrolling, switching modes, continued scene rendering, streamed replies, keyboard/gamepad access and teardown.
+See the [Virtual Monitors README](../../examples/virtual_monitors/README.md) for its build command and application map. Use the actual showcase for regression work. Verify filtering and sorting after scrolling, switching modes, continued scene rendering, streamed replies, keyboard/gamepad access and teardown.
 
 ## Reference applications
 

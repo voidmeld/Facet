@@ -31,8 +31,6 @@
     "commit_scope",
     "commit_translate",
     "commit_walks_seam",
-    "compose_backend",
-    "compose_contract",
     "compose_lifetime",
     "compose_scene",
     "composition",
@@ -62,7 +60,6 @@
     "example_drift",
     "experiment_markers",
     "fake_target_ops_opt",
-    "faults",
     "fill_minimum",
     "fine_grained_reactivity",
     "fits_ideal_size",
@@ -235,7 +232,50 @@
     "zstack_fill_diagnostic",
     "zstack_shape"
   ],
-  "replacements": {},
+  "replacements": {
+    "faults": {
+      "specs": [
+        "native_stress"
+      ],
+      "cases": [
+        "native_stress::native stress invariants::rejects stale async completions and cancels exactly once through 200 seeded fault storms",
+        "native_stress::native stress invariants::preserves UTF8 edit state and gates actions through 200 seeded preference and visibility storms",
+        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice"
+      ],
+      "behaviors": [
+        "The removed custom scheduler-feedback and presenter-dismiss-non-top internals have no native Facet implementation. Async generation fencing, locale/text/input availability, modal churn and owner teardown remain tested against mounted controls with 200 seeded storms and exhaustive native resource censuses."
+      ],
+      "remaining": []
+    },
+    "compose_contract": {
+      "specs": [
+        "native_compose_contract"
+      ],
+      "cases": [
+        "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings",
+        "native_compose_contract::native Compose integration contract::does not recompute equal writes and shares a formula across independent readers",
+        "native_compose_contract::native Compose integration contract::disposes child watches with their parent and tolerates repeated disposal",
+        "native_compose_contract::native Compose integration contract::recovers a failed formula after its newly reached dependency changes"
+      ],
+      "behaviors": [
+        "Removed Facet services.lastError/warning containment wrapper and render/settle_pass convergence/quarantine implementation. Propagation and owner lifetime contracts still apply to the unwrapped Compose runtime and are now explicitly exercised."
+      ],
+      "remaining": []
+    },
+    "compose_backend": {
+      "specs": [
+        "native_compose_contract"
+      ],
+      "cases": [
+        "native_compose_contract::native Compose integration contract::recovers a failed formula after its newly reached dependency changes",
+        "native_compose_contract::native Compose integration contract::keeps diamonds glitch free and batches one delivery through mounted control bindings"
+      ],
+      "behaviors": [
+        "The old core/on_change observation wrapper is removed. Newly reached dependency recovery and native mounted propagation remain verified; wrapper-specific callback registration order is not a public native control contract."
+      ],
+      "remaining": []
+    }
+  },
   "groups": [
     {
       "group": "custom-layout-engine",
@@ -339,7 +379,6 @@
         "compose_scene",
         "controls_namespace",
         "error_boundary",
-        "faults",
         "fuzz_replication",
         "replication",
         "settle_containment",
@@ -390,8 +429,6 @@
         "build_index_patch",
         "chrome_inset_yield",
         "chrome_padding_refit",
-        "compose_backend",
-        "compose_contract",
         "conn_reconnect_sweep",
         "container_aggregate",
         "container_grid",

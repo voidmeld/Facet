@@ -42,6 +42,8 @@ local list = UI.VirtualList {
         return UI.Button {
             label = function(use) return use(current).title end,
             onActivate = function() openItem(current:peek().id) end,
+            Size = UDim2.new(1, 0, 0, 48),
+            AutomaticSize = Enum.AutomaticSize.None,
         }
     end,
 }

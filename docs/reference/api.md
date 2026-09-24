@@ -103,7 +103,7 @@ Requires writable string `value`, writable string `text`, options and an `accept
 
 ### TabView
 
-Requires writable `selection` naming a declared tab and `tabs` containing unique `{ id, label, content }` entries. Tabs may be a plain array or readable. `content` is a factory returning native content. Visited content is retained through Compose LayerStack.
+Requires writable `selection` naming a declared tab and `tabs` containing unique `{ id, label, content }` entries. Tabs may be a plain array or readable. `content` is a factory returning native content. Visited content is retained through Compose LayerStack by default (`retention = "all"`). Use `retention = "top"` to dispose departing pages after their transition; keep durable page state in the model.
 
 Use `style = "sidebarAdaptable"` for peer destinations: the control chooses a sidebar on a sufficiently wide native viewport and a bottom bar otherwise. `placement` makes an explicit choice. `railWidth`, `sidebarPreference`, `sections`, accessories and `customization = { order, hidden }` refine presentation. Required tabs cannot be hidden. `onChange(id)` reports user selection; programmatic selection changes do not masquerade as user input. Scroll/focus restoration and shoulder navigation belong to the control. Native fades accept direct Compose tween options such as `transition = { seconds = 0.18, ease = Compose.easing.outQuad }`, or `false` to disable motion; named Facet transition presets do not exist.
 

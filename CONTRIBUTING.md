@@ -14,9 +14,18 @@ and contains no explanatory comments; preserve required directives and notices.
 
 ## Verification
 
+Use a checkout with Git history (`git clone` without `--depth`, or
+`git fetch --unshallow` for an existing shallow clone). The coverage audit reads
+the pinned pre-cutover commit to account for removed and replaced specs; CI
+fetches this history too.
+
 Use targeted behavioral specs while editing. `tools/verify.sh full` is required
 for a completed change. Read its report, including unmapped legacy behavioral
 coverage, rather than treating a new runner's passing subset as full parity.
+The [verification scope audit](docs/guide/18-verification-scope.md) records the
+substantial reduction from main and the unresolved coverage work. Native `full`
+is currently a complete run of the candidate's checks, not equivalent historical
+coverage.
 
 Run `tools/bench.sh` without concurrent verification load. Keep workload intent
 and checked-in baselines intact; report changed measurement boundaries and

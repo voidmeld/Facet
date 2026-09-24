@@ -51,3 +51,5 @@ Begin with [a working screen](03-getting-started.md) and [components](15-compone
 | Embedded 3D content | `UI.Stage` |
 
 All control roots are native Instances. Layout is expressed with Host constructors and native properties. Use Compose structural operations directly instead of introducing Facet aliases for them.
+
+Design records under `docs/plans` and `docs/superpowers` are historical. They may describe removed APIs; this guide and the API reference describe the supported surface.

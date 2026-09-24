@@ -16,9 +16,9 @@ Create a runtime with `Facet.Roblox.createRuntime()`, bind `Host = runtime.const
 | Motion values and activity indicators | [Progress](gallery/scenarios/progress_ring.luau) |
 | Toast reflow, edge and width choices | [Toasts](gallery/scenarios/sponsor_toast.luau) |
 | A shared model on a world surface | [Outpost terminal](gallery/examples/outpost_terminal/init.luau) |
-| Every public control and modifier at once | [Virtual monitors](virtual_monitors/README.md) |
+| A complete multi-surface showcase | [Virtual monitors](virtual_monitors/README.md) |
 
 
-Keep durable state in Compose cells. Read current values in property functions through `use`. Use `Compose.OrderedCollection` for keyed children and the virtual controls for large collections. Use `runtime.spring` and `runtime.tween` for animation. Native `UIListLayout`, `UIGridLayout`, `UIPadding`, `CanvasGroup` and `StyleRule` express the presentation directly.
+Keep durable state in Compose cells. Read current values in property functions through `use`. Use `Compose.keyed` for bounded keyed children and the virtual controls for large collections. Use `runtime.spring` and `runtime.tween` for animation. Native `UIListLayout`, `UIGridLayout`, `UIPadding`, `CanvasGroup` and `StyleRule` express the presentation directly.
 
 The gallery keeps ten main demos with nested control, collection and motion pages. `tests/native_gallery.spec.luau` mounts those pages and exercises the games, settings, playlist and standalone consumer. Reference applications and virtual monitors have separate native tests and Studio evidence.

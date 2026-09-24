@@ -169,15 +169,18 @@
     },
     "fuzz_replication": {
       "specs": [
-        "native_outpost_terminal"
+        "native_outpost_terminal",
+        "native_stress"
       ],
       "cases": [
         "native_outpost_terminal::native outpost terminal::keeps draft separate until the matching server verdict and ignores stale replies",
         "native_outpost_terminal::native outpost terminal::converges full snapshots across skipped revisions without losing independent drafts",
-        "native_outpost_terminal::native outpost terminal::recovers rejected or failed sends and cancels an unanswered request before reengagement"
+        "native_outpost_terminal::native outpost terminal::recovers rejected or failed sends and cancels an unanswered request before reengagement",
+        "native_stress::native stress invariants::converges authoritative snapshots under 400 seeded delayed duplicated reordered deliveries"
       ],
       "behaviors": [
-        "Stale and duplicate revisions, skipped-revision convergence, request identity, confirmed/draft isolation, one request in flight, cancellation and throwing send recovery are exercised in the actual caller protocol."
+        "Stale and duplicate revisions, skipped-revision convergence, request identity, confirmed/draft isolation, one request in flight, cancellation and throwing send recovery are exercised in the actual caller protocol.",
+        "Restored 400 deterministic seeds with 80 randomized stale/duplicate/reordered full-snapshot deliveries each; asserts monotonic revision acceptance, confirmed authority content, final convergence, and complete resource cleanup. Generic delta patching was removed; this exercises the actual remaining snapshot protocol."
       ],
       "retiredAssertions": {
         "Facet.replication snapshot/collection/mutation constructors and generic patch.remove transport": "Removed from Facet. The Outpost caller owns a small domain request protocol and receives complete authoritative allocation snapshots. It has no generic patch application, delta-gap latch or retry/backoff subsystem.",

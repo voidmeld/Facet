@@ -192,15 +192,20 @@
       "specs": [
         "native_collections",
         "native_navigation",
-        "native_public_surface"
+        "native_public_surface",
+        "native_stress"
       ],
       "cases": [
         "native_public_surface::native public surface::exposes controls over the unwrapped Compose Roblox runtime",
         "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
+        "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice",
+        "native_stress::native stress invariants::detects detached instance and service connection leaks in the census"
       ],
       "behaviors": [
-        "Direct owned surface cleanup, native modal restoration and keyed collection instance lifetimes."
+        "Direct owned surface cleanup, native modal restoration and keyed collection instance lifetimes.",
+        "Two complete replays of 200 modal cycles and 100 structural row cycles; every created native instance (including detached nodes) and every event/property/heartbeat connection returns to the starting census. Negative controls inject a detached instance and a service connection to prove the census detects both."
       ],
       "retiredAssertions": {
         "removed architecture assertions": "Old renderer/controller/adapter census and token-bus leak counters are absent. Runtime suite and package canary execute repeated native lifecycle checks; this does not claim old counter equivalence."

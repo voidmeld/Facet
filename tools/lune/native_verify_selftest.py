@@ -105,6 +105,12 @@ return require("./actual")''')
         self.assertEqual(selected, ["native_demo"])
         self.assertEqual(failures, ["product parity G01: Reverse does not change visible row order"])
 
+    def test_pending_live_risk_cannot_be_reported_as_complete_coverage(self):
+        self.write("tools/lune/parity_blockers.json", json.dumps({"items": [], "pendingLiveRisks": ["compact largest-text input"]}))
+        with self.historical([]):
+            _, _, failures = verify.inventory()
+        self.assertEqual(failures, ["pending live verification: compact largest-text input"])
+
     def test_full_generates_performance_before_checking_its_report(self):
         artifacts = self.root / "artifacts/verify/native"
         performance = self.root / "artifacts/phase-4/perf.json"
@@ -112,6 +118,8 @@ return require("./actual")''')
 
         def execute(command, **kwargs):
             commands.append(command)
+            if command == ["lune", "run", "tools/lune/native_verify_suite", "full"]:
+                (artifacts / "suite.json").write_text(json.dumps({"cases": [{"id": "native_sample::sample", "spec": "native_sample", "status": "pass"}], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}))
             if command == ["bash", "tools/perf.sh"]:
                 performance.parent.mkdir(parents=True, exist_ok=True)
                 performance.write_text("{}")
@@ -119,12 +127,37 @@ return require("./actual")''')
                 self.assertTrue(performance.exists(), "budget validation needs this run's performance report")
             return type("Result", (), {"returncode": 0})()
 
-        with patch.object(verify, "ARTIFACTS", artifacts), patch.object(verify, "inventory", return_value=([], [], [])), patch.object(verify, "architecture", return_value=[]), patch.object(verify.subprocess, "run", side_effect=execute), patch.object(verify.sys, "argv", ["native_verify.py", "full"]):
+        with patch.object(verify, "ARTIFACTS", artifacts), patch.object(verify, "inventory", return_value=([], ["native_sample"], [])), patch.object(verify, "architecture", return_value=[]), patch.object(verify.subprocess, "run", side_effect=execute), patch.object(verify.sys, "argv", ["native_verify.py", "full"]):
             self.assertEqual(verify.run(), 0)
         self.assertIn(["python3", "tools/check_perf_budgets.py"], commands)
         report = json.loads((artifacts / "report.json").read_text())
         self.assertTrue(report["completeTier"])
         self.assertTrue(report["ok"])
+        self.assertEqual(report["historicalParity"], "not-established")
+        for command in (
+            ["lune", "run", "tools/lune/check_links_cli"],
+            ["lune", "run", "tools/lune/check_links_cli", "--selftest"],
+            ["python3", "tools/check_source_size.py"],
+            ["python3", "tools/check_types.py", "--selftest"],
+            ["python3", "tools/package.py", "--selftest"],
+        ):
+            self.assertIn(command, commands)
+
+    def test_suite_census_rejects_missing_duplicate_failed_and_forged_results(self):
+        case = {"id": "sample::one", "spec": "sample", "status": "pass"}
+        clean = {"cases": [case], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}
+        self.assertEqual(verify.validate_suite(clean, ["sample"]), [])
+        for change in ({"cases": []}, {"cases": [case, case], "passed": 2}, {"registeredSpecs": 0}, {"reportedSpecs": 0}, {"passed": 0}, {"failed": 1}, {"cases": [dict(case, status="fail")]}, {"cases": [dict(case, spec="other")]}):
+            with self.subTest(change=change):
+                self.assertTrue(verify.validate_suite(dict(clean, **change), ["sample"]))
+
+    def test_architecture_rejects_example_imports_of_private_modules_and_extra_vendors(self):
+        self.write("src/ui/private.luau", "return {}")
+        self.write("examples/screen.luau", 'return require("../src/ui/private")')
+        self.write("src/vendor/other/init.luau", "return {}")
+        failures = verify.architecture()
+        self.assertTrue(any("private Facet module" in issue for issue in failures))
+        self.assertTrue(any("unapproved vendor" in issue for issue in failures))
 
     def test_architecture_rejects_both_old_api_and_abandoned_renderer(self):
         self.write("src/render/renderer.luau", "return {}")

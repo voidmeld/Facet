@@ -158,7 +158,10 @@ def inventory():
                 failures.append(f"workload {scene['name']}: {'; '.join(scene['remaining'])}")
     parity_path = ROOT / "tools/lune/parity_blockers.json"
     if parity_path.exists():
-        for item in json.loads(parity_path.read_text())["items"]:
+        parity = json.loads(parity_path.read_text())
+        for risk in parity.get("pendingLiveRisks", []):
+            failures.append(f"pending live verification: {risk}")
+        for item in parity["items"]:
             records.append({"spec": f"product-parity/{item['id']}", "classification": "product-parity", "replacement": {"cases": item.get("cases", [])}, "parity": item})
             if item.get("remaining"):
                 failures.append(f"product parity {item['id']}: {'; '.join(item['remaining'])}")
@@ -179,6 +182,15 @@ def architecture():
                 failures.append(f"{path.relative_to(ROOT)}: removed Facet scaffolding API")
             if re.search(r"\blocal\s+H\s*=\s*[^\n]*constructors", text):
                 failures.append(f"{path.relative_to(ROOT)}: use Host for Roblox constructors")
+    for folder in ("examples", "bench"):
+        for path in sorted((ROOT / folder).rglob("*.luau")):
+            for requested in imports(path):
+                target = resolve(path, requested)
+                if isinstance(target, Path) and target.is_relative_to(ROOT / "src") and target != ROOT / "src/init.luau":
+                    failures.append(f"{path.relative_to(ROOT)}: requires private Facet module {target.relative_to(ROOT)}")
+    vendor = ROOT / "src/vendor"
+    if vendor.exists():
+        failures.extend(f"src/vendor/{path.name}: unapproved vendor" for path in vendor.iterdir() if path.name != "compose")
     for removed in ("src/client/application.luau", "src/render/compose_scene.luau", "src/render/renderer.luau", "src/core/services.luau"):
         if (ROOT / removed).exists():
             failures.append(f"{removed}: removed architecture still exists")
@@ -192,6 +204,25 @@ def mapped_cases(replacement):
     if not all(isinstance(case, str) for case in cases):
         raise ValueError("Replacement case ids must be strings or lists of strings")
     return cases
+
+
+
+def validate_suite(suite, selected):
+    failures = []
+    cases = suite.get("cases", [])
+    identifiers = [case.get("id") for case in cases]
+    reported = {case.get("spec") for case in cases}
+    if not cases:
+        failures.append("suite reported no test cases")
+    if len(identifiers) != len(set(identifiers)) or any(not isinstance(value, str) or not value for value in identifiers):
+        failures.append("suite reported missing or duplicate case IDs")
+    if reported != set(selected):
+        failures.append(f"suite spec census differs: missing={sorted(set(selected) - reported)} unexpected={sorted(reported - set(selected))}")
+    if suite.get("registeredSpecs") != len(selected) or suite.get("reportedSpecs") != len(selected):
+        failures.append("suite spec totals do not match selected inventory")
+    if suite.get("passed") != len(cases) or suite.get("failed") != 0 or any(case.get("status") != "pass" for case in cases):
+        failures.append("suite did not pass every registered case")
+    return failures
 
 
 def run():
@@ -216,9 +247,20 @@ def run():
     ]
     if args.tier in ("full", "release"):
         commands.extend([
+            ("links", ["lune", "run", "tools/lune/check_links_cli"]),
+            ("links-selftest", ["lune", "run", "tools/lune/check_links_cli", "--selftest"]),
+            ("source-size", ["python3", "tools/check_source_size.py"]),
             ("types", ["python3", "tools/check_types.py"]),
+            ("types-selftest", ["python3", "tools/check_types.py", "--selftest"]),
+            ("package-selftest", ["python3", "tools/package.py", "--selftest"]),
             ("word-data", ["python3", "tools/build_word_lists.py", "--check"]),
             ("word-data-selftest", ["python3", "tools/build_word_lists.py", "--selftest"]),
+            ("public-allowlist", ["python3", "tools/check_public_allowlist.py"]),
+            ("public-allowlist-selftest", ["python3", "tools/check_public_allowlist.py", "--selftest"]),
+            ("standalone-builds", ["bash", "tools/build_places.sh"]),
+            ("reference-builds", ["bash", "tools/build_reference_places.sh"]),
+            ("consumer-build", ["rojo", "build", "examples/consumer/default.project.json", "-o", "artifacts/verify/native/consumer.rbxl"]),
+            ("theme-builds", ["bash", "tools/build_themes.sh"]),
             ("gallery-build", ["rojo", "build", "examples/showcase.project.json", "-o", "artifacts/verify/native/gallery.rbxl"]),
             ("monitors-build", ["rojo", "build", "examples/virtual_monitors/default.project.json", "-o", "artifacts/verify/native/virtual-monitors.rbxl"]),
             ("performance-build", ["rojo", "build", "examples/performance.project.json", "-o", "artifacts/verify/native/performance.rbxl"]),
@@ -234,6 +276,11 @@ def run():
         parser.error(f"unknown producer: {args.rerun}")
     producers = [{"id": "architecture", "exitCode": int(bool(architecture_failures)), "findings": architecture_failures}, {"id": "coverage", "exitCode": int(bool(missing_coverage)), "findings": missing_coverage}]
     print(f"Facet native architecture verification: {args.tier}; {len(selected)} executable specs. Historical solver/renderer suite is not a native suite verdict.", flush=True)
+    print("Historical parity: NOT ESTABLISHED. Spec mappings are bookkeeping, not assertion-level equivalence; see docs/guide/18-verification-scope.md.", flush=True)
+    if args.explain:
+        print("This runner executes each selected command afresh; it does not reuse the main verification graph or its cached evidence.", flush=True)
+        for name, command in commands:
+            print(f"  {name}: {' '.join(command)}", flush=True)
     if args.tier in ("affected", "fast"):
         print("Working tier only: not full verification.", flush=True)
     for producer in producers:
@@ -259,7 +306,10 @@ def run():
         passed_cases = set()
         if suite_path.exists():
             suite = json.loads(suite_path.read_text())
+            case_failures.extend(validate_suite(suite, selected))
             passed_cases = {case["id"] for case in suite["cases"] if case["status"] == "pass"}
+        else:
+            case_failures.append("suite produced no current-run result file")
         for record in records:
             replacement = record.get("replacement") or {}
             required = mapped_cases(replacement)
@@ -269,7 +319,7 @@ def run():
         producers.append({"id": "replacement-cases", "exitCode": int(bool(case_failures)), "findings": case_failures})
         print(f"replacement-cases: {'FAIL' if case_failures else 'PASS'} ({len(case_failures)} findings)", flush=True)
     ok = all(producer["exitCode"] == 0 for producer in producers)
-    report = {"schema": "facet-native-verification/1", "tier": args.tier, "completeTier": not bool(args.rerun), "ok": ok, "coverage": "coverage.json", "producers": producers, "studioEvidence": "External live Studio gallery and virtual monitors checks are required; these builds do not assert visual parity."}
+    report = {"schema": "facet-native-verification/1", "tier": args.tier, "completeTier": not bool(args.rerun), "ok": ok, "coverage": "coverage.json", "historicalParity": "not-established", "producers": producers, "studioEvidence": "External live Studio gallery and virtual monitors checks are required; these builds do not assert visual parity."}
     (ARTIFACTS / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"native {args.tier}: {'PASS' if ok else 'FAIL'}; artifacts/verify/native/report.json", flush=True)
     return 0 if ok else 1

@@ -134,9 +134,9 @@ function screen.build(ctx: any)
 			})
 		end
 	end
-	local choices = {}
+	local tabs = {}
 	for _, demo in (ctx.demos or catalogue.list()) do
-		table.insert(choices, { value = demo.id, label = demo.title })
+		table.insert(tabs, { id = demo.id, label = demo.title, content = branches[demo.id] })
 	end
 	local themes = {}
 	for name in ctx.packages do
@@ -170,13 +170,12 @@ function screen.build(ctx: any)
 				Padding = UDim.new(0, 8),
 				SortOrder = Enum.SortOrder.LayoutOrder,
 			}),
-			UI.Picker({
+			UI.Label({
 				LayoutOrder = 1,
-				Name = "Demo",
-				label = "Demo",
-				selected = selected,
-				options = choices,
-				Size = UDim2.new(1, -160, 0, 40),
+				Name = "Title",
+				label = "Facet gallery",
+				Size = UDim2.new(1, -144, 0, 40),
+				AutomaticSize = Enum.AutomaticSize.None,
 			}),
 			UI.Button({
 				LayoutOrder = 2,
@@ -188,12 +187,15 @@ function screen.build(ctx: any)
 				end,
 			}),
 		}),
-		Host.Frame({
-			Name = "Content",
+		UI.TabView({
+			Name = "Demos",
+			selection = selected,
+			tabs = tabs,
+			style = "sidebarAdaptable",
+			retention = "top",
+			transition = false,
 			Position = UDim2.fromOffset(0, 56),
 			Size = UDim2.new(1, 0, 1, -56),
-			BackgroundTransparency = 1,
-			Compose.switch(selected, branches),
 		}),
 		UI.Sheet({
 			detent = Compose.cell("medium"),
