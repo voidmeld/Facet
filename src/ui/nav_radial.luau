@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local geometry = require("./nav_radial_geometry")
 local Types = require("./types")
@@ -15,6 +16,7 @@ return function(
 	surfaces: Navigation.Surfaces
 )
 	local Host, Compose, runtime, read = ctx.Host, ctx.Compose, ctx.runtime, ctx.read
+	local lists = layoutKit.of(ctx)
 	local E, D2, V2 = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2
 	local build: Radial.RadialMenuBuilder = function<V>(spec: Radial.RadialMenuSpec<V>): Frame
 		assert(spec.items, "RadialMenu requires items")
@@ -553,10 +555,7 @@ return function(
 					end,
 					Attributes = attributes,
 					Compose.show(fallback, function()
-						return Host.UIListLayout({
-							SortOrder = E.SortOrder.LayoutOrder,
-							Padding = ctx.types.UDim.new(0, 4),
-						})
+						return lists.list({ gap = 4 }, true)
 					end),
 					Compose.keyed({
 						from = function(use: Reactive.Use)

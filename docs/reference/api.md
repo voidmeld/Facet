@@ -17,7 +17,8 @@ and styling. This reference describes the `0.12.0` surface.
 ### Types
 
 The exported Luau types include `Controls`, `ControlOptions`, `ThemePackage`,
-and the `Props` and `Spec` contracts of each control. `Cell<T>`, `Readable<T>`,
+and the `Props` and `Spec` contracts of each control. The layout types include
+`Space`, `Padding` and `Extent`. `Cell<T>`, `Readable<T>`,
 `Runtime`, `Owner` and `Use` are the Compose types. Collection, menu and picker
 contracts keep the item and value types through callbacks. Native properties use
 the Roblox property types. For example, `Size` accepts a `UDim2` or a reactive
@@ -123,6 +124,113 @@ The `theme` option does not install paint. Parent a `createStyleSheet` result
 and its StyleLink in the native tree, with the same theme package source.
 Ordinary Roblox consumers use the ambient services and datatypes. The runtime
 that you supply must use the Compose Roblox host.
+
+## Layout
+
+The layout constructors make ordinary native containers. A container is a
+`Frame` or a `ScrollingFrame` with a `UIListLayout` or a `UIGridLayout`, and a
+`UIPadding` when you set `padding`. Roblox does the layout. Facet adds no
+solver and no measurement pass. Each constructor accepts the native properties
+of its root, and a native property that you set replaces the default value.
+
+Write the children as dense numeric children. The container sets the
+`LayoutOrder` of each child to its position in the list. Nodes that a
+`Compose.show` or `Compose.keyed` child adds get the position of that child.
+Nodes in one keyed child share that position. Set `LayoutOrder` in the row
+when their order is important.
+
+```luau
+local sound = Compose.cell(true)
+local function save() print("Saved") end
+return UI.Screen "Settings" {
+    gap = "s",
+    UI.Label { text = "Settings", textRole = "title" },
+    UI.ScrollView "Page" {
+        gap = "s",
+        UI.Toggle { label = "Sound", value = sound },
+        UI.Button { label = "Save", onActivate = save },
+    },
+}
+```
+
+### Spacing and size options
+
+| Option | Values | Native result |
+|---|---|---|
+| `gap` | a spacing step or a number of pixels | `UIListLayout.Padding` |
+| `padding` | a spacing step, a number, or `{ top?, right?, bottom?, left? }` | a `UIPadding` child |
+| `width`, `height` | `"fill"`, `"hug"` or a number of pixels | `Size` and `AutomaticSize` |
+| `align` | `start`, `center`, `end` or `stretch` | cross-axis alignment and `ItemLineAlignment` |
+| `distribute` | `start`, `center`, `end`, `spaceBetween`, `spaceAround` or `spaceEvenly` | main-axis alignment and `HorizontalFlex` or `VerticalFlex` |
+
+- The spacing steps are `xs`, `s`, `m`, `l` and `xl`. They come from
+  `metrics.space` of the theme package in the `theme` factory option. The
+  neutral values are 4, 8, 16, 24 and 40 pixels. A package without a step uses
+  the neutral value.
+- When the theme package changes, the containers write the new pixel values.
+  The native layout objects stay the same.
+- An unknown step, alignment or size causes an error that names the valid
+  values.
+- `"fill"` sets the scale of that axis to 1. `"hug"` sets `AutomaticSize` on
+  that axis. A number sets the pixel offset.
+- `align = "stretch"` sets `ItemLineAlignment.Stretch`, so each child fills the
+  cross axis.
+- A container writes an alignment property only when you set `align` or
+  `distribute`.
+- All options accept a value, a readable or a `function(use)` body.
+
+### Screen
+
+`UI.Screen(spec) -> Frame` is the root of a screen. It fills its parent
+(`width` and `height` are `"fill"`) and stacks its children vertically. It has
+`padding = "m"` by default. The ScreenGui `ScreenInsets` property keeps the
+screen inside the device safe area. Options: `gap`, `padding`, `align`,
+`distribute`, `width` and `height`.
+
+### VStack and HStack
+
+`UI.VStack(spec) -> Frame` stacks its children vertically. `UI.HStack(spec) ->
+Frame` stacks them horizontally. Both hug their content by default. Options:
+`gap`, `padding`, `align`, `distribute`, `wrap`, `width` and `height`. `wrap`
+sets `UIListLayout.Wraps`. The shared props type is `StackProps`.
+
+### ZStack
+
+`UI.ZStack(spec) -> Frame` puts its children on top of each other. It has no
+layout object. A later child gets a higher `ZIndex`. A child that sets its own
+`ZIndex` keeps it. `alignH` and `alignV` (`start`, `center` or `end`) set the
+`AnchorPoint` and the scale `Position` of each child. Options: `padding`,
+`alignH`, `alignV`, `width` and `height`.
+
+### ScrollView
+
+`UI.ScrollView(spec) -> ScrollingFrame` scrolls its children. It fills its
+parent by default. It contains a `UIListLayout` and sets `AutomaticCanvasSize`
+and `ScrollingDirection` for its axis. Thus the content fits the scroll window
+beside the scroll bar. `axis` is `"y"` (the default), `"x"` or `"xy"`. The
+`"x"` axis stacks the children horizontally. Options: `axis`, `gap`, `padding`,
+`align`, `distribute`, `width` and `height`.
+
+### Grid
+
+`UI.Grid(spec) -> Frame` puts its children in a `UIGridLayout`. `columns` is
+required. It must be a whole number, 1 or more. The grid divides its width into
+that number of cells. `gap` spaces the cells on both axes, and `rowGap`
+replaces the vertical space. `cellHeight` is the cell height in pixels. The
+default is the regular control height of the theme package. `aspectRatio` adds
+a `UIAspectRatioConstraint` to the grid layout, which sets the cell height
+from the cell width. `align` (`start`, `center` or `end`) aligns the cells
+horizontally. The grid fills the width and hugs the height by default.
+
+### fill
+
+`UI.fill(weight?) -> UIFlexItem` makes a child grow along the main axis of its
+stack. Put the result in the children of the control:
+`UI.Label { text = "Name", UI.fill() }`. Without a weight, the item uses
+`UIFlexMode.Fill`. With a weight, it uses `UIFlexMode.Custom` with that
+`GrowRatio` and `ShrinkRatio`. The weight must be a positive number. For the
+cross axis, use `align = "stretch"` on the stack or `width = "fill"` on a
+container.
 
 ## Actions and input
 
@@ -589,7 +697,8 @@ weight. The derived role keeps the family, style, size and line height.
 - `define(definition)` derives from `base` (neutral by default) and returns
   `package?, report`. Check `report.ok` before use. An accepted theme package is
   recursively frozen. Callbacks, cycles and malformed definitions are rejected.
-  A type role needs a positive size, and a chrome shadow name must be a
+  A type role needs a positive size. Each `metrics.space` step needs a pixel
+  size of 0 or more. A chrome shadow name must be a
   package shadow or a preset (`raised` or `overlay`). Each palette pair needs a
   contrast of at least 4.5:1, which includes `onSelected` (or `content`) on
   `controlSelected`.

@@ -244,6 +244,19 @@ function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.Them
 			)
 		end
 	end
+	local space = (package.metrics :: { space: unknown }).space
+	if type(space) ~= "table" then
+		table.insert(errors, { field = "metrics.space", message = "Spacing steps must be a table of pixel sizes" })
+	else
+		for step, pixels in space :: { [unknown]: unknown } do
+			if type(step) ~= "string" or type(pixels) ~= "number" or pixels < 0 then
+				table.insert(errors, {
+					field = "metrics.space." .. tostring(step),
+					message = "Spacing steps require a pixel size of 0 or more",
+				})
+			end
+		end
+	end
 	local chrome: { [string]: ThemeTypes.SkinLayer } = package.chrome or {}
 	local shadows: { [string]: ThemeTypes.Shadow } = package.style.shadows or {}
 	for slot, recipe in chrome do

@@ -105,6 +105,24 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		},
 	}
 	return {
+		Screen = function()
+			return {}
+		end,
+		VStack = function()
+			return {}
+		end,
+		HStack = function()
+			return {}
+		end,
+		ZStack = function()
+			return {}
+		end,
+		ScrollView = function()
+			return {}
+		end,
+		Grid = function()
+			return { columns = 2 }
+		end,
 		Alert = function()
 			return {
 				isPresented = Compose.cell(false),
@@ -260,10 +278,12 @@ t.describe("native parity gaps", function()
 		local probe: any = engineLib.new()
 		local names: { string } = {}
 		for name in Facet.controls(Facet.Roblox.createRuntime(probe), { types = probe.types } :: any) do
-			table.insert(names, name :: string)
+			if name ~= "fill" then
+				table.insert(names, name :: string)
+			end
 		end
 		table.sort(names)
-		t.expect(#names).toBe(35)
+		t.expect(#names).toBe(41)
 		for _, name in names do
 			local accepted = mountError(function(UI, Host)
 				local spec = assert(minimalSpecs(Host)[name], `no minimal spec for {name}`)()

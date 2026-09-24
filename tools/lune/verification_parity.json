@@ -128,16 +128,16 @@
     },
     "layout-geometry": {
       "mainCases": 1326,
-      "a": 94,
-      "aWeaker": 58,
-      "b": 359,
-      "c": 872,
+      "a": 280,
+      "aWeaker": 244,
+      "b": 218,
+      "c": 827,
       "d": 1,
       "candidateSpecs": {
         "native_inputs": 11,
         "native_navigation": 11,
         "native_parity_navigation": 7,
-        "native_themes_media": 5
+        "native_layout": 7
       }
     },
     "public-surface-api": {
@@ -298,10 +298,10 @@
     },
     "theme-packages": {
       "mainCases": 379,
-      "a": 146,
-      "aWeaker": 68,
+      "a": 149,
+      "aWeaker": 71,
       "b": 0,
-      "c": 233,
+      "c": 230,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 61,
@@ -457,9 +457,9 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3131,
-      "b": 1581,
-      "c": 6080,
+      "a": 3320,
+      "b": 1440,
+      "c": 6032,
       "d": 56
     },
     "auditByClass": {
@@ -469,9 +469,9 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1139,
-      "b": 306,
-      "c": 823,
+      "a": 1147,
+      "b": 302,
+      "c": 819,
       "d": 22
     },
     "mainCases": 10848,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1725
+    "coveredButWeaker": 1914
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -18493,8 +18493,16 @@
         "content_terms_height"
       ],
       "mainCases": 38,
-      "class": "c",
-      "removal": "Dimension grammar (content lines/rows, UI.fill/UI.hug) deleted; native AutomaticSize."
+      "auditClass": "c",
+      "class": "a",
+      "removal": "Dimension grammar (content lines/rows, UI.fill/UI.hug) deleted; native AutomaticSize.",
+      "candidateCases": [
+        "native_layout::fill::makes a native flex item that fills the main axis, by weight when given",
+        "native_layout::fill::refuses a weight that is not a positive number",
+        "native_layout::VStack and HStack::sizes by fill, hug and pixels on each axis"
+      ],
+      "weaker": "Candidate checks UI.fill with and without a weight, refuses a non-positive weight, and checks fill and hug on width and height. The content-terms height grammar (lines, rows, of, role) was not restored.",
+      "closedBy": "native_layout::fill::makes a native flex item that fills the main axis, by weight when given"
     },
     {
       "id": "mech1-101",
@@ -19437,9 +19445,21 @@
         "layout"
       ],
       "mainCases": 39,
-      "class": "b",
+      "auditClass": "b",
+      "class": "a",
       "nativeMechanism": "UIListLayout, UIFlexItem, UIPadding, UISizeConstraint, AutomaticSize, TextWrapped, ScrollingFrame.AutomaticCanvasSize, ScreenGui.ScreenInsets",
-      "nativeEvidence": "none (Facet no longer wraps general layout; callers author Host.* native layout objects directly); control-internal use: native_gallery::native gallery::keeps action controls ordered responsive and interactive through..."
+      "nativeEvidence": "none (Facet no longer wraps general layout; callers author Host.* native layout objects directly); control-internal use: native_gallery::native gallery::keeps action controls ordered responsive and interactive through...",
+      "candidateCases": [
+        "native_layout::VStack and HStack::build a plain Frame with a list layout and number the children in declaration order",
+        "native_layout::VStack and HStack::resolves gap and padding spacing steps from the theme package",
+        "native_layout::VStack and HStack::sizes by fill, hug and pixels on each axis",
+        "native_layout::ScrollView::sizes vertical content to the scroll window with a list layout and automatic canvas",
+        "native_layout::ScrollView::stretches the children across the scroll window when align is stretch",
+        "native_layout::Screen::fills its parent, pads the content by the m step and stacks vertically",
+        "native_layout::fill::makes a native flex item that fills the main axis, by weight when given"
+      ],
+      "weaker": "Candidate checks the native structure that makes stack, scroll, hug and fill sizing (Size, AutomaticSize, UIListLayout, UIPadding, AutomaticCanvasSize, ScrollBarInset, ItemLineAlignment, UIFlexItem). Main asserted solved rects, wrapped text height and overflow diagnostics; the rects need live Roblox layout and the diagnostics belonged to the deleted solver.",
+      "closedBy": "native_layout::VStack and HStack::build a plain Frame with a list layout and number the children in declaration order"
     },
     {
       "id": "mech2-37",
@@ -19482,9 +19502,18 @@
         "layout_v1"
       ],
       "mainCases": 7,
-      "class": "b",
+      "auditClass": "b",
+      "class": "a",
       "nativeMechanism": "ZIndex overlay, UIGridLayout, AnchorPoint/Position, UISizeConstraint, UIAspectRatioConstraint, UIPadding",
-      "nativeEvidence": "none (Facet no longer wraps general layout; callers author Host.* native layout objects directly)"
+      "nativeEvidence": "none (Facet no longer wraps general layout; callers author Host.* native layout objects directly)",
+      "candidateCases": [
+        "native_layout::ZStack::aligns every child by anchor point and scale position",
+        "native_layout::Grid::divides the width into columns with a native grid layout",
+        "native_layout::VStack and HStack::maps align and distribute to the native list alignment and flex",
+        "native_layout::Screen::fills its parent, pads the content by the m step and stacks vertically"
+      ],
+      "weaker": "Candidate checks the native properties that make the ZStack alignment, the grid columns and the stack cross-axis alignment. Main solved exact rects; those need live Roblox layout. Anchor, minMax and margin vocabulary were not restored.",
+      "closedBy": "native_layout::ZStack::aligns every child by anchor point and scale position"
     },
     {
       "id": "mech2-41",
@@ -19494,8 +19523,14 @@
         "layout_v1"
       ],
       "mainCases": 2,
-      "class": "c",
-      "removal": "UI.Grid and solver diagnostics deleted"
+      "auditClass": "c",
+      "class": "a",
+      "removal": "UI.Grid and solver diagnostics deleted",
+      "candidateCases": [
+        "native_layout::Grid::divides the width into columns with a native grid layout"
+      ],
+      "weaker": "Candidate checks the native UIGridLayout of UI.Grid (column count, cell size, cell padding, LayoutOrder). The row and column placement of mounted cells needs live Roblox layout. The aspect-on-both-axes diagnostic belonged to the deleted solver.",
+      "closedBy": "native_layout::Grid::divides the width into columns with a native grid layout"
     },
     {
       "id": "mech2-42",
@@ -19505,9 +19540,19 @@
         "layout_vocabulary"
       ],
       "mainCases": 39,
-      "class": "b",
+      "auditClass": "b",
+      "class": "a",
       "nativeMechanism": "UIGridLayout, UIFlexItem (Spacer), UISizeConstraint, UIPadding, UIAspectRatioConstraint, AutomaticSize, UIGridLayout.CellPadding",
-      "nativeEvidence": "none (Facet no longer wraps general layout; callers author Host.* native layout objects directly)"
+      "nativeEvidence": "none (Facet no longer wraps general layout; callers author Host.* native layout objects directly)",
+      "candidateCases": [
+        "native_layout::Grid::divides the width into columns with a native grid layout",
+        "native_layout::Grid::takes a separate row gap, a cell height and an aspect ratio",
+        "native_layout::Grid::moves the row gap with the theme and keeps the column count",
+        "native_layout::VStack and HStack::pads each side on its own and keeps literal pixel values",
+        "native_layout::fill::makes a native flex item that fills the main axis, by weight when given"
+      ],
+      "weaker": "Candidate checks grid cells, row gap (a theme spacing step that follows a theme swap and keeps the column count), per-side padding and the fill flex item as native properties. Spacer, frame bands, aspect-with-fill and capped containers were not restored. Main solved rects need live Roblox layout.",
+      "closedBy": "native_layout::Grid::divides the width into columns with a native grid layout"
     },
     {
       "id": "mech2-43",
@@ -20956,9 +21001,18 @@
         "stack_distribution"
       ],
       "mainCases": 56,
-      "class": "b",
+      "auditClass": "b",
+      "class": "a",
       "nativeMechanism": "Native UIListLayout HorizontalFlex/VerticalFlex (SpaceBetween/SpaceAround/SpaceEvenly), UIFlexItem FlexMode/ShrinkRatio/ItemLineAlignment, native TextTruncate for floors",
-      "nativeEvidence": "none: Facet no longer exposes stacks; authors write Host.UIListLayout (guide 15-adaptive-recipes); no candidate test or live evidence of flex behavior"
+      "nativeEvidence": "none: Facet no longer exposes stacks; authors write Host.UIListLayout (guide 15-adaptive-recipes); no candidate test or live evidence of flex behavior",
+      "candidateCases": [
+        "native_layout::VStack and HStack::maps align and distribute to the native list alignment and flex",
+        "native_layout::VStack and HStack::spreads the leftover space with every native flex distribution",
+        "native_layout::VStack and HStack::accepts distribute only on the list containers",
+        "native_layout::VStack and HStack::refuses an unknown spacing step, alignment or option and names the vocabulary"
+      ],
+      "weaker": "Candidate maps distribute to native UIListLayout alignment and UIFlexAlignment on HStack, VStack and Screen, refuses it elsewhere and refuses values outside the closed set. Shrink weights, layoutPriority, lineAlign and their overflow diagnostics were not restored. The leftover distribution itself is Roblox layout and needs a live check.",
+      "closedBy": "native_layout::VStack and HStack::maps align and distribute to the native list alignment and flex"
     },
     {
       "id": "mech3-48",
@@ -32283,8 +32337,16 @@
         "theme_roles"
       ],
       "mainCases": 5,
-      "class": "c",
-      "removal": "MAIN renderer layout-node construction, solver measure path, spacing-step gap/padding and metric-path dimensions deleted; CAND layout is native UIListLayout/UIPadding with numeric values supplied by the caller (09-cus..."
+      "auditClass": "c",
+      "class": "a",
+      "removal": "MAIN renderer layout-node construction, solver measure path, spacing-step gap/padding and metric-path dimensions deleted; CAND layout is native UIListLayout/UIPadding with numeric values supplied by the caller (09-cus...",
+      "candidateCases": [
+        "native_layout::VStack and HStack::resolves gap and padding spacing steps from the theme package",
+        "native_layout::VStack and HStack::pads each side on its own and keeps literal pixel values",
+        "native_layout::VStack and HStack::moves gap and padding when the theme package changes"
+      ],
+      "weaker": "Main solved rects for spacing steps and resolved typography roles and metric paths through the solver. Candidate checks that gap and padding steps resolve to the theme pixels on the native UIListLayout and UIPadding and move on a theme swap. Metric-path dimensions and the solver measure path were not restored. The solved positions need live Roblox layout (needs-live primitives.json).",
+      "closedBy": "native_layout::VStack and HStack::resolves gap and padding spacing steps from the theme package"
     },
     {
       "id": "themes-P3-25",
@@ -32326,8 +32388,16 @@
         "theme_roles"
       ],
       "mainCases": 3,
-      "class": "c",
-      "removal": "Semantic spacing/metric-path prop forms removed with the solver; CAND takes native numeric properties only."
+      "auditClass": "c",
+      "class": "a",
+      "removal": "Semantic spacing/metric-path prop forms removed with the solver; CAND takes native numeric properties only.",
+      "candidateCases": [
+        "native_layout::VStack and HStack::refuses an unknown spacing step, alignment or option and names the vocabulary",
+        "native_layout::VStack and HStack::pads each side on its own and keeps literal pixel values",
+        "native_layout::theme spacing steps::validates the spacing scale of a theme package"
+      ],
+      "weaker": "Candidate refuses an unknown spacing step on gap and on each padding side, keeps literal pixel values legal, and validates the metrics.space scale of a theme package. Metric-path props do not exist on the candidate, so their validation has no counterpart.",
+      "closedBy": "native_layout::VStack and HStack::refuses an unknown spacing step, alignment or option and names the vocabulary"
     },
     {
       "id": "themes-P3-28",

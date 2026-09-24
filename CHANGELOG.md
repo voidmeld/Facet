@@ -13,6 +13,8 @@
 - A `RadialMenu` with `follow = "fixed"` keeps its ring and its center hole until it opens again. The list presentation shows one navigation control: `close` and `back` at the root read "Close", and `back` in a submenu reads "Back".
 - Button refuses an `imageFraming` other than `fit` or `crop`. ComboBox refuses a value that is not a string and missing `options`.
 - `Facet` exports the `RadialItem` and `RadialMenuSpec` types.
+- Added the layout constructors `UI.Screen`, `UI.VStack`, `UI.HStack`, `UI.ZStack`, `UI.ScrollView` and `UI.Grid`, and the `UI.fill(weight?)` flex item. Each one makes a native Frame or ScrollingFrame with a native list or grid layout. They set `LayoutOrder` from the order of the children. `gap` and `padding` take the `xs`, `s`, `m`, `l` and `xl` spacing steps from `metrics.space` of the theme package, and follow a theme change. `width` and `height` take `fill`, `hug` or pixels. The internal control stacks use the same code. `themes.define` refuses a negative spacing step. `Facet` exports the `StackProps`, `ScreenProps`, `ZStackProps`, `ScrollViewProps`, `GridProps`, `Space`, `Padding` and `Extent` types.
+- The generated native property types share one alias for each reactive property type, such as `ValueUDim2`. The public type graph stays inside the analyzer limit.
 
 ## Pre-0.12.0 development history
 

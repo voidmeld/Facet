@@ -3,6 +3,7 @@ local Compose = require("../vendor/compose/core")
 local themes = require("./themes")
 local Shared = require("./types")
 local Theme = require("./theme_types")
+local layoutKit = require("./layout_kit")
 
 type ModalPortal = { node: Instance, anchor: Instance }
 type ActionSettings = { onReleased: (() -> ())?, priority: number?, sink: boolean? }
@@ -211,13 +212,9 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		node:AddTag("facet-" .. string.lower(role))
 		return node
 	end
+	local layout = layoutKit.attach((ctx :: unknown) :: Shared.Context)
 	function ctx.padding(horizontal: number, vertical: number): UIPadding
-		return Host.UIPadding({
-			PaddingLeft = types.UDim.new(0, horizontal),
-			PaddingRight = types.UDim.new(0, horizontal),
-			PaddingTop = types.UDim.new(0, vertical),
-			PaddingBottom = types.UDim.new(0, vertical),
-		})
+		return assert(layout.insets({ top = vertical, right = horizontal, bottom = vertical, left = horizontal }))
 	end
 	function ctx.corner(radius: number?): UICorner
 		return if radius then Host.UICorner({ CornerRadius = types.UDim.new(0, radius) }) else Host.UICorner({})
@@ -237,46 +234,11 @@ return function(runtime: Compose.Runtime, options: Shared.Config?): Shared.Conte
 		end
 		return ctx.styled(Host.TextLabel(native), "Text")
 	end
-	local function stack(
-		children: { Compose.Child },
-		properties: Shared.FrameNativeProps?,
-		direction: Enum.FillDirection
-	): Frame
-		local native: Shared.FrameNativeProps = {
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Size = types.UDim2.fromOffset(0, 0),
-			AutomaticSize = Enum.AutomaticSize.XY,
-			Host.UIListLayout({
-				FillDirection = direction,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				Padding = types.UDim.new(0, 8),
-			}),
-		}
-		local fields = (native :: unknown) :: { [unknown]: unknown }
-		for key, value in ((properties or {}) :: unknown) :: { [unknown]: unknown } do
-			if type(key) == "number" then
-				fields[#fields + 1] = value
-			else
-				fields[key] = value
-			end
-		end
-		for index, child in children do
-			if type(child) ~= "function" then
-				local node = child :: Instance
-				if node:IsA("GuiObject") then
-					runtime.decorate(node, { LayoutOrder = index })
-				end
-			end
-			table.insert(native, child)
-		end
-		return Host.Frame(native)
-	end
 	function ctx.row(children: { Compose.Child }, properties: Shared.FrameNativeProps?): Frame
-		return stack(children, properties, Enum.FillDirection.Horizontal)
+		return layout.stack(children, properties, { gap = 8 }, false)
 	end
 	function ctx.column(children: { Compose.Child }, properties: Shared.FrameNativeProps?): Frame
-		return stack(children, properties, Enum.FillDirection.Vertical)
+		return layout.stack(children, properties, { gap = 8 }, true)
 	end
 	function ctx.icon(
 		name: Shared.Value<string>,

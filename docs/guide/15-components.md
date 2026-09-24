@@ -9,6 +9,49 @@ A component is a function that returns a native Instance.
 - Put a semantic name directly after the constructor: `Host.Frame "Toolbar" { ... }` or `UI.Button "Save" { ... }`. Do not write `Name = "..."` for a fixed name. Use `Name` only when the name is computed.
 - Use numeric children and native property names.
 
+## Layout
+
+Use the layout constructors for screens, stacks, layers, scrolling pages and
+grids. Each one makes an ordinary native frame and a native layout object.
+Roblox does the layout.
+
+| Need | Constructor |
+|---|---|
+| The root of a screen, with theme padding | `UI.Screen` |
+| A vertical or horizontal stack | `UI.VStack`, `UI.HStack` |
+| Children on top of each other | `UI.ZStack` |
+| A page that scrolls | `UI.ScrollView` |
+| Cells in columns | `UI.Grid` |
+| A child that takes the remaining space | `UI.fill()` |
+
+- Write `gap` and `padding` as spacing steps: `xs`, `s`, `m`, `l` or `xl`.
+  The steps come from the theme package. A number is a pixel value.
+- The containers set `LayoutOrder` from the order of the children. Do not
+  write it.
+- Set `width` or `height` to `"fill"`, `"hug"` or a number of pixels.
+- Native properties, such as `BackgroundTransparency` or `Visible`, go to the
+  root.
+
+```luau
+local function Profile()
+    local name = Compose.cell("")
+    return UI.Screen "Profile" {
+        gap = "m",
+        UI.Label { text = "Profile", textRole = "title" },
+        UI.ScrollView "Form" {
+            gap = "s",
+            UI.TextInput { value = name, placeholder = "Name" },
+            UI.HStack { gap = "s", UI.Button { label = "Save" }, UI.Button { label = "Cancel" } },
+        },
+    }
+end
+```
+
+The ScrollView puts a `UIListLayout` in its `ScrollingFrame` and sets the
+automatic canvas size. Thus each child fits the window beside the scroll bar.
+Use Host constructors directly for a layout that these constructors do not
+make. See the [layout reference](../reference/api.md#layout).
+
 ## State and requests
 
 A component runs when its owner is created. A reactive property body runs again
@@ -31,11 +74,8 @@ local function Settings()
     local status = Compose.formula(function(use)
         return if use(enabled) then "Notifications are on" else "Notifications are off"
     end)
-    return Host.Frame {
-        Size = UDim2.new(1, 0, 0, 0),
-        AutomaticSize = Enum.AutomaticSize.Y,
-        BackgroundTransparency = 1,
-        Host.UIListLayout { Padding = UDim.new(0, 8) },
+    return UI.VStack {
+        gap = "s",
         UI.Toggle {
             label = "Notifications",
             value = enabled,
@@ -67,9 +107,8 @@ navigation, keep it outside that owner.
 
 ```luau
 local detailsOpen = Compose.cell(false)
-return Host.Frame {
-    Size = UDim2.fromScale(1, 1),
-    Host.UIListLayout { Padding = UDim.new(0, 8) },
+return UI.VStack {
+    gap = "s",
     UI.Toggle { label = "Show details", value = detailsOpen },
     Compose.show(detailsOpen, function()
         return UI.Label { label = "Changes are saved to this session." }
@@ -87,7 +126,8 @@ Keep durable row edits and selections in the model, outside the windowed row
 owners. Compose `OrderedCollection` and `Pool` supply the collection mechanisms
 for those controls. Screens do not need their own windowing.
 
-Put a `UIListLayout` directly in a vertical page `ScrollingFrame`. Without a
+Use `UI.ScrollView` for a vertical page. If you make a native
+`ScrollingFrame` yourself, put a `UIListLayout` directly in it. Without a
 layout, Roblox sizes a full-width child against the whole frame, so the child
 goes under the scroll bar. With a layout, the child fits the window beside the
 scroll bar.

@@ -17,12 +17,18 @@ where.
   still promises, but no candidate case tested it. The parity tests close
   837 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 56 cases remain.
-- 1,725 of the 3,131 covered cases have a weaker
+- 1,914 of the 3,320 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
-- 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
-  845 of them, no candidate test and no live Studio record show that
+- 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
+  704 of them, no candidate test and no live Studio record show that
   Facet uses the mechanism correctly.
+- The layout constructors (`UI.Screen`, `UI.VStack`, `UI.HStack`,
+  `UI.ZStack`, `UI.ScrollView`, `UI.Grid` and `UI.fill`) returned. Eight
+  layout and spacing contracts (189 main cases) moved from class b or c to
+  class a. Their candidate cases in `native_layout` check the native layout
+  objects and the theme spacing. The solved positions need live Roblox
+  layout.
 - Of 130 main `full` producers, no producer is a gap. Five producers run
   but wait for live Studio evidence, and four are weaker replacements. See
   [Producers](#producers).
@@ -64,9 +70,9 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 1139 | 2,294 | 3,131 |
-| b | Retired. The Roblox Engine or Compose owns the mechanism | 306 | 1,581 | 1,581 |
-| c | Retired. The feature or code was deleted and is not promised | 823 | 6,079 | 6,080 |
+| a | Covered by a candidate case | 1147 | 2,294 | 3,320 |
+| b | Retired. The Roblox Engine or Compose owns the mechanism | 302 | 1,581 | 1,440 |
+| c | Retired. The feature or code was deleted and is not promised | 819 | 6,079 | 6,032 |
 | d | Gap. A promise remains and no candidate case verifies it | 22 | 894 | 56 |
 
 Class c is the largest class. Most of it tested the deleted solver,
@@ -83,7 +89,7 @@ last column names the candidate specs that the group cites most.
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 63 | 23 | 16 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 316 | 142 | 103 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,326 | 94 | 58 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Layout and geometry | 1,326 | 280 | 244 | 218 | 827 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 497 | 54 | 38 | 232 | 202 | 9 | `native_inputs`, `native_collections`, `native_parity_navigation` |
 | Focus and selection | 532 | 101 | 49 | 257 | 172 | 2 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
@@ -91,7 +97,7 @@ last column names the candidate specs that the group cites most.
 | Scrolling | 330 | 93 | 60 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 581 | 142 | 80 | 33 | 404 | 2 | `native_themes_media`, `native_navigation`, `native_inputs` |
 | Paint and theming | 709 | 199 | 71 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 379 | 146 | 68 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Theme packages | 379 | 149 | 71 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 251 | 110 | 66 | 37 | 98 | 6 | `native_themes_media`, `native_stress`, `native_public_surface` |
 | Action controls | 394 | 94 | 57 | 1 | 297 | 2 | `native_inputs`, `native_navigation`, `native_themes_media` |
 | Value controls | 249 | 221 | 128 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |

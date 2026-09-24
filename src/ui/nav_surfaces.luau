@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
@@ -17,6 +18,7 @@ type Controls = {
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Host, Compose, runtime, read = ctx.Host, ctx.Compose, ctx.runtime, ctx.read
+	local lists = layoutKit.of(ctx)
 	local E, D2, V2 = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2
 	type CalloutRegistration = { id: number, eligible: Core.Readable<boolean>, priority: number }
 	local callouts = Compose.cell({} :: { CalloutRegistration })
@@ -407,7 +409,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							)
 						)
 					end,
-					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }) :: Instance,
+					lists.list({}, true) :: Instance,
 					contentRoot :: Instance,
 				}
 				local layout: GuiObject
@@ -820,7 +822,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						Size = D2.new(1, 0, 0, 0),
 						ClipsDescendants = true,
 						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }) :: Instance,
-						Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }) :: Instance,
+						lists.list({}, true) :: Instance,
 						body(spec.content, nil),
 					},
 					ctx.padding(16, 12),

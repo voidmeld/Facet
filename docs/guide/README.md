@@ -35,6 +35,9 @@ to select a control. Then read the exact contract of that control in the
 | Reactive graph, owners, keyed and presented composition | `Facet.Compose` |
 | Native host, runtime and target construction | `Facet.Roblox`; `runtime.constructors` as `Host` |
 | Control constructors | `Facet.controls(runtime, options?)` |
+| Screen roots, stacks and layers | `UI.Screen`, `UI.VStack`, `UI.HStack`, `UI.ZStack` |
+| Scrolling content and grids | `UI.ScrollView`, `UI.Grid` |
+| Main-axis fill | `UI.fill` |
 | Semantic native styling and art | `Facet.themes` |
 | Activation and rich action rows | `UI.Button` |
 | Boolean and mixed selection | `UI.Toggle` |
@@ -59,9 +62,10 @@ to select a control. Then read the exact contract of that control in the
 | Identity groups | `UI.Avatar`, `UI.AvatarGroup` |
 | Embedded 3D content | `UI.Stage` |
 
-Every control root is a native Instance. Use Host constructors and native
-properties for layout. Use the Compose structural operations directly. Do not
-add Facet aliases for them.
+Every control root is a native Instance. The layout constructors make native
+frames and layout objects with theme spacing. Use Host constructors and native
+properties for layout that they do not cover. Use the Compose structural
+operations directly. Do not add Facet aliases for them.
 
 The design records in `docs/plans` and `docs/superpowers` are historical. They
 can describe removed APIs. This guide and the API reference describe the

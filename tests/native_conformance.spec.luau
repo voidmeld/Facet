@@ -4,6 +4,24 @@ local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
 local Compose = Facet.Compose
 local fixtures = {
+	Screen = function()
+		return {}
+	end,
+	VStack = function()
+		return { gap = "s" }
+	end,
+	HStack = function()
+		return { gap = "s" }
+	end,
+	ZStack = function()
+		return {}
+	end,
+	ScrollView = function()
+		return { gap = "s" }
+	end,
+	Grid = function()
+		return { columns = 2 }
+	end,
 	Button = function()
 		return { label = "Press" }
 	end,
@@ -203,7 +221,7 @@ t.describe("native constructor conformance", function()
 		local runtime = Facet.Roblox.createRuntime(engine)
 		local UI = Facet.controls(runtime, { types = engine.types })
 		for name in UI do
-			assert(fixtures[name], `Missing conformance fixture: {name}`)
+			assert(fixtures[name] or name == "fill", `Missing conformance fixture: {name}`)
 		end
 		for name in fixtures do
 			assert(UI[name], `Stale conformance fixture: {name}`)

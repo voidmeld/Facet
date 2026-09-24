@@ -3821,7 +3821,9 @@ t.describe("native parity reference applications", function()
 			local runtime = Facet.Roblox.createRuntime(engine)
 			local names = {}
 			for name in Facet.controls(runtime, { types = engine.types } :: any) do
-				table.insert(names, name :: string)
+				if name ~= "fill" then
+					table.insert(names, name :: string)
+				end
 			end
 			table.sort(names)
 			runtime:dispose()
@@ -3834,9 +3836,14 @@ t.describe("native parity reference applications", function()
 			for name in string.gmatch(source, "export type ([%a_][%w_]*)") do
 				exported[name] = true
 			end
-			local shared = { VirtualList = "CollectionSpec", VirtualGrid = "CollectionSpec" }
+			local shared = {
+				VirtualList = "CollectionSpec",
+				VirtualGrid = "CollectionSpec",
+				VStack = "StackProps",
+				HStack = "StackProps",
+			}
 			local names = controlNames()
-			t.expect(#names).toBe(35)
+			t.expect(#names).toBe(41)
 			for _, name in names do
 				local contract = shared[name]
 				local found = if contract
