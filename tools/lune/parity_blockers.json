@@ -196,7 +196,7 @@
   "pendingLiveRisks": [
     "Collection toolbar under phone/largest-text and compact landscape",
     "Shell measured reservation and Settings reachability under themes/largest text",
-    "Retained A→B→A transient/haptic/motion visibility and lifetime"
+    "Haptic motor output on a physical gamepad and phone for Button, selection and custom pulses (Studio only records requests)"
   ],
   "resolvedLiveRisks": [
     {
@@ -211,6 +211,28 @@
         "headless": [
           "native_themes_media::scales translucent theme surfaces by the player's background transparency preference",
           "native_navigation::darkens modal scrims as the player lowers background transparency"
+        ]
+      }
+    },
+    {
+      "risk": "Retained A→B→A transient/haptic/motion visibility and lifetime",
+      "resolvedBy": [
+        "abe7b0e2 Hand TabView selection to the new panel once it is visible",
+        "7337cbb8 Keep a coach mark queued while its tab is away",
+        "f1d9ca94 Pause repeating progress motion while it is off screen"
+      ],
+      "evidence": {
+        "date": "2026-09-23",
+        "host": "Roblox Studio playtest, HD 720 (1280x720), studio sync stamps ba79a813, 55cb7f23, 789ba133",
+        "menus": "Actions > Menus: open the Tap menu, click Alerts (light-dismisses the menu), click Alerts, return to Menus. The menu does not leak; selection moves into the shown panel with no 'invalid GuiObject' warning (was stranded on a hidden control before abe7b0e2).",
+        "callouts": "Actions > Help: show the coach mark, switch to Alerts (no leak), return to Help. The coach mark returns and the report matches the screen (it was lost before 7337cbb8).",
+        "toasts": "Indicators > Toasts: show a pair, switch to Feedback (no leak), return. Toasts keep expiring on their timers while away.",
+        "motion": "Indicators > Progress: 8 animated properties change per 0.5 s while shown, 0 while Levels is shown, 8 again after return (8 while hidden before f1d9ca94).",
+        "modal": "Alerts and sheets are modal: their scrim blocks tab switches, so a player cannot leave them by tab. A demo switch through the gallery API remounts the demo; the sheet does not leak.",
+        "headless": [
+          "native_navigation::hands selection to the shown tab panel and restores it on return",
+          "native_navigation::hides a callout while its retained tab is away and shows it again on return",
+          "native_navigation::pauses repeating progress motion while its retained tab is hidden"
         ]
       }
     }
