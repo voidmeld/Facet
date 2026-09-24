@@ -172,7 +172,10 @@ return function(
 						end,
 						icon = item.icon,
 						role = item.role,
-						trailingIcon = if item.children then "chevron.trailing" else nil,
+						trailingIcon = if item.children
+							then "chevron.trailing"
+							elseif item.checked ~= nil or item.selected ~= nil or item.marked ~= nil then "checkmark"
+							else nil,
 						subtitle = function(use: Core.Use)
 							return read(actionItem(use(source)).description, use) or ""
 						end,
@@ -208,6 +211,16 @@ return function(
 						end,
 					})
 					row:AddTag("facet-menu-item")
+					local check = if item.children then nil else row:FindFirstChild("TrailingIcon", true)
+					if check and check:IsA("GuiObject") then
+						Compose.watch(function(use: Core.Use)
+							local live = actionItem(use(source))
+							check.Visible = if live.checked
+								then use(live.checked) == true
+								elseif live.selected then use(live.selected) == live.value
+								else read(live.marked, use) == true
+						end)
+					end
 					if item.role == "destructive" then
 						row:AddTag("facet-menu-destructive")
 					end

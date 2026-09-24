@@ -970,6 +970,35 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("shows a checkmark on the marked menu item only", function()
+		local opened, current = Compose.cell(false), Compose.cell("a")
+		local world = setup(function(UI)
+			local function item(id)
+				return {
+					id = id,
+					label = id,
+					marked = function(use)
+						return use(current) == id
+					end,
+					onSelect = function()
+						current:set(id)
+					end,
+				}
+			end
+			return UI.Menu({ isPresented = opened, items = { item("a"), item("b") } })
+		end)
+		opened:set(true)
+		local function check(id)
+			return find(find(world.screen, id), "TrailingIcon").Visible
+		end
+		t.expect(check("a")).toBe(true)
+		t.expect(check("b")).toBe(false)
+		current:set("b")
+		t.expect(check("a")).toBe(false)
+		t.expect(check("b")).toBe(true)
+		world.stop()
+	end)
+
 	t.it("keeps a transparent menu catcher transparent at every background preference", function()
 		local opened = Compose.cell(false)
 		local world = setup(function(UI)
