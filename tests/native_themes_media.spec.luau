@@ -1625,6 +1625,23 @@ t.describe("native themes and media", function()
 		runtime:dispose()
 	end)
 
+	t.it("shows the showValue readout beside a ProgressView endLabel", function()
+		local engine, runtime, UI = setup()
+		local stop, root = runtime.mount(function()
+			return UI.ProgressView "Upload" { value = 0.5, showValue = true, endLabel = "End" }
+		end, engine.new("Folder"))
+		local texts = {}
+		for _, node in root:GetDescendants() do
+			if node:IsA("TextLabel") then
+				texts[node.Text] = node
+			end
+		end
+		t.expect(texts["50%"] ~= nil).toBe(true)
+		t.expect(texts["End"] ~= nil).toBe(true)
+		stop()
+		runtime:dispose()
+	end)
+
 	t.it("returns the Label root that api.md states, with and without an icon", function()
 		local engine, runtime, UI = setup()
 		local stop, root = runtime.mount(function()

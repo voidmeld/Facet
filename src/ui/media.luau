@@ -410,7 +410,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			readout = ctx.text({
 				Name = "Value",
 				Text = function(use: Compose.Use)
-					if spec.endLabel then
+					if spec.endLabel and not spec.showValue then
 						return read(spec.endLabel, use)
 					end
 					if indeterminate then
@@ -423,6 +423,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end,
 			})
 		end
+		local ending: TextLabel? = if spec.showValue and spec.endLabel
+			then ctx.text({
+				Name = "EndLabel",
+				Text = function(use: Compose.Use)
+					return read(spec.endLabel, use)
+				end,
+			})
+			else nil
 		local direction = Compose.formula(function(use: Compose.Use): Theme.FillDirection
 			local package = read(ctx.config.theme, use)
 			local recipe = if package then ((package.chrome or {}) :: { [string]: Theme.SkinLayer }).barFill else nil
@@ -705,6 +713,9 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		table.insert(children, content)
 		if readout then
 			table.insert(children, readout)
+		end
+		if ending then
+			table.insert(children, ending)
 		end
 		local root = ctx.column(
 			children,
