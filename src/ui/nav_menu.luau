@@ -349,6 +349,29 @@ return function(
 			return #use(path) > 0
 		end, back, { priority = 2100 })
 		local focusIn = surfaces.selecting()
+		local placed = ctx.observe(modal, "Parent")
+		Compose.watch(function(use: ComposeTypes.Use)
+			local rows = use(current)
+			if gui and not nonmodal and pendingFocus == nil and use(placed) and focusIn(use) then
+				for _, item in rows do
+					if item.divider ~= true then
+						local live = actionItem(item)
+						if
+							live.selected
+							and live.selected:peek() == live.value
+							and read(live.enabled, use) ~= false
+						then
+							local target = surfaces.firstSelectable(panel, tostring(live.id))
+							if target then
+								gui.SelectedObject = target
+								return
+							end
+						end
+					end
+				end
+			end
+		end)
+		local focusIn = surfaces.selecting()
 		Compose.watch(function(use: ComposeTypes.Use)
 			local rows = use(current)
 			if gui and not nonmodal and focusIn(use) then

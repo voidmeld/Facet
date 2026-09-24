@@ -151,6 +151,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 				end,
 			}
 		end,
+		DateTimePicker = function()
+			return { value = Compose.cell(nil), onChange = function() end }
+		end,
 		DisclosureGroup = function()
 			return { expanded = Compose.cell(false), content = content }
 		end,

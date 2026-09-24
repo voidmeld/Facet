@@ -14,6 +14,7 @@ return function(Compose: Types.ComposeModule, runtime: Types.Runtime, options: T
 	require("@self/collection_row_actions")(ctx, UI)
 	require("@self/collection_table")(ctx, UI)
 	require("@self/media")(ctx, UI)
+	require("@self/date_time_picker")(ctx, UI, surfaces)
 	table.freeze(UI)
 	return UI
 end

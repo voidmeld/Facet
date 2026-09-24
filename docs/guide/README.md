@@ -41,6 +41,7 @@ to select a control. Then read the exact contract of that control in the
 | Activation and rich action rows | `UI.Button` |
 | Boolean and mixed selection | `UI.Toggle` |
 | Native editing, field chrome and numeric input | `UI.TextInput`, `UI.NumberInput` |
+| Civil date and date range fields with a calendar | `UI.DateTimePicker` |
 | Numeric adjustment | `UI.Stepper`, `UI.Slider` |
 | Rating and discrete levels | `UI.Rating`, `UI.LevelPicker` |
 | Selected and removable chips | `UI.Chip` |
