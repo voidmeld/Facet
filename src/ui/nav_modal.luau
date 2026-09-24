@@ -519,12 +519,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 					AutomaticSize = E.AutomaticSize.XY,
 					Size = D2.fromOffset(0, 0),
 					ZIndex = 120,
-					Host.UIPadding({
-						PaddingLeft = ctx.types.UDim.new(0, 8),
-						PaddingRight = ctx.types.UDim.new(0, 8),
-						PaddingTop = ctx.types.UDim.new(0, 6),
-						PaddingBottom = ctx.types.UDim.new(0, 6),
-					}) :: Types.Child,
+					ctx.padding(8, 6) :: Types.Child,
 					label,
 					measure,
 				}

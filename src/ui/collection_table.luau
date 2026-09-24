@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reorder = require("./collection_reorder")
 local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
@@ -14,6 +15,7 @@ type Controls = {
 	Button: Types.Constructor<InputTypes.ButtonProps, TextButton>,
 }
 return function(ctx: Types.Context, UI: Controls): ()
+	local lists = layoutKit.of(ctx)
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
 	local read = ctx.read
 	local D2, V2, E = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
@@ -411,11 +413,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return frame
 			end,
 		})
-		local headerLayoutProps: Types.UIListLayoutProps = {
-			FillDirection = E.FillDirection.Horizontal,
-			SortOrder = E.SortOrder.LayoutOrder,
-		}
-		local headerLayout = Host.UIListLayout(headerLayoutProps)
+		local headerLayout = lists.list({}, false)
 		local headerProps: Types.FrameProps = {
 			Name = "Header",
 			Visible = spec.header ~= false,
@@ -520,10 +518,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 							return read(selection, use)[key] == true
 						end,
 					} :: EngineTypes.Attributes,
-					Host.UIListLayout({
-						FillDirection = E.FillDirection.Horizontal,
-						SortOrder = E.SortOrder.LayoutOrder,
-					}) :: ComposeTypes.Child,
+					lists.list({}, false) :: ComposeTypes.Child,
 					Compose.keyed({
 						from = function(use: ComposeTypes.Use)
 							return read(spec.columns, use)

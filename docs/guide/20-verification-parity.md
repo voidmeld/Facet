@@ -18,11 +18,11 @@ where.
   884 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 9 cases remain. Only a live Studio check
   can close them. See [Gap list](#gap-list).
-- 704 of the 3,178 covered cases have a weaker
+- 893 of the 3,367 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
-- 1,581 cases moved to a Roblox Engine or Compose mechanism. For about
-  845 of them, no candidate test and no live Studio record show that
+- 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
+  704 of them, no candidate test and no live Studio record show that
   Facet uses the mechanism correctly.
 - Of 130 main `full` producers, no producer is a gap and no producer is a
   weaker replacement. Four producers run but wait for live Studio evidence. See
@@ -84,7 +84,7 @@ last column names the candidate specs that the group cites most.
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 63 | 23 | 0 | 4 | 36 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 316 | 142 | 6 | 6 | 168 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,326 | 94 | 25 | 359 | 872 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Layout and geometry | 1,326 | 280 | 211 | 218 | 827 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 497 | 63 | 27 | 232 | 202 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
 | Focus and selection | 532 | 103 | 49 | 257 | 172 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 332 | 101 | 48 | 105 | 121 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
@@ -92,7 +92,7 @@ last column names the candidate specs that the group cites most.
 | Scrolling | 330 | 93 | 9 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 581 | 144 | 4 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
 | Paint and theming | 709 | 199 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 379 | 146 | 0 | 0 | 233 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Theme packages | 379 | 149 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 251 | 116 | 0 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
 | Action controls | 394 | 96 | 57 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
 | Value controls | 249 | 221 | 128 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |

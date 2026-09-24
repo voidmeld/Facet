@@ -12,6 +12,7 @@ export type Use = ComposeTypes.Use
 export type Child = ComposeTypes.Child
 export type Dispose = ComposeTypes.Dispose
 export type Value<T> = Engine.Value<T>
+
 export type Constructor<P, N> = Engine.Constructor<P, N>
 export type Host = Engine.Host
 export type Attributes = Engine.Attributes
@@ -20,6 +21,28 @@ export type RobloxTypes = Engine.RobloxTypes
 export type Observe = Engine.Observe
 export type Playback = { play: (self: any) -> (), pause: (self: any) -> () }
 export type ControlSize = "compact" | "regular" | "large"
+export type SpaceStep = "xs" | "s" | "m" | "l" | "xl"
+export type Space = number | SpaceStep | string
+export type Sides = { top: Space?, right: Space?, bottom: Space?, left: Space? }
+export type Padding = Space | Sides
+export type Extent = number | "fill" | "hug"
+export type Align = "start" | "center" | "end" | "stretch"
+export type Distribute = "start" | "center" | "end" | "spaceBetween" | "spaceAround" | "spaceEvenly"
+export type Edge = "start" | "center" | "end"
+export type Box = {
+	padding: Value<Padding>?,
+	width: Value<Extent>?,
+	height: Value<Extent>?,
+}
+export type Flow = {
+	padding: Value<Padding>?,
+	width: Value<Extent>?,
+	height: Value<Extent>?,
+	gap: Value<Space>?,
+	align: Value<Align>?,
+	distribute: Value<Distribute>?,
+	wrap: Value<boolean>?,
+}
 
 export type BillboardGuiProps = Engine.BillboardGuiProps
 export type BillboardGuiNativeProps = Engine.BillboardGuiNativeProps
@@ -73,6 +96,8 @@ export type UIFlexItemProps = Engine.UIFlexItemProps
 export type UIFlexItemNativeProps = Engine.UIFlexItemNativeProps
 export type UIGradientProps = Engine.UIGradientProps
 export type UIGradientNativeProps = Engine.UIGradientNativeProps
+export type UIGridLayoutProps = Engine.UIGridLayoutProps
+export type UIGridLayoutNativeProps = Engine.UIGridLayoutNativeProps
 export type UIListLayoutProps = Engine.UIListLayoutProps
 export type UIListLayoutNativeProps = Engine.UIListLayoutNativeProps
 export type UIPaddingProps = Engine.UIPaddingProps

@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local decoration = require("./native_decoration")
 local help = require("./help")
@@ -30,6 +31,7 @@ type ToggleButtonProps = InputTypes.ButtonProps & {
 }
 
 return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
+	local lists = layoutKit.of(ctx)
 	local runtime, Host, Compose = ctx.runtime, ctx.Host, ctx.Compose
 	local read, props = ctx.read, ctx.props
 	local D, D2, V2, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
@@ -1540,12 +1542,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				LayoutOrder = 2,
 				Size = D2.fromOffset(0, 40),
 				AutomaticSize = E.AutomaticSize.X,
-				Host.UIListLayout({
-					FillDirection = E.FillDirection.Horizontal,
-					SortOrder = E.SortOrder.LayoutOrder,
-					VerticalAlignment = E.VerticalAlignment.Center,
-				}) :: ComposeTypes.Child,
-				Host.UIPadding({ PaddingLeft = D.new(0, 2), PaddingRight = D.new(0, 2) }) :: ComposeTypes.Child,
+				lists.list({ align = "center" }, false) :: ComposeTypes.Child,
+				lists.insets({ left = 2, right = 2 }) :: ComposeTypes.Child,
 				stepButton("Decrease", "decrement", -1, function(use: ComposeTypes.Use)
 					return enabled(spec, use) and read(spec.value, use) > model.min
 				end),
@@ -1567,12 +1565,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"stepper-track"
 		)
 		local parts: { ComposeTypes.Child } = {
-			Host.UIListLayout({
-				FillDirection = E.FillDirection.Horizontal,
-				SortOrder = E.SortOrder.LayoutOrder,
-				VerticalAlignment = E.VerticalAlignment.Center,
-				Padding = D.new(0, 12),
-			}),
+			lists.list({ gap = 12, align = "center" }, false),
 			controls,
 		}
 		if spec.label then
@@ -1939,12 +1932,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			BackgroundTransparency = 1,
 			AnchorPoint = V2.new(0.5, 0.5),
 			Position = D2.fromScale(0.5, 0.5),
-			Host.UIListLayout({
-				FillDirection = E.FillDirection.Horizontal,
-				SortOrder = E.SortOrder.LayoutOrder,
-				VerticalAlignment = E.VerticalAlignment.Bottom,
-				Padding = D.new(0, 2),
-			}),
+			lists.list({ gap = 2, align = "end" }, false),
 		}
 		for index, mark in marks do
 			runtime.decorate(mark, { LayoutOrder = index })

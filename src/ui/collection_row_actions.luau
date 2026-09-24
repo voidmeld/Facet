@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
@@ -13,6 +14,7 @@ type Controls = {
 type RowEdge = CollectionTypes.RowEdge
 type RowAction = CollectionTypes.RowAction
 return function(ctx: Types.Context, UI: Controls): ()
+	local lists = layoutKit.of(ctx)
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
 	local read = ctx.read
 	local D2, V2, E = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
@@ -197,10 +199,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				end,
 				BackgroundTransparency = 1,
 				ClipsDescendants = true,
-				Host.UIListLayout({
-					FillDirection = E.FillDirection.Horizontal,
-					SortOrder = E.SortOrder.LayoutOrder,
-				}) :: ComposeTypes.Child,
+				lists.list({}, false) :: ComposeTypes.Child,
 				Compose.keyed({
 					from = function(use: ComposeTypes.Use)
 						return actions(edge, use)

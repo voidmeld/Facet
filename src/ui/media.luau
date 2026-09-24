@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local Types = require("./types")
 local Engine = require("./engine_types")
@@ -12,6 +13,7 @@ export type MediaControls = Media.MediaControls
 return function(ctx: Types.Context, controls: Media.MediaControls?): Media.MediaControls
 	local Host, runtime, Compose = ctx.Host, ctx.runtime, ctx.Compose
 	local themes = bindThemes(Compose)
+	local lists = layoutKit.of(ctx)
 	local types, read = ctx.types, ctx.read
 	local E, D2, D, V2 = types.Enum, types.UDim2, types.UDim, types.Vector2
 	local UI: Media.MediaControls = controls or ({} :: Media.MediaControls)
@@ -167,12 +169,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				Size = function(use: ComposeTypes.Use)
 					return D2.fromOffset(0, controlSize(spec.controlSize, "iconSize", use) + 4)
 				end,
-				Host.UIListLayout({
-					FillDirection = E.FillDirection.Horizontal,
-					VerticalAlignment = E.VerticalAlignment.Center,
-					SortOrder = E.SortOrder.LayoutOrder,
-					Padding = D.new(0, 4),
-				}) :: ComposeTypes.Child,
+				lists.list({ gap = 4, align = "center" }, false) :: ComposeTypes.Child,
 				icon :: ComposeTypes.Child,
 				node :: ComposeTypes.Child,
 			})

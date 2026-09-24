@@ -4,6 +4,7 @@ local Types = require("@self/control_types")
 return function(Compose: Types.ComposeModule, runtime: Types.Runtime, options: Types.Config?): Types.Controls
 	local ctx = context(Compose, runtime, options)
 	local UI = ({} :: unknown) :: Types.Controls
+	require("@self/layout")(ctx, UI)
 	require("@self/inputs")(ctx, UI)
 	local surfaces = require("@self/nav_modal")(ctx)
 	require("@self/nav_menu")(ctx, UI, surfaces)
