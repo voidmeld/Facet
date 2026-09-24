@@ -16,13 +16,13 @@ where.
 - 894 main cases test behavior that `api.md`, a guide or `src`
   still promises, but no candidate case tested it. The parity tests close
   884 of these cases. One case moved to class c, because `api.md`
-  no longer makes its promise. 9 cases remain. Only a live Studio check
-  can close them. See [Gap list](#gap-list).
-- 949 of the 3,426 covered cases have a weaker
+  no longer makes its promise. 3 cases remain. Only a live check with a
+  real drag can close them. See [Gap list](#gap-list).
+- 577 of the 3,943 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
-  704 of them, no candidate test and no live Studio record show that
+  296 of them, no candidate test and no live Studio record show that
   Facet uses the mechanism correctly.
 - Of 130 main `full` producers, no producer is a gap and no producer is a
   weaker replacement. The five Studio producers of the performance lab have
@@ -65,10 +65,10 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 1446 | 2,294 | 3,743 |
+| a | Covered by a candidate case | 1638 | 2,294 | 3,943 |
 | b | Retired. The Roblox Engine or Compose owns the mechanism | 307 | 1,581 | 1,432 |
 | c | Retired. The feature or code was deleted and is not promised | 831 | 6,079 | 5,998 |
-| d | Gap. A promise remains and no candidate case verifies it | 3 | 894 | 9 |
+| d | Gap. A promise remains and no candidate case verifies it | 1 | 894 | 3 |
 
 The contract counts and the main-case counts with new tests are the sums over
 the contracts in `tools/lune/verification_parity.json`. They include the
@@ -88,31 +88,31 @@ last column names the candidate specs that the group cites most.
 | Group | Main cases | a | Weaker | b | c | d | Candidate coverage |
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 64 | 23 | 0 | 4 | 37 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
-| Lifetime and ownership | 333 | 158 | 8 | 6 | 169 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,393 | 338 | 250 | 221 | 833 | 1 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 510 | 102 | 66 | 233 | 175 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 547 | 123 | 13 | 257 | 167 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
-| Input actions | 344 | 110 | 16 | 107 | 122 | 5 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 382 | 76 | 1 | 98 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
-| Scrolling | 332 | 95 | 10 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
+| Lifetime and ownership | 333 | 158 | 5 | 6 | 169 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
+| Layout and geometry | 1,395 | 341 | 239 | 221 | 833 | 0 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Text measurement and fit | 510 | 102 | 45 | 233 | 175 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Focus and selection | 547 | 156 | 42 | 242 | 149 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Input actions | 344 | 115 | 6 | 107 | 122 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
+| Pointer, touch and drag | 393 | 87 | 2 | 98 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Scrolling | 332 | 95 | 7 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 596 | 159 | 6 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 713 | 203 | 10 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
+| Paint and theming | 715 | 205 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
 | Theme packages | 382 | 152 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 255 | 120 | 2 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 402 | 104 | 12 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
-| Value controls | 252 | 224 | 8 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
-| Text input | 119 | 70 | 0 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 149 | 110 | 10 | 0 | 39 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Action controls | 411 | 113 | 16 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Value controls | 287 | 259 | 13 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
+| Text input | 173 | 124 | 15 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
+| Menus and pickers | 226 | 187 | 44 | 0 | 39 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
 | Navigation containers | 88 | 85 | 7 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 332 | 168 | 41 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
-| Virtual collections | 224 | 169 | 7 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
-| Tables | 156 | 97 | 1 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
+| Presented surfaces | 332 | 168 | 18 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Virtual collections | 224 | 169 | 1 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
+| Tables | 156 | 97 | 0 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
 | Row actions | 264 | 162 | 25 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 170 | 50 | 2 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 424 | 36 | 5 | 51 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
-| Public surface | 369 | 89 | 0 | 0 | 280 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
+| Adaptive environment | 424 | 36 | 6 | 51 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| Public surface | 373 | 93 | 0 | 0 | 280 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 513 | 51 | 0 | 0 | 462 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
-| Gallery and examples | 442 | 257 | 56 | 113 | 72 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
+| Gallery and examples | 442 | 257 | 47 | 113 | 72 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
 | Reference apps | 327 | 152 | 2 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 6 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
@@ -136,11 +136,12 @@ results:
 motor output on a physical phone and gamepad. The `coverage` producer fails
 for this reason. Studio shows only that the controls request the effects.
 
-The live Studio harness in `tools/studio/live` records engine geometry for 34
-contracts in the `liveEvidence` field of each contract. The results are in
-`artifacts/studio-live`. The runs use the device emulator at 844x369 and
-388x824, at the Medium and Largest preferred text sizes. The harness found
-four defects, and the branch fixes them:
+The live Studio harness in `tools/studio/live` records engine evidence for 224
+contracts (985 main cases) in the `liveEvidence` field of each contract. The
+results are in `artifacts/studio-live`. The runs use the Xbox and iPhone 14
+device emulators, a fixed stage size for each case, and the Medium text size.
+Earlier runs used 844x369 and 388x824 at the Medium and Largest text sizes.
+The harness found these defects, and the branch fixes them:
 
 - The collection toolbar took the whole page on a short landscape phone, so
   the list had no height.
@@ -148,6 +149,39 @@ four defects, and the branch fixes them:
   overlapped the demo tabs.
 - A top callout with no room above covered its anchor.
 - A circle Button with a Size on one axis only collapsed to 0x0.
+- A stretched stack child was only as wide as the widest child.
+- The last cell of a Grid wrapped to a new line because of rounding.
+- The automatic Picker kept clipped segments for long labels.
+- An Alert did not take the selection when its screen reached the
+  `PlayerGui` after the first frame.
+- Callouts and help plates were placed against the whole layer, not inside
+  `overlayParent`.
+- The reference apps' notice line was wider than the screen.
+- A Pagination page slot, the StepIndicator number circle, a hugging ZStack
+  with end alignment, the scaled container tiles, the affixed Notice
+  reservation, the settings row columns, a lifted Card in a grid, a menu
+  landing row, the popover body height, the hero media height, a picker built
+  open, and a collection focus restore before a `PlayerGui` did not match the
+  main behavior.
+
+Live findings that remain are in the `liveFinding` field of 27 contracts.
+Each names the failed checks and the artifact:
+
+- Sheet and Dialog bodies: wrapped copy is cut by 1 to 3 px, and a hug Sheet
+  fills the room (`post-overlays-011` to `-013`, `-128` to `-150`).
+- Popover: the capped body does not scroll (`post-overlays-033`, `-166`).
+- Card grid: the last row ends past the canvas at the end of the scroll, and
+  the engine selection ring is outside the clip (`post-card-27`, `-28`).
+- Category bar at 320 px: seven tab labels do not fit 45 px tabs
+  (`post-showcase-01`, `-04`).
+- Pagination: Down from a control at the left edge goes to the right-to-left
+  row, not the Results row (`post-pagination-11`, `-16`).
+- Fields: a title label and an error line keep a stale 12 px height after
+  the style sheet sets the text size, and a multiline field does not grow
+  with its lines (`post-pickers-002`, `-005`, `-007`, `-092`).
+- Date and colour pickers on a phone: a range calendar opens as a popover,
+  the colour sheet placement depends on the case order, and the plane bubble
+  is clipped by the sheet body (`post-pickers-157`, `-182`, `-183`).
 
 [Device verification](11-device-verification.md#live-assertion-harness)
 describes the harness and its limits.
@@ -184,7 +218,7 @@ of each one after the producer restoration. The data is in `producers.rows`.
 
 | Status | Main `full` producers |
 |---|---:|
-| Equivalent candidate producer | 48 |
+| Equivalent candidate producer | 52 |
 | Replaced by a different check | 16 |
 | Replaced by a weaker check | 0 |
 | Producer runs; its live evidence is not recorded | 0 |
@@ -192,8 +226,7 @@ of each one after the producer restoration. The data is in `producers.rows`.
 | Total | 130 |
 
 No main producer is a gap now. Each main producer is equivalent, replaced,
-retired with its subject, or has a candidate producer that waits for live
-evidence.
+or retired with its subject.
 
 ### How the candidate runs its producers
 
@@ -895,16 +928,18 @@ Each proposal is headless. Use the fake engine in `tests/lib/native_engine.luau`
 
 ## Gap list
 
-These 3 contracts (9 main cases) still have a promise and no candidate case
-that proves all of it. Each has a partial headless case. Only a live Studio
-check can prove the rest, because the fake engine does no layout and does
-not deliver engine input.
+This contract (3 main cases) still has a promise and no candidate case that
+proves all of it. It has a partial headless case. Only a live check with a
+real pointer or touch drag can prove the rest, because the Studio input tools
+do not send `InputChanged` while a button is held.
 
 | ID | Group | Main cases | Contract | Live check |
 |---|---|---:|---|---|
 | apps2-35 | row-actions | 3 | Scrolling the page closes a swiped-open tray; a swipe never plays the track (touch and mouse) | A swipe on a playlist row does not also fire `RowHit.Activated`. |
-| apps-163 | input-actions | 5 | Exactly one Activate per press across the InputAction and native Activated paths | One physical Return press on a selected Button reaches `onActivate` once. |
-| navigation-1-69 | layout-geometry | 1 | Nothing on the callout page crosses a lateral edge at swept sizes | Nothing on the callout page crosses a lateral edge at 390, 768, 1280 and 1920 pixels. |
+
+The live harness closed `apps-163` (one Return press on a selected Button
+reaches `onActivate` once) and `navigation-1-69` (nothing on the callout page
+crosses a lateral edge at 390, 768, 1280 and 1920 px).
 
 ## Main cases after the baseline
 
@@ -923,38 +958,38 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-pagination-05 | `pagination` | 1 | a | `follows the flags of an unknown count, shows the page label and never a last page` |  |
 | post-pagination-06 | `pagination` | 1 | a | `shows an outside page clamped with a diagnostic and never writes it back` |  |
 | post-pagination-07 | `pagination` | 1 | a | `refuses malformed construction and keeps the last legal value for a late one` | Main refused width = hug; the native control refuses AutomaticSize on X, the equivalent native declaration. |
-| post-pagination-08 | `pagination` | 1 | a | `drops the farthest boundary page, then the farthest neighbour, then shows the label as room narrows` | Text widths come from injected TextBounds on the measure labels; real glyph widths need Studio. |
-| post-pagination-09 | `pagination` | 1 | b | - | Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize. |
+| post-pagination-08 | `pagination` | 1 | a | `drops the farthest boundary page, then the farthest neighbour, then shows the label as room narrows` | Proven live in `ports_content/pagination-fit-narrows-in-order`. |
+| post-pagination-09 | `pagination` | 1 | b | - | Proven live in `ports_content/pagination-hug-matches-fill`. |
 | post-pagination-10 | `pagination` | 1 | a | `reverses the row once in rtl and keeps the meaning of previous and next` |  |
-| post-pagination-11 | `pagination` | 1 | a | `hands the selection of a page that leaves the window to the current page` | Arrival from the neighbours is native gamepad selection and is not simulated headlessly. |
+| post-pagination-11 | `pagination` | 1 | a | `hands the selection of a page that leaves the window to the current page` | Arrival from the neighbours is native gamepad selection and is not simulated headlessly. Live finding in `ports_content/pagination-neighbours-arrive-and-land`: Down from Refuse lands inside the Results row. |
 | post-pagination-12 | `pagination` | 1 | a | `hands the selection of an arrow that disables at an edge to the current page` |  |
-| post-pagination-13 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Slot and arrow sizes are asserted; hit rectangles need the native layout. |
-| post-pagination-14 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Anchor, position and compact size are asserted; the centred rectangle needs the native layout. |
-| post-pagination-15 | `pagination` | 1 | a | `keeps the label reservation while the label gains a digit, ltr and rtl, known and unknown` | The label reservation and its measure text are asserted; the arrow X positions need the native layout. |
-| post-pagination-16 | `pagination` | 1 | a | `leaves no stop inside the row when the count drops to zero` | The landing on a live neighbour is native selection. |
+| post-pagination-13 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Proven live in `ports_content/pagination-targets-separate-and-centred`. |
+| post-pagination-14 | `pagination` | 1 | a | `gives every page and arrow a slot at the target floor and a compact plate centred in it` | Proven live in `ports_content/pagination-targets-separate-and-centred`. |
+| post-pagination-15 | `pagination` | 1 | a | `keeps the label reservation while the label gains a digit, ltr and rtl, known and unknown` | Proven live in `ports_content/pagination-arrows-hold-still`. |
+| post-pagination-16 | `pagination` | 1 | a | `leaves no stop inside the row when the count drops to zero` | The landing on a live neighbour is native selection. Live finding in `ports_content/pagination-neighbours-arrive-and-land`: Down from Refuse lands inside the Results row. |
 | post-pagination-17 | `pagination` | 1 | a | `stays safe when a callback changes the count and removes the control` |  |
 | post-pagination-18 | `pagination` | 1 | a | `follows an accepted page in the Paging scenario context and changes nothing on a refusal` |  |
 | post-step-01 | `step_indicator` | 1 | a | `makes only navigable, enabled steps with onSelect into Buttons and the rest into content` |  |
-| post-step-02 | `step_indicator` | 1 | a | `moves the underline and the summary only with current, and a refused selection changes nothing` | The cell rectangles are injected AbsolutePosition and AbsoluteSize values. |
-| post-step-03 | `step_indicator` | 1 | a | `stretches the row cells to one height on one top edge` | The native ItemLineAlignment, VerticalAlignment and underline anchor are asserted; the solved heights need Studio. |
+| post-step-02 | `step_indicator` | 1 | a | `moves the underline and the summary only with current, and a refused selection changes nothing` | Live evidence does not cover this part: The spring is skipped (noted) if GuiService.ReducedMotionEnabled is on in the session. Proven live in `ports_content/steps-underline-follows-and-springs`. |
+| post-step-03 | `step_indicator` | 1 | a | `stretches the row cells to one height on one top edge` | Live evidence does not cover this part: The spring is skipped (noted) if GuiService.ReducedMotionEnabled is on in the session. Proven live in `ports_content/steps-underline-follows-and-springs`. |
 | post-step-04 | `step_indicator` | 1 | a | `keeps the own cue and state word of an errored or completed current step` |  |
-| post-step-05 | `step_indicator` | 1 | a | `keeps the number marker a circle when the text grows` | The number TextBounds are injected; the largest player text size needs Studio. |
+| post-step-05 | `step_indicator` | 1 | a | `keeps the number marker a circle when the text grows` | Live evidence does not cover this part: The largest preferred text size: scripts cannot set PreferredTextSize, so the circle is checked at the session's text size (Medium) only. Proven live in `ports_content/steps-number-marker-is-a-circle`. |
 | post-step-06 | `step_indicator` | 1 | a | `never guesses a missing current and rebuilds empty and repopulated lists` |  |
-| post-step-07 | `step_indicator` | 1 | a | `keeps each step node across a reorder and renumbers it` | The underline follow is asserted in the current-step case from injected rectangles. |
+| post-step-07 | `step_indicator` | 1 | a | `keeps each step node across a reorder and renumbers it` | Live evidence does not cover this part: The spring is skipped (noted) if GuiService.ReducedMotionEnabled is on in the session. Proven live in `ports_content/steps-underline-follows-and-springs`. |
 | post-step-08 | `step_indicator` | 1 | a | `refuses conflicts at construction and keeps the last legal snapshot later` |  |
 | post-step-09 | `step_indicator` | 1 | a | `shows Step n of m and a list that selects through the same path when the width is narrow` | The list is a UI.Menu anchored to the Steps trigger, not a UI.Popover; Popover is not a control of this family. |
-| post-step-10 | `step_indicator` | 1 | a | `follows its offer both ways between the row and the summary, for fill and hug` | Label widths are injected TextBounds on the measure labels. |
-| post-step-11 | `step_indicator` | 1 | b | - | Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize. |
+| post-step-10 | `step_indicator` | 1 | a | `follows its offer both ways between the row and the summary, for fill and hug` | Live evidence does not cover this part: The Narrow copy's form at 1280 px is noted, not asserted. Proven live in `ports_content/steps-form-fits-the-offer`. |
+| post-step-11 | `step_indicator` | 1 | b | - | Live evidence does not cover this part: The Narrow copy's form at 1280 px is noted, not asserted. Proven live in `ports_content/steps-form-fits-the-offer`. |
 | post-step-12 | `step_indicator` | 1 | a | `leaves nothing open when a callback removes the control` |  |
 | post-step-13 | `step_indicator` | 1 | a | `moves the narrow summary with a row selection in the Steps scenario and refuses both` |  |
 | post-vote-01 | `vote` | 1 | a | `accepts, swaps in one change, and proposes none when the chosen side is pressed again` |  |
 | post-vote-02 | `vote` | 1 | a | `never paints a refused proposal and never touches the caller's cell` |  |
-| post-vote-03 | `vote` | 1 | a | `proposes from a selected side through the keyboard Activate action` | The keyboard Activate action is fired; native gamepad selection and ButtonA are engine paths. |
+| post-vote-03 | `vote` | 1 | a | `proposes from a selected side through the keyboard Activate action` | Live evidence does not cover this part: ButtonA itself: the input tools send it as a keyboard key; Return exercises the same native activation of the selected side. D-pad is proven by the Right arrow key. Proven live in `ports_content/vote-pad-reaches-and-proposes`. |
 | post-vote-04 | `vote` | 1 | a | `reads a function value and keeps the last legal paint for an invalid late value` |  |
 | post-vote-05 | `vote` | 1 | a | `leaves no stale state when a callback removes the vote` |  |
 | post-vote-06 | `vote` | 1 | a | `shows a read-only choice with nothing to press or select and uses ordinary disabled paint` |  |
 | post-vote-07 | `vote` | 1 | a | `refuses to become interactive without onChange` | The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard. |
-| post-vote-08 | `vote` | 1 | a | `keeps two votes and a chip as separate targets at the floor, with a disclosed summary` | Minimum target constraints and separate nodes are asserted; overlap of hit rectangles needs the native layout. |
+| post-vote-08 | `vote` | 1 | a | `keeps two votes and a chip as separate targets at the floor, with a disclosed summary` | Proven live in `ports_content/vote-targets-separate`. |
 | post-vote-09 | `vote` | 1 | a | `repaints the Choices vote only from its caller's value and follows the summary` |  |
 | post-card-01 | `card` | 1 | a | `refuses malformed specs before building anything` |  |
 | post-card-02 | `card` | 1 | a | `keeps body, primary and More as sibling targets so one press runs one intent` |  |
@@ -966,7 +1001,7 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-card-08 | `card` | 1 | a | `measures the envelope height at rest, before anything reveals` | The root AbsoluteSize is injected. |
 | post-card-09 | `card` | 1 | a | `keeps hidden actions out of reach at rest and lets a selected body reveal them` |  |
 | post-card-10 | `card` | 1 | a | `reveals on focus within, keeps it when the pointer leaves and ends it when focus leaves` | The Tab walk is native selection; the case moves GuiService.SelectedObject. |
-| post-card-11 | `card` | 1 | a | `holds the reveal while its menu is open and releases it when the menu closes` | The pad route (ButtonY opens the menu from a selected More and B returns selection to it) is the Menu control route and is not repeated here. |
+| post-card-11 | `card` | 1 | a | `holds the reveal while its menu is open and releases it when the menu closes` | Live evidence does not cover this part: ButtonA, ButtonB and ButtonY cannot be sent: Return stands in for A (same native activation), leaveActions() is called directly for B, and ButtonY-on-More / B-returns-to-More for the open menu (post-card-11) is not checked. Proven live in `ports_content/card-keys-enter-and-stay-inside`. |
 | post-card-12 | `card` | 1 | a | `keeps the reveal while a press is held on an action after the pointer leaves` | The press is the native GuiState of the action Button, set directly. |
 | post-card-13 | `card` | 1 | a | `keeps the actions at rest while touch is present and runs the body on the first tap` |  |
 | post-card-14 | `card` | 1 | a | `takes no tap on hidden actions and never fires a press cut off by disabling` |  |
@@ -978,12 +1013,12 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-card-20 | `card` | 1 | a | `puts the card lift on its grid browse stop so the selection ring marks the lifted card` |  |
 | post-card-21 | `card` | 1 | a | `keeps only the raised shadow under reduced motion` | The ten-foot half is retired: the native architecture deleted the viewing-distance profile and its tenFootFocusScale, so no focus lift competes with the card scale. |
 | post-card-22 | `card` | 1 | a | `reveals only the card whose grid browse stop is selected and moves with the selection` | A parked focus without a painted ring does not exist natively: a pointer session has no GuiService.SelectedObject. |
-| post-card-23 | `card` | 1 | a | `enters the actions at the first action, traps the selection and restores the stop on Cancel` | The trap is the native SelectionGroup with Stop behavior on all four sides; the engine moves the selection, so arrow presses are a live check. |
+| post-card-23 | `card` | 1 | a | `enters the actions at the first action, traps the selection and restores the stop on Cancel` | Live evidence does not cover this part: ButtonA, ButtonB and ButtonY cannot be sent: Return stands in for A (same native activation), leaveActions() is called directly for B, and ButtonY-on-More / B-returns-to-More for the open menu (post-card-11) is not checked. Proven live in `ports_content/card-keys-enter-and-stay-inside`. |
 | post-card-24 | `card` | 1 | a | `leaves no trap, menu or controls behind when an entered card is removed or replaced` |  |
 | post-card-25 | `card` | 1 | a | `recycles an entered card scrolled out of the window without stranding its trap` |  |
 | post-card-26 | `card` | 1 | a | `keeps separate cards and entries in two grids with identical keys` |  |
-| post-card-27 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The scenario step enters and Play runs; that each line holds its card and plate needs the native layout. |
-| post-card-28 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The half-gutter padding, lane width, canvas extent and both scroll ends are asserted; the lifted footprint against the clip is a live check. |
+| post-card-27 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The scenario step enters and Play runs; that each line holds its card and plate needs the native layout. Live finding in `ports_content/card-grid-lines-and-corners`: g4 selected cell ring box inside the grid clip; g57 lifted card inside the grid clip; g57 selected cell ring box inside the grid clip. |
+| post-card-28 | `card` | 1 | a | `keeps a half gutter at the outer edges of a grid so a lifted corner card is not clipped` | The half-gutter padding, lane width, canvas extent and both scroll ends are asserted; the lifted footprint against the clip is a live check. Live finding in `ports_content/card-grid-lines-and-corners`: g4 selected cell ring box inside the grid clip; g57 lifted card inside the grid clip; g57 selected cell ring box inside the grid clip. |
 | post-card-29 | `card` | 1 | a | `keeps the mounted cards and their controls bounded across a thousand items` |  |
 | post-grid-01 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
 | post-grid-02 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
@@ -993,13 +1028,13 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-grid-06 | `virtual_grid` | 1 | a | `collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes` |  |
 | post-grid-07 | `virtual_hgrid` | 1 | a | `collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent` |  |
 | post-menu-01 | `menu` | 1 | a | `opens on ButtonA, closes on ButtonB with the selection back on the trigger, and opens again` | ButtonA is the native Activated event of the trigger; ButtonB is the ModalBack action. |
-| post-menu-02 | `menu` | 1 | a | `places the root panel by edge and align and keeps bottom and start when they are absent` | The trigger and panel rectangles are injected; the native popover draws the panel. |
+| post-menu-02 | `menu` | 1 | a | `places the root panel by edge and align and keeps bottom and start when they are absent` | Live evidence does not cover this part: Uses a fixture Menu with edge/align (the Menus scenario has none). Proven live in `ports_content/menu-edge-and-align-place-the-panel`. |
 | post-menu-03 | `menu` | 1 | a | `sets the floating panel width from width` |  |
 | post-menu-04 | `menu` | 1 | a | `keeps the panel width for rows with a badge, a shortcut label or a section heading` |  |
-| post-menu-05 | `menu` | 1 | a | `leads plain rows like accessory rows and gives every row the target floor` | Row heights and the left content alignment are asserted; label x positions and hit rectangles need Studio. |
+| post-menu-05 | `menu` | 1 | a | `leads plain rows like accessory rows and gives every row the target floor` | Live evidence does not cover this part: Uses a fixture bounded Menu with plain, badge, shortcut and meta rows (the Menus scenario has no bounded menu). Proven live in `ports_content/menu-rows-floor-and-lead`. |
 | post-menu-06 | `menu` | 1 | a | `bounds a floating panel by the screen so a long list scrolls` |  |
-| post-menu-07 | `menu` | 1 | a | `opens a level on its selected row, centred in the scrolled list` | The row and list rectangles are injected; the centring is computed from them. |
-| post-menu-08 | `menu` | 1 | a | `bounds the whole panel by maxHeight while the rows keep their ids and activation` | The keyboard walk to the last row and its scroll into view are native ScrollingFrame selection behavior. |
+| post-menu-07 | `menu` | 1 | a | `opens a level on its selected row, centred in the scrolled list` | Proven live in `ports_content/menu-lands-on-selected-and-walks-bounded`. |
+| post-menu-08 | `menu` | 1 | a | `bounds the whole panel by maxHeight while the rows keep their ids and activation` | Proven live in `ports_content/menu-lands-on-selected-and-walks-bounded`. |
 | post-menu-09 | `menu` | 1 | a | `keeps submenus anchored to their parent level in a bounded list` |  |
 | post-menu-10 | `menu` | 1 | a | `shares one row recipe for badge, avatar, sectionTitle and a display-only shortcutLabel` |  |
 | post-menu-11 | `menu` | 1 | a | `refuses malformed placement and bounds by name` | width is a number of pixels natively; main refused a bare number because it took a dimension table. The native control refuses 0 and a string. |
@@ -1012,10 +1047,10 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-tab-03 | `tab_view` | 1 | a | `refuses a tab indicator that is not a StatusIndicator spec by name` |  |
 | post-tab-04 | `tab_view` | 1 | a | `keeps a disabled tab in the strip and refuses its selection on every route` |  |
 | post-tab-05 | `tab_view_scenario` | 4 | c | - | A path shape of the solver tree only; native tab rows are named TabRow-<id> when sections exist. |
-| post-showcase-01 | `showcase_tabs` | 1 | a | `shrinks tab words toward the caption role in a filling bottom bar before they truncate` | The measured word width and the tab width are injected; the real glyph widths at 320 and 389 px need Studio. |
+| post-showcase-01 | `showcase_tabs` | 1 | a | `shrinks tab words toward the caption role in a filling bottom bar before they truncate` | The measured word width and the tab width are injected; the real glyph widths at 320 and 389 px need Studio. Live finding in `ports_content/category-bar-fits-phone-words`: 320 px Status shows whole; 320 px Inputs shows whole; 320 px Actions shows whole. |
 | post-showcase-02 | `showcase_tabs` | 4 | a | `names the Status and Menus groups and the Paging and Steps tabs in All controls` | native_gallery mounts every all_controls tab; the category bar walk is the native TabView. |
-| post-showcase-03 | `showcase_tabs` | 1 | b | - | Native TabView content frame and ScrollingFrame canvas. |
-| post-showcase-04 | `showcase_tabs` | 1 | b | - | Native AutomaticSize X on each tab button follows the engine text bounds. |
+| post-showcase-03 | `showcase_tabs` | 1 | b | - | Live evidence does not cover this part: Studio's xbox device reports Gamepad preferred input, so the gallery uses top bars rather than the desktop sidebar at 1542 x 1067. Proven live in `ports_content/choices-vote-row-inside-the-page`. |
+| post-showcase-04 | `showcase_tabs` | 1 | b | - | Live finding in `ports_content/category-bar-fits-phone-words`: 320 px Status shows whole; 320 px Inputs shows whole; 320 px Actions shows whole. |
 | post-showcase-05 | `showcase_tabs` | 1 | c | - | UI.ViewThatFits and the candidate solver were deleted (contracts mech1-04, mech1-126). A screen chooses a form with Compose.show on observed native bounds. |
 | post-fits-01 | `container_memo` | 1 | c | - | UI.ViewThatFits was deleted with the solver (mech1-04, mech1-126); there is no candidate rule to verify. |
 | post-lab-01 | `error_boundary` | 1 | c | - | UI.ErrorBoundary and the text primitive were deleted (mech1-115). Containment stays for presented Alert content and NavigationStack destinations; constructors take the native Name or the constructor name form. |
@@ -1023,18 +1058,18 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-lab-03 | `tab_view` | 1 | a | `nests a TabView that a page builds later inside one of its branches` |  |
 | post-lab-04 | `preview` | 1 | c | - | The environment and its preview were deleted with the application shell. The engine owns the preferred text size and transparency; Studio emulates them. The gallery previews only viewing distance. |
 | post-lab-05 | `gallery_chrome` | 1 | c | - | The showcase settings have no device, orientation or input preview; the native gallery keeps only the viewing-distance preview. |
-| post-lab-06 | `disclosure_group` | 1 | a | `closes up a collapsed outline section in a scroller and reopens it` | The content leaves and returns and the canvas is native AutomaticCanvasSize; the canvas height needs Studio. |
+| post-lab-06 | `disclosure_group` | 1 | a | `closes up a collapsed outline section in a scroller and reopens it` | Live evidence does not cover this part: Uses a fixture of two DisclosureGroups in a ScrollingFrame; the Disclosure gallery page has no DisclosureGroup. Proven live in `ports_content/outline-section-closes-up`. |
 | post-lab-07 | `api` | 1 | a | `fades a subtree as one group and keeps a transparent group laid out while removal closes up` | The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false; Compose.show removes the node. Guide 17 documents both. |
 | post-navh-01 | `focus_chrome_mixed` | 2 | b | `yields native directional navigation at value bounds and rearms on focus return` | Native gamepad and arrow selection owns horizontal movement; a selected Slider or Stepper binds Left and Right only while it is selected and yields them at its bounds. No focus chrome host exists. |
-| post-recipes-01 | `view_recipes` | 1 | a | `runs one activation in a styled group and disables it by inheritance` | The disabled group is native Interactable on the ancestor. |
-| post-recipes-02 | `view_recipes` | 1 | a | `declares fixed, quarter and fill axes as native sizes and flex` | Native Size and UIFlexItem are asserted; hug, minimum and the overflow rectangle need Studio. |
-| post-recipes-03 | `view_recipes` | 1 | a | `sizes 1:1, 16:9 and 9:16 subjects inside the same 96 by 96 offer and centres them` | The subject sizes and centred anchors are asserted; solved rectangles need Studio. |
-| post-recipes-04 | `view_recipes` | 1 | a | `scales paint with a UIScale while the declared box stays` | The UIScale and the unchanged box are asserted; the painted footprint needs Studio. |
-| post-recipes-05 | `view_recipes` | 1 | a | `fades a subtree as one group and keeps a transparent group laid out while removal closes up` | Zero-transparency focus is native CanvasGroup behavior; selection of a faded button needs Studio. |
-| post-recipes-06 | `view_recipes` | 1 | a | `moves a child through spare room with nine alignments` | Anchor and scale position are asserted; the hugging parent case needs Studio. |
-| post-recipes-07 | `view_recipes` | 1 | a | `spaces siblings with a gap and moves only the named edges with padding` | Padding values are asserted; sibling rectangles need Studio. |
-| post-recipes-08 | `view_recipes` | 1 | a | `wraps a row to a second line, or keeps it on one line in a sideways scroller` | Wraps and the X scroller are asserted; the overrun and clip rectangles need Studio. |
-| post-recipes-09 | `view_recipes` | 1 | a | `rounds, strokes and shadows one node with native modifiers` | A UICorner rounds every corner with one radius natively; main painted per-corner radii. |
+| post-recipes-01 | `view_recipes` | 1 | a | `runs one activation in a styled group and disables it by inheritance` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-02 | `view_recipes` | 1 | a | `declares fixed, quarter and fill axes as native sizes and flex` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-03 | `view_recipes` | 1 | a | `sizes 1:1, 16:9 and 9:16 subjects inside the same 96 by 96 offer and centres them` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-04 | `view_recipes` | 1 | a | `scales paint with a UIScale while the declared box stays` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-05 | `view_recipes` | 1 | a | `fades a subtree as one group and keeps a transparent group laid out while removal closes up` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-06 | `view_recipes` | 1 | a | `moves a child through spare room with nine alignments` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-07 | `view_recipes` | 1 | a | `spaces siblings with a gap and moves only the named edges with padding` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-08 | `view_recipes` | 1 | a | `wraps a row to a second line, or keeps it on one line in a sideways scroller` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
+| post-recipes-09 | `view_recipes` | 1 | a | `rounds, strokes and shadows one node with native modifiers` | Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted. Proven live in `ports_content/containers-recipes-draw-as-described`. |
 | post-recipes-10 | `recipes_common` | 1 | a | `insets and paints the recipe dividers from the installed theme` | The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported. |
 | post-badge-01 | `badge` | 1 | a | `centres a count seal on the top-right corner of its host without changing the host` | The zero-size Corner frame, the centred anchor, 99+ and no selection stop are asserted; the painted centre needs Studio. |
 | post-badge-02 | `badge` | 1 | a | `mirrors the seal to the top-left in rtl and shows true as a dot` |  |
@@ -1047,18 +1082,18 @@ Some cases were added on `main` after the baseline. Each family records them her
 | Contract | Main spec | Main cases | Class | Candidate cases | Note |
 |---|---|---:|---|---|---|
 | post-pickers-001 | `field_chrome` | 1 | a | `a field with no chrome keys keeps its native TextBox root` |  |
-| post-pickers-002 | `field_chrome` | 1 | a | `the label sits above its field, and a tap or a finger on it puts the caret in the field` | The fake engine computes no layout; the rectangle is a live item in needs-live/port-pickers.json. |
+| post-pickers-002 | `field_chrome` | 1 | a | `the label sits above its field, and a tap or a finger on it puts the caret in the field` | The fake engine computes no layout; the rectangle is a live item in needs-live/port-pickers.json. Live finding in `ports_pickers/fields-label-above`: 1280x720 Handle title text fits its box; 1280x720 Speed title text fits its box. |
 | post-pickers-003 | `field_chrome` | 1 | a | `a disabled field's label follows it: no press or hover affordance, live both ways` |  |
 | post-pickers-004 | `field_chrome` | 1 | a | `the label adds no focus stop and reserves the touch floor in its own box` | Selectable flags replace the focus-order traversal; the hit-rectangle overlap is live. |
-| post-pickers-005 | `field_chrome` | 1 | a | `the required mark is part of the label's words, bound or static; optional paints no word` | The wrapped-title width check at 320 px is live. |
+| post-pickers-005 | `field_chrome` | 1 | a | `the required mark is part of the label's words, bound or static; optional paints no word` | The wrapped-title width check at 320 px is live. Live finding in `ports_pickers/fields-label-above`: 1280x720 Handle title text fits its box; 1280x720 Speed title text fits its box. |
 | post-pickers-006 | `field_chrome` | 1 | a | `an error replaces the hint, in the danger role, beside a mark, and the field holds still` |  |
-| post-pickers-007 | `field_chrome` | 1 | a | `the error mark is floored at the icon rung and painted the message's colour` | The mark height against its line is live; the colour is read from the compiled StyleSheet rules. |
+| post-pickers-007 | `field_chrome` | 1 | a | `the error mark is floored at the icon rung and painted the message's colour` | The mark height against its line is live; the colour is read from the compiled StyleSheet rules. Live finding in `ports_pickers/fields-error-still`: the error mark is as tall as its message line. |
 | post-pickers-008 | `field_chrome` | 1 | a | `the caller's error outranks the numeric field's own rejection line` |  |
-| post-pickers-009 | `field_chrome` | 1 | a | `both accessories sit inside the plate, and the clear keeps its room between them` | LayoutOrder in one horizontal list replaces solved rectangles; containment is live. |
+| post-pickers-009 | `field_chrome` | 1 | a | `both accessories sit inside the plate, and the clear keeps its room between them` | Proven live in `ports_pickers/fields-accessories`. |
 | post-pickers-010 | `field_chrome` | 1 | a | `a static leading mark is not a stop; the clear and the trailing action are, in that order` | Selectable nodes in LayoutOrder replace the focus-graph traversal. |
 | post-pickers-011 | `field_chrome` | 1 | a | `the trailing action and the clear fire on activation without changing the other` | Only Activated is fired; per-input routing is the native Button and is live. |
 | post-pickers-012 | `field_chrome` | 1 | a | `the trailing action and the clear fire on activation without changing the other` | The clear is driven by Activated; the four input routes are native. |
-| post-pickers-013 | `field_chrome` | 1 | a | `a search field keeps its leading mark beside a trailing action, and refuses a second one` | The icon inset against the plate is live. |
+| post-pickers-013 | `field_chrome` | 1 | a | `a search field keeps its leading mark beside a trailing action, and refuses a second one` | Proven live in `ports_pickers/fields-accessories`. |
 | post-pickers-014 | `field_chrome` | 1 | a | `appearance paints the plate a published surface; a bound word repaints in place` |  |
 | post-pickers-015 | `field_chrome` | 1 | a | `corners ride a native UICorner, and square is a radius of zero` |  |
 | post-pickers-016 | `field_chrome` | 1 | a | `a named rung shrinks the plate, reserves a whole target, and the label still focuses` | Target height from Size offsets; the tap area is live. |
@@ -1072,12 +1107,12 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-pickers-024 | `number_input` | 1 | a | `an out-of-range commit clamps and says clamped rather than refusing` |  |
 | post-pickers-025 | `number_input` | 1 | a | `precision rounds half away from zero, at commit and never while typing` |  |
 | post-pickers-026 | `number_input` | 1 | a | `a callback that disposes the control mid-commit leaves nothing half-written` |  |
-| post-pickers-027 | `number_input` | 1 | a | `a prefix and a suffix stand beside the editor and never enter the draft` | LayoutOrder replaces solved rectangles; the unit positions are live. |
+| post-pickers-027 | `number_input` | 1 | a | `a prefix and a suffix stand beside the editor and never enter the draft` | Live evidence does not cover this part: The largest PreferredTextSize cannot be set by script; the 320 px check runs at the current text size. Proven live in `ports_pickers/number-units`. |
 | post-pickers-028 | `number_input` | 1 | a | `a step button moves the value by one step and commits with submit` | The press is fired through Activated; the four input routes are the native Button. |
 | post-pickers-029 | `number_input` | 1 | a | `a press goes through the typed path's rounding and clamping, bounded or not` |  |
 | post-pickers-030 | `number_input` | 1 | a | `without a precision, presses land on the step's own places, never on float noise` |  |
-| post-pickers-031 | `number_input` | 1 | a | `the step buttons are square targets at the touch floor and separate stops` | Sizes are read from native Size; the hit rectangles are live. |
-| post-pickers-032 | `number_input` | 1 | a | `the step buttons are ordinary focus stops after the editor and its clear, and claim no arrows` | LayoutOrder of selectable children replaces the focus-graph traversal. |
+| post-pickers-031 | `number_input` | 1 | a | `the step buttons are square targets at the touch floor and separate stops` | Live evidence does not cover this part: Gamepad D-pad is proven with the arrow keys (same native selection). Proven live in `ports_pickers/number-step-buttons`. |
+| post-pickers-032 | `number_input` | 1 | a | `the step buttons are ordinary focus stops after the editor and its clear, and claim no arrows` | Live evidence does not cover this part: Gamepad D-pad is proven with the arrow keys (same native selection). Proven live in `ports_pickers/number-step-buttons`. |
 | post-pickers-033 | `number_input` | 1 | a | `at the end of its range, read-only or disabled, the button says so and refuses` | Refusal is fired through Activated only. |
 | post-pickers-034 | `number_input` | 1 | a | `closing the screen releases the numeric field and its buttons` |  |
 | post-pickers-035 | `number_input` | 1 | a | `a field handed the arithmetic recipe commits the answer, and never runs the text` |  |
@@ -1090,24 +1125,24 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-pickers-042 | `number_input` | 1 | a | `cancel, class loss, disable, readOnly and scrub off restore the snapshot without a commit` |  |
 | post-pickers-043 | `number_input` | 1 | a | `a caller write mid-gesture ends it and the caller's number stands` |  |
 | post-pickers-044 | `number_input` | 1 | a | `disposal mid-gesture restores the snapshot; an unscrubbable field adds no listener` |  |
-| post-pickers-045 | `picker_fields` | 1 | a | `the required mark rides the label and the error replaces the hint beside a danger trigger` |  |
+| post-pickers-045 | `picker_fields` | 1 | a | `the required mark rides the label and the error replaces the hint beside a danger trigger` | Live evidence does not cover this part: The danger border colour is recorded as a note; the check is the facet-invalid tag. Proven live in `ports_pickers/picker-field-live`. |
 | post-pickers-046 | `picker_fields` | 1 | a | `the hint line belongs to the picker: disposal releases it for every style` |  |
 | post-pickers-047 | `picker_fields` | 1 | a | `a named rung shrinks the trigger, corners reach it, and it still opens` | The reserved target wrapper is not built for the trigger; the target is live. |
 | post-pickers-048 | `picker_fields` | 1 | a | `the hint line belongs to the picker: disposal releases it for every style` |  |
-| post-pickers-049 | `picker_fields` | 1 | a | `maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused` |  |
+| post-pickers-049 | `picker_fields` | 1 | a | `maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused` | Live evidence does not cover this part: Uses a mounted copy of the Driver picker opened through isPresented with d10 chosen; mouse and touch opening are not driven. Proven live in `ports_pickers/picker-menu-scroll-live`. |
 | post-pickers-050 | `picker_fields` | 1 | a | `a labelled menu picker stands its title above a trigger at the leading edge` | The retired placement warning channel does not exist; the field form is proven structurally instead. |
-| post-pickers-051 | `picker_fields` | 1 | a | `opening lands on the selected row with gamepad or keyboard selection` | Scroll position of the chosen row is live. |
+| post-pickers-051 | `picker_fields` | 1 | a | `opening lands on the selected row with gamepad or keyboard selection` | Live evidence does not cover this part: Uses a mounted copy of the Driver picker opened through isPresented with d10 chosen; mouse and touch opening are not driven. Proven live in `ports_pickers/picker-menu-scroll-live`. |
 | post-pickers-052 | `picker_fields` | 1 | a | `an option avatar's keys are closed: a misspelt one is refused by name` |  |
 | post-pickers-053 | `picker_fields` | 1 | a | `an avatar leads its row without a second stop or press, and a disabled row is unreachable` |  |
 | post-pickers-054 | `picker_fields` | 1 | a | `an avatar leads its row without a second stop or press, and a disabled row is unreachable` | The panel width against its widest row is live. |
 | post-pickers-055 | `picker_fields` | 1 | a | `an avatar leads its row without a second stop or press, and a disabled row is unreachable` | The long label containment is live. |
 | post-pickers-056 | `picker_fields` | 1 | a | `appearance paints the track filled, stroked or not at all, live, and refuses a menu word` |  |
 | post-pickers-057 | `picker_fields` | 1 | a | `an automatic picker keeps its appearance intent across a live family switch` | The family switch is driven by the measured width and the PreferredInput, not by an environment object. |
-| post-pickers-058 | `picker_fields` | 1 | a | `corners reach the strip, and a rung shrinks the segments` | Hit-rectangle separation of segments is live. |
+| post-pickers-058 | `picker_fields` | 1 | a | `corners reach the strip, and a rung shrinks the segments` | Live evidence does not cover this part: Hairline weight and the fill silhouette are paint; screen capture needed. Proven live in `ports_pickers/picker-segmented-live`. |
 | post-pickers-059 | `picker_fields` | 1 | a | `indicatorPosition moves the radio mark to either edge, and belongs to the radio group only` |  |
 | post-pickers-060 | `picker_fields` | 1 | a | `each option is a bordered card with its meta, the chosen one plated, on every input` | Selection is driven through Activated. |
 | post-pickers-061 | `picker_fields` | 1 | a | `choosing the chosen card again clears it only when the selection is not required` |  |
-| post-pickers-062 | `picker_fields` | 1 | a | `a row of cards wraps and long copy wraps inside its card; cards take no appearance` | Wrapping on a narrow phone is live. |
+| post-pickers-062 | `picker_fields` | 1 | a | `a row of cards wraps and long copy wraps inside its card; cards take no appearance` | Proven live in `ports_pickers/picker-cards-live`. |
 | post-pickers-063 | `picker_fields` | 1 | a | `follows the caller's live option record: status changes and a removed mark goes` |  |
 | post-pickers-064 | `native_text_press` | 1 | a | `a pointer focus selects at its own release, after the engine's release writes` |  |
 | post-pickers-065 | `native_text_press` | 1 | a | `activation focus selects in Focused, and offsets are bytes` |  |
@@ -1120,37 +1155,37 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-pickers-072 | `native_text_press` | 1 | a | `a vertical drag or a refused promotion stays native for the rest of the press` |  |
 | post-pickers-073 | `native_text_press` | 1 | a | `Escape cancels, a recycle cancels, and a second finger never joins the first` |  |
 | post-pickers-074 | `native_text_press` | 1 | a | `a mouse press whose release never came does not block the next scrub` |  |
-| post-pickers-075 | `chip` | 4 | a | `a tag selects with no mark; editing shows the mark in its plate and activation removes, via pointer`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via touch`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via keyboard`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via gamepad` | Mark containment inside the plate is live. |
+| post-pickers-075 | `chip` | 4 | a | `a tag selects with no mark; editing shows the mark in its plate and activation removes, via pointer`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via touch`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via keyboard`; `a tag selects with no mark; editing shows the mark in its plate and activation removes, via gamepad` | Live evidence does not cover this part: Uses a mounted copy of the race tags with editing on; ButtonX is not driven (Delete runs the same RemoveChip action). Proven live in `ports_pickers/chip-edit-live`. |
 | post-pickers-076 | `chip` | 1 | a | `Delete and Backspace remove the focused tag only while editing` |  |
 | post-pickers-077 | `chip` | 1 | a | `one plate in skinned themes: the mark is text inside the tag, never its own button` |  |
 | post-pickers-078 | `chip` | 1 | a | `a selectable tag that can be removed must say when it is editing` |  |
-| post-pickers-079 | `chip` | 1 | a | `Delete or Backspace on the last of N tags removes exactly one and lands on the new last` | The held key is modelled with IsKeyDown; the engine delivery is live. |
+| post-pickers-079 | `chip` | 1 | a | `Delete or Backspace on the last of N tags removes exactly one and lands on the new last` | Live evidence does not cover this part: Uses a mounted copy of the race tags with editing on; ButtonX is not driven (Delete runs the same RemoveChip action). Proven live in `ports_pickers/chip-edit-live`. |
 | post-pickers-080 | `chip` | 1 | a | `a held removal does not repeat after an input change, and inherited disabled refuses it` | The input-class change is modelled by a frame with the key still held. |
 | post-pickers-081 | `picker_style` | 1 | a | `a searchable list's chosen row paints no wash and wears a check instead` |  |
-| post-pickers-082 | `picker_style` | 1 | a | `a labelled menu picker stands its title above a trigger at the leading edge` | The leading-edge position is structural; the rectangles are live. |
+| post-pickers-082 | `picker_style` | 1 | a | `a labelled menu picker stands its title above a trigger at the leading edge` | Live evidence does not cover this part: The danger border colour is recorded as a note; the check is the facet-invalid tag. Proven live in `ports_pickers/picker-field-live`. |
 | post-pickers-083 | `picker_style` | 1 | a | `a navigation link keeps its title and value in one row` | One-line fit at a regular width is live. |
 | post-pickers-084 | `picker_style` | 1 | a | `badge, meta and sectionTitle reach the menu engine from an automatic picker` |  |
-| post-pickers-085 | `picker_sweep` | 1 | a | `maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused` | The scroll-bar reserve width is live. |
+| post-pickers-085 | `picker_sweep` | 1 | a | `maxHeight bounds the whole panel, ordinary and searchable, and a bad cap is refused` | Live evidence does not cover this part: Uses a mounted copy of the Driver picker opened through isPresented with d10 chosen; mouse and touch opening are not driven. Proven live in `ports_pickers/picker-menu-scroll-live`. |
 | post-pickers-086 | `text_input` | 1 | a | `a read-only field keeps its stop and contrast, refuses every edit and commits nothing` |  |
 | post-pickers-087 | `text_input` | 1 | a | `a function readOnly flips live on the same editor, keeping the draft and the edit` |  |
 | post-pickers-088 | `text_input` | 1 | a | `enabled and readOnly compose onto TextEditable in either order and recover` | The composition is proven through the control, not through the retired screen_props adapter. |
 | post-pickers-089 | `text_input` | 1 | a | `readOnly refuses anything but a boolean` |  |
 | post-pickers-090 | `text_input` | 1 | a | `the selectOnFocus policy lands on the same editor, live, and an illegal live word keeps the last` |  |
 | post-pickers-091 | `text_input` | 1 | a | `an unknown initial selectOnFocus word fails before mount` |  |
-| post-pickers-092 | `text_input` | 1 | a | `the box is the count of lines it was told; one line is shorter and still multiline` | Viewport heights come from the typography metric; rendered line boxes are live. |
+| post-pickers-092 | `text_input` | 1 | a | `the box is the count of lines it was told; one line is shorter and still multiline` | Viewport heights come from the typography metric; rendered line boxes are live. Live finding in `ports_pickers/fields-visible-lines`: the Briefing Field grows taller than its viewport; the caret line at the end is scrolled into view. |
 | post-pickers-093 | `text_input` | 1 | a | `past the count the box holds still while the editor grows inside it, on the same editor` |  |
 | post-pickers-094 | `text_input` | 1 | a | `an authored root size wins over the line count` |  |
 | post-pickers-095 | `text_input` | 1 | a | `a line count is a multiline fact and a whole number of at least one` |  |
 | post-pickers-096 | `toggle_presentations` | 1 | a | `a switch, bare or in a settings row, wears no plate and no control art` |  |
-| post-pickers-097 | `toggle_presentations` | 1 | a | `a toggle settings row starts its content where a button row does, in every package` | Padding rules are compared in every package sheet; the solved positions are live. |
-| post-pickers-098 | `value_controls` | 1 | a | `a vertical track fills from the bottom edge and the thumb climbs as the value rises` | Fill and thumb scales replace solved rectangles; the rendered geometry is live. |
+| post-pickers-097 | `toggle_presentations` | 1 | a | `a toggle settings row starts its content where a button row does, in every package` | Live evidence does not cover this part: Uses the Buttons tab SettingsRows (Equipment, Assist, Music), which is where the three row kinds stack; the hover state is not driven. Proven live in `ports_pickers/toggle-row-align`. |
+| post-pickers-098 | `value_controls` | 1 | a | `a vertical track fills from the bottom edge and the thumb climbs as the value rises` | Proven live in `ports_pickers/slider-axis-live`. |
 | post-pickers-099 | `value_controls` | 1 | a | `Up and Down adjust a vertical track and Left and Right do not` |  |
-| post-pickers-100 | `value_controls` | 1 | a | `the arrow that lands the ring is not a value step; the next arrow is` | The held key is modelled with IsKeyDown; the engine delivery is live. |
+| post-pickers-100 | `value_controls` | 1 | a | `the arrow that lands the ring is not a value step; the next arrow is` | Live evidence does not cover this part: DPadUp is proven with the Up arrow key. Proven live in `ports_pickers/slider-landing-live`. |
 | post-pickers-101 | `value_controls` | 1 | a | `every eighth of a turn reads the value the upright track would` |  |
 | post-pickers-102 | `value_controls` | 1 | a | `a press on a scrolled track reads the painted position` | The scrolled track is modelled by moving AbsolutePosition. |
 | post-pickers-103 | `value_controls` | 1 | a | `a bound angle turns the paint live and the label and readout stay upright` |  |
-| post-pickers-104 | `value_controls` | 1 | a | `both handles are touch-floor targets and the fill spans between them` | The target size is the handle Size; the hit rectangle is live. |
-| post-pickers-105 | `value_controls` | 1 | a | `a thumb stops at the other one, and minGap holds them apart` |  |
+| post-pickers-104 | `value_controls` | 1 | a | `both handles are touch-floor targets and the fill spans between them` | Live evidence does not cover this part: Dragging a handle past the other to minGap needs a pointer drag. Proven live in `ports_pickers/slider-range-live`. |
+| post-pickers-105 | `value_controls` | 1 | a | `a thumb stops at the other one, and minGap holds them apart` | Live evidence does not cover this part: Dragging a handle past the other to minGap needs a pointer drag. Proven live in `ports_pickers/slider-range-live`. |
 | post-pickers-106 | `value_controls` | 1 | a | `an arrow a thumb cannot use against its partner keeps the ring on that thumb` |  |
 | post-pickers-107 | `value_controls` | 1 | a | `a press left of a coincident pair takes the lower thumb, and a press right takes the upper` |  |
 | post-pickers-108 | `value_controls` | 1 | a | `a drag keeps the thumb it started with, even dragged past the other one` |  |
@@ -1172,68 +1207,68 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-pickers-124 | `value_controls` | 1 | a | `an illegal pair arriving at run time keeps the last legal band and stays driveable` |  |
 | post-pickers-125 | `value_controls` | 1 | a | `an illegal pair arriving at run time keeps the last legal band and stays driveable` |  |
 | post-pickers-126 | `value_controls` | 1 | a | `the axis and the other construction words refuse a readable` |  |
-| post-pickers-127 | `value_controls` | 1 | a | `a knob is told its own thumb in a range, and each handle wears one` | Each handle wears its own knob; the travel measured from each drawn knob is live. |
+| post-pickers-127 | `value_controls` | 1 | a | `a knob is told its own thumb in a range, and each handle wears one` | Live evidence does not cover this part: Dragging a handle past the other to minGap needs a pointer drag. Proven live in `ports_pickers/slider-range-live`. |
 | post-pickers-128 | `value_controls` | 1 | a | `a thumbImage beside a thumbContent names the collision, and so does a track pair` |  |
 | post-pickers-129 | `value_controls` | 1 | a | `a keyboard Return on a handle does not latch the pad adjust mode` |  |
 | post-pickers-130 | `value_controls` | 1 | a | `an initial NaN, a bad type and a bad gap are build errors` |  |
 | post-pickers-131 | `value_controls` | 1 | a | `an initial NaN, a bad type and a bad gap are build errors` |  |
 | post-pickers-132 | `value_controls` | 1 | a | `a knob is told its own thumb in a range, and each handle wears one`; `building, driving and disposing a shaped slider leaves no connection behind` |  |
-| post-pickers-133 | `semantic_rows` | 2 | a | `a toggle settings row starts its content where a button row does, in every package` | Only the padding rules are compared; the icon and label columns are live. |
+| post-pickers-133 | `semantic_rows` | 2 | a | `a toggle settings row starts its content where a button row does, in every package` | Live evidence does not cover this part: Uses the Buttons tab SettingsRows (Equipment, Assist, Music), which is where the three row kinds stack; the hover state is not driven. Proven live in `ports_pickers/toggle-row-align`. |
 | post-pickers-134 | `date_time_picker` | 1 | a | `counts leap years, clamps month arithmetic and rolls over years` |  |
 | post-pickers-135 | `date_time_picker` | 1 | a | `lays six weeks from the week start, and a date-only value survives any fixed offset` |  |
 | post-pickers-136 | `date_time_picker` | 1 | a | `writes and reads the numeric form in the locale's order; a non-date is refused, never moved` |  |
 | post-pickers-137 | `date_time_picker` | 1 | a | `the default clock reads the player's local wall clock, not UTC` |  |
 | post-pickers-138 | `date_time_picker` | 1 | a | `the calendar opens anchored on the chosen day's month; a pick commits once and closes` |  |
-| post-pickers-139 | `date_time_picker` | 1 | a | `the year and month menus open on the shown ones and honour min/max (owner: opened at 1926)` | Centring the selected year in a scrolled menu needs engine layout (needs-live dtp-menu-centred). |
+| post-pickers-139 | `date_time_picker` | 1 | a | `the year and month menus open on the shown ones and honour min/max (owner: opened at 1926)` | Live evidence does not cover this part: Gamepad ButtonA is replaced by Return, which drives the same native activation. Proven live in `ports_pickers/dtp-menu-centred`. |
 | post-pickers-140 | `date_time_picker` | 1 | a | `a refused pick paints nothing; a disabled or out-of-bounds day is focusable, inert and struck` |  |
-| post-pickers-141 | `date_time_picker` | 1 | a | `typed entry commits a date; a refused text stays with its error and commits nothing` | The anchored position is proven with synthetic Absolute* rectangles, and the icon's second press is proven as the modal's outside tap; real layout and hit-testing are needs-live (dtp-anchor-below, dtp-icon-toggle). |
+| post-pickers-141 | `date_time_picker` | 1 | a | `typed entry commits a date; a refused text stays with its error and commits nothing` | Live evidence does not cover this part: Opened with isPresented instead of a press on the calendar icon. Proven live in `ports_pickers/dtp-anchor-below`. |
 | post-pickers-142 | `date_time_picker` | 1 | a | `a typed range reads back its own words in every locale order; a draft's typed text only proposes` |  |
 | post-pickers-143 | `date_time_picker` | 1 | a | `keyboard and pad: the arrows walk the grid with its contribution attached, a row's end continues, L1/R1 page` |  |
-| post-pickers-144 | `date_time_picker` | 1 | a | `the grid is one selection group; the arrows walk days across months; grey days are no stop; paging stops at the bounds` | Roblox has no Tab focus traversal, so the Tab and Shift+Tab steps are not ported; the grid is one native SelectionGroup and its exits are proven through NextSelectionUp/Down and disabled InputContexts, not through engine navigation (needs-live dtp-native-navigation). |
-| post-pickers-145 | `date_time_picker` | 1 | a | `a draft on a TV: Down from any day leaves the months below; Up from the first row reaches the header` | The walk follows the native NextSelectionDown chain to the Hour field (time) or ResetAll (no time); the engine's own step from there to Apply is needs-live (dtp-native-navigation). |
+| post-pickers-144 | `date_time_picker` | 1 | a | `the grid is one selection group; the arrows walk days across months; grey days are no stop; paging stops at the bounds` | Live evidence does not cover this part: D-pad is proven with the arrow keys; the picker is opened with isPresented, not a gamepad press. Proven live in `ports_pickers/dtp-native-navigation`. |
+| post-pickers-145 | `date_time_picker` | 1 | a | `a draft on a TV: Down from any day leaves the months below; Up from the first row reaches the header` | Live evidence does not cover this part: D-pad is proven with the arrow keys; the picker is opened with isPresented, not a gamepad press. Proven live in `ports_pickers/dtp-native-navigation`. |
 | post-pickers-146 | `date_time_picker` | 1 | a | `a pad sets a date and time: each pick commits, B keeps it and returns focus; a draft's B restores` |  |
 | post-pickers-147 | `date_time_picker` | 1 | a | `time: hour and minute fields step on the minute grid, AM/PM flips, and a touch list sets both` |  |
-| post-pickers-148 | `date_time_picker` | 1 | a | `the first pick anchors, an earlier second pick swaps, and onRangeCommit waits for both ends` | Paint is proven as tags plus the compiled StyleRule properties, not as rendered colours (needs-live dtp-paint). |
+| post-pickers-148 | `date_time_picker` | 1 | a | `the first pick anchors, an earlier second pick swaps, and onRangeCommit waits for both ends` | Live evidence does not cover this part: Colours are read with GetStyled against the Standard palette, not from pixels; the today ring colour is recorded as a note only. Proven live in `ports_pickers/dtp-paint`. |
 | post-pickers-149 | `date_time_picker` | 1 | a | `presets clip to the bounds: outside is shown disabled, overlapping is clamped and enabled` |  |
 | post-pickers-150 | `date_time_picker` | 1 | a | `draft: picks and presets propose live, only Apply commits, Cancel restores, Reset all clears` | Footer order is proven by LayoutOrder, parents and the SpaceBetween flex, and chip size by the compact controlSize, not by measured rectangles. |
 | post-pickers-151 | `date_time_picker` | 1 | a | `a caller write during an open draft re-bases what Cancel restores` |  |
 | post-pickers-152 | `date_time_picker` | 1 | a | `a range's end drags across days and panes, crossing swaps, release commits once (owner)` | Drag positions come from synthetic cell rectangles and fired InputBegan/InputChanged/InputEnded events (needs-live dtp-range-drag). |
 | post-pickers-153 | `date_time_picker` | 1 | a | `a drafted range drags live but commits only on Apply` |  |
 | post-pickers-154 | `date_time_picker` | 1 | a | `the Pickers scenario's window applies a preset only on Apply, and a refusal changes nothing` | The gallery Pickers scenario is not on this branch; the spec builds the same Race day and Season window flow inline instead of running the gallery scenario. |
-| post-pickers-155 | `date_time_picker` | 1 | a | `a wide screen shows two consecutive months, and they stay consecutive through paging and bounds` | The width comes from a synthetic root AbsoluteSize, and Down leaving the months relies on native navigation (NextSelectionDown nil). |
+| post-pickers-155 | `date_time_picker` | 1 | a | `a wide screen shows two consecutive months, and they stay consecutive through paging and bounds` | Proven live in `ports_pickers/dtp-grid-layout`. |
 | post-pickers-156 | `date_time_picker` | 1 | a | `two time pickers on one page: Down from a picker's last week reaches ITS OWN hour field` |  |
-| post-pickers-157 | `date_time_picker` | 1 | a | `phone portrait and landscape: the calendar fits, every day keeps the floor, Apply is on screen` | Headless proves the route, the 44x44 cell sizes and the surface capped to the screen height; on-screen fit and reachability are needs-live (dtp-phone-fit). |
-| post-pickers-158 | `date_time_picker` | 1 | a | `a single date's panel hugs its six weeks: no room kept for an absent hint, caption or footer` | Proves automatic height, the absent or hidden hint, title and footer, and the 44 px header; the measured insets are needs-live (dtp-panel-hugs). |
-| post-pickers-159 | `date_time_picker` | 1 | a | `the week starts where the caller says; a compact touch field opens a sheet with Done, ten feet a centred sheet` | Pixel Quest's calendar icon check is replaced by the standard calendar asset on the Open icon; ten-foot is injected through GuiService:IsTenFootInterface (needs-live dtp-ten-foot). |
+| post-pickers-157 | `date_time_picker` | 1 | a | `phone portrait and landscape: the calendar fits, every day keeps the floor, Apply is on screen` | Headless proves the route, the 44x44 cell sizes and the surface capped to the screen height; on-screen fit and reachability are needs-live (dtp-phone-fit). Live finding in `ports_pickers/dtp-phone-fit`: portrait range: the calendar opens as a sheet; portrait range: the sheet spans the screen width minus 24 px. |
+| post-pickers-158 | `date_time_picker` | 1 | a | `a single date's panel hugs its six weeks: no room kept for an absent hint, caption or footer` | Live evidence does not cover this part: No device gives KeyboardAndMouse preferred input; under the xbox default the Gamepad PageHint is legitimately present and the inset is measured from the last visible part. Proven live in `ports_pickers/dtp-panel-hugs`. |
+| post-pickers-159 | `date_time_picker` | 1 | a | `the week starts where the caller says; a compact touch field opens a sheet with Done, ten feet a centred sheet` | Live evidence does not cover this part: Closing with B and the return of selection to the calendar icon: B cannot be sent. Relies on the xbox emulator reporting IsTenFootInterface() true, which is recorded in the first check. Proven live in `ports_pickers/dtp-ten-foot`. |
 | post-pickers-160 | `date_time_picker` | 1 | a | `refuses a malformed contract at construction and quarantines a late bad value` |  |
 | post-pickers-161 | `color_picker` | 1 | a | `parses #RGB, #RRGGBB and #RRGGBBAA (only with alpha) and formats engine bytes uppercase` |  |
 | post-pickers-162 | `color_picker` | 1 | a | `keeps a grey's hue (and a black's saturation) through the engine conversion` |  |
 | post-pickers-163 | `color_picker` | 1 | a | `a saturation round trip through the Sliders tab returns to the hue the player set` |  |
 | post-pickers-164 | `color_picker` | 1 | a | `switching the readout twenty times never moves canonical, and a hex commit is the only write` |  |
-| post-pickers-165 | `color_picker` | 1 | a | `a bare well is its swatch, named by its value; a labelled one is a form row` | The 44x44 floor is read from the well's Size property, not from a solved engine rect (live: color-placement-real-layout). |
+| post-pickers-165 | `color_picker` | 1 | a | `a bare well is its swatch, named by its value; a labelled one is a form row` | Proven live in `ports_pickers/color-placement-real-layout`. |
 | post-pickers-166 | `color_picker` | 1 | a | `the well opens an anchored panel on a roomy pointer screen; a refused swatch never paints` |  |
-| post-pickers-167 | `color_picker` | 1 | a | `the panel never covers its well: below, else above, else beside, else shrunk` | Heights of Modes, Readout and the techniques are injected as AbsoluteSize; the engine's own layout of a tall Bricks technique is live (color-placement-real-layout). |
-| post-pickers-168 | `color_picker` | 1 | a | `the panel never covers its well: below, else above, else beside, else shrunk` | Measurements are injected; the native candidate has no host app-chrome inset band, so main's appChromeInsets = { top = 120 } variant has no native counterpart (live: color-placement-real-layout). |
-| post-pickers-169 | `color_picker` | 1 | a | `the panel keeps one height across every technique, on a pointer panel and a phone sheet` | Technique heights are injected; that the engine still reports AbsoluteSize for a hidden technique is live (color-hidden-technique-size). |
+| post-pickers-167 | `color_picker` | 1 | a | `the panel never covers its well: below, else above, else beside, else shrunk` | Proven live in `ports_pickers/color-placement-real-layout`. |
+| post-pickers-168 | `color_picker` | 1 | a | `the panel never covers its well: below, else above, else beside, else shrunk` | Proven live in `ports_pickers/color-placement-real-layout`. |
+| post-pickers-169 | `color_picker` | 1 | a | `the panel keeps one height across every technique, on a pointer panel and a phone sheet` | Live evidence does not cover this part: Each tab is shown by opening a well whose first mode is that tab (same mode set) rather than pressing the mode picker. Proven live in `ports_pickers/color-hidden-technique-size`. |
 | post-pickers-170 | `color_picker` | 1 | a | `the panel's height follows its room, never a height it once measured` | The room change is a ScreenGui AbsoluteSize change with injected content heights, not a real rotation. |
-| post-pickers-171 | `color_picker` | 1 | a | `an accepted swatch commits once, marks the cell, and the swatch grid lays out rows of eight` | The two-dimensional D-pad walk is the engine's selection over the wrapped layout; headless proves the 8-cell row width, wrap, order and selectable cells only (live: color-grid-wraps-two-dimensions). |
+| post-pickers-171 | `color_picker` | 1 | a | `an accepted swatch commits once, marks the cell, and the swatch grid lays out rows of eight` | Live evidence does not cover this part: D-pad is proven with the arrow keys. Proven live in `ports_pickers/color-grid-wraps-two-dimensions`. |
 | post-pickers-172 | `color_picker` | 1 | a | `saved colours: + proposes the current colour once; Edit removes by activate or Delete and hands the ring on` |  |
 | post-pickers-173 | `color_picker` | 1 | a | `refuses a saved-colour callback that is not a function` |  |
 | post-pickers-174 | `color_picker` | 1 | a | `a short swatch list keeps square target cells, and the default grid stays a hue per column` | Cell squareness is read from Size offsets, not solved rects. |
 | post-pickers-175 | `color_picker` | 1 | a | `without draft every change commits live and B or an outside tap only closes, keeping it` |  |
 | post-pickers-176 | `color_picker` | 1 | a | `draft: B and an outside tap discard, restoring the open-time colour; a caller write re-bases it` |  |
 | post-pickers-177 | `color_picker` | 1 | a | `draft: gestures propose live but commit nothing; Apply commits once and Cancel restores` |  |
-| post-pickers-178 | `color_picker` | 1 | a | `opens as a sheet with Done on a compact touch screen, and a centred sheet at ten feet with the plane` | The on-screen-keyboard re-measure (keyboardOcclusionRect) has no the native candidate counterpart and is not proven; the sheet's 'never moves while dragging' is proven on the Position property only. |
-| post-pickers-179 | `color_picker` | 1 | a | `a drag tracks 1:1 in saturation and value, keeps the hue, and commits once at release` |  |
+| post-pickers-178 | `color_picker` | 1 | a | `opens as a sheet with Done on a compact touch screen, and a centred sheet at ten feet with the plane` | Live evidence does not cover this part: B cannot be sent. D-pad is proven with the arrow keys. Relies on the xbox emulator reporting IsTenFootInterface() true, which is recorded in the first check. Proven live in `ports_pickers/color-ten-foot-center`. |
+| post-pickers-179 | `color_picker` | 1 | a | `a drag tracks 1:1 in saturation and value, keeps the hue, and commits once at release` | Live evidence does not cover this part: Only the precondition is checked (the drag Surface covers the painted plane exactly); a drag cannot be sent, so 1:1 tracking is not checked. Proven live in `ports_pickers/color-plane-layers-and-ring`. |
 | post-pickers-180 | `color_picker` | 1 | a | `the native drag detector follows the plane through a tab round trip` |  |
 | post-pickers-181 | `color_picker` | 1 | a | `losing the pointer class mid-drag restores where the drag began` |  |
-| post-pickers-182 | `color_picker` | 1 | a | `phone portrait and landscape: every target keeps the floor and Apply stays in the panel` | Apply staying on screen and inside the sheet body is proven structurally (Apply outside the scrolling Body, route by orientation); the solved rects are live (color-phone-sheet-apply-on-screen). |
-| post-pickers-183 | `color_picker` | 1 | a | `on touch the preview leads the panel, and a drag shows the colour in a bubble above the finger` | The bubble is not clamped to the room above the plane (main's bubbleRoom); readability near the top edge is live (color-touch-bubble-room). |
+| post-pickers-182 | `color_picker` | 1 | a | `phone portrait and landscape: every target keeps the floor and Apply stays in the panel` | Apply staying on screen and inside the sheet body is proven structurally (Apply outside the scrolling Body, route by orientation); the solved rects are live (color-phone-sheet-apply-on-screen). Live finding in `ports_pickers/color-phone-sheet-apply-on-screen`: portrait swatches: the panel is a sheet; portrait spectrum: the panel is a sheet; portrait sliders: the panel is a sheet. |
+| post-pickers-183 | `color_picker` | 1 | a | `on touch the preview leads the panel, and a drag shows the colour in a bubble above the finger` | The bubble is not clamped to the room above the plane (main's bubbleRoom); readability near the top edge is live (color-touch-bubble-room). Live finding in `ports_pickers/color-touch-bubble-room`: sheet Plane bubble is not clipped by the panel body. |
 | post-pickers-184 | `color_picker` | 1 | a | `the right stick steers the plane only while it holds focus, and a live hint says so` | The owner-size leak check is replaced by the engine heartbeat listener count; camera sinking is proven as InputContext.Sink = true, the camera itself is live (color-stick-sinks-camera). |
 | post-pickers-185 | `color_picker` | 1 | a | `a committed line follows a commit, and a refusal changes nothing` | The gallery Pickers scenario itself is not ported to the native candidate; the test composes the same Trim well, team swatches, save cell, committed line and refusal switch in a screen. |
 | post-pickers-186 | `color_picker` | 1 | a | `alpha mounts opacity, writes #RRGGBBAA, and shows the checker under a translucent colour` |  |
 | post-pickers-187 | `color_picker` | 1 | a | `the Bricks tab names the chosen brick in a field above its grid` | 'Above' is proven by LayoutOrder in the Brick column, not by solved rects. |
-| post-pickers-188 | `color_picker` | 1 | a | `the plane is two exact layers, the strips show what they select, and the thumbs are two-tone rings` |  |
+| post-pickers-188 | `color_picker` | 1 | a | `the plane is two exact layers, the strips show what they select, and the thumbs are two-tone rings` | Live evidence does not cover this part: The ring structure (black 1 px, white 3 px, black 1 px) is checked on every ring; legibility on white, black and hues needs a screen capture. Proven live in `ports_pickers/color-plane-layers-and-ring`. |
 | post-pickers-189 | `color_picker` | 1 | a | `empty shows the placeholder and the crossed plate; disabled keeps its colour and does not open` |  |
 | post-pickers-190 | `color_picker` | 1 | a | `refuses a malformed contract at construction and quarantines a late bad value` |  |
 

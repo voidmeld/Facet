@@ -2913,6 +2913,10 @@ add("color-phone-sheet-apply-on-screen", { "post-pickers-182" }, function(t)
 			then
 				local placement = root:GetAttribute("placement")
 				t.note(`{where} placement`, placement)
+				t.note(`{where} layer and input`, {
+					layer.AbsoluteSize,
+					game:GetService("UserInputService").PreferredInput,
+				})
 				t.inside(`{where}: the panel stays inside the screen`, panel, layer, 1)
 				if turn.name == "portrait" then
 					t.check(`{where}: the panel is a sheet`, placement == "sheet", placement)

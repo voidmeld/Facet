@@ -133,3 +133,16 @@ source stamp.
 - The input tools cannot open the Roblox menu, so a live run cannot change the
   text size. Record the Largest text size on a device or in a session where a
   person opens the menu.
+- After `SetDeviceAsync`, `UserInputService.PreferredInput` can change some
+  frames later. `t.device` waits until the preferred input is steady, and a
+  case can pass `input` to wait for one value.
+
+### Engine behavior found by the harness
+
+- A read of `AbsolutePosition` in the same frame as a reparent or a scroll
+  can return the old value. The engine can then correct the value without a
+  change signal. The affixed Notice reservation and the menu landing row read
+  the geometry again on the next `Heartbeat`.
+- After a style sheet sets `TextSize` or a font, an explicit
+  `AutomaticSize` label can keep its old height. Some labels on the
+  text-controls page stay 12 px tall for 13 to 16 px text.
