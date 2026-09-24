@@ -286,8 +286,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 						table.insert(
 							children,
 							1,
-							Host.TextButton({
-								Name = "RowHit",
+							Host.TextButton "RowHit" {
 								Size = D2.fromScale(1, 1),
 								Text = "",
 								BackgroundTransparency = 1,
@@ -303,7 +302,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 										return read(selection, use)[key] == true
 									end,
 								} :: EngineTypes.Attributes,
-							})
+							}
 						)
 					end
 					return Host.Frame(children)

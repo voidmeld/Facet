@@ -86,11 +86,10 @@ function example.build(ctx: any)
 		return baseRows:peek() :: { any }
 	end
 	local function starCell(item: any)
-		return UI.Rating({
-			Name = "Rating",
+		return UI.Rating "Rating" {
 			value = ratings[plain(item).id],
 			count = 5,
-		})
+		}
 	end
 
 	local function removeTrack(id: string)
@@ -157,8 +156,7 @@ function example.build(ctx: any)
 		baseRows:set(out)
 	end
 	function built.screen()
-		local tracks = UI.Table({
-			Name = "Tracks",
+		local tracks = UI.Table "Tracks" {
 			Size = UDim2.new(1, 0, 0, 328),
 			widths = columnWidths,
 			columns = {
@@ -237,7 +235,7 @@ function example.build(ctx: any)
 				}
 			end,
 			onReorder = reorder,
-		})
+		}
 
 		local function restore()
 			filterText:set("")
@@ -290,8 +288,7 @@ function example.build(ctx: any)
 			end
 			return `Now playing — {track}`
 		end
-		local screen = Host.Frame({
-			Name = "Playlist",
+		local screen = Host.Frame "Playlist" {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			Host.UIPadding({
@@ -300,8 +297,7 @@ function example.build(ctx: any)
 				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 16),
 			}),
-			Host.ScrollingFrame({
-				Name = "Page",
+			Host.ScrollingFrame "Page" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -312,9 +308,7 @@ function example.build(ctx: any)
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					Padding = UDim.new(0, 8),
 				}),
-				UI.Label({
-
-					Name = "Title",
+				UI.Label "Title" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -324,17 +318,13 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.TextInput({
-
-					Name = "Filter",
+				},
+				UI.TextInput "Filter" {
 					value = filterText,
 					presentation = "search",
 					placeholder = "Filter tracks",
-				}),
-				UI.Label({
-
-					Name = "Hint",
+				},
+				UI.Label "Hint" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -344,10 +334,8 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "NowPlaying",
+				},
+				UI.Label "NowPlaying" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -357,10 +345,8 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "Widths",
+				},
+				UI.Label "Widths" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -370,16 +356,14 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 				tracks,
-				UI.Button({
-
-					Name = "Restore",
+				UI.Button "Restore" {
 					label = "Restore the original playlist",
 					onActivate = restore,
-				}),
-			}),
-		})
+				},
+			},
+		}
 		local exports = {
 			from = filteredRows,
 			sortedRows = sortedRows,

@@ -69,8 +69,7 @@ return {
 				end,
 			}
 			if item.kind == "world" then
-				stage = UI.Stage({
-					Name = "TrailPack",
+				stage = UI.Stage "TrailPack" {
 					Size = UDim2.fromOffset(260, 200),
 					Position = UDim2.fromScale(0.5, 0.5),
 					AnchorPoint = Vector2.new(0.5, 0.5),
@@ -80,10 +79,8 @@ return {
 					end,
 					content = function(runtime, world)
 						return runtime.mount(function()
-							return Host.Model({
-								Name = "TrailPack",
-								Host.Part({
-									Name = "Bag",
+							return Host.Model "TrailPack" {
+								Host.Part "Bag" {
 									Anchored = true,
 									CanCollide = false,
 									Color = Color3.fromRGB(91, 121, 80),
@@ -93,19 +90,18 @@ return {
 									CFrame = function(use)
 										return CFrame.Angles(0, math.rad(use(turnAngle)), 0)
 									end,
-								}),
-								Host.Part({
-									Name = "Pocket",
+								},
+								Host.Part "Pocket" {
 									Anchored = true,
 									CanCollide = false,
 									Color = Color3.fromRGB(51, 76, 44),
 									Size = Vector3.new(1.2, 0.75, 0.35),
 									Position = Vector3.new(0, -0.35, 0.6),
-								}),
-							})
+								},
+							}
 						end, world)
 					end,
-				})
+				}
 				worldState = function()
 					return { angle = turnAngle:peek(), unpacked = unpacked:peek(), taken = taken:peek() }
 				end
@@ -331,48 +327,42 @@ return {
 					orbit:pause()
 				end
 			end)
-			local silhouette = Host.Frame({
-				Name = "Explorer",
+			local silhouette = Host.Frame "Explorer" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(0, 76, 0, 110),
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Position = function(use)
 					return UDim2.new(0.5, 32 * math.sin(use(orbit.progress) * math.pi * 2), 0.5, use(bodyY))
 				end,
-				Host.Frame({
-					Name = "Head",
+				Host.Frame "Head" {
 					BackgroundColor3 = Color3.fromRGB(229, 181, 139),
 					Size = UDim2.new(0, 32, 0, 32),
 					AnchorPoint = Vector2.new(0.5, 0),
 					Position = UDim2.new(0.5, 0, 0, 0),
-				}),
-				Host.Frame({
-					Name = "Coat",
+				},
+				Host.Frame "Coat" {
 					BackgroundColor3 = Color3.fromRGB(80, 135, 93),
 					Size = UDim2.new(0, 40, 0, 46),
 					AnchorPoint = Vector2.new(0.5, 0.5),
 					Position = UDim2.new(0.5, 0, 0.5, 0),
-				}),
-				Host.Frame({
-					Name = "Arm",
+				},
+				Host.Frame "Arm" {
 					Position = UDim2.fromOffset(60, 32),
 					BackgroundColor3 = Color3.fromRGB(80, 135, 93),
 					Size = UDim2.new(0, 12, 0, 42),
 					Rotation = armAngle,
-				}),
-				Host.Frame({
-					Name = "LegLeft",
+				},
+				Host.Frame "LegLeft" {
 					Position = UDim2.fromOffset(22, 80),
 					BackgroundColor3 = Color3.fromRGB(43, 59, 84),
 					Size = UDim2.new(0, 13, 0, 30),
-				}),
-				Host.Frame({
-					Name = "LegRight",
+				},
+				Host.Frame "LegRight" {
 					Position = UDim2.fromOffset(42, 80),
 					BackgroundColor3 = Color3.fromRGB(43, 59, 84),
 					Size = UDim2.new(0, 13, 0, 30),
-				}),
-			})
+				},
+			}
 			if item.kind == "character" then
 				spec.anchor = silhouette
 			end
@@ -383,13 +373,12 @@ return {
 					current, currentPresented, worldState = nil, nil, nil
 				end
 			end)
-			local root = Host.Frame({
-				Name = "Scene",
+			local root = Host.Frame "Scene" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 380),
 				if item.kind == "world" then stage else silhouette,
 				menuNode,
-			})
+			}
 			return root
 		end
 		local tabs = {}
@@ -426,8 +415,7 @@ return {
 				elseif tab == "world" then "Open the pack’s actions, then inspect, unpack, or pick it up."
 				else "Open your commands. Equipment leads to Tools. The explorer stays in view."
 		end)
-		local disclosure = UI.DisclosureGroup({
-			Name = "Advanced",
+		local disclosure = UI.DisclosureGroup "Advanced" {
 			label = "More options",
 			expanded = advanced,
 			content = function()
@@ -440,56 +428,49 @@ return {
 						SortOrder = Enum.SortOrder.LayoutOrder,
 						Padding = UDim.new(0, 8),
 					}),
-					UI.Button({
-						Name = "ContentFit",
+					UI.Button "ContentFit" {
 						label = Compose.formula(function(use)
 							return "Arc shape: " .. fitNames[use(fitting)]
 						end),
 						onActivate = function()
 							fitting:set(fitModes[(table.find(fitModes, fitting:peek()) :: number) % #fitModes + 1])
 						end,
-					}),
-					UI.Button({
-						Name = "CornerPosition",
+					},
+					UI.Button "CornerPosition" {
 						label = Compose.formula(function(use)
 							return "Corner: " .. use(corner)
 						end),
 						onActivate = function()
 							corner:set(corners[(table.find(corners, corner:peek()) :: number) % #corners + 1])
 						end,
-					}),
-					UI.Toggle({
-						Name = "Separate",
+					},
+					UI.Toggle "Separate" {
 						label = "Separate character icons",
 						value = separate,
-					}),
-					UI.Toggle({
-						Name = "Skin",
+					},
+					UI.Toggle "Skin" {
 						label = "Jewel buttons",
 						value = skinned,
-					}),
-					UI.Toggle({
-						Name = "Move",
+					},
+					UI.Toggle "Move" {
 						label = "Let the explorer wander",
 						value = moving,
-					}),
-					UI.Toggle({
-						Name = "PassThrough",
+					},
+					UI.Toggle "PassThrough" {
 						label = "Allow taps through the center",
 						value = passThrough,
-					}),
-					UI.Button({
-						Name = "CenterPolicy",
+					},
+					UI.Button "CenterPolicy" {
 						label = Compose.formula(function(use)
 							return "Center: " .. use(centerPolicy)
 						end),
 						onActivate = function()
 							centerPolicy:set(if centerPolicy:peek() == "empty" then "back" else "empty")
 						end,
-					}),
+					},
 				})
 			end,
-		})
+		}
 		local function sceneRows()
 			return Compose.OrderedCollection({
 				from = scenes,
@@ -501,8 +482,7 @@ return {
 		end
 		local function controls()
 			return {
-				Host.Frame({
-					Name = "Tabs",
+				Host.Frame "Tabs" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -513,14 +493,12 @@ return {
 						Padding = UDim.new(0, 4),
 					}),
 					table.unpack(tabs),
-				}),
-				Host.Frame({
-					Name = "InstructionPlate",
+				},
+				Host.Frame "InstructionPlate" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					UI.Label({
-						Name = "Instruction",
+					UI.Label "Instruction" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -530,15 +508,13 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-				}),
-				Host.Frame({
-					Name = "ResultPlate",
+					},
+				},
+				Host.Frame "ResultPlate" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					UI.Label({
-						Name = "Result",
+					UI.Label "Result" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -548,16 +524,15 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-				}),
+					},
+				},
 				disclosure,
 			}
 		end
 		local function screen()
 			local content = controls()
 			table.insert(content, 3, sceneRows())
-			return Host.ScrollingFrame({
-				Name = "RadialMenu",
+			return Host.ScrollingFrame "RadialMenu" {
 				BackgroundTransparency = 1,
 				Size = UDim2.fromScale(1, 1),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -575,7 +550,7 @@ return {
 					PaddingRight = UDim.new(0, 16),
 				}),
 				table.unpack(content),
-			})
+			}
 		end
 		return {
 			screen = screen,

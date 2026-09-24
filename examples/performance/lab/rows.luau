@@ -48,8 +48,7 @@ function rows.build(ctx, current, options)
 			Padding = T.UDim.new(0, 8),
 		}),
 		if full then UI.AsyncImage(image) else Host.ImageLabel(image),
-		Host.Frame({
-			Name = "Copy",
+		Host.Frame "Copy" {
 			LayoutOrder = 2,
 			Size = D2.fromOffset(0, 0),
 			AutomaticSize = E.AutomaticSize.Y,
@@ -57,8 +56,7 @@ function rows.build(ctx, current, options)
 			Host.UISizeConstraint({ MinSize = T.Vector2.new(120, 40) }),
 			Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = T.UDim.new(0, 2) }),
-			UI.Label({
-				Name = "Title",
+			UI.Label "Title" {
 				TextSize = if full then nil else 16,
 				LayoutOrder = 1,
 				text = function(use)
@@ -68,9 +66,8 @@ function rows.build(ctx, current, options)
 				AutomaticSize = E.AutomaticSize.Y,
 				TextXAlignment = E.TextXAlignment.Left,
 				TextTruncate = E.TextTruncate.AtEnd,
-			}),
-			UI.Label({
-				Name = "Detail",
+			},
+			UI.Label "Detail" {
 				TextSize = if full then nil else 13,
 				LayoutOrder = 2,
 				text = function(use)
@@ -80,20 +77,18 @@ function rows.build(ctx, current, options)
 				AutomaticSize = E.AutomaticSize.Y,
 				TextXAlignment = E.TextXAlignment.Left,
 				TextTruncate = E.TextTruncate.AtEnd,
-			}),
-		}),
-		UI.Toggle({
-			Name = "Ready",
+			},
+		},
+		UI.Toggle "Ready" {
 			LayoutOrder = 3,
 			label = if full then "Ready" else "Favourite",
 			value = checked,
-		}),
+		},
 	}
 	if full then
 		table.insert(
 			children,
-			UI.Stepper({
-				Name = "Rate",
+			UI.Stepper "Rate" {
 				LayoutOrder = 4,
 				label = "Rate",
 				value = value,
@@ -103,12 +98,11 @@ function rows.build(ctx, current, options)
 				format = function(next)
 					return string.format("%d%%", math.floor(next * 100 + 0.5))
 				end,
-			})
+			}
 		)
 		table.insert(
 			children,
-			UI.Button({
-				Name = "Open",
+			UI.Button "Open" {
 				LayoutOrder = 5,
 				label = "Open",
 				onActivate = function()
@@ -116,7 +110,7 @@ function rows.build(ctx, current, options)
 						ctx.onRowActivate(current:peek())
 					end
 				end,
-			})
+			}
 		)
 	end
 	local node = Host.Frame(children)

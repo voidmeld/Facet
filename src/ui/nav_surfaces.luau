@@ -61,8 +61,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local function chevron(use: Core.Use): string
 			return if use(spec.expanded) then "chevron.down" else "chevron.trailing"
 		end
-		local header = UI.Button({
-			Name = "Header",
+		local header = UI.Button "Header" {
 			label = spec.label,
 			icon = if side == "leading" then chevron else spec.icon,
 			trailingIcon = if side == "trailing" then chevron else spec.icon,
@@ -77,7 +76,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					spec.onToggle(value)
 				end
 			end,
-		})
+		}
 
 		local root = ctx.column(
 			{
@@ -87,7 +86,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					if spec.appearance == "divided" then
 						node = ctx.column({
 							ctx.styled(
-								Host.Frame({ Name = "Divider", BorderSizePixel = 0, Size = D2.new(1, 0, 0, 1) }),
+								Host.Frame "Divider" { BorderSizePixel = 0, Size = D2.new(1, 0, 0, 1) },
 								"divider"
 							),
 							node,
@@ -163,7 +162,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									return read(spec.dismissButton, use) ~= false
 										or use(preferred) == E.PreferredInput.Gamepad
 								end, function()
-									return UI.Button({ Name = "Close", label = "Close", onActivate = close })
+									return UI.Button "Close" { label = "Close", onActivate = close }
 								end),
 								ctx.padding(16, 16),
 								ctx.corner(),
@@ -315,11 +314,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				if spec.suppression then
 					table.insert(
 						contents,
-						UI.Toggle({
-							Name = "Suppression",
+						UI.Toggle "Suppression" {
 							value = spec.suppression.isSuppressed,
 							label = spec.suppression.label or "Do not show again",
-						})
+						}
 					)
 				end
 				local contentRoot = ctx.column(
@@ -377,8 +375,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end)
 				local actionBar = Host.Frame(actionProps)
 				local actionSize = ctx.observe(actionBar, "AbsoluteSize")
-				local scroll = Host.ScrollingFrame({
-					Name = "AlertMessage",
+				local scroll = Host.ScrollingFrame "AlertMessage" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					CanvasSize = D2.fromOffset(0, 0),
@@ -400,18 +397,17 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						)
 					end,
 					contentRoot,
-				})
+				}
 				local layout: GuiObject
 				if fullScreen then
 					runtime.decorate(actionBar, { AnchorPoint = V2.new(0, 1), Position = D2.fromScale(0, 1) })
-					layout = Host.CanvasGroup({
-						Name = "AlertLayout",
+					layout = Host.CanvasGroup "AlertLayout" {
 						BackgroundTransparency = 1,
 						Size = D2.fromScale(1, 1),
 						scroll :: Instance,
 						actionBar,
 						ctx.padding(padding, padding),
-					})
+					}
 				else
 					layout = ctx.column(
 						{ scroll, actionBar, ctx.padding(padding, padding), ctx.corner() },
@@ -419,13 +415,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					)
 				end
 				local panel = ctx.styled(
-					Host.CanvasGroup({
-						Name = "AlertPanel",
+					Host.CanvasGroup "AlertPanel" {
 						BackgroundTransparency = 0,
 						BorderSizePixel = 0,
 						Size = D2.fromScale(1, 1),
 						layout,
-					}),
+					},
 					"alert"
 				)
 				if not fullScreen then
@@ -518,8 +513,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								AutomaticSize = E.AutomaticSize.None,
 							})
 							surfaces.attach(panel, {
-								Host.CanvasGroup({
-									Name = "SourcePreview",
+								Host.CanvasGroup "SourcePreview" {
 									BackgroundTransparency = 1,
 									Size = D2.fromScale(1, 1),
 									Interactable = false,
@@ -531,7 +525,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 										return math.clamp((amount(use) - 0.15) / 0.5, 0, 1)
 									end,
 									snapshot,
-								}),
+								},
 							})
 						end
 						runtime.decorate(layout, {
@@ -593,8 +587,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							end,
 						})
 						surfaces.attach(panel, {
-							Host.UIScale({
-								Name = "PresentationScale",
+							Host.UIScale "PresentationScale" {
 								Scale = function(use: Core.Use)
 									if not source then
 										return 1
@@ -603,7 +596,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									local width = math.max(1, math.min(use(offer).X - 32, spec.maxWidth or 440))
 									return math.max(0.01, use(sourceSize).X / width) * (1 - t) + t
 								end,
-							}),
+							},
 						})
 					end
 					local parent = ctx.observe(modal, "Parent")
@@ -644,7 +637,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					if ctx.config.onError then
 						ctx.config.onError(failure)
 					end
-					return Host.Folder({ Name = "FailedAlert" })
+					return Host.Folder "FailedAlert" {}
 				end,
 			}),
 		})
@@ -759,23 +752,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					table.insert(resizeOptions, { value = detent.id, label = detent.id })
 				end
 				local panel = ctx.column({
-					Host.Frame({
-						Name = "DragHandle",
+					Host.Frame "DragHandle" {
 						BackgroundTransparency = 1,
 						Size = D2.new(1, 0, 0, 24),
 						Visible = spec.dragIndicator ~= "hidden",
 						detector,
-					}),
+					},
 					ctx.text({ Name = "Title", Text = spec.title }),
-					UI.Picker({
-						Name = "Size",
+					UI.Picker "Size" {
 						selected = spec.detent,
 						options = resizeOptions,
 						multiple = false :: false,
 						style = "segmented" :: "segmented",
-					}),
-					Host.ScrollingFrame({
-						Name = "SheetContent",
+					},
+					Host.ScrollingFrame "SheetContent" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						CanvasSize = D2.fromOffset(0, 0),
@@ -786,8 +776,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						ClipsDescendants = true,
 						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 						body(spec.content, nil),
-					}),
-					UI.Button({ Name = "Close", label = "Close", onActivate = close, Size = D2.new(1, 0, 0, 44) }),
+					},
+					UI.Button "Close" { label = "Close", onActivate = close, Size = D2.new(1, 0, 0, 44) },
 					ctx.padding(16, 12),
 					ctx.corner(),
 				}, {
@@ -909,13 +899,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				local panel = ctx.styled(
 					ctx.column({
 						body(spec.content, nil),
-						UI.Button({
-							Name = "Dismiss",
+						UI.Button "Dismiss" {
 							label = spec.dismissLabel or "Got it",
 							onActivate = function()
 								retire("dismissed")
 							end,
-						}),
+						},
 						ctx.padding(12, 12),
 						ctx.corner(),
 					}, {
@@ -964,8 +953,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				local arrow: Frame?
 				if spec.tail ~= false and spec.tail ~= "none" then
 					arrow = ctx.styled(
-						Host.Frame({
-							Name = "Arrow",
+						Host.Frame "Arrow" {
 							Size = D2.fromOffset(10, 10),
 							Rotation = 45,
 							BorderSizePixel = 0,
@@ -983,7 +971,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									place.top + (if at.Y - offset.Y < place.top then -5 else box.Y - 5)
 								)
 							end,
-						}),
+						},
 						"callout"
 					)
 					ctx.styled(arrow :: Frame, "panel")
@@ -1012,7 +1000,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 					end)
 				end
-				return if arrow then Host.Folder({ Name = "CalloutOverlay", panel, arrow }) else panel
+				return if arrow then Host.Folder "CalloutOverlay" { panel, arrow } else panel
 			end),
 		})
 		return root

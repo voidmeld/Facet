@@ -283,8 +283,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				Font = E.Font.BuilderSansBold,
 			}),
 			chrome,
-			UI.Menu({
-				Name = "ActionsMenu",
+			UI.Menu "ActionsMenu" {
 				label = "Menu",
 				Position = D2.new(1, -100, 0, 8),
 				Visible = function(use)
@@ -320,9 +319,8 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						}
 						else nil,
 				},
-			}),
-			Host.Frame({
-				Name = "Content",
+			},
+			Host.Frame "Content" {
 				Position = D2.fromOffset(16, 62),
 				Size = D2.new(1, -32, 1, -78),
 				BackgroundTransparency = 1,
@@ -330,7 +328,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					return not actions.spatial or use(model.focused) == name
 				end,
 				body,
-			}),
+			},
 			button("WakeMonitor", "", function()
 				model.focus(name)
 			end, {
@@ -343,13 +341,12 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					return actions.spatial == true and use(model.focused) ~= name
 				end,
 			}),
-			UI.Alert({
-				Name = "AboutDialog",
+			UI.Alert "AboutDialog" {
 				isPresented = about,
 				title = "About Virtual Monitors",
 				message = "Three complete apps, shared between a spatial desktop and a flat screen. Compose owns every scene and lifetime; Facet supplies controls; Roblox supplies layout and rendering.",
 				actions = { { id = "done", label = "Done", role = "cancel" } },
-			}),
+			},
 		})
 		root:AddTag("facet-surface")
 		local dimensions = observeSize(root)
@@ -447,13 +444,12 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			}),
 		})
 		card:AddTag("facet-panel")
-		local drag = Host.UIDragDetector({
-			Name = "SaveDrag",
+		local drag = Host.UIDragDetector "SaveDrag" {
 			ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
 			Enabled = function(use)
 				return not use(touchEnabled)
 			end,
-		})
+		}
 		runtime.mount(function()
 			return drag
 		end, card)
@@ -603,26 +599,24 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				local wobble = ((selected.index * (day + 1) * 37) % 23) / 23
 				table.insert(points, types.Path2DControlPoint.new(D2.fromScale(day / 6, 1 - (0.25 + 0.5 * wobble))))
 			end
-			local path = Host.Path2D({
-				Name = "TrendLine",
+			local path = Host.Path2D "TrendLine" {
 				Thickness = 3,
 				Color3 = function(use)
 					return if use(model.dark) then C3.fromRGB(144, 220, 190) else C3.fromRGB(45, 86, 65)
 				end,
-			})
+			}
 			path:SetControlPoints(points)
-			return Host.Frame({ Name = "Sparkline", Size = D2.new(1, 0, 0, 40), BackgroundTransparency = 1, path })
+			return Host.Frame "Sparkline" { Size = D2.new(1, 0, 0, 40), BackgroundTransparency = 1, path }
 		end
 		local tab = function(use)
 			return use(model.detailTab)
 		end
-		local contentFrame = Host.Frame({
-			Name = "GameDetails",
+		local contentFrame = Host.Frame "GameDetails" {
 			Size = D2.new(1, 0, 0, 0),
 			AutomaticSize = E.AutomaticSize.Y,
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
-		})
+		}
 		runtime.mount(function()
 			return column("DetailBody", {
 				stage(
@@ -632,20 +626,18 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				),
 				text("Description", selected.description, 18),
 				row("Creator", {
-					UI.AsyncImage({
-						Name = "CreatorAvatar",
+					UI.AsyncImage "CreatorAvatar" {
 						source = selected.creatorImage,
 						loader = actions.creatorImageLoader,
 						Size = D2.fromOffset(40, 40),
 						placeholder = function()
-							return UI.Skeleton({
-								Name = "CreatorShimmer",
+							return UI.Skeleton "CreatorShimmer" {
 								form = "circle",
 								Size = D2.fromOffset(40, 40),
 								AutomaticSize = E.AutomaticSize.None,
-							})
+							}
 						end,
-					}),
+					},
 					text(
 						"CreatorName",
 						selected.creator,
@@ -668,8 +660,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					return column("AboutGame", {
 						ratingAnchor,
 						Compose.show(ratingPresented, function()
-							return UI.Callout({
-								Name = "RatingPopover",
+							return UI.Callout "RatingPopover" {
 								priority = 10,
 								anchor = ratingAnchor,
 								isPresented = ratingPresented,
@@ -683,7 +674,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 								onRetire = function()
 									ratingPresented:set(false)
 								end,
-							})
+							}
 						end),
 						text("TrendHeading", "Players this week", 16),
 						sparkline(),
@@ -695,8 +686,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 							"facet-secondary"
 						),
 						text("YourRating", "Your rating", 17),
-						UI.Rating({
-							Name = "Stars",
+						UI.Rating "Stars" {
 							value = function(use)
 								return use(model.ratings)[selected.id] or selected.stars
 							end,
@@ -707,7 +697,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 							end,
 							Size = D2.new(1, 0, 0, 44),
 							AutomaticSize = E.AutomaticSize.None,
-						}),
+						},
 						text(
 							"RatingExplanation",
 							"The rating is the share of players who would recommend this game to a friend.",
@@ -761,7 +751,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		return contentFrame
 	end
 	local function Discover()
-		local body = Host.Frame({ Name = "DiscoverBody", Size = D2.fromScale(1, 1), BackgroundTransparency = 1 })
+		local body = Host.Frame "DiscoverBody" { Size = D2.fromScale(1, 1), BackgroundTransparency = 1 }
 		local dimensions = observeSize(body)
 		local function compact(use)
 			return use(dimensions).X < 620
@@ -790,8 +780,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		end
 		runtime.mountFragment(function()
 			return {
-				Host.Frame({
-					Name = "SearchControls",
+				Host.Frame "SearchControls" {
 					BackgroundTransparency = 1,
 					Size = function(use)
 						return D2.new(1, 0, 0, searchHeight(use))
@@ -803,8 +792,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						SortOrder = E.SortOrder.LayoutOrder,
 						Padding = D.new(0, 8),
 					}),
-					UI.ComboBox({
-						Name = "Search",
+					UI.ComboBox "Search" {
 						LayoutOrder = function(use)
 							return if compact(use) then 2 else 1
 						end,
@@ -841,9 +829,8 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						end,
 						AutomaticSize = E.AutomaticSize.None,
 						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-					}),
-					Host.Frame({
-						Name = "SortControl",
+					},
+					Host.Frame "SortControl" {
 						LayoutOrder = function(use)
 							return if compact(use) then 1 else 2
 						end,
@@ -860,8 +847,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 							SortOrder = E.SortOrder.LayoutOrder,
 							Padding = D.new(0, 8),
 						}),
-						UI.Picker({
-							Name = "Sort",
+						UI.Picker "Sort" {
 							LayoutOrder = 1,
 							selected = model.sort,
 							onChange = function(value)
@@ -878,10 +864,9 @@ function screens.create(Facet: any, runtime: any, actions: any)
 							end,
 							AutomaticSize = E.AutomaticSize.None,
 							Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-						}),
+						},
 						Compose.show(compact, function()
-							return UI.Picker({
-								Name = "Genre",
+							return UI.Picker "Genre" {
 								LayoutOrder = 2,
 								selected = model.genre,
 								onChange = function(value)
@@ -894,17 +879,16 @@ function screens.create(Facet: any, runtime: any, actions: any)
 								end,
 								AutomaticSize = E.AutomaticSize.None,
 								Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-							})
+							}
 						end),
-					}),
-				}),
+					},
+				},
 				Compose.keyed({
 					from = function(use)
 						return if compact(use) then {} else { if use(dimensions).X >= 900 then "segmented" else "menu" }
 					end,
 					render = function(current)
-						return UI.Picker({
-							Name = "Genre",
+						return UI.Picker "Genre" {
 							selected = model.genre,
 							onChange = function(value)
 								model.genre:set(value)
@@ -916,7 +900,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 							end,
 							Size = D2.new(1, 0, 0, 44),
 							AutomaticSize = E.AutomaticSize.None,
-						})
+						}
 					end,
 				}),
 				(function()
@@ -999,20 +983,18 @@ function screens.create(Facet: any, runtime: any, actions: any)
 										Size = D2.new(0.58, -28, 0, 0),
 										Host.UISizeConstraint({ MaxSize = V2.new(520, 1000000) }),
 									}),
-									UI.Badge({
-										Name = "FeaturedBadge",
+									UI.Badge "FeaturedBadge" {
 										label = "Featured",
 										AnchorPoint = V2.new(1, 0),
 										Position = D2.new(1, -12, 0, 8),
-									}),
+									},
 								})
 								card:AddTag("facet-panel")
 								return card
 							end,
 						})
 					end
-					return UI.PageView({
-						Name = "Featured",
+					return UI.PageView "Featured" {
 						pages = pages,
 						selection = model.featuredSelection,
 						summary = false,
@@ -1021,7 +1003,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 							return D2.fromOffset(0, headerHeight(use))
 						end,
 						Size = D2.new(1, 0, 0, 284),
-					})
+					}
 				end),
 				Compose.show(function(use)
 					return use(model.shelf) == "browse"
@@ -1056,8 +1038,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				Compose.show(function(use)
 					return use(model.shelf) == "saved"
 				end, function()
-					return UI.Table({
-						Name = "SavedGames",
+					return UI.Table "SavedGames" {
 						from = model.savedGames,
 						key = function(item)
 							return item.id
@@ -1132,7 +1113,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 								end,
 							},
 						},
-					})
+					}
 				end),
 				Compose.show(function(use)
 					return (use(model.shelf) == "saved" and #use(model.savedGames) == 0)
@@ -1163,8 +1144,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						Size = D2.new(1, -32, 0, 0),
 					})
 				end),
-				UI.Alert({
-					Name = "GameDetail",
+				UI.Alert "GameDetail" {
 					surface = "fullScreen",
 					transition = { source = selectedCard, seconds = 0.32, ease = Compose.easing.outCubic },
 					item = model.selectedGame,
@@ -1186,8 +1166,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 								presentedGame:set(selected)
 							end
 						end)
-						return Host.Frame({
-							Name = "DetailSelection",
+						return Host.Frame "DetailSelection" {
 							BackgroundTransparency = 1,
 							Size = D2.new(1, 0, 0, 0),
 							AutomaticSize = E.AutomaticSize.Y,
@@ -1200,10 +1179,10 @@ function screens.create(Facet: any, runtime: any, actions: any)
 								end,
 								render = detailContent,
 							}),
-						})
+						}
 					end,
 					actions = { { id = "close", label = "Done", role = "cancel" } },
-				}),
+				},
 			}
 		end, body)
 		return shell("Discover", body)

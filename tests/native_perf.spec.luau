@@ -304,7 +304,7 @@ t.describe("native benchmark workload contract", function()
 					Compose.cleanup(function()
 						disposed += 1
 					end)
-					return world.Host.Frame({ Name = "Custom" })
+					return world.Host.Frame "Custom" {}
 				end,
 			})
 		end, world.target)

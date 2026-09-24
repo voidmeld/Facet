@@ -54,8 +54,7 @@ return {
 			})
 		end
 		local function screen()
-			return Host.ScrollingFrame({
-				Name = "StateMotion",
+			return Host.ScrollingFrame "StateMotion" {
 				Size = D2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -67,18 +66,16 @@ return {
 				}),
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 12) }),
 				label("Title", "One action, one shared motion"),
-				UI.Toggle({ Name = "Reduced", label = "Reduce decorative motion", value = reduced }),
-				UI.Button({ Name = "Animate", label = "Animate", onActivate = animate }),
+				UI.Toggle "Reduced" { label = "Reduce decorative motion", value = reduced },
+				UI.Button "Animate" { label = "Animate", onActivate = animate },
 				label(
 					"Decorative",
 					"The puck changes color and position; the card grows; the badge fades, shrinks and turns."
 				),
-				Host.Frame({
-					Name = "PuckLane",
+				Host.Frame "PuckLane" {
 					Size = D2.new(1, 0, 0, 56),
 					BackgroundTransparency = 1,
-					Host.Frame({
-						Name = "Puck",
+					Host.Frame "Puck" {
 						Size = D2.fromOffset(40, 40),
 						BorderSizePixel = 0,
 						Position = function(use)
@@ -92,10 +89,9 @@ return {
 							)
 						end,
 						Host.UICorner({ CornerRadius = D.new(1, 0) }),
-					}),
-				}),
-				Host.Frame({
-					Name = "GrowingCard",
+					},
+				},
+				Host.Frame "GrowingCard" {
 					BorderSizePixel = 0,
 					Size = function(use)
 						return D2.new(1, 0, 0, 64 + 64 * use(amount))
@@ -103,27 +99,23 @@ return {
 					BackgroundColor3 = function(use)
 						return color(use, "accent")
 					end,
-					Host.Frame({
-						Name = "Pip",
+					Host.Frame "Pip" {
 						Size = D2.fromOffset(16, 16),
 						Position = D2.fromOffset(12, 12),
 						BackgroundColor3 = C3.new(1, 1, 1),
 						BorderSizePixel = 0,
-					}),
-					UI.Label({
-						Name = "CardCaption",
+					},
+					UI.Label "CardCaption" {
 						Text = "The card grows; this pip keeps its size.",
 						Position = D2.fromOffset(40, 8),
 						Size = D2.new(1, -48, 1, -16),
 						TextWrapped = true,
-					}),
-				}),
-				Host.Frame({
-					Name = "EffectsLane",
+					},
+				},
+				Host.Frame "EffectsLane" {
 					Size = D2.new(1, 0, 0, 100),
 					BackgroundTransparency = 1,
-					Host.CanvasGroup({
-						Name = "Badge",
+					Host.CanvasGroup "Badge" {
 						Position = D2.fromScale(0.5, 0.5),
 						AnchorPoint = V2.new(0.5, 0.5),
 						Size = function(use)
@@ -140,10 +132,9 @@ return {
 							return color(use, "accent")
 						end,
 						UI.Label({ Text = "GO", Size = D2.fromScale(1, 1), TextXAlignment = E.TextXAlignment.Center }),
-					}),
-				}),
-				Host.CanvasGroup({
-					Name = "WrappedFade",
+					},
+				},
+				Host.CanvasGroup "WrappedFade" {
 					Size = D2.new(1, 0, 0, 84),
 					BackgroundTransparency = 1,
 					GroupTransparency = function(use)
@@ -151,10 +142,9 @@ return {
 					end,
 					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
 					label("FadedLabel", "A group fades its label and controls together"),
-					UI.Button({ Name = "Locked", label = "Locked", enabled = false }),
-				}),
-				Host.Frame({
-					Name = "Details",
+					UI.Button "Locked" { label = "Locked", enabled = false },
+				},
+				Host.Frame "Details" {
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					BackgroundTransparency = 1,
@@ -166,8 +156,7 @@ return {
 							return if use(arrived) and not use(phase.exiting) then 1 else 0
 						end, { seconds = 0.2 })
 						arrived:set(true)
-						return Host.CanvasGroup({
-							Name = "DetailArrival",
+						return Host.CanvasGroup "DetailArrival" {
 							BackgroundTransparency = 1,
 							Size = D2.new(1, 0, 0, 0),
 							AutomaticSize = E.AutomaticSize.Y,
@@ -178,7 +167,7 @@ return {
 								"DetailPanel",
 								"Detail panel — the same action reveals this information and reverses the cards below."
 							),
-						})
+						}
 					end, {
 						exit = function()
 							return {
@@ -188,9 +177,8 @@ return {
 							}
 						end,
 					}),
-				}),
-				Host.Frame({
-					Name = "Cards",
+				},
+				Host.Frame "Cards" {
 					Size = D2.new(1, 0, 0, 136),
 					BackgroundTransparency = 1,
 					Compose.OrderedCollection({
@@ -216,18 +204,18 @@ return {
 							})
 						end,
 					}),
-				}),
+				},
 				label(
 					"Informational",
 					"Charge keeps moving to its known destination when decorative motion is reduced."
 				),
-				UI.ProgressView({ Name = "Charge", label = "Charge", value = charge, showValue = true }),
-				UI.ProgressView({ Name = "Busy", label = "No terminus" }),
-				UI.ProgressView({ Name = "Spinner", label = "Spinner", presentation = "spinner" }),
+				UI.ProgressView "Charge" { label = "Charge", value = charge, showValue = true },
+				UI.ProgressView "Busy" { label = "No terminus" },
+				UI.ProgressView "Spinner" { label = "Spinner", presentation = "spinner" },
 				label("Status", function(use)
 					return "Animations: " .. use(runs)
 				end),
-			})
+			}
 		end
 		return {
 			screen = screen,

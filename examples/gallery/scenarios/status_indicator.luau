@@ -75,8 +75,7 @@ return {
 					})
 				)
 			end
-			local root = Host.Frame({
-				Name = "StatusRecipe",
+			local root = Host.Frame "StatusRecipe" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -205,7 +204,7 @@ return {
 						end,
 					}),
 				}),
-			})
+			}
 			return root
 		end
 		return {
@@ -213,8 +212,7 @@ return {
 			reset = reset,
 			report = report,
 			screen = function()
-				return Host.Frame({
-					Name = "StatusIndicator",
+				return Host.Frame "StatusIndicator" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -223,16 +221,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						section(),
-					}),
-				})
+					},
+				}
 			end,
 			steps = {
 				warning = function()

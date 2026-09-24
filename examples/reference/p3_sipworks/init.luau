@@ -126,7 +126,7 @@ function Sipworks.build(ctx)
 			end, function(use)
 				return use(order.status) ~= "pending" and use(taskModel.phase) ~= "done"
 			end),
-			UI.TextInput({ Name = "Search", value = search, placeholder = "Search blends and botanicals" }),
+			UI.TextInput "Search" { value = search, placeholder = "Search blends and botanicals" },
 			view.column("Blends", {
 				view.list(visible, function(current)
 					local blend = current:peek()
@@ -152,7 +152,7 @@ function Sipworks.build(ctx)
 	local function recipeContent(id)
 		local rows = {
 			view.text("Recipe", 24),
-			UI.Stepper({ Name = "Batch", value = batchSize, min = 1, max = 9, step = 1, label = "Batch size" }),
+			UI.Stepper "Batch" { value = batchSize, min = 1, max = 9, step = 1, label = "Batch size" },
 		}
 		for _, measure in catalog.recipeMeasures(id) do
 			local ingredient = catalog.botanical(measure.botanicalId)
@@ -241,11 +241,10 @@ function Sipworks.build(ctx)
 	local function stampsPage()
 		return view.page("Rewards", {
 			view.text("Steam Stamps", 28),
-			UI.Picker({
-				Name = "Locale",
+			UI.Picker "Locale" {
 				selected = i18n.locale,
 				options = { { value = "en", label = "English" }, { value = "xa", label = "Expanded" } },
-			}),
+			},
 			view.text(function(use)
 				return tostring(use(rewards.earned) - use(rewards.spent)) .. " stamps · ten stamps earn a free pour"
 			end),
@@ -286,12 +285,10 @@ function Sipworks.build(ctx)
 		})
 	end
 	local function screen()
-		return ctx.Host.Frame({
-			Name = "Sipworks",
+		return ctx.Host.Frame "Sipworks" {
 			BackgroundTransparency = 1,
 			Size = ctx.types.UDim2.fromScale(1, 1),
-			UI.TabView({
-				Name = "Destinations",
+			UI.TabView "Destinations" {
 				selection = section,
 				style = "sidebarAdaptable",
 				Size = ctx.types.UDim2.new(1, 0, 1, -64),
@@ -301,22 +298,20 @@ function Sipworks.build(ctx)
 					{ id = "rewards", label = "Steam Stamps", content = stampsPage },
 					{ id = "book", label = "Blend Book", content = bookPage },
 				},
-			}),
+			},
 			UI.Label({
 				label = notice,
 				Position = ctx.types.UDim2.new(0, 16, 1, -60),
 				Size = ctx.types.UDim2.new(1, -32, 0, 56),
 				TextWrapped = true,
 			}),
-			UI.Sheet({
-				Name = "Blend",
+			UI.Sheet "Blend" {
 				isPresented = selectedOpen,
 				detent = Compose.cell("large"),
 				title = "House blend",
 				content = detail,
-			}),
-			UI.Sheet({
-				Name = "Botanical",
+			},
+			UI.Sheet "Botanical" {
 				isPresented = botanicalOpen,
 				detent = Compose.cell("medium"),
 				title = "Botanical",
@@ -350,8 +345,8 @@ function Sipworks.build(ctx)
 					}
 					return view.column("BotanicalCard", rows)
 				end,
-			}),
-		})
+			},
+		}
 	end
 	local model = {
 		catalog = catalog,

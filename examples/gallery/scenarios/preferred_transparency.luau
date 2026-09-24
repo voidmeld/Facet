@@ -28,8 +28,7 @@ return {
 			})
 		end
 		local function screen()
-			return Host.ScrollingFrame({
-				Name = "PreferredTransparency",
+			return Host.ScrollingFrame "PreferredTransparency" {
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -39,38 +38,34 @@ return {
 				UI.Label({
 					label = "Change Background transparency in the Roblox menu under Settings. Facet scales translucent theme surfaces and modal backdrops by your setting. An authored group fade stays independent.",
 				}),
-				UI.Label({
-					Name = "Reading",
+				UI.Label "Reading" {
 					label = function(use)
 						return `Your setting: {math.round(use(preference) * 100)}%`
 					end,
-				}),
+				},
 				panel("Translucent surface", function(use)
 					return 0.5 * use(preference)
 				end),
 				panel("Opaque panel", 0),
-				Host.CanvasGroup({
-					Name = "AuthoredFade",
+				Host.CanvasGroup "AuthoredFade" {
 					Size = UDim2.fromOffset(200, 96),
 					BackgroundTransparency = 1,
 					GroupTransparency = 0.5,
 					panel("Authored fade", 0),
-				}),
-				UI.Button({
-					Name = "Open",
+				},
+				UI.Button "Open" {
 					label = "Open a dialog",
 					onActivate = function()
 						opened:set(true)
 					end,
-				}),
-				UI.Alert({
-					Name = "Dialog",
+				},
+				UI.Alert "Dialog" {
 					isPresented = opened,
 					title = "Modal backdrop",
 					message = "This backdrop darkens as you lower Background transparency.",
 					actions = { { id = "Close", label = "Close", role = "cancel" } },
-				}),
-			})
+				},
+			}
 		end
 		local function report()
 			return { preference = preference:peek(), dialogOpen = opened:peek() }

@@ -331,39 +331,35 @@ function example.build(ctx: any)
 						Size = function(use)
 							return UDim2.new(0, 44, 0, 44)
 						end,
-						Host.Frame({
-							Name = "fill",
+						Host.Frame "fill" {
 							Size = UDim2.fromScale(1, 1),
 							BorderSizePixel = 0,
 							BackgroundColor3 = function(use)
 								return tileColors[use(state)]
 							end,
 							Host.UICorner({ CornerRadius = UDim.new(0, 4) }),
-						}),
-						UI.Label({
-							Name = "ch",
+						},
+						UI.Label "ch" {
 							Text = letter,
 							TextColor3 = Color3.new(1, 1, 1),
 							TextSize = 24,
 							Size = UDim2.new(1, 0, 1, -12),
 							TextXAlignment = Enum.TextXAlignment.Center,
 							TextYAlignment = Enum.TextYAlignment.Center,
-						}),
-						UI.Label({
-							Name = "mark",
+						},
+						UI.Label "mark" {
 							Text = mark,
 							TextColor3 = Color3.new(1, 1, 1),
 							TextSize = 12,
 							Position = UDim2.new(0, 0, 1, -14),
 							Size = UDim2.new(1, 0, 0, 14),
 							TextXAlignment = Enum.TextXAlignment.Center,
-						}),
+						},
 					})
 				)
 			end
 		end
-		local board = Host.Frame({
-			Name = "board",
+		local board = Host.Frame "board" {
 			Size = UDim2.new(1, 0, 0, 0),
 			BackgroundTransparency = 1,
 			AutomaticSize = Enum.AutomaticSize.Y,
@@ -374,7 +370,7 @@ function example.build(ctx: any)
 				FillDirectionMaxCells = tiles.columns or 4,
 			}),
 			table.unpack(tiles),
-		})
+		}
 		local keyboardRows: { any } = {}
 		for ri, keys in KEYBOARD do
 			local rowId = "kbrow" .. ri
@@ -447,8 +443,7 @@ function example.build(ctx: any)
 				table.unpack(buttons),
 			})
 		end
-		local keyboard = Host.Frame({
-			Name = "kb",
+		local keyboard = Host.Frame "kb" {
 			Size = UDim2.new(1, 0, 0, 0),
 			Host.UISizeConstraint({ MaxSize = Vector2.new(472, math.huge) }),
 			BackgroundTransparency = 1,
@@ -459,7 +454,7 @@ function example.build(ctx: any)
 				Padding = UDim.new(0, 8),
 			}),
 			table.unpack(keyboardRows),
-		})
+		}
 		statusSig = Compose.formula(function(use)
 			local notice = use(noticeSig)
 			if notice ~= "" then
@@ -467,8 +462,7 @@ function example.build(ctx: any)
 			end
 			return `Guess the five-letter word — row {math.min(use(activeSig), ROWS)} of {ROWS}.`
 		end)
-		return Host.Frame({
-			Name = "Wordle",
+		return Host.Frame "Wordle" {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			Host.UIPadding({
@@ -477,8 +471,7 @@ function example.build(ctx: any)
 				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 16),
 			}),
-			Host.ScrollingFrame({
-				Name = "page",
+			Host.ScrollingFrame "page" {
 				BackgroundTransparency = 1,
 				Size = function(use)
 					return UDim2.new(1, 0, 1, 0)
@@ -486,8 +479,7 @@ function example.build(ctx: any)
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				CanvasSize = UDim2.new(),
 				ScrollBarThickness = 6,
-				Host.Frame({
-					Name = "col",
+				Host.Frame "col" {
 					BackgroundTransparency = 1,
 					Size = function(use)
 						return UDim2.new(1, 0, 0, 0)
@@ -498,9 +490,7 @@ function example.build(ctx: any)
 						SortOrder = Enum.SortOrder.LayoutOrder,
 						Padding = UDim.new(0, 8),
 					}),
-					UI.Label({
-
-						Name = "Title",
+					UI.Label "Title" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -510,10 +500,8 @@ function example.build(ctx: any)
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-					UI.Label({
-
-						Name = "Status",
+					},
+					UI.Label "Status" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -523,11 +511,9 @@ function example.build(ctx: any)
 						TextXAlignment = Enum.TextXAlignment.Center,
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
-					}),
+					},
 					board,
-					UI.Label({
-
-						Name = "Legend",
+					UI.Label "Legend" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -537,19 +523,17 @@ function example.build(ctx: any)
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
+					},
 					keyboard,
-					UI.Button({
-
-						Name = "Restart",
+					UI.Button "Restart" {
 						label = "New game",
 						onActivate = function()
 							restart()
 						end,
-					}),
-				}),
-			}),
-		})
+					},
+				},
+			},
+		}
 	end
 
 	local bindings = {}
@@ -569,40 +553,35 @@ function example.build(ctx: any)
 	end
 	table.insert(
 		bindings,
-		Host.InputAction({
-			Name = "Submit",
+		Host.InputAction "Submit" {
 			Type = Enum.InputActionType.Bool,
 			Pressed = submit,
 			Host.InputBinding({ KeyCode = Enum.KeyCode.Return }),
-		})
+		}
 	)
 	table.insert(
 		bindings,
-		Host.InputAction({
-			Name = "Backspace",
+		Host.InputAction "Backspace" {
 			Type = Enum.InputActionType.Bool,
 			Pressed = backspace,
 			Host.InputBinding({ KeyCode = Enum.KeyCode.Backspace }),
-		})
+		}
 	)
-	Host.InputContext({
-		Name = "WordGameInput",
+	Host.InputContext "WordGameInput" {
 		Parent = ctx.inputTarget,
 		Priority = 2000,
 		Sink = true,
 		table.unpack(bindings),
-	})
+	}
 
 	return {
 		title = example.title,
 		screen = function()
-			return Host.Frame({
-				Name = "WordGame",
+			return Host.Frame "WordGame" {
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				WordGame(),
-				UI.Alert({
-					Name = "WordleResult",
+				UI.Alert "WordleResult" {
 					isPresented = resultOpen,
 					title = resultTitle,
 					message = resultMessage,
@@ -610,8 +589,8 @@ function example.build(ctx: any)
 						{ id = "Again", label = "New game", onActivate = restart },
 						{ id = "Close", label = "Close", role = "cancel", onActivate = closeResults },
 					},
-				}),
-			})
+				},
+			}
 		end,
 		rules = rules,
 		press = function(keyCode: string)

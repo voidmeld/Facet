@@ -73,8 +73,7 @@ return {
 			return report()
 		end
 		local function section()
-			local root = Host.Frame({
-				Name = "GroupRecipe",
+			local root = Host.Frame "GroupRecipe" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -83,9 +82,7 @@ return {
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					Padding = UDim.new(0, 16),
 				}),
-				UI.Label({
-
-					Name = "Title",
+				UI.Label "Title" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -95,10 +92,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "Note",
+				},
+				UI.Label "Note" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -107,7 +102,7 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 				Compose.OrderedCollection({
 					from = function(use)
 						return { use(variant) }
@@ -117,8 +112,7 @@ return {
 					end,
 					render = function(current, placement, key)
 						local value = current:peek()
-						return UI.AvatarGroup({
-							Name = "Team",
+						return UI.AvatarGroup "Team" {
 							items = items,
 							controlSize = size,
 							layout = if value == "spread" then "spread" else "stacked",
@@ -129,12 +123,10 @@ return {
 							ref = function(value)
 								record = value
 							end,
-						})
+						}
 					end,
 				}),
-				Host.Frame({
-
-					Name = "RosterActions",
+				Host.Frame "RosterActions" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(0, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.XY,
@@ -168,10 +160,8 @@ return {
 						label = "Change picture",
 						onActivate = source,
 					}),
-				}),
-				Host.Frame({
-
-					Name = "LayoutActions",
+				},
+				Host.Frame "LayoutActions" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(0, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.XY,
@@ -221,10 +211,8 @@ return {
 							setSize("large")
 						end,
 					}),
-				}),
-				UI.Label({
-
-					Name = "Activations",
+				},
+				UI.Label "Activations" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -235,15 +223,14 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-			})
+				},
+			}
 			return root
 		end
 		return {
 			section = section,
 			screen = function()
-				return Host.Frame({
-					Name = "AvatarGroup",
+				return Host.Frame "AvatarGroup" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -252,16 +239,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						section(),
-					}),
-				})
+					},
+				}
 			end,
 			report = report,
 			steps = {

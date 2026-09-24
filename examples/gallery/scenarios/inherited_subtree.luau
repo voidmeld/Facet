@@ -33,29 +33,26 @@ return {
 			})
 		end
 		local function screen()
-			local after = UI.Button({
-				Name = "After",
+			local after = UI.Button "After" {
 				label = "After",
 				onActivate = function()
 					live:set(true)
 				end,
-			})
-			local go = UI.Button({
-				Name = "Go",
+			}
+			local go = UI.Button "Go" {
 				label = "Engage",
 				enabled = live,
 				onActivate = function()
 					engaged:set(engaged:peek() + 1)
 				end,
-			})
-			local innerGo = UI.Button({
-				Name = "InnerGo",
+			}
+			local innerGo = UI.Button "InnerGo" {
 				label = "Engage from inner panel",
 				enabled = live,
 				onActivate = function()
 					engaged:set(engaged:peek() + 1)
 				end,
-			})
+			}
 			Compose.watch(function(use)
 				if not use(live) and ctx.guiService then
 					local focused = ctx.guiService.SelectedObject
@@ -68,42 +65,37 @@ return {
 					end
 				end
 			end)
-			return Host.ScrollingFrame({
-				Name = "InheritedSubtree",
+			return Host.ScrollingFrame "InheritedSubtree" {
 				Size = D2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				AutomaticCanvasSize = E.AutomaticSize.Y,
 				CanvasSize = D2.new(),
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 12) }),
 				UI.Label({ Text = "Nested color and control state", textRole = "title" }),
-				UI.Toggle({ Name = "PowerToggle", label = "Panel power", value = live }),
-				UI.Slider({ Name = "BlendSlider", label = "Tint", value = blend, min = 0, max = 100, step = 5 }),
-				Host.Frame({
-					Name = "Panel",
+				UI.Toggle "PowerToggle" { label = "Panel power", value = live },
+				UI.Slider "BlendSlider" { label = "Tint", value = blend, min = 0, max = 100, step = 5 },
+				Host.Frame "Panel" {
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					BackgroundTransparency = 1,
 					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
-					Host.Frame({
-						Name = "Row",
+					Host.Frame "Row" {
 						Size = D2.new(1, 0, 0, 0),
 						AutomaticSize = E.AutomaticSize.Y,
 						BackgroundTransparency = 1,
 						Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
 						label("HeroTitle", "The title and crest share this panel's live tint", tint),
-						Host.ImageLabel({
-							Name = "Crest",
+						Host.ImageLabel "Crest" {
 							Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
 							ImageColor3 = tint,
 							Size = D2.fromOffset(40, 40),
 							BackgroundTransparency = 1,
-						}),
-					}),
+						},
+					},
 					label("Note", "This leaf keeps its own danger color", function(use)
 						return palette(use, "danger")
 					end),
-					Host.Frame({
-						Name = "Inner",
+					Host.Frame "Inner" {
 						Size = D2.new(1, 0, 0, 0),
 						AutomaticSize = E.AutomaticSize.Y,
 						BackgroundTransparency = 1,
@@ -112,20 +104,20 @@ return {
 							return palette(use, "contentSecondary")
 						end),
 						innerGo,
-					}),
+					},
 					go,
 					label("Count", function(use)
 						return "Engaged " .. use(engaged) .. " times"
 					end, function(use)
 						return palette(use, "contentPrimary")
 					end),
-				}),
+				},
 				after,
 				UI.Label({
 					Text = "Control paint stays independent of the surrounding text tint. Power disables both controls and moves focus to After.",
 					TextWrapped = true,
 				}),
-			})
+			}
 		end
 		return {
 			screen = screen,

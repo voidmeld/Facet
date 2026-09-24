@@ -6,7 +6,7 @@ return function(ctx)
 	local palettes = { sage = "Sage", clay = "Clay", iris = "Iris" }
 	local spins = { "Off", "Slow", "Medium", "Fast" }
 	local turnSteps = { 15, 30, 45, 90 }
-	local body = Host.Frame({ Name = "AvatarBody", Size = D2.fromScale(1, 1), BackgroundTransparency = 1 })
+	local body = Host.Frame "AvatarBody" { Size = D2.fromScale(1, 1), BackgroundTransparency = 1 }
 	local dimensions = ctx.observeSize(body)
 	local function wide(use)
 		return use(dimensions).X >= 760
@@ -124,8 +124,7 @@ return function(ctx)
 		return column("SummaryFacts", rows)
 	end
 	local stop = runtime.mountFragment(function()
-		local preview = Host.Frame({
-			Name = "PreviewPanel",
+		local preview = Host.Frame "PreviewPanel" {
 			BorderSizePixel = 0,
 			Size = function(use)
 				return if wide(use)
@@ -159,10 +158,9 @@ return function(ctx)
 				AutomaticSize = E.AutomaticSize.None,
 				ZIndex = 3,
 			}),
-		})
+		}
 		preview:AddTag("facet-panel")
-		local settings = Host.ScrollingFrame({
-			Name = "AvatarSettings",
+		local settings = Host.ScrollingFrame "AvatarSettings" {
 			BorderSizePixel = 0,
 			CanvasSize = D2.fromOffset(0, 0),
 			AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -187,16 +185,14 @@ return function(ctx)
 			column("Settings", {
 				text("Heading", "Explorer", 28),
 				text("Subtitle", "Choose a palette and accessories.", 16, {}, "facet-secondary"),
-				UI.DisclosureGroup({
-					Name = "SettingsDisclosure",
+				UI.DisclosureGroup "SettingsDisclosure" {
 					label = "Appearance",
 					expanded = model.avatarSettingsExpanded,
 					Size = D2.new(1, 0, 0, 0),
 					content = function()
 						return column("AppearanceSettings", {
 							text("PaletteLabel", "Palette", 18),
-							UI.Picker({
-								Name = "Palette",
+							UI.Picker "Palette" {
 								selected = model.palette,
 								style = "segmented",
 								options = {
@@ -206,16 +202,14 @@ return function(ctx)
 								},
 								Size = D2.new(1, 0, 0, 44),
 								AutomaticSize = E.AutomaticSize.None,
-							}),
-							UI.Toggle({
-								Name = "Hat",
+							},
+							UI.Toggle "Hat" {
 								label = "Explorer hat",
 								value = model.hat,
 								Size = D2.new(1, 0, 0, 44),
 								AutomaticSize = E.AutomaticSize.None,
-							}),
-							UI.RadialMenu({
-								Name = "QuickPalette",
+							},
+							UI.RadialMenu "QuickPalette" {
 								label = "Quick palette",
 								appearance = "buttons",
 								Size = D2.new(1, 0, 0, 44),
@@ -224,13 +218,12 @@ return function(ctx)
 									{ id = "clay", label = "Clay", selected = model.palette, value = "clay" },
 									{ id = "iris", label = "Iris", selected = model.palette, value = "iris" },
 								},
-							}),
+							},
 						})
 					end,
-				}),
+				},
 				text("TurnStepLabel", "Turn step", 18),
-				UI.Stepper({
-					Name = "TurnStep",
+				UI.Stepper "TurnStep" {
 					min = 1,
 					max = #turnSteps,
 					step = 1,
@@ -244,10 +237,9 @@ return function(ctx)
 						return `{turnSteps[index]}°`
 					end,
 					Size = D2.new(1, 0, 0, 44),
-				}),
+				},
 				text("RotationLabel", "Rotation", 18),
-				UI.Slider({
-					Name = "Rotation",
+				UI.Slider "Rotation" {
 					value = model.angle,
 					min = -180,
 					max = 180,
@@ -256,7 +248,7 @@ return function(ctx)
 						return `{math.round(value)}°`
 					end,
 					Size = D2.new(1, 0, 0, 44),
-				}),
+				},
 				row("TurnButtons", {
 					button("TurnLeft", "Turn left", function()
 						model.turn(-1)
@@ -268,14 +260,13 @@ return function(ctx)
 				text("SpinLabel", "Auto-spin", 18),
 				row("AutoSpinRow", {
 					text("SpinValue", spin, 16, { Size = D2.new(1, -164, 0, 0) }, "facet-secondary"),
-					UI.LevelPicker({
-						Name = "AutoSpin",
+					UI.LevelPicker "AutoSpin" {
 						value = model.autoSpin,
 						count = 3,
 						allowZero = true,
 						Size = D2.fromOffset(156, 44),
 						AutomaticSize = E.AutomaticSize.None,
-					}),
+					},
 				}, { Size = D2.new(1, 0, 0, 44) }),
 				row("SummaryActions", {
 					button(
@@ -284,8 +275,7 @@ return function(ctx)
 						openSummary,
 						{ Size = D2.new(0.5, -4, 0, 44), AutomaticSize = E.AutomaticSize.None }
 					),
-					UI.CollapsibleView({
-						Name = "Tips",
+					UI.CollapsibleView "Tips" {
 						label = "Tips",
 						icon = "edit",
 						expanded = model.avatarTipsExpanded,
@@ -309,26 +299,24 @@ return function(ctx)
 								),
 							})
 						end,
-					}),
+					},
 				}, { Size = D2.new(1, 0, 0, 44) }),
 				button("Reset", "Reset look", function()
 					model.resetAvatarPresented:set(true)
 				end, { Size = D2.new(1, 0, 0, 44), AutomaticSize = E.AutomaticSize.None }),
 			}, { Size = D2.new(1, -8, 0, 0), padding(16) }),
-		})
+		}
 		settings:AddTag("facet-panel")
 		return {
 			preview,
 			settings,
-			UI.Sheet({
-				Name = "AvatarSummary",
+			UI.Sheet "AvatarSummary" {
 				title = "Look summary",
 				isPresented = model.avatarSummary,
 				detent = model.avatarSummaryDetent,
 				content = facts,
-			}),
-			UI.Alert({
-				Name = "ResetAvatar",
+			},
+			UI.Alert "ResetAvatar" {
 				isPresented = model.resetAvatarPresented,
 				title = "Reset your look?",
 				message = "The palette, hat and rotation return to their defaults.",
@@ -336,7 +324,7 @@ return function(ctx)
 					{ id = "cancel", label = "Cancel", role = "cancel" },
 					{ id = "reset", label = "Reset", role = "destructive", onActivate = model.resetAvatar },
 				},
-			}),
+			},
 		}
 	end, body)
 	Compose.cleanup(stop)

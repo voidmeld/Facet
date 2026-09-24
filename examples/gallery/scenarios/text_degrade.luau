@@ -65,8 +65,7 @@ return {
 		end)
 
 		local function widthPicker()
-			return UI.Picker({
-				Name = "Room",
+			return UI.Picker "Room" {
 				label = COPY.widthLabel,
 				style = "segmented",
 				options = {
@@ -76,12 +75,11 @@ return {
 					{ value = "impossible", label = COPY.impossible },
 				},
 				selected = stop,
-			})
+			}
 		end
 
 		local function screen()
-			return Host.Frame({
-				Name = "TextDegrade",
+			return Host.Frame "TextDegrade" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -90,8 +88,7 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -102,9 +99,7 @@ return {
 						SortOrder = Enum.SortOrder.LayoutOrder,
 						Padding = UDim.new(0, 16),
 					}),
-					UI.Label({
-
-						Name = "Title",
+					UI.Label "Title" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -114,10 +109,8 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-					UI.Label({
-
-						Name = "Lead",
+					},
+					UI.Label "Lead" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -127,11 +120,9 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
+					},
 					widthPicker(),
-					Host.Frame({
-
-						Name = "RowPanel",
+					Host.Frame "RowPanel" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -204,10 +195,8 @@ return {
 								TextXAlignment = Enum.TextXAlignment.Left,
 							}),
 						}),
-					}),
-					Host.Frame({
-
-						Name = "WrapPanel",
+					},
+					Host.Frame "WrapPanel" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -249,10 +238,8 @@ return {
 							TextYAlignment = Enum.TextYAlignment.Top,
 							TextXAlignment = Enum.TextXAlignment.Left,
 						}),
-					}),
-					UI.Label({
-
-						Name = "Footnote",
+					},
+					UI.Label "Footnote" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -262,9 +249,9 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-				}),
-			})
+					},
+				},
+			}
 		end
 
 		return {

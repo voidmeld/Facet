@@ -75,8 +75,7 @@ return {
 		end
 
 		local function Example()
-			return Host.Frame({
-				Name = "FlowWrap",
+			return Host.Frame "FlowWrap" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -85,8 +84,7 @@ return {
 					PaddingLeft = UDim.new(0, 12),
 					PaddingRight = UDim.new(0, 12),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -202,8 +200,8 @@ return {
 						}),
 						table.unpack(tagRow({}, "S", "short", SHORT_COUNT)),
 					}),
-				}),
-			})
+				},
+			}
 		end
 
 		return {

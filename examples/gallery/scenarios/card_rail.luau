@@ -57,22 +57,20 @@ return {
 				local perView = math.max(1, math.floor((available - 40) / 240))
 				return math.max(1, math.floor((available - 40) / perView))
 			end)
-			local nameProbe = UI.Label({
-				Name = "NameMeasure",
+			local nameProbe = UI.Label "NameMeasure" {
 				Visible = false,
 				Text = "Livery 000",
 				TextSize = 14,
 				Size = D2.new(),
 				AutomaticSize = E.AutomaticSize.XY,
-			})
-			local badgeProbe = UI.Label({
-				Name = "BadgeMeasure",
+			}
+			local badgeProbe = UI.Label "BadgeMeasure" {
 				Visible = false,
 				Text = "Endurance",
 				TextSize = 12,
 				Size = D2.new(),
 				AutomaticSize = E.AutomaticSize.XY,
-			})
+			}
 			local nameBounds, badgeBounds = observe(nameProbe, "TextBounds"), observe(badgeProbe, "TextBounds")
 			local height = Compose.formula(function(use)
 				return math.ceil(math.max(1, use(cardWidth) - 16) * 9 / 16)
@@ -110,7 +108,7 @@ return {
 					return D2.new(1, 0, 0, use(height))
 				end,
 				render = function(current, _, key)
-					local track = Host.Path2D({ Name = "Track", Thickness = 5 })
+					local track = Host.Path2D "Track" { Thickness = 5 }
 					local points = {}
 					local pointType = ctx.types.Path2DControlPoint or Path2DControlPoint
 					for index = 0, 16 do
@@ -127,14 +125,12 @@ return {
 						onActivate = function()
 							selected:set(key)
 						end,
-						Host.Frame({
-							Name = "Card",
+						Host.Frame "Card" {
 							BackgroundTransparency = 1,
 							Size = D2.new(1, -16, 1, -16),
 							Position = D2.fromOffset(8, 8),
 							Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 2) }),
-							Host.Frame({
-								Name = "Preview",
+							Host.Frame "Preview" {
 								LayoutOrder = 1,
 								Size = D2.new(1, 0, 0, 0),
 								BackgroundTransparency = 0.82,
@@ -143,9 +139,8 @@ return {
 									DominantAxis = E.DominantAxis.Width,
 								}),
 								track,
-							}),
-							UI.Label({
-								Name = "Name",
+							},
+							UI.Label "Name" {
 								Text = function(use)
 									return use(current).name
 								end,
@@ -156,9 +151,8 @@ return {
 								TextWrapped = false,
 								TextTruncate = E.TextTruncate.AtEnd,
 								BackgroundTransparency = 1,
-							}),
-							UI.Label({
-								Name = "Badge",
+							},
+							UI.Label "Badge" {
 								Text = function(use)
 									return use(current).badge
 								end,
@@ -169,8 +163,8 @@ return {
 								TextWrapped = false,
 								TextTruncate = E.TextTruncate.AtEnd,
 								BackgroundTransparency = 1,
-							}),
-						}),
+							},
+						},
 					})
 				end,
 				nameProbe,
@@ -185,8 +179,7 @@ return {
 		end
 		return {
 			screen = function()
-				return Host.ScrollingFrame({
-					Name = "CardRail",
+				return Host.ScrollingFrame "CardRail" {
 					Size = D2.fromScale(1, 1),
 					BackgroundTransparency = 1,
 					AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -215,7 +208,7 @@ return {
 					rail("WeekendRail", 6),
 					label("RecommendedTitle", copy.recommendedTitle, 7, 22),
 					rail("RecommendedRail", 8),
-				})
+				}
 			end,
 			report = function()
 				local result =

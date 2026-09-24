@@ -137,8 +137,7 @@ function Glade.build(ctx)
 	end)
 	local function scene(gladeId)
 		local visitor = visits.current(gladeId)
-		return Host.Frame({
-			Name = "LivingGlade",
+		return Host.Frame "LivingGlade" {
 			Size = D2.new(1, 0, 0, 190),
 			ClipsDescendants = true,
 			BorderSizePixel = 0,
@@ -150,13 +149,12 @@ function Glade.build(ctx)
 				local sky = seed.SKY[seed.PHASES[index]].high
 				return C3.new(sky[1], sky[2], sky[3])
 			end,
-			Host.Frame({
-				Name = "Meadow",
+			Host.Frame "Meadow" {
 				Position = D2.fromScale(0, 0.7),
 				Size = D2.fromScale(1, 0.3),
 				BackgroundColor3 = C3.new(seed.MOSS[1], seed.MOSS[2], seed.MOSS[3]),
 				BorderSizePixel = 0,
-			}),
+			},
 			Compose.show(function(use)
 				return use(visitor) ~= nil
 			end, function()
@@ -175,7 +173,7 @@ function Glade.build(ctx)
 					Host.UICorner({ CornerRadius = ctx.types.UDim.new(1, 0) }),
 				})
 			end),
-		})
+		}
 	end
 	local function detail()
 		local id = selected:peek()
@@ -187,7 +185,7 @@ function Glade.build(ctx)
 		return view.page("GladeDetail", {
 			view.text(text("glade." .. id), 28),
 			scene(id),
-			UI.Toggle({ Name = "Favorite", label = "Favorite glade", value = favorites[id] }),
+			UI.Toggle "Favorite" { label = "Favorite glade", value = favorites[id] },
 			view.text(function(use)
 				return "Dew: " .. use(supply.state(id, "dew"))
 			end),
@@ -199,8 +197,7 @@ function Glade.build(ctx)
 				return "Nectar: " .. use(supply.state(id, "nectar"))
 			end),
 			UI.ProgressView({ value = supply.level(id, "nectar"), label = "Nectar" }),
-			UI.Picker({
-				Name = "Nectar",
+			UI.Picker "Nectar" {
 				selected = choice,
 				options = options,
 				onChange = function(value)
@@ -208,7 +205,7 @@ function Glade.build(ctx)
 						choice:set(value)
 					end
 				end,
-			}),
+			},
 			view.text("Recent visitors", 22),
 			view.column("Visits", {
 				view.list(visits.recent(id), function(current)
@@ -236,7 +233,7 @@ function Glade.build(ctx)
 			view.action("Task", text("task.open", { glade = L("glade." .. seed.TASK.glade) }), function()
 				open(seed.TASK.glade)
 			end),
-			UI.TextInput({ Name = "Search", value = search, placeholder = "Search glades" }),
+			UI.TextInput "Search" { value = search, placeholder = "Search glades" },
 			view.column("Glades", {
 				view.list(filtered, function(current)
 					local glade = current:peek()
@@ -343,21 +340,18 @@ function Glade.build(ctx)
 		table.insert(children, view.action("Restore", "Restore provisions", commerce.restore))
 		table.insert(
 			children,
-			UI.Picker({
-				Name = "Locale",
+			UI.Picker "Locale" {
 				selected = locale,
 				options = { { value = "en", label = "English" }, { value = "xa", label = "Expanded" } },
-			})
+			}
 		)
 		return view.page("Keeper", children)
 	end
 	local function screen()
-		return Host.Frame({
-			Name = "Glade",
+		return Host.Frame "Glade" {
 			BackgroundTransparency = 1,
 			Size = D2.fromScale(1, 1),
-			UI.TabView({
-				Name = "Destinations",
+			UI.TabView "Destinations" {
 				selection = section,
 				style = "sidebarAdaptable",
 				Size = D2.new(1, 0, 1, -64),
@@ -387,39 +381,35 @@ function Glade.build(ctx)
 					},
 					{ id = "keeper", label = "Keeper", content = keeper },
 				},
-			}),
+			},
 			UI.Label({
 				label = notice,
 				Position = D2.new(0, 16, 1, -60),
 				Size = D2.new(1, -32, 0, 56),
 				TextWrapped = true,
 			}),
-			UI.Sheet({
-				Name = "KeeperEdit",
+			UI.Sheet "KeeperEdit" {
 				title = text("keeper.editTitle"),
 				isPresented = editOpen,
 				detent = Compose.cell("medium"),
 				content = function()
 					return view.column("Fields", {
-						UI.TextInput({
-							Name = "DisplayName",
+						UI.TextInput "DisplayName" {
 							value = draftName,
 							placeholder = text("keeper.displayName"),
-						}),
-						UI.TextInput({
-							Name = "Contact",
+						},
+						UI.TextInput "Contact" {
 							value = draftContact,
 							placeholder = text("keeper.contact"),
-						}),
+						},
 						view.action("SaveKeeper", text("keeper.save"), saveKeeper),
 						view.action("CancelKeeper", text("keeper.cancel"), function()
 							editOpen:set(false)
 						end),
 					})
 				end,
-			}),
-			UI.Alert({
-				Name = "Reset",
+			},
+			UI.Alert "Reset" {
 				isPresented = resetOpen,
 				title = text("keeper.confirmTitle"),
 				message = text("keeper.confirmBody"),
@@ -427,23 +417,20 @@ function Glade.build(ctx)
 					{ id = "cancel", label = text("keeper.keep"), role = "cancel" },
 					{ id = "reset", label = text("keeper.startOver"), role = "destructive", onActivate = reset },
 				},
-			}),
-			UI.Sheet({
-				Name = "Detail",
+			},
+			UI.Sheet "Detail" {
 				title = "Glade",
 				isPresented = detailOpen,
 				detent = Compose.cell("large"),
 				content = detail,
-			}),
-			UI.Sheet({
-				Name = "Provisions",
+			},
+			UI.Sheet "Provisions" {
 				title = "Provisions",
 				isPresented = shopOpen,
 				detent = Compose.cell("large"),
 				content = shop,
-			}),
-			UI.Sheet({
-				Name = "Wisp",
+			},
+			UI.Sheet "Wisp" {
 				title = "Wisp",
 				isPresented = wispOpen,
 				detent = Compose.cell("medium"),
@@ -457,8 +444,8 @@ function Glade.build(ctx)
 						view.text(if last then "Last seen in " .. L("glade." .. last.glade) else "Not seen yet"),
 					})
 				end,
-			}),
-		})
+			},
+		}
 	end
 	return {
 		screen = screen,

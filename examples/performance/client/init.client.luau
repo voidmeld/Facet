@@ -11,8 +11,7 @@ local Host = runtime.constructors
 local UI = Facet.controls(runtime)
 local stop = runtime.mount(function()
 	local sheet = Facet.themes.createStyleSheet(runtime)
-	return Host.ScreenGui({
-		Name = "FacetPerformanceLab",
+	return Host.ScreenGui "FacetPerformanceLab" {
 		ResetOnSpawn = false,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		sheet,
@@ -44,7 +43,7 @@ local stop = runtime.mount(function()
 				print("FACET_PERF_CAPTURE " .. game:GetService("HttpService"):JSONEncode(row))
 			end,
 		}, lab),
-	})
+	}
 end, Players.LocalPlayer:WaitForChild("PlayerGui"))
 script.Destroying:Connect(function()
 	stop()

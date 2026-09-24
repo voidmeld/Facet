@@ -375,7 +375,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			table.insert(p, Host.UICorner({ CornerRadius = D.new(if spec.corners == "pill" then 1 else 0, 0) }))
 		end
 		if popTimeline then
-			table.insert(p, Host.UIScale({ Name = "Pop", Scale = popScale }))
+			table.insert(p, Host.UIScale "Pop" { Scale = popScale })
 		end
 		if spec.busy ~= nil then
 			table.insert(
@@ -428,8 +428,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				p.AutomaticSize = spec.AutomaticSize or E.AutomaticSize.None
 				table.insert(
 					content,
-					Host.ImageLabel({
-						Name = "Image",
+					Host.ImageLabel "Image" {
 						Image = spec.image,
 						BackgroundTransparency = 1,
 						Size = D2.new(1, 0, 0.55, 0),
@@ -439,7 +438,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							DominantAxis = E.DominantAxis.Width,
 							AspectType = E.AspectType.FitWithinMaxSize,
 						}),
-					})
+					}
 				)
 			end
 			if spec.icon then
@@ -826,8 +825,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			local trailing = spec.indicatorPosition == "trailing"
 			local reserve = (if presentation == "switch" then 38 else 24) + 8
 			local mark = ctx.styled(
-				Host.Frame({
-					Name = "Mark",
+				Host.Frame "Mark" {
 					AnchorPoint = V2.new(0.5, 0.5),
 					Size = D2.fromOffset(
 						if presentation == "switch" then 18 else 12,
@@ -835,7 +833,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					),
 					Position = D2.fromScale(0.5, 0.5),
 					ctx.corner(if presentation == "switch" then 9 else 2),
-				}),
+				},
 				"toggle-mark"
 			)
 			local indicator = ctx.styled(
@@ -1207,8 +1205,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			table.insert(p, messageNode)
 			table.insert(
 				p,
-				Host.UIScale({
-					Name = "ValidationPulse",
+				Host.UIScale "ValidationPulse" {
 					Scale = function(use: ComposeTypes.Use)
 						if read(ctx.config.reducedMotion, use) then
 							return 1
@@ -1216,7 +1213,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						local phase = use(assert(errorTimeline).progress)
 						return 1 - 0.03 * math.sin(math.pi * phase) * (1 - phase)
 					end,
-				})
+				}
 			)
 		end
 
@@ -1229,8 +1226,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		if mode ~= "never" then
 			table.insert(
 				p,
-				UI.Button({
-					Name = "Clear",
+				UI.Button "Clear" {
 					label = "Clear",
 					Size = D2.fromOffset(44, 32),
 					AutomaticSize = E.AutomaticSize.None,
@@ -1248,7 +1244,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					onActivate = function()
 						propose("")
 					end,
-				})
+				}
 			)
 		end
 		node = ctx.styled(ctx.styled(ctx.styled(Host.TextBox(p), "text"), "field"), "text-input")
@@ -1363,8 +1359,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		end
 		table.insert(
 			parts,
-			UI.Button({
-				Name = "Decrease",
+			UI.Button "Decrease" {
 				label = "−",
 				enabled = function(use: ComposeTypes.Use)
 					return enabled(spec, use) and read(spec.value, use) > model.min
@@ -1372,7 +1367,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				onActivate = function()
 					adjust(-1)
 				end,
-			})
+			}
 		)
 		table.insert(
 			parts,
@@ -1385,8 +1380,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		)
 		table.insert(
 			parts,
-			UI.Button({
-				Name = "Increase",
+			UI.Button "Increase" {
 				label = "+",
 				enabled = function(use: ComposeTypes.Use)
 					return enabled(spec, use) and read(spec.value, use) < model.max
@@ -1394,7 +1388,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				onActivate = function()
 					adjust(1)
 				end,
-			})
+			}
 		)
 		local p = props(spec, { "value", "min", "max", "step", "format", "enabled", "onChange", "label" }, {
 			Selectable = true,
@@ -1420,13 +1414,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		if image then
 			table.insert(
 				native,
-				Host.ImageLabel({
-					Name = "Artwork",
+				Host.ImageLabel "Artwork" {
 					Image = image,
 					BackgroundTransparency = 1,
 					Size = D2.fromScale(1, 1),
 					ScaleType = E.ScaleType.Stretch,
-				})
+				}
 			)
 		end
 		local node = ctx.styled(Host.Frame(native), role)
@@ -1462,8 +1455,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 			end
 		end
-		local detector = Host.UIDragDetector({
-			Name = "Drag",
+		local detector = Host.UIDragDetector "Drag" {
 			ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
 			Enabled = function(use: ComposeTypes.Use)
 				return enabled(spec, use)
@@ -1490,7 +1482,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					spec.onCommit(read(spec.value))
 				end
 			end,
-		})
+		}
 		track = ctx.styled(
 			Host.Frame({
 				Name = "Track",
@@ -1507,15 +1499,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					ctx.corner(3),
 				}, spec.trackImage, "slider-rail", "sliderTrack") :: ComposeTypes.Child,
 				ctx.styled(
-					Host.Frame({
-						Name = "Fill",
+					Host.Frame "Fill" {
 						Size = function(use: ComposeTypes.Use)
 							return D2.new(model.fraction(read(spec.value, use)), 0, 0, 6)
 						end,
 						Position = D2.fromScale(0, 0.5),
 						AnchorPoint = V2.new(0, 0.5),
 						ctx.corner(3),
-					}),
+					},
 					"slider-fill"
 				),
 				paintedPart({
@@ -1769,8 +1760,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				Selectable = interactive,
 				Interactable = interactive,
 				markContent :: ComposeTypes.Child,
-				Host.UIDragDetector({
-					Name = "Scrub",
+				Host.UIDragDetector "Scrub" {
 					ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
 					Enabled = interactive,
 					DragStart = function(position)
@@ -1790,7 +1780,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							suppressActivation = true
 						end
 					end,
-				}),
+				},
 			} :: Shared.TextButtonNativeProps
 		)
 		p.Activated = function(input: InputObject, clickCount: number)
@@ -1967,8 +1957,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end
 			pendingFocus = nil
 		end
-		remove = UI.Button({
-			Name = "Remove",
+		remove = UI.Button "Remove" {
 			label = spec.removeLabel or "Remove",
 			enabled = spec.enabled,
 			onActivate = function()
@@ -1980,7 +1969,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					restore()
 				end
 			end,
-		})
+		}
 		root = ctx.styled(ctx.row({ body, remove }, rootProps), "chip")
 		Compose.cleanup(restore)
 		return root
@@ -2061,8 +2050,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						end
 						return nil
 					end)
-					return Host.Frame({
-						Name = "PreferredBinding",
+					return Host.Frame "PreferredBinding" {
 						Size = D2.fromOffset(0, 0),
 						AutomaticSize = E.AutomaticSize.XY,
 						BackgroundTransparency = 1,
@@ -2120,7 +2108,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 								})
 							end,
 						}),
-					})
+					}
 				end,
 			})
 		)

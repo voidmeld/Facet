@@ -128,7 +128,7 @@ t.describe("native navigation controls", function()
 		local presented = Compose.cell(false)
 		local cancelled = 0
 		local world = setup(function(UI, Host, _, gui)
-			local button = UI.Button({ Name = "Original", label = "Original" })
+			local button = UI.Button "Original" { label = "Original" }
 			gui.SelectedObject = button
 			return Host.Frame({
 				button,
@@ -205,7 +205,7 @@ t.describe("native navigation controls", function()
 						Compose.cleanup(function()
 							disposed += 1
 						end)
-						return Host.Frame({ Name = "Details", LayoutOrder = -10 })
+						return Host.Frame "Details" { LayoutOrder = -10 }
 					end,
 				})
 			end)
@@ -252,7 +252,7 @@ t.describe("native navigation controls", function()
 				Compose.cleanup(function()
 					disposed += 1
 				end)
-				return Host.Frame({ Name = "ContentState" })
+				return Host.Frame "ContentState" {}
 			end
 			tabs = Compose.cell({
 				{ id = "one", label = "One", content = content },
@@ -349,8 +349,7 @@ t.describe("native navigation controls", function()
 	t.it("keeps combo suggestions beside a single line and preserves native typing until Down", function()
 		local value, text, changes, validations = Compose.cell("a"), Compose.cell("Alpha"), 0, 0
 		local world = setup(function(UI, _, engine)
-			return UI.ComboBox({
-				Name = "SearchCombo",
+			return UI.ComboBox "SearchCombo" {
 				Size = engine.types.UDim2.fromOffset(320, 44),
 				value = value,
 				text = text,
@@ -367,7 +366,7 @@ t.describe("native navigation controls", function()
 				onChange = function()
 					changes += 1
 				end,
-			})
+			}
 		end)
 		local root = find(world.screen, "SearchCombo")
 		local row, editor, suggestions = find(root, "Row"), find(root, "Editor"), find(root, "Suggestions")
@@ -487,8 +486,7 @@ t.describe("native navigation controls", function()
 		local changes = 0
 		local world = setup(function(UI, Host)
 			return Host.Frame({
-				UI.ComboBox({
-					Name = "Search",
+				UI.ComboBox "Search" {
 					value = value,
 					text = text,
 					options = function(use)
@@ -509,14 +507,13 @@ t.describe("native navigation controls", function()
 						changes += 1
 						presented:set(true)
 					end,
-				}),
-				UI.Alert({
-					Name = "Result",
+				},
+				UI.Alert "Result" {
 					isPresented = presented,
 					title = "Selected game",
 					transition = { seconds = 0.1 },
 					actions = { { id = "CloseResult", label = "Close", role = "cancel" } },
-				}),
+				},
 			})
 		end)
 		local editor = find(world.screen, "Editor")
@@ -558,7 +555,7 @@ t.describe("native navigation controls", function()
 				detent = detent,
 				title = "Sheet",
 				content = function()
-					return Host.Frame({ Name = "Body" })
+					return Host.Frame "Body" {}
 				end,
 				interactiveDismissDisabled = true,
 			})
@@ -608,14 +605,13 @@ t.describe("native navigation controls", function()
 		local presented, count = Compose.cell(false), 0
 		local world = setup(function(UI, Host)
 			return Host.Frame({
-				UI.Button({
-					Name = "Background",
+				UI.Button "Background" {
 					label = "Background",
 					shortcut = { keyCode = "K" },
 					onActivate = function()
 						count += 1
 					end,
-				}),
+				},
 				UI.Alert({ isPresented = presented, title = "Modal" }),
 			})
 		end)
@@ -665,7 +661,7 @@ t.describe("native navigation controls", function()
 				expanded = expanded,
 				label = "Details",
 				content = function()
-					return UI.Button({ Name = "Inside", label = "Inside" })
+					return UI.Button "Inside" { label = "Inside" }
 				end,
 			})
 		end)
@@ -819,8 +815,8 @@ t.describe("native navigation controls", function()
 			return UI.TabView({
 				selection = selection,
 				tabs = {
-					{ id = "one", content = UI.Button({ Name = "OneAction", label = "One" }) },
-					{ id = "two", content = UI.Button({ Name = "TwoAction", label = "Two" }) },
+					{ id = "one", content = UI.Button "OneAction" { label = "One" } },
+					{ id = "two", content = UI.Button "TwoAction" { label = "Two" } },
 				},
 			})
 		end)
@@ -836,7 +832,7 @@ t.describe("native navigation controls", function()
 	t.it("queues callouts by priority and retires once without writing model facts", function()
 		local seen, used, retired = Compose.cell(false), Compose.cell(false), {}
 		local world = setup(function(UI, Host)
-			local anchor = UI.Button({ Name = "Anchor", label = "Anchor" })
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
 			return Host.Frame({
 				anchor,
 				UI.Callout({
@@ -844,7 +840,7 @@ t.describe("native navigation controls", function()
 					seen = seen,
 					priority = 1,
 					content = function()
-						return Host.TextLabel({ Name = "FirstTip" })
+						return Host.TextLabel "FirstTip" {}
 					end,
 					onRetire = function(reason)
 						table.insert(retired, "low:" .. reason)
@@ -855,7 +851,7 @@ t.describe("native navigation controls", function()
 					featureUsed = used,
 					priority = 2,
 					content = function()
-						return Host.TextLabel({ Name = "PriorityTip" })
+						return Host.TextLabel "PriorityTip" {}
 					end,
 					onRetire = function(reason)
 						table.insert(retired, "high:" .. reason)
@@ -884,7 +880,7 @@ t.describe("native navigation controls", function()
 				title = "Details",
 				interactiveDismissDisabled = true,
 				content = function()
-					return Host.ScrollingFrame({ Name = "DetailBody" })
+					return Host.ScrollingFrame "DetailBody" {}
 				end,
 			})
 		end)
@@ -913,7 +909,7 @@ t.describe("native navigation controls", function()
 					if value.id == "bad" then
 						error("invalid content")
 					end
-					return Host.Frame({ Name = "Recovered" })
+					return Host.Frame "Recovered" {}
 				end,
 			})
 		end)
@@ -1010,13 +1006,13 @@ t.describe("native navigation controls", function()
 				path = path,
 				root = {
 					content = function()
-						return UI.Button({ Name = "RootAction", label = "Root" })
+						return UI.Button "RootAction" { label = "Root" }
 					end,
 				},
 				destinations = {
 					detail = {
 						content = function()
-							return UI.Button({ Name = "DetailAction", label = "Detail" })
+							return UI.Button "DetailAction" { label = "Detail" }
 						end,
 					},
 				},
@@ -1033,8 +1029,8 @@ t.describe("native navigation controls", function()
 			return UI.PageView({
 				selection = selection,
 				pages = {
-					{ id = "one", content = UI.Button({ Name = "PageOne", label = "One" }) },
-					{ id = "two", content = UI.Button({ Name = "PageTwo", label = "Two" }) },
+					{ id = "one", content = UI.Button "PageOne" { label = "One" } },
+					{ id = "two", content = UI.Button "PageTwo" { label = "Two" } },
 				},
 			})
 		end)
@@ -1079,8 +1075,7 @@ t.describe("native navigation controls", function()
 		local reference, references, enters = nil, 0, 0
 		local world = setup(function(UI, Host, engine)
 			return Host.Frame({
-				UI.Picker({
-					Name = "Auto",
+				UI.Picker "Auto" {
 					Position = function(use)
 						return engine.types.UDim2.fromOffset(use(position), 70)
 					end,
@@ -1098,20 +1093,19 @@ t.describe("native navigation controls", function()
 					[Compose.event("MouseEnter")] = function()
 						enters += 1
 					end,
-					Host.UICorner({ Name = "AuthoredCorner" }),
+					Host.UICorner "AuthoredCorner" {},
 					selected = value,
 					options = {
 						{ value = "a", label = "Alpha" },
 						{ value = "b", label = "Beta" },
 					},
-				}),
-				UI.Picker({
-					Name = "Segments",
+				},
+				UI.Picker "Segments" {
 					style = "segmented",
 					axis = axis,
 					selected = value,
 					options = { { value = "a", label = "Alpha", badge = badge }, { value = "b", label = "Beta" } },
-				}),
+				},
 			})
 		end)
 		local automatic = find(world.screen, "Auto")
@@ -1172,8 +1166,7 @@ t.describe("native navigation controls", function()
 		local world = setup(function(UI, Host, engine)
 			sizing = Compose.cell(engine.types.Enum.AutomaticSize.None)
 			return Host.Frame({
-				UI.Picker({
-					Name = "Bounded",
+				UI.Picker "Bounded" {
 					style = "menu",
 					Size = engine.types.UDim2.new(1, -160, 0, 44),
 					selected = selected,
@@ -1181,14 +1174,13 @@ t.describe("native navigation controls", function()
 						{ value = "hud", label = "Screen-anchored HUD with a long title" },
 						{ value = "other", label = "Another destination with a long title" },
 					},
-				}),
-				UI.Menu({
-					Name = "AdaptiveHeight",
+				},
+				UI.Menu "AdaptiveHeight" {
 					Size = engine.types.UDim2.new(1, 0, 0, 0),
 					AutomaticSize = sizing,
 					label = "Menu",
 					items = { { id = "one", label = "One", onSelect = function() end } },
-				}),
+				},
 			})
 		end)
 		local bounded = find(world.screen, "Bounded")
@@ -1222,19 +1214,17 @@ t.describe("native navigation controls", function()
 		local options = Compose.cell({ { value = "a", label = "Alpha" } })
 		local world = setup(function(UI, Host)
 			return Host.Frame({
-				UI.Picker({
-					Name = "Plain",
+				UI.Picker "Plain" {
 					style = "segmented",
 					selected = selected,
 					options = { { value = "a", label = "Alpha" }, { value = "b", label = "Beta" } },
-				}),
-				UI.Picker({
-					Name = "ReadableDescription",
+				},
+				UI.Picker "ReadableDescription" {
 					style = "segmented",
 					selected = selected,
 					options = { { value = "a", label = "Alpha", description = description } },
-				}),
-				UI.Picker({ Name = "ReadableOptions", style = "segmented", selected = selected, options = options }),
+				},
+				UI.Picker "ReadableOptions" { style = "segmented", selected = selected, options = options },
 			})
 		end)
 		local plain = find(find(world.screen, "Plain"), "a")
@@ -1267,13 +1257,13 @@ t.describe("native navigation controls", function()
 				path = path,
 				root = {
 					content = function()
-						return UI.Button({ Name = "RootAction", label = "Root" })
+						return UI.Button "RootAction" { label = "Root" }
 					end,
 				},
 				destinations = {
 					good = {
 						content = function()
-							return UI.Button({ Name = "Good", label = "Good" })
+							return UI.Button "Good" { label = "Good" }
 						end,
 					},
 					bad = {
@@ -1317,8 +1307,7 @@ t.describe("native navigation controls", function()
 				destinations = {
 					child = {
 						content = function()
-							return UI.NavigationStack({
-								Name = "ChildStack",
+							return UI.NavigationStack "ChildStack" {
 								path = inner,
 								root = {
 									content = function()
@@ -1328,11 +1317,11 @@ t.describe("native navigation controls", function()
 								destinations = {
 									detail = {
 										content = function()
-											return UI.Button({ Name = "DeepAction", label = "Deep" })
+											return UI.Button "DeepAction" { label = "Deep" }
 										end,
 									},
 								},
-							})
+							}
 						end,
 					},
 				},
@@ -1359,13 +1348,12 @@ t.describe("native navigation controls", function()
 	t.it("keeps callouts nonmodal, fits their plate and observes nonconsuming tap away", function()
 		local shown, retired, presses = Compose.cell(true), nil, 0
 		local world = setup(function(UI, Host, engine, gui)
-			local anchor = UI.Button({
-				Name = "Anchor",
+			local anchor = UI.Button "Anchor" {
 				label = "Anchor",
 				onActivate = function()
 					presses += 1
 				end,
-			})
+			}
 			gui.SelectedObject = anchor
 			return Host.Frame({
 				anchor,
@@ -1408,7 +1396,7 @@ t.describe("native navigation controls", function()
 				detent = selected,
 				isPresented = shown,
 				content = function()
-					return UI.Button({ Name = "KeptContent", label = "Content" })
+					return UI.Button "KeptContent" { label = "Content" }
 				end,
 			})
 		end)
@@ -1435,13 +1423,13 @@ t.describe("native navigation controls", function()
 					{
 						id = "a",
 						content = function()
-							return UI.Button({ Name = "AContent", label = "A" })
+							return UI.Button "AContent" { label = "A" }
 						end,
 					},
 					{
 						id = "b",
 						content = function()
-							return UI.Button({ Name = "BContent", label = "B" })
+							return UI.Button "BContent" { label = "B" }
 						end,
 					},
 				},
@@ -1497,7 +1485,7 @@ t.describe("native navigation controls", function()
 	end)
 	t.it("keeps measured callout arrows outside automatic content bounds", function()
 		local world = setup(function(UI, Host, engine)
-			local anchor = UI.Button({ Name = "Anchor", label = "Anchor" })
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
 			return Host.Frame({
 				anchor,
 				UI.Callout({
@@ -1505,13 +1493,12 @@ t.describe("native navigation controls", function()
 					edge = "top",
 					onRetire = function() end,
 					content = function()
-						return Host.TextLabel({
-							Name = "TipContent",
+						return Host.TextLabel "TipContent" {
 							Text = "Start from a prompt, then edit it before you send.",
 							TextWrapped = true,
 							Size = engine.types.UDim2.new(1, 0, 0, 0),
 							AutomaticSize = engine.types.Enum.AutomaticSize.Y,
-						})
+						}
 					end,
 				}),
 			})
@@ -1544,9 +1531,8 @@ t.describe("native navigation controls", function()
 	t.it("suspends callout plates with hidden anchors and restores their native arrow", function()
 		local retired = 0
 		local world = setup(function(UI, Host)
-			local anchor = UI.Button({ Name = "Anchor", label = "Anchor" })
-			return Host.Frame({
-				Name = "Surface",
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
+			return Host.Frame "Surface" {
 				anchor,
 				UI.Callout({
 					anchor = anchor,
@@ -1557,7 +1543,7 @@ t.describe("native navigation controls", function()
 						return UI.Label({ text = "Tip" })
 					end,
 				}),
-			})
+			}
 		end)
 		t.expect(find(world.screen, "Arrow") ~= nil).toBe(true)
 		find(world.screen, "Surface").Visible = false
@@ -1603,8 +1589,7 @@ t.describe("native navigation controls", function()
 		local expanded, image = Compose.cell(false), Compose.cell("rbxassetid://1")
 		local world = setup(function(UI, Host)
 			return Host.Frame({
-				UI.DisclosureGroup({
-					Name = "Disclosure",
+				UI.DisclosureGroup "Disclosure" {
 					label = "Details",
 					appearance = "divided",
 					chevronPosition = "leading",
@@ -1612,17 +1597,16 @@ t.describe("native navigation controls", function()
 					content = function()
 						return UI.Label({ text = "Details" })
 					end,
-				}),
-				UI.CollapsibleView({
-					Name = "Summary",
+				},
+				UI.CollapsibleView "Summary" {
 					label = "Summary",
 					image = image,
 					expanded = expanded,
 					dismissButton = false,
 					content = function()
-						return UI.Button({ Name = "DetailsAction", label = "Details" })
+						return UI.Button "DetailsAction" { label = "Details" }
 					end,
-				}),
+				},
 			})
 		end)
 		t.expect(find(find(world.screen, "Disclosure"), "LeadingIcon") ~= nil).toBe(true)
@@ -1645,8 +1629,7 @@ t.describe("native navigation controls", function()
 		local selected = Compose.cell("a")
 		local world = setup(function(UI, Host)
 			return Host.Frame({
-				UI.TabView({
-					Name = "Sidebar",
+				UI.TabView "Sidebar" {
 					selection = selected,
 					placement = "sidebar",
 					sections = { { id = "s", label = "Section" } },
@@ -1666,9 +1649,8 @@ t.describe("native navigation controls", function()
 							end,
 						},
 					},
-				}),
-				UI.TabView({
-					Name = "Collapsed",
+				},
+				UI.TabView "Collapsed" {
 					selection = selected,
 					style = "collapsible",
 					tabs = {
@@ -1687,7 +1669,7 @@ t.describe("native navigation controls", function()
 							end,
 						},
 					},
-				}),
+				},
 			})
 		end)
 		t.expect(find(find(world.screen, "Sidebar"), "Section").Text).toBe("Section")
@@ -1703,15 +1685,14 @@ t.describe("native navigation controls", function()
 	t.it("closes menu and picker presentations when native ancestors become unavailable", function()
 		local selected, opened = Compose.cell("a"), Compose.cell(false)
 		local world = setup(function(UI, Host)
-			return Host.Frame({
-				Name = "Surface",
+			return Host.Frame "Surface" {
 				UI.Picker({
 					selected = selected,
 					style = "menu",
 					isPresented = opened,
 					options = { { value = "a", label = "Alpha" }, { value = "b", label = "Beta" } },
 				}),
-			})
+			}
 		end)
 		opened:set(true)
 		local row = find(find(world.screen, "MenuPanel"), "b")
@@ -1781,7 +1762,7 @@ t.describe("native navigation controls", function()
 	t.it("animates alerts from native sources and reclaims interrupted Compose presence", function()
 		local shown = Compose.cell(false)
 		local world = setup(function(UI, Host)
-			local source = UI.Button({ Name = "Source", label = "Open" })
+			local source = UI.Button "Source" { label = "Open" }
 			return Host.Frame({
 				source,
 				UI.Alert({ isPresented = shown, title = "Detail", transition = { source = source, seconds = 0.2 } }),
@@ -1815,22 +1796,20 @@ t.describe("native navigation controls", function()
 	t.it("expands a source rectangle into full screen and reverses the same Compose-owned snapshot", function()
 		local shown = Compose.cell(false)
 		local world = setup(function(UI, Host, engine)
-			local camera = Host.Camera({ Name = "PreviewCamera" })
-			local externalCamera = Host.Camera({ Name = "ExternalCamera" })
-			local source = Host.Frame({
-				Name = "Card",
+			local camera = Host.Camera "PreviewCamera" {}
+			local externalCamera = Host.Camera "ExternalCamera" {}
+			local source = Host.Frame "Card" {
 				Host.UICorner({ CornerRadius = engine.types.UDim.new(0, 12) }),
-				Host.ViewportFrame({
-					Name = "Scene",
+				Host.ViewportFrame "Scene" {
 					CurrentCamera = Compose.static(camera),
-					Host.Camera({ Name = "PreviewCamera", Archivable = false }),
+					Host.Camera "PreviewCamera" { Archivable = false },
 					camera,
-					Host.WorldModel({ Name = "World" }),
-				}),
-				Host.ViewportFrame({ Name = "OtherScene", CurrentCamera = Compose.static(externalCamera) }),
-				UI.Button({ Name = "Open", label = "Open" }),
-				Host.UIDragDetector({ Name = "CardDrag" }),
-			})
+					Host.WorldModel "World" {},
+				},
+				Host.ViewportFrame "OtherScene" { CurrentCamera = Compose.static(externalCamera) },
+				UI.Button "Open" { label = "Open" },
+				Host.UIDragDetector "CardDrag" {},
+			}
 			return Host.Frame({
 				source,
 				externalCamera,
@@ -1903,7 +1882,7 @@ t.describe("native navigation controls", function()
 		local shown = Compose.cell(false)
 		local world = setup(function(UI, Host, engine, gui)
 			gui.ReducedMotionEnabled = true
-			local source = UI.Button({ Name = "Card", label = "Card" })
+			local source = UI.Button "Card" { label = "Card" }
 			return Host.Frame({
 				source,
 				UI.Alert({

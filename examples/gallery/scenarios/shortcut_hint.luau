@@ -12,14 +12,12 @@ return {
 		local rung, separator, title = Compose.cell("regular"), Compose.cell("or"), Compose.cell("Saved")
 		local guide = Compose.cell(false)
 		local key = Compose.cell(nil)
-		local liveAction = Host.InputAction({
-			Name = "Activate",
+		local liveAction = Host.InputAction "Activate" {
 			Type = Enum.InputActionType.Bool,
 			Host.InputBinding({ KeyCode = Enum.KeyCode.Return }),
 			Host.InputBinding({ KeyCode = Enum.KeyCode.ButtonA }),
-		})
-		local customAction = Host.InputAction({
-			Name = "RecipeCommand",
+		}
+		local customAction = Host.InputAction "RecipeCommand" {
 			Type = Enum.InputActionType.Bool,
 			Compose.show(key, function()
 				return Host.InputBinding({
@@ -28,14 +26,13 @@ return {
 					end,
 				})
 			end),
-		})
-		Host.InputContext({
-			Name = "ShortcutRecipe",
+		}
+		Host.InputContext "ShortcutRecipe" {
 			Parent = ctx.inputTarget,
 			Enabled = true,
 			liveAction,
 			customAction,
-		})
+		}
 		local function report()
 			return { binding = key:peek(), title = title:peek(), guideVisible = guide:peek(), controlSize = rung:peek() }
 		end
@@ -44,8 +41,7 @@ return {
 			return report()
 		end
 		local function section()
-			local root = Host.Frame({
-				Name = "HintRecipe",
+			local root = Host.Frame "HintRecipe" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -228,8 +224,7 @@ return {
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					Compose.show(guide, function()
-						return UI.Label({
-							Name = "GuideText",
+						return UI.Label "GuideText" {
 							BackgroundTransparency = 1,
 							BorderSizePixel = 0,
 							Size = UDim2.new(1, 0, 0, 0),
@@ -238,17 +233,16 @@ return {
 							TextWrapped = true,
 							TextYAlignment = Enum.TextYAlignment.Top,
 							TextXAlignment = Enum.TextXAlignment.Left,
-						})
+						}
 					end),
 				}),
-			})
+			}
 			return root
 		end
 		return {
 			section = section,
 			screen = function()
-				return Host.Frame({
-					Name = "ShortcutHint",
+				return Host.Frame "ShortcutHint" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -257,16 +251,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						section(),
-					}),
-				})
+					},
+				}
 			end,
 			report = report,
 			steps = {

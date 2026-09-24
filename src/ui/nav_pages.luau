@@ -275,8 +275,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				spec.onChange(id)
 			end
 		end
-		local bar = Host.ScrollingFrame({
-			Name = "Tabs",
+		local bar = Host.ScrollingFrame "Tabs" {
 			ZIndex = 2,
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
@@ -349,12 +348,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								and read(spec.indicator, use) ~= "pill"
 						end, function()
 							return ctx.styled(
-								Host.Frame({
-									Name = "SelectionIndicator",
+								Host.Frame "SelectionIndicator" {
 									Size = D2.new(1, 0, 0, 2),
 									Position = D2.new(0, 0, 1, -2),
 									BorderSizePixel = 0,
-								}),
+								},
 								"selection-indicator"
 							)
 						end),
@@ -403,7 +401,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					return button
 				end,
 			}),
-		})
+		}
 		local barSize, barPosition = ctx.observe(bar, "AbsoluteSize"), ctx.observe(bar, "AbsolutePosition")
 		Compose.watch(function(use: Core.Use)
 			local selected = use(spec.selection)
@@ -426,8 +424,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					else V2.new(math.max(0, bar.CanvasPosition.X + delta), bar.CanvasPosition.Y)
 			end
 		end)
-		local layers = Host.Frame({
-			Name = "Content",
+		local layers = Host.Frame "Content" {
 			BackgroundTransparency = 1,
 			Position = function(use: Core.Use)
 				local place = use(placement)
@@ -511,13 +508,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					return panel
 				end,
 			}),
-		})
+		}
 		surfaces.attach(root, { bar, layers })
 		if spec.style == "collapsible" then
 			runtime.decorate(bar, { Visible = false })
 			surfaces.attach(root, {
-				UI.Menu({
-					Name = "TabsMenu",
+				UI.Menu "TabsMenu" {
 					Size = D2.new(1, 0, 0, 44),
 					label = function(use: Core.Use)
 						local tab = use(tabMap)[use(spec.selection)]
@@ -540,7 +536,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 						return items
 					end,
-				}),
+				},
 			})
 		end
 		local slots: { [string]: { [string]: boolean } } = {
@@ -722,7 +718,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Compose.show(function(use: Core.Use)
 								return use(state).index > 1
 							end, function()
-								return UI.Button({ Name = "Back", label = spec.backLabel or "Back", onActivate = pop })
+								return UI.Button "Back" { label = spec.backLabel or "Back", onActivate = pop }
 							end),
 							ctx.text({ Text = destination.title or "" }),
 						}, {
@@ -731,8 +727,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Visible = chrome > 0,
 							AutomaticSize = E.AutomaticSize.None,
 						}),
-						Host.Frame({
-							Name = "Destination",
+						Host.Frame "Destination" {
 							BackgroundTransparency = 1,
 							Position = D2.fromOffset(0, chrome),
 							Size = D2.new(1, 0, 1, -chrome),
@@ -753,7 +748,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									TextWrapped = true,
 								})
 							end),
-						}),
+						},
 					}, state, spec.transition)
 					local visible, parent = ctx.observe(panel, "Visible"), ctx.observe(panel, "Parent")
 					local remembered: GuiObject?
@@ -815,8 +810,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local pageNodes: { [string]: Frame } = {}
 		local gui = surfaces.service("GuiService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
-		local layout = Host.UIPageLayout({
-			Name = "PagesLayout",
+		local layout = Host.UIPageLayout "PagesLayout" {
 			Animated = function(use: Core.Use)
 				return read(ctx.config.reducedMotion, use) ~= true and not use(reduced)
 			end,
@@ -826,7 +820,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			GamepadInputEnabled = true,
 			TouchInputEnabled = true,
 			ScrollWheelInputEnabled = false,
-		})
+		}
 		local children: { Types.Child } = { layout }
 		for index, page in spec.pages do
 			local node = Host.Frame({
@@ -839,12 +833,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			pageNodes[page.id] = node
 			table.insert(children, node)
 		end
-		local pages = Host.Frame({
-			Name = "Pages",
+		local pages = Host.Frame "Pages" {
 			BackgroundTransparency = 1,
 			Size = D2.new(1, 0, 1, -footerHeight),
 			ClipsDescendants = true,
-		})
+		}
 		surfaces.attach(pages, children)
 		local changing = false
 		local parent = ctx.observe(pages, "Parent")
@@ -897,21 +890,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			table.insert(
 				footer,
-				UI.Picker({
-					Name = "Indicators",
+				UI.Picker "Indicators" {
 					selected = spec.selection,
 					options = options,
 					multiple = false :: false,
 					style = "segmented" :: "segmented",
-				})
+				}
 			)
 		end
 		if spec.controls ~= false then
 			table.insert(
 				footer,
 				ctx.row({
-					UI.Button({
-						Name = "Previous",
+					UI.Button "Previous" {
 						label = "Previous",
 						enabled = function(use: Core.Use)
 							return indexById[use(spec.selection)] > 1
@@ -919,9 +910,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						onActivate = function()
 							step(-1)
 						end,
-					}),
-					UI.Button({
-						Name = "Next",
+					},
+					UI.Button "Next" {
 						label = "Next",
 						enabled = function(use: Core.Use)
 							return indexById[use(spec.selection)] < #spec.pages
@@ -929,7 +919,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						onActivate = function()
 							step(1)
 						end,
-					}),
+					},
 				})
 			)
 		end

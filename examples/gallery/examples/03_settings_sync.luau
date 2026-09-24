@@ -67,8 +67,7 @@ function example.build(ctx: any)
 	end
 	return {
 		screen = function()
-			return Host.ScrollingFrame({
-				Name = "SettingsSync",
+			return Host.ScrollingFrame "SettingsSync" {
 				Size = UDim2.fromScale(1, 1),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				CanvasSize = UDim2.new(),
@@ -89,9 +88,7 @@ function example.build(ctx: any)
 					local value = use(server)
 					return `Server confirmed: music {if value.music then "on" else "off"}, volume {value.volume} (revision {value.revision})`
 				end),
-				UI.Toggle({
-
-					Name = "Music",
+				UI.Toggle "Music" {
 					label = "Music",
 					value = function(use)
 						return use(draft).music
@@ -99,10 +96,8 @@ function example.build(ctx: any)
 					onChange = function(value)
 						request(value, draft:peek().volume)
 					end,
-				}),
-				UI.Stepper({
-
-					Name = "Volume",
+				},
+				UI.Stepper "Volume" {
 					label = "Volume",
 					min = 0,
 					max = 10,
@@ -112,22 +107,20 @@ function example.build(ctx: any)
 					onChange = function(value)
 						request(draft:peek().music, value)
 					end,
-				}),
-				UI.Button({
-
-					Name = "Invalid",
+				},
+				UI.Button "Invalid" {
 					label = "Ask for volume 99",
 					onActivate = function()
 						request(draft:peek().music, 99)
 					end,
-				}),
-				UI.Button({ Name = "Deliver", label = "Deliver server reply", onActivate = deliver }),
-				UI.Button({ Name = "Reset", label = "Reset demo", onActivate = reset }),
+				},
+				UI.Button "Deliver" { label = "Deliver server reply", onActivate = deliver },
+				UI.Button "Reset" { label = "Reset demo", onActivate = reset },
 				text("Status", status),
 				text("History", function(use)
 					return table.concat(use(history), "\n")
 				end),
-			})
+			}
 		end,
 		request = request,
 		deliver = deliver,

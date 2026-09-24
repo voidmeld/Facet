@@ -37,8 +37,7 @@ return {
 			Compose.cleanup(function()
 				rootPath, controller = nil, nil
 			end)
-			local root = Host.Frame({
-				Name = "ProgressRing",
+			local root = Host.Frame "ProgressRing" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -47,8 +46,7 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -59,9 +57,7 @@ return {
 						SortOrder = Enum.SortOrder.LayoutOrder,
 						Padding = UDim.new(0, 8),
 					}),
-					UI.Label({
-
-						Name = "Title",
+					UI.Label "Title" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -71,10 +67,8 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-					UI.Label({
-
-						Name = "Caption",
+					},
+					UI.Label "Caption" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -84,7 +78,7 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
+					},
 					UI.Label({
 
 						BackgroundTransparency = 1,
@@ -96,14 +90,12 @@ return {
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					}),
-					UI.Slider({
-
-						Name = "AdjustProgress",
+					UI.Slider "AdjustProgress" {
 						value = progress,
 						min = 0,
 						max = 1,
 						step = 0.05,
-					}),
+					},
 					UI.Label({
 
 						BackgroundTransparency = 1,
@@ -115,9 +107,7 @@ return {
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					}),
-					UI.ProgressView({
-
-						Name = "Bar",
+					UI.ProgressView "Bar" {
 						value = progress,
 						showValue = true,
 						endLabel = function(use)
@@ -126,35 +116,27 @@ return {
 						format = percent,
 						segments = 5,
 						trail = { delay = 0.3, duration = 0.35 },
-					}),
-					UI.ProgressView({
-
-						Name = "Ring",
+					},
+					UI.ProgressView "Ring" {
 						label = COPY.determinate,
 						value = progress,
 						presentation = "circular",
 						diameter = 120,
 						showValue = true,
 						format = percent,
-					}),
-					UI.ProgressView({
-
-						Name = "Busy",
+					},
+					UI.ProgressView "Busy" {
 						label = COPY.indeterminate,
 						presentation = "circular",
 						controlSize = rung,
 						endLabel = "Connecting",
-					}),
-					UI.ProgressView({
-
-						Name = "Dots",
+					},
+					UI.ProgressView "Dots" {
 						label = COPY.spinner,
 						presentation = "spinner",
 						controlSize = rung,
-					}),
-					Host.Frame({
-
-						Name = "Sizes",
+					},
+					Host.Frame "Sizes" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(0, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.XY,
@@ -188,16 +170,14 @@ return {
 								rung:set("large")
 							end,
 						}),
-					}),
-					UI.Button({
-
-						Name = "Reset",
+					},
+					UI.Button "Reset" {
 						label = "Reset progress",
 						onActivate = reset,
-					}),
+					},
 					placeholders.section(),
-				}),
-			})
+				},
+			}
 			return root
 		end
 		local function report()

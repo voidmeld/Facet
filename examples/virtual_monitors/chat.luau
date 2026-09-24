@@ -4,7 +4,7 @@ return function(ctx)
 	local D, D2, V2, C3, E = ctx.D, ctx.D2, ctx.V2, ctx.C3, ctx.E
 	local text, row, column, button = ctx.text, ctx.row, ctx.column, ctx.button
 	local chat, promptUsed = model.chat, model.chatPromptUsed
-	local body = Host.Frame({ Name = "ChatBody", Size = D2.fromScale(1, 1), BackgroundTransparency = 1 })
+	local body = Host.Frame "ChatBody" { Size = D2.fromScale(1, 1), BackgroundTransparency = 1 }
 	local extent = ctx.observeSize(body)
 	local width = Compose.formula(function(use)
 		return math.min(960, math.max(0, use(extent).X - 24))
@@ -37,14 +37,13 @@ return function(ctx)
 		chat.draft:set(value)
 	end
 	local function sparkle(size)
-		local path = Host.Path2D({
-			Name = "AssistantMark",
+		local path = Host.Path2D "AssistantMark" {
 			Thickness = math.max(2, math.floor(size / 10)),
 			Closed = true,
 			Color3 = function(use)
 				return if use(model.dark) then C3.fromRGB(192, 172, 255) else C3.fromRGB(91, 70, 140)
 			end,
-		})
+		}
 		local points = {}
 		for corner = 0, 7 do
 			local radius = if corner % 2 == 0 then 0.46 else 0.12
@@ -57,13 +56,12 @@ return function(ctx)
 			)
 		end
 		path:SetControlPoints(points)
-		return Host.Frame({
-			Name = "AssistantIcon",
+		return Host.Frame "AssistantIcon" {
 			Size = D2.fromOffset(size, size),
 			BackgroundTransparency = 1,
 			LayoutOrder = 1,
 			path,
-		})
+		}
 	end
 	local function message(current)
 		local id = current:peek().id
@@ -172,8 +170,7 @@ return function(ctx)
 		local buildSomething = button("BuildSomething", "Build something", function()
 			prompt("Help me build a game browser")
 		end, { Size = D2.fromOffset(160, 40), AutomaticSize = E.AutomaticSize.Y, TextWrapped = true, LayoutOrder = 2 })
-		local prompts = Host.Frame({
-			Name = "Suggestions",
+		local prompts = Host.Frame "Suggestions" {
 			Visible = function(use)
 				return not use(short)
 			end,
@@ -188,12 +185,11 @@ return function(ctx)
 			}),
 			findGame,
 			buildSomething,
-		})
+		}
 		local footer = column("Composer", {
 			prompts,
 			row("ComposeMessage", {
-				UI.TextInput({
-					Name = "Draft",
+				UI.TextInput "Draft" {
 					value = chat.draft,
 					placeholder = "Message assistant",
 					onChange = function(value)
@@ -205,9 +201,8 @@ return function(ctx)
 						end
 					end,
 					Size = D2.new(1, -156, 0, 44),
-				}),
-				UI.SplitButton({
-					Name = "Send",
+				},
+				UI.SplitButton "Send" {
 					menuLabel = "More",
 					Size = D2.fromOffset(148, 44),
 					AutomaticSize = E.AutomaticSize.None,
@@ -234,7 +229,7 @@ return function(ctx)
 						},
 						{ id = "Clear", label = "Clear conversation", role = "destructive", onSelect = chat.clear },
 					},
-				}),
+				},
 			}, { Size = D2.new(1, 0, 0, 44) }),
 			text("Disclaimer", "Simulated responses · No messages leave this device", 12, {
 				Visible = function(use)
@@ -252,8 +247,7 @@ return function(ctx)
 		Compose.cleanup(observation.observeProperty(footer, "AbsoluteSize", measureFooter))
 		measureFooter()
 		return {
-			Host.Frame({
-				Name = "ConversationColumn",
+			Host.Frame "ConversationColumn" {
 				BackgroundTransparency = 1,
 				AnchorPoint = V2.new(0.5, 0),
 				Position = D2.fromScale(0.5, 0),
@@ -277,8 +271,7 @@ return function(ctx)
 						},
 						"facet-secondary"
 					),
-					UI.Menu({
-						Name = "Conversation",
+					UI.Menu "Conversation" {
 						trigger = button("ConversationMenu", "Conversation", function() end, {
 							compactLabel = "Thread",
 							Size = D2.fromOffset(146, 40),
@@ -287,10 +280,9 @@ return function(ctx)
 						items = conversationItems,
 						Size = D2.fromOffset(146, 40),
 						AutomaticSize = E.AutomaticSize.None,
-					}),
+					},
 				}, { Size = D2.new(1, 0, 0, 40) }),
-				Host.Frame({
-					Name = "Thread",
+				Host.Frame "Thread" {
 					Position = D2.fromOffset(0, 50),
 					BackgroundTransparency = 1,
 					ClipsDescendants = true,
@@ -341,8 +333,7 @@ return function(ctx)
 							end
 							return if reduced then 1 else math.clamp(use(motion), 0, 1)
 						end
-						return Host.CanvasGroup({
-							Name = "Welcome",
+						return Host.CanvasGroup "Welcome" {
 							Size = D2.fromScale(1, 1),
 							BackgroundTransparency = 1,
 							GroupTransparency = function(use)
@@ -354,8 +345,7 @@ return function(ctx)
 								end, function()
 									return sparkle(40)
 								end),
-								UI.Label({
-									Name = "WelcomeQuestion",
+								UI.Label "WelcomeQuestion" {
 									text = "What are you working on?",
 									textRole = "title",
 									TextSize = function(use)
@@ -365,7 +355,7 @@ return function(ctx)
 									TextYAlignment = E.TextYAlignment.Top,
 									Size = D2.new(1, 0, 0, 0),
 									AutomaticSize = E.AutomaticSize.Y,
-								}),
+								},
 								Compose.show(function(use)
 									return not use(short)
 								end, function()
@@ -384,12 +374,11 @@ return function(ctx)
 									return D2.new(0.5, 0, 0.5, (1 - reveal(use)) * 12)
 								end,
 							}),
-						})
+						}
 					end),
-				}),
+				},
 				footer,
-				UI.Callout({
-					Name = "PromptHint",
+				UI.Callout "PromptHint" {
 					anchor = findGame,
 					edge = "top",
 					align = "leading",
@@ -403,10 +392,9 @@ return function(ctx)
 					content = function()
 						return text("PromptTip", "Start from a prompt, then edit it before you send.", 16)
 					end,
-				}),
+				},
 				Compose.show(chat.streaming, function()
-					return UI.ProgressView({
-						Name = "ReplyProgress",
+					return UI.ProgressView "ReplyProgress" {
 						value = function(use)
 							return use(chat.streamedChars) / math.max(1, use(chat.totalChars))
 						end,
@@ -414,9 +402,9 @@ return function(ctx)
 							return D2.new(0, 0, 1, -footerExtent(use) - 8)
 						end,
 						Size = D2.new(1, 0, 0, 4),
-					})
+					}
 				end),
-			}),
+			},
 		}
 	end, body)
 	return body

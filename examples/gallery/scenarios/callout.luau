@@ -49,8 +49,7 @@ return {
 		end)
 
 		local function plate(title: string, sub: string): any
-			return Host.Frame({
-				Name = "Body",
+			return Host.Frame "Body" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -85,7 +84,7 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-			})
+			}
 		end
 
 		local generation = Compose.cell(1)
@@ -138,16 +137,14 @@ return {
 				seen:set(true)
 				saved:set(`seen = true (because the framework reported "{reason}")`)
 			end)
-			local anchor = UI.Button({
-				Name = "Plus",
+			local anchor = UI.Button "Plus" {
 				label = COPY.plus,
 				hint = COPY.helpPlus,
 				onActivate = function()
 					presses:set(presses:peek() + 1)
 				end,
-			})
-			return Host.Frame({
-				Name = "PlusSlot",
+			}
+			return Host.Frame "PlusSlot" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(0, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.XY,
@@ -184,19 +181,17 @@ return {
 						})
 					end,
 				}),
-			})
+			}
 		end
 
 		local function shareTip()
 			local events = callbacks(second, function() end)
-			local anchor = UI.Button({
-				Name = "Share",
+			local anchor = UI.Button "Share" {
 				label = COPY.share,
 				hint = COPY.helpShare,
 				onActivate = function() end,
-			})
-			return Host.Frame({
-				Name = "ShareSlot",
+			}
+			return Host.Frame "ShareSlot" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(0, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.XY,
@@ -231,7 +226,7 @@ return {
 						})
 					end,
 				}),
-			})
+			}
 		end
 
 		local queueLine = Compose.cell("—")
@@ -282,8 +277,7 @@ return {
 		end
 
 		local function Example()
-			return Host.Frame({
-				Name = "CalloutDemo",
+			return Host.Frame "CalloutDemo" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -292,16 +286,14 @@ return {
 					PaddingLeft = UDim.new(0, 12),
 					PaddingRight = UDim.new(0, 12),
 				}),
-				Host.Frame({
-					Name = "Bar",
+				Host.Frame "Bar" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					shareTip(),
 					avatarTip(),
-				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				},
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -589,8 +581,8 @@ return {
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					}),
-				}),
-			})
+				},
+			}
 		end
 
 		return {

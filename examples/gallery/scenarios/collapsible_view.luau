@@ -29,8 +29,7 @@ return {
 			return if use(club) then "check" else "flag"
 		end)
 		local function settingsContent()
-			return Host.Frame({
-				Name = "SettingsContent",
+			return Host.Frame "SettingsContent" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -68,7 +67,7 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-			})
+			}
 		end
 		local tabs = {}
 		for _, key in { "coast", "forest", "summit" } do
@@ -77,8 +76,7 @@ return {
 				label = copy[key],
 				icon = "flag",
 				content = function()
-					return Host.ScrollingFrame({
-						Name = "Course",
+					return Host.ScrollingFrame "Course" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -120,13 +118,12 @@ return {
 							label = "Practice this course",
 							onActivate = function() end,
 						}),
-					})
+					}
 				end,
 			})
 		end
 		local function Example()
-			return Host.Frame({
-				Name = "CollapsibleView",
+			return Host.Frame "CollapsibleView" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -135,8 +132,7 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -196,8 +192,8 @@ return {
 							tabs = tabs,
 						}),
 					}),
-				}),
-			})
+				},
+			}
 		end
 		return {
 			screen = Example,

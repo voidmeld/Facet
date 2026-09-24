@@ -43,53 +43,47 @@ return {
 			})
 		end
 		local function switch()
-			return UI.Toggle({
-				Name = "Switch",
+			return UI.Toggle "Switch" {
 				label = "Enable choices",
 				value = enabled,
-			})
+			}
 		end
 		local function checkbox()
-			return UI.Toggle({
-				Name = "Checkbox",
+			return UI.Toggle "Checkbox" {
 				label = "Include night races and their full race results",
 				value = checked,
 				mixed = mixed,
 				presentation = "checkbox",
 				enabled = enabled,
-			})
+			}
 		end
 		local function toggle()
-			return UI.Toggle({
-				Name = "Boost",
+			return UI.Toggle "Boost" {
 				label = "Boost mode",
 				value = boost,
 				presentation = "button",
 				enabled = enabled,
-			})
+			}
 		end
 
 		local function radio()
-			return UI.Picker({
-				Name = "Radio",
+			return UI.Picker "Radio" {
 				selected = selected,
 				options = choices,
 				style = "radioGroup",
 				enabled = enabled,
-			})
+			}
 		end
 		local function segmented()
-			return UI.Picker({
-				Name = "Segments",
+			return UI.Picker "Segments" {
 				selected = selected,
 				options = { { value = "open", label = "Open" }, { value = "club", label = "Club", enabled = club } },
 				style = "segmented",
 				enabled = enabled,
-			})
+			}
 		end
 		local function popup()
-			return UI.Picker({
-				Name = "Popup",
+			return UI.Picker "Popup" {
 				label = "Race group",
 				selected = selected,
 				options = {
@@ -97,31 +91,28 @@ return {
 					{ value = "club", label = "Club races", description = "Join a club to unlock.", enabled = club },
 				},
 				enabled = enabled,
-			})
+			}
 		end
 		local trackOptions = {}
 		for _, item in tracks do
 			table.insert(trackOptions, { value = item.id, label = item.label })
 		end
 		local function search()
-			return UI.Picker({
-				Name = "Tracks",
+			return UI.Picker "Tracks" {
 				label = "Track",
 				selected = track,
 				options = trackOptions,
 				query = query,
 				enabled = enabled,
-			})
+			}
 		end
 		local function multi()
-			return UI.Menu({
-				Name = "Tags",
-				trigger = UI.Button({
-					Name = "Trigger",
+			return UI.Menu "Tags" {
+				trigger = UI.Button "Trigger" {
 					label = "Scenery filters",
 					enabled = enabled,
 					onActivate = function() end,
-				}),
+				},
 				items = {
 					{ id = "coastal", label = "Coastal", checked = tagCoastal },
 					{ id = "forest", label = "Forest", checked = tagForest },
@@ -133,11 +124,10 @@ return {
 						description = "Winter routes are closed.",
 					},
 				},
-			})
+			}
 		end
 		local function combo()
-			return UI.ComboBox({
-				Name = "Vehicle",
+			return UI.ComboBox "Vehicle" {
 				value = comboValue,
 				text = comboText,
 				options = { { id = "road", label = "Road" }, { id = "rally", label = "Rally" } },
@@ -145,7 +135,7 @@ return {
 				acceptCustom = function(text)
 					return #text >= 3 and #text <= 24, "Use 3 to 24 characters."
 				end,
-			})
+			}
 		end
 		local function reset()
 			enabled:set(true)
@@ -192,8 +182,7 @@ return {
 		end
 
 		local function body()
-			return Host.Frame({
-				Name = "Body",
+			return Host.Frame "Body" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -214,7 +203,7 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-				UI.Button({ Name = "Reset", label = "Reset", onActivate = reset }),
+				UI.Button "Reset" { label = "Reset", onActivate = reset },
 				caption("CapSwitch", "Toggle · switch"),
 				switch(),
 				heading("Check and toggle"),
@@ -229,14 +218,12 @@ return {
 				segmented(),
 				caption("CapPopup", "Picker · automatic (menu on touch and pointer; rows on a television)"),
 				popup(),
-				UI.Button({
-
-					Name = "Join",
+				UI.Button "Join" {
 					label = "Toggle club membership",
 					onActivate = function()
 						club:set(not club:peek())
 					end,
-				}),
+				},
 				heading("Search 250 tracks"),
 				caption("CapSearch", "Picker · navigationLink (searchable sheet)"),
 				search(),
@@ -246,11 +233,10 @@ return {
 				heading("Choose or name a vehicle class"),
 				caption("CapCombo", "ComboBox · suggestions with custom text"),
 				combo(),
-			})
+			}
 		end
 		local function screen()
-			return Host.Frame({
-				Name = "SelectionControls",
+			return Host.Frame "SelectionControls" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -259,16 +245,15 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Content",
+				Host.ScrollingFrame "Content" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 					CanvasSize = UDim2.new(),
 					ScrollBarThickness = 6,
 					body(),
-				}),
-			})
+				},
+			}
 		end
 		return {
 			screen = screen,

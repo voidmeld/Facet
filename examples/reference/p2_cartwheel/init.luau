@@ -127,19 +127,16 @@ function Cartwheel.build(ctx)
 		})
 	end
 	local function brewsPage()
-		return Host.Frame({
-			Name = "Brews",
+		return Host.Frame "Brews" {
 			Size = D2.fromScale(1, 1),
 			BackgroundTransparency = 1,
-			UI.TextInput({
-				Name = "Search",
+			UI.TextInput "Search" {
 				value = query,
 				placeholder = "Search brews",
 				Size = D2.new(1, -32, 0, 44),
 				Position = D2.fromOffset(16, 8),
-			}),
-			UI.VirtualList({
-				Name = "BrewList",
+			},
+			UI.VirtualList "BrewList" {
 				from = rows,
 				key = function(item)
 					return item.id
@@ -149,8 +146,8 @@ function Cartwheel.build(ctx)
 				Position = D2.fromOffset(16, 60),
 				Size = D2.new(1, -32, 1, -76),
 				render = brewRow,
-			}),
-		})
+			},
+		}
 	end
 	local function chart(title, series)
 		local bars = {}
@@ -189,8 +186,7 @@ function Cartwheel.build(ctx)
 				section:set("brews")
 			end),
 			view.text("Recommended pitch: " .. ambient.recommendedPlaza().name),
-			UI.Picker({
-				Name = "Timeframe",
+			UI.Picker "Timeframe" {
 				selected = timeframe,
 				options = {
 					{ value = "today", label = "Today" },
@@ -198,7 +194,7 @@ function Cartwheel.build(ctx)
 					{ value = "month", label = "Month" },
 					{ value = "year", label = "Year" },
 				},
-			}),
+			},
 			view.text("Top five", 24),
 			view.column("TopFive", {
 				view.list(function(use)
@@ -246,13 +242,13 @@ function Cartwheel.build(ctx)
 	local function workbench()
 		return view.page("Workbench", {
 			view.text("Workbench", 28),
-			UI.TextInput({ Name = "PotionName", value = draftName, placeholder = "Potion name" }),
+			UI.TextInput "PotionName" { value = draftName, placeholder = "Potion name" },
 			view.action("NewPotion", "New potion", function()
 				selectPotion("scratch")
 			end),
-			UI.Picker({ Name = "Base", selected = base, options = pickerOptions(data.bases, false) }),
-			UI.Picker({ Name = "Essence", selected = essence, options = pickerOptions(data.essences, true) }),
-			UI.Picker({ Name = "Garnish", selected = garnish, options = pickerOptions(data.garnishes, true) }),
+			UI.Picker "Base" { selected = base, options = pickerOptions(data.bases, false) },
+			UI.Picker "Essence" { selected = essence, options = pickerOptions(data.essences, true) },
+			UI.Picker "Garnish" { selected = garnish, options = pickerOptions(data.garnishes, true) },
 			view.text(function(use)
 				local values = data.attributesOf(use(base), use(essence), use(garnish))
 				local parts = {}
@@ -266,12 +262,11 @@ function Cartwheel.build(ctx)
 				view.list(data.potions, function(current)
 					local potion = current:peek()
 					return view.column(potion.id, {
-						Host.ImageLabel({
-							Name = "Potion",
+						Host.ImageLabel "Potion" {
 							Image = potion.mark.image,
 							BackgroundTransparency = 1,
 							Size = D2.fromOffset(48, 48),
-						}),
+						},
 						view.action("Mix", potion.name, function()
 							selectPotion(potion.id)
 						end),
@@ -283,15 +278,14 @@ function Cartwheel.build(ctx)
 	local function ledger()
 		return view.page("Ledger", {
 			view.text("Ledger", 28),
-			UI.Picker({
-				Name = "LedgerTimeframe",
+			UI.Picker "LedgerTimeframe" {
 				selected = ledgerTimeframe,
 				options = {
 					{ value = "twoWeeks", label = "Two weeks" },
 					{ value = "month", label = "Month · Full Ledger" },
 					{ value = "year", label = "Year · Full Ledger" },
 				},
-			}),
+			},
 			Compose.show(function(use)
 				return use(ledgerTimeframe) ~= "twoWeeks" and not use(entitlement.fullLedger)
 			end, function()
@@ -365,50 +359,44 @@ function Cartwheel.build(ctx)
 	end
 	local function marketStage(plaza)
 		local V3, CF = ctx.types.Vector3, ctx.types.CFrame
-		return UI.Stage({
-			Name = "MarketScene",
+		return UI.Stage "MarketScene" {
 			Size = D2.new(1, 0, 0, 220),
 			camera = CF.lookAt(V3.new(6, 4, 9), V3.new(0, 1, 0)),
 			content = function(sceneRuntime, world)
 				return sceneRuntime.mount(function()
 					return Host.Model({
 						Name = plaza.name,
-						Host.Part({
-							Name = "Ground",
+						Host.Part "Ground" {
 							Anchored = true,
 							Size = V3.new(16, 0.3, 12),
 							CFrame = CF.new(0, -0.2, 0),
 							Color = ctx.types.Color3.fromRGB(87, 103, 83),
-						}),
-						Host.Part({
-							Name = "Cart",
+						},
+						Host.Part "Cart" {
 							Anchored = true,
 							Size = V3.new(4, 1.5, 2),
 							CFrame = CF.new(0, 1, 0),
 							Color = ctx.types.Color3.fromRGB(118, 79, 49),
 							Material = ctx.types.Enum.Material.Wood,
-						}),
-						Host.Part({
-							Name = "Canopy",
+						},
+						Host.Part "Canopy" {
 							Anchored = true,
 							Size = V3.new(5, 0.2, 3),
 							CFrame = CF.new(0, 3, 0),
 							Color = ctx.types.Color3.fromRGB(168, 94, 69),
-						}),
-						Host.Part({
-							Name = "LeftPost",
+						},
+						Host.Part "LeftPost" {
 							Anchored = true,
 							Size = V3.new(0.2, 3, 0.2),
 							CFrame = CF.new(-1.8, 1.5, 0.7),
 							Color = ctx.types.Color3.fromRGB(118, 79, 49),
-						}),
-						Host.Part({
-							Name = "RightPost",
+						},
+						Host.Part "RightPost" {
 							Anchored = true,
 							Size = V3.new(0.2, 3, 0.2),
 							CFrame = CF.new(1.8, 1.5, 0.7),
 							Color = ctx.types.Color3.fromRGB(118, 79, 49),
-						}),
+						},
 						Compose.keyed({
 							from = function()
 								return { 1, 2, 3, 4, 5 }
@@ -432,12 +420,12 @@ function Cartwheel.build(ctx)
 					})
 				end, world)
 			end,
-		})
+		}
 	end
 	local function plazas()
 		return view.page("Plazas", {
 			view.text("Plazas", 28),
-			UI.Picker({ Name = "Market", selected = selectedPlaza, options = pickerOptions(data.plazas, false) }),
+			UI.Picker "Market" { selected = selectedPlaza, options = pickerOptions(data.plazas, false) },
 			view.column("Conditions", {
 				Compose.keyed({
 					from = function(use)
@@ -466,12 +454,10 @@ function Cartwheel.build(ctx)
 		})
 	end
 	local function screen()
-		return Host.Frame({
-			Name = "Cartwheel",
+		return Host.Frame "Cartwheel" {
 			Size = D2.fromScale(1, 1),
 			BackgroundTransparency = 1,
-			UI.TabView({
-				Name = "Destinations",
+			UI.TabView "Destinations" {
 				selection = section,
 				style = "sidebarAdaptable",
 				Size = D2.new(1, 0, 1, -112),
@@ -483,9 +469,8 @@ function Cartwheel.build(ctx)
 					{ id = "chatter", label = "Chatter", content = chatter },
 					{ id = "plazas", label = "Plazas", content = plazas },
 				},
-			}),
-			UI.Button({
-				Name = "Guild",
+			},
+			UI.Button "Guild" {
 				label = function(use)
 					return if use(identity.signedIn)
 						then "Sign out of " .. use(identity.guildName)
@@ -499,15 +484,14 @@ function Cartwheel.build(ctx)
 						signupOpen:set(true)
 					end
 				end,
-			}),
+			},
 			UI.Label({
 				label = notice,
 				TextWrapped = true,
 				Position = D2.new(0, 16, 1, -60),
 				Size = D2.new(1, -32, 0, 56),
 			}),
-			UI.Sheet({
-				Name = "BrewDetail",
+			UI.Sheet "BrewDetail" {
 				title = "Brew",
 				isPresented = detailOpen,
 				detent = Compose.cell("large"),
@@ -551,27 +535,24 @@ function Cartwheel.build(ctx)
 					)
 					return view.page("Brew", parts)
 				end,
-			}),
-			UI.Sheet({
-				Name = "Signup",
+			},
+			UI.Sheet "Signup" {
 				title = "Join the guild",
 				isPresented = signupOpen,
 				detent = Compose.cell("medium"),
 				content = function()
 					return view.column("Form", {
-						UI.TextInput({
-							Name = "GuildName",
+						UI.TextInput "GuildName" {
 							value = guild,
 							placeholder = "Guild name",
 							maxLength = 24,
 							validate = identity.normalize,
-						}),
-						UI.TextInput({
-							Name = "Watchword",
+						},
+						UI.TextInput "Watchword" {
 							value = watchword,
 							placeholder = "Watchword",
 							maxLength = 32,
-						}),
+						},
 						view.text(commands.reason("signup")),
 						view.action("Submit", "Join", signup, function(use)
 							return use(guild) ~= ""
@@ -580,15 +561,14 @@ function Cartwheel.build(ctx)
 						end),
 					})
 				end,
-			}),
-			UI.Alert({
-				Name = "Celebration",
+			},
+			UI.Alert "Celebration" {
 				isPresented = celebration,
 				title = "Brew collected!",
 				message = notice,
 				actions = { { id = "done", label = "Keep brewing" } },
-			}),
-		})
+			},
+		}
 	end
 	return {
 		screen = screen,

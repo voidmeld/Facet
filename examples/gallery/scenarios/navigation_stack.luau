@@ -86,15 +86,13 @@ return {
 			Compose.cleanup(function()
 				exits += 1
 			end)
-			return Host.ScrollingFrame({
-				Name = "Scroll",
+			return Host.ScrollingFrame "Scroll" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
 				CanvasSize = UDim2.new(),
 				ScrollBarThickness = 6,
-				Host.Frame({
-					Name = "Content",
+				Host.Frame "Content" {
 					Size = UDim2.new(1, 0, 0, 0),
 					BackgroundTransparency = 1,
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -104,20 +102,18 @@ return {
 						Padding = UDim.new(0, 8),
 					}),
 					table.unpack(content),
-				}),
-			})
+				},
+			}
 		end
 		local function journey()
-			return UI.NavigationStack({
-				Name = "Journey",
+			return UI.NavigationStack "Journey" {
 				path = path,
 				backLabel = "Back",
 
 				root = {
 					title = "Plan a journey",
 					content = function()
-						local searchLayout = Host.Frame({
-							Name = "SearchLayout",
+						local searchLayout = Host.Frame "SearchLayout" {
 							BackgroundTransparency = 1,
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
@@ -168,9 +164,7 @@ return {
 									SortOrder = Enum.SortOrder.LayoutOrder,
 									Padding = UDim.new(0, 8),
 								}),
-								UI.Label({
-
-									Name = "ResultsHeading",
+								UI.Label "ResultsHeading" {
 									BackgroundTransparency = 1,
 									BorderSizePixel = 0,
 									Size = UDim2.new(1, 0, 0, 0),
@@ -182,7 +176,7 @@ return {
 									TextWrapped = true,
 									TextYAlignment = Enum.TextYAlignment.Top,
 									TextXAlignment = Enum.TextXAlignment.Left,
-								}),
+								},
 								Compose.OrderedCollection({
 									from = matches,
 									key = function(item)
@@ -204,9 +198,7 @@ return {
 										})
 									end,
 								}),
-								Host.Frame({
-
-									Name = "Empty",
+								Host.Frame "Empty" {
 									BackgroundTransparency = 1,
 									Size = UDim2.new(1, 0, 0, 0),
 									AutomaticSize = Enum.AutomaticSize.Y,
@@ -224,9 +216,9 @@ return {
 											TextXAlignment = Enum.TextXAlignment.Left,
 										})
 									end),
-								}),
+								},
 							}),
-						})
+						}
 						return page({
 							UI.Label({
 								BackgroundTransparency = 1,
@@ -239,13 +231,12 @@ return {
 								TextXAlignment = Enum.TextXAlignment.Left,
 							}),
 							searchLayout,
-							UI.Button({
-								Name = "Continue",
+							UI.Button "Continue" {
 								label = "Plan details",
 								onActivate = function()
 									push({ id = "details" })
 								end,
-							}),
+							},
 						})
 					end,
 				},
@@ -254,8 +245,7 @@ return {
 						title = "Journey details",
 						content = function()
 							return page({
-								Host.Frame({
-									Name = "Columns",
+								Host.Frame "Columns" {
 									BackgroundTransparency = 1,
 									Size = UDim2.new(1, 0, 0, 0),
 									AutomaticSize = Enum.AutomaticSize.Y,
@@ -400,14 +390,13 @@ return {
 											multiline = true,
 										}),
 									}),
-								}),
-								UI.Button({
-									Name = "Review",
+								},
+								UI.Button "Review" {
 									label = "Review journey",
 									onActivate = function()
 										push({ id = "review", value = destination:peek() })
 									end,
-								}),
+								},
 							})
 						end,
 					},
@@ -436,27 +425,25 @@ return {
 									TextYAlignment = Enum.TextYAlignment.Top,
 									TextXAlignment = Enum.TextXAlignment.Left,
 								}),
-								UI.Button({
-									Name = "StartAgain",
+								UI.Button "StartAgain" {
 									label = "Back to the beginning",
 									onActivate = function()
 										popToRoot()
 									end,
-								}),
+								},
 							})
 						end,
 					},
 				},
-			})
+			}
 		end
 		return {
 			screen = function()
-				local root = Host.Frame({
-					Name = "NavigationFlow",
+				local root = Host.Frame "NavigationFlow" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					journey(),
-				})
+				}
 				local function measure()
 					measuredWidth:set(root.AbsoluteSize.X)
 				end

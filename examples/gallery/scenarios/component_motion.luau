@@ -37,15 +37,13 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-				Host.Frame({
-
-					Name = "Rows",
+				Host.Frame "Rows" {
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					BackgroundTransparency = 1,
 					Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8) }),
 					table.unpack(rows),
-				}),
+				},
 				props.footer,
 			})
 		end
@@ -127,19 +125,17 @@ return {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
-					UI.Button({
-						Name = "Select",
+					UI.Button "Select" {
 						label = function(use)
 							return `{use(current).name} · {use(current).price} credits`
 						end,
 						onActivate = function()
 							selected:set(current:peek().id)
 						end,
-					}),
+					},
 				})
 			end
-			return Host.Frame({
-				Name = "AutomaticMotion",
+			return Host.Frame "AutomaticMotion" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -148,8 +144,7 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -184,15 +179,11 @@ return {
 							}),
 						},
 					}),
-					UI.Toggle({
-
-						Name = "DetailsToggle",
+					UI.Toggle "DetailsToggle" {
 						label = "Show details",
 						value = expanded,
-					}),
-					Host.Frame({
-
-						Name = "Details",
+					},
+					Host.Frame "Details" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -226,28 +217,22 @@ return {
 								}),
 							})
 						end),
-					}),
-					UI.Button({
-
-						Name = "Buy",
+					},
+					UI.Button "Buy" {
 						label = "Buy selected",
 						enabled = affordable,
 						onActivate = buy,
-					}),
-					UI.Button({
-
-						Name = "Reverse",
+					},
+					UI.Button "Reverse" {
 						label = "Reverse order",
 						onActivate = reverse,
-					}),
-					UI.Button({
-
-						Name = "Reset",
+					},
+					UI.Button "Reset" {
 						label = "Reset balance",
 						onActivate = commands.reset,
-					}),
-				}),
-			})
+					},
+				},
+			}
 		end
 		return {
 			screen = Inventory,

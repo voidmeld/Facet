@@ -133,22 +133,20 @@ return function(
 			Compose.show(function()
 				return spec.query ~= nil
 			end, function()
-				return UI.TextInput({
-					Name = "Search",
+				return UI.TextInput "Search" {
 					value = assert(spec.query),
 					placeholder = "Search",
 					LayoutOrder = -2,
-				})
+				}
 			end),
 			Compose.show(function(use: Core.Use)
 				return #use(path) > 0
 			end, function()
-				return UI.Button({
-					Name = "Back",
+				return UI.Button "Back" {
 					label = spec.backLabel or "Back",
 					onActivate = back,
 					Size = D2.new(1, 0, 0, 44),
-				})
+				}
 			end),
 			Compose.keyed({
 				from = current,
@@ -159,7 +157,7 @@ return function(
 					local item = source:peek()
 					if item.divider then
 						return ctx.styled(
-							Host.Frame({ Name = "Divider", Size = D2.new(1, 0, 0, 1), LayoutOrder = index }),
+							Host.Frame "Divider" { Size = D2.new(1, 0, 0, 1), LayoutOrder = index },
 							"divider"
 						)
 					end
@@ -213,8 +211,7 @@ return function(
 			ctx.corner(),
 		}, { Name = "MenuRows", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 		local rowSize = ctx.observe(rows, "AbsoluteSize")
-		local panel = Host.ScrollingFrame({
-			Name = "MenuPanel",
+		local panel = Host.ScrollingFrame "MenuPanel" {
 			Size = D2.fromOffset(280, 0),
 			BorderSizePixel = 0,
 			AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -222,19 +219,18 @@ return function(
 			ScrollingDirection = E.ScrollingDirection.Y,
 			ScrollBarThickness = 4,
 			rows,
-		})
+		}
 		ctx.styled(panel, "menu")
 		surfaces.skin(panel)
 		local position = ctx.observe(anchor, "AbsolutePosition")
 		local size = ctx.observe(anchor, "AbsoluteSize")
 		local modal = if nonmodal
-			then Host.Frame({
-				Name = "SuggestionsOverlay",
+			then Host.Frame "SuggestionsOverlay" {
 				BackgroundTransparency = 1,
 				Size = D2.fromScale(1, 1),
 				ZIndex = 100,
 				panel,
-			})
+			}
 			else surfaces.modal(function()
 				return panel
 			end, back, { backgroundTransparency = 1, onOutside = close })
@@ -859,13 +855,12 @@ return function(
 						return surfaces.centered(
 							ctx.column({
 								UI.Picker(choices),
-								UI.Button({
-									Name = "Close",
+								UI.Button "Close" {
 									label = "Close",
 									onActivate = function()
 										opened:set(false)
 									end,
-								}),
+								},
 								ctx.padding(16, 16),
 								ctx.corner(),
 							}, { Name = "PickerSearch" }),
@@ -899,7 +894,7 @@ return function(
 			}),
 		}
 		if spec.query then
-			table.insert(children, UI.TextInput({ Name = "Search", value = spec.query, placeholder = "Search" }))
+			table.insert(children, UI.TextInput "Search" { value = spec.query, placeholder = "Search" })
 		end
 		table.insert(
 			children,
@@ -956,13 +951,12 @@ return function(
 							return read(spec.indicator, use) == "underline" and selected(use)
 						end, function()
 							return ctx.styled(
-								Host.Frame({
-									Name = "SelectionIndicator",
+								Host.Frame "SelectionIndicator" {
 									BorderSizePixel = 0,
 									Size = D2.new(1, 0, 0, 2),
 									Position = D2.new(0, 0, 1, -2),
 									Selectable = false,
-								}),
+								},
 								"selection-indicator"
 							)
 						end),
@@ -997,14 +991,13 @@ return function(
 			return read(spec.enabled, use) ~= false and read(spec.busy, use) ~= true
 		end
 		local function primary()
-			return UI.Button({
-				Name = "Primary",
+			return UI.Button "Primary" {
 				label = spec.label,
 				onActivate = spec.onActivate,
 				enabled = spec.enabled,
 				busy = spec.busy,
 				shortcut = spec.shortcut,
-			})
+			}
 		end
 		return Host.Frame(
 			ctx.props(spec, { "label", "onActivate", "items", "enabled", "busy", "shortcut", "menuLabel" }, {
@@ -1014,8 +1007,7 @@ return function(
 				AutomaticSize = E.AutomaticSize.XY,
 				Compose.show(touch, function()
 					local suppressEcho = false
-					local trigger = UI.Button({
-						Name = "Primary",
+					local trigger = UI.Button "Primary" {
 						Size = if spec.Size then D2.fromScale(1, 1) else nil,
 						AutomaticSize = if spec.Size then E.AutomaticSize.None else nil,
 						label = spec.label,
@@ -1030,9 +1022,8 @@ return function(
 								spec.onActivate()
 							end
 						end,
-					})
-					return UI.Menu({
-						Name = "TouchAlternatives",
+					}
+					return UI.Menu "TouchAlternatives" {
 						Size = if spec.Size then D2.fromScale(1, 1) else nil,
 						AutomaticSize = if spec.Size then E.AutomaticSize.None else nil,
 						trigger = function(): GuiObject
@@ -1048,17 +1039,16 @@ return function(
 						onClose = function()
 							suppressEcho = false
 						end,
-					})
+					}
 				end, function()
 					return ctx.row({
 						primary(),
-						UI.Menu({
-							Name = "Alternatives",
+						UI.Menu "Alternatives" {
 							label = spec.menuLabel or "More options",
 							items = spec.items,
 							enabled = enabled,
 							isPresented = opened,
-						}),
+						},
 					})
 				end),
 			})
@@ -1133,8 +1123,7 @@ return function(
 			spec.text:set(label(spec.value:peek()))
 			errorText:set("")
 		end
-		local editor = UI.TextInput({
-			Name = "Editor",
+		local editor = UI.TextInput "Editor" {
 			value = spec.text,
 			placeholder = spec.placeholder,
 			enabled = spec.enabled,
@@ -1157,20 +1146,18 @@ return function(
 			FocusLost = function()
 				editing:set(false)
 			end,
-		})
+		}
 		local function open()
 			if read(spec.enabled) ~= false then
 				opened:set(true)
 			end
 		end
 		local triggerAttributes: Types.Attributes = { FacetLabel = "Suggestions" }
-		local suggestions = Host.Frame({
-			Name = "Suggestions",
+		local suggestions = Host.Frame "Suggestions" {
 			BackgroundTransparency = 1,
 			Position = D2.new(1, -56, 0, 0),
 			Size = D2.new(0, 56, 1, 0),
-			UI.Button({
-				Name = "Trigger",
+			UI.Button "Trigger" {
 				label = "",
 				icon = "chevron.down",
 				enabled = spec.enabled,
@@ -1184,15 +1171,14 @@ return function(
 						open()
 					end
 				end,
-			}),
-		})
-		local row = Host.Frame({
-			Name = "Row",
+			},
+		}
+		local row = Host.Frame "Row" {
 			BackgroundTransparency = 1,
 			Size = D2.new(1, 0, 0, 44),
 			editor :: Instance,
 			suggestions,
-		})
+		}
 		local root = ctx.column(
 			{
 				row,

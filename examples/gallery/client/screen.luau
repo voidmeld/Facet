@@ -125,13 +125,12 @@ function screen.build(ctx: any)
 			ctx.currentReport = nil
 			errorMessage:set(tostring(result))
 			warn("[Facet Gallery] " .. demo.id .. ": " .. tostring(result))
-			return Host.TextLabel({
-				Name = "DemoFailure",
+			return Host.TextLabel "DemoFailure" {
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				Text = demo.title .. " could not load\n" .. tostring(result),
 				TextWrapped = true,
-			})
+			}
 		end
 	end
 	local tabs = {}
@@ -145,19 +144,17 @@ function screen.build(ctx: any)
 	table.sort(themes, function(a, b)
 		return if a.value == "Neutral" then true elseif b.value == "Neutral" then false else a.label < b.label
 	end)
-	local root = Host.Frame({
-		Name = "Gallery",
+	local root = Host.Frame "Gallery" {
 		Size = function(use)
 			local inverse = 1 / use(ctx.previewScale)
 			return UDim2.fromScale(inverse, inverse)
 		end,
-		Host.UIScale({ Name = "ViewingDistance", Scale = ctx.previewScale }),
+		Host.UIScale "ViewingDistance" { Scale = ctx.previewScale },
 		BackgroundTransparency = function(use)
 			return if use(ctx.sceneVisible) then 1 else 0
 		end,
 
-		Host.Frame({
-			Name = "Toolbar",
+		Host.Frame "Toolbar" {
 			Size = UDim2.new(1, 0, 0, 56),
 			BackgroundTransparency = 1,
 			Host.UIPadding({
@@ -186,9 +183,8 @@ function screen.build(ctx: any)
 					settingsOpen:set(not settingsOpen:peek())
 				end,
 			}),
-		}),
-		UI.TabView({
-			Name = "Demos",
+		},
+		UI.TabView "Demos" {
 			selection = selected,
 			tabs = tabs,
 			style = "sidebarAdaptable",
@@ -196,15 +192,14 @@ function screen.build(ctx: any)
 			transition = false,
 			Position = UDim2.fromOffset(0, 56),
 			Size = UDim2.new(1, 0, 1, -56),
-		}),
+		},
 		UI.Sheet({
 			detent = Compose.cell("medium"),
 			Name = "GallerySettings",
 			isPresented = settingsOpen,
 			title = "Gallery settings",
 			content = function()
-				return Host.Frame({
-					Name = "Settings",
+				return Host.Frame "Settings" {
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					BackgroundTransparency = 1,
@@ -295,10 +290,10 @@ function screen.build(ctx: any)
 						AutomaticSize = Enum.AutomaticSize.Y,
 						BackgroundTransparency = 1,
 					}),
-				})
+				}
 			end,
 		}),
-	})
+	}
 	root:AddTag("facet-surface")
 	return root
 end

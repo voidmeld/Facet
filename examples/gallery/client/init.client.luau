@@ -103,23 +103,21 @@ local owner = Compose.createRootOwner(function()
 		reducedMotion = context.reducedMotion,
 	})
 	local stop, gui = runtime.mount(function()
-		return Host.ScreenGui({
-			Name = "FacetGallery",
+		return Host.ScreenGui "FacetGallery" {
 			ResetOnSpawn = false,
 			ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 			sheet,
 			Host.StyleLink({ StyleSheet = Facet.Compose.static(sheet) }),
 			gallery.build(context),
-		})
+		}
 	end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	Compose.cleanup(stop)
-	local api = Host.BindableFunction({
-		Name = "FacetShowcaseAPI",
+	local api = Host.BindableFunction "FacetShowcaseAPI" {
 		Parent = workspace,
 		OnInvoke = Compose.static(function(command, argument)
 			return gallery.dispatch(context, command, argument)
 		end),
-	})
+	}
 	workspace:SetAttribute("Facet_Version", Facet.VERSION)
 	workspace:SetAttribute("Facet_ShowcaseReady", true)
 end, runtime.reactor)

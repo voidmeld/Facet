@@ -54,7 +54,7 @@ local function mountGame(ctx, definition)
 	local game
 	local stop, node = ctx.runtime.mount(function()
 		game = definition.build(ctx)
-		return ctx.Host.ScreenGui({ Name = "GameScreen", game.screen() })
+		return ctx.Host.ScreenGui "GameScreen" { game.screen() }
 	end, ctx.target)
 	ctx.node = node
 	game.dispose = function()

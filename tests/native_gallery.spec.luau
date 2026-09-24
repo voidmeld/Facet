@@ -68,12 +68,11 @@ t.describe("native gallery", function()
 		local sheet
 		local stop, gui = ctx.runtime.mount(function()
 			sheet = Facet.themes.createStyleSheet(ctx.runtime, ctx.theme, { types = ctx.types, theme = ctx.themeMode })
-			return ctx.Host.ScreenGui({
-				Name = "FacetGallery",
+			return ctx.Host.ScreenGui "FacetGallery" {
 				sheet,
 				ctx.Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
 				require("../examples/gallery/client/screen").build(ctx),
-			})
+			}
 		end, target)
 		local root = find(gui, "Gallery")
 		t.expect(sheet.Parent).toBe(gui)

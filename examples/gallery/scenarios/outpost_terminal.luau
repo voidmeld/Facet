@@ -190,8 +190,7 @@ return {
 					ctx.theme,
 					{ types = ctx.types, theme = ctx.themeMode }
 				)
-				local gui = Host.SurfaceGui({
-					Name = "OutpostSurface",
+				local gui = Host.SurfaceGui "OutpostSurface" {
 					Parent = ctx.inputTarget,
 					Adornee = console,
 					Face = Enum.NormalId.Back,
@@ -205,25 +204,23 @@ return {
 					end,
 					Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
 					built.screen(),
-				})
-				Host.InputContext({
-					Name = "OutpostInput",
+				}
+				Host.InputContext "OutpostInput" {
 					Parent = ctx.inputTarget,
 					Priority = 3000,
 					Sink = true,
 					Enabled = function(use)
 						return use(built.model.phase) == "engaged"
 					end,
-					Host.InputAction({
-						Name = "LeaveConsole",
+					Host.InputAction "LeaveConsole" {
 						Type = Enum.InputActionType.Bool,
 						Pressed = function()
 							release("cancel")
 						end,
 						Host.InputBinding({ KeyCode = Enum.KeyCode.Escape }),
 						Host.InputBinding({ KeyCode = Enum.KeyCode.ButtonB }),
-					}),
-				})
+					},
+				}
 				local previousPhase = built.model.phase:peek()
 				Compose.watch(function(use)
 					local phase = use(built.model.phase)
@@ -237,8 +234,7 @@ return {
 					end
 					previousPhase = phase
 				end)
-				return Host.Frame({
-					Name = "OutpostCompanion",
+				return Host.Frame "OutpostCompanion" {
 					Position = UDim2.fromOffset(12, 12),
 					Size = UDim2.new(0, 280, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -273,7 +269,7 @@ return {
 						TextWrapped = true,
 						Size = UDim2.new(1, 0, 0, 36),
 					}),
-				})
+				}
 			end,
 			steps = steps,
 			report = function()

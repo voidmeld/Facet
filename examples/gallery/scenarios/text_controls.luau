@@ -35,8 +35,7 @@ return {
 			saved:set("No notes saved yet.")
 		end
 		local function body()
-			return Host.Frame({
-				Name = "Body",
+			return Host.Frame "Body" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -57,17 +56,15 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-				UI.Button({
-
-					Name = "Enable",
+				UI.Button "Enable" {
 					label = function(use)
 						return if use(enabled) then "Disable fields" else "Enable fields"
 					end,
 					onActivate = function()
 						enabled:set(not enabled:peek())
 					end,
-				}),
-				UI.Button({ Name = "Reset", label = "Reset", onActivate = reset }),
+				},
+				UI.Button "Reset" { label = "Reset", onActivate = reset },
 				UI.Label({
 
 					BackgroundTransparency = 1,
@@ -91,28 +88,22 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-				UI.TextInput({
-
-					Name = "Editor",
+				UI.TextInput "Editor" {
 					value = text,
 					multiline = true,
 					enabled = enabled,
 					onCommit = function(v)
 						saved:set(v)
 					end,
-				}),
-				UI.Button({
-
-					Name = "Save",
+				},
+				UI.Button "Save" {
 					label = "Save notes",
 					enabled = enabled,
 					onActivate = function()
 						saved:set(text:peek())
 					end,
-				}),
-				UI.Label({
-
-					Name = "Saved",
+				},
+				UI.Label "Saved" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -121,7 +112,7 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 				UI.Label({
 
 					BackgroundTransparency = 1,
@@ -134,13 +125,11 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-				UI.TextInput({
-
-					Name = "Search",
+				UI.TextInput "Search" {
 					value = query,
 					presentation = "search",
 					enabled = enabled,
-				}),
+				},
 				Compose.OrderedCollection({
 					from = matches,
 					key = function(name)
@@ -173,19 +162,15 @@ return {
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
-				UI.TextInput({
-
-					Name = "Laps",
+				UI.TextInput "Laps" {
 					value = draft,
 					presentation = "number",
 					numericValue = laps,
 					min = 1,
 					max = 99,
 					enabled = enabled,
-				}),
-				UI.Label({
-
-					Name = "Committed",
+				},
+				UI.Label "Committed" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -196,13 +181,12 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-			})
+				},
+			}
 		end
 		return {
 			screen = function()
-				return Host.Frame({
-					Name = "TextControls",
+				return Host.Frame "TextControls" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -211,16 +195,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						body(),
-					}),
-				})
+					},
+				}
 			end,
 
 			steps = {

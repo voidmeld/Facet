@@ -145,32 +145,29 @@ local lifetime = Compose.createRootOwner(function()
 		end
 		table.insert(
 			children,
-			Host.Part({
-				Name = "Floor",
+			Host.Part "Floor" {
 				Anchored = true,
 				Size = Vector3.new(200, 1, 200),
 				CFrame = CFrame.new(0, -0.5, 0),
 				Color = moodColor(Color3.fromRGB(24, 25, 38), Color3.fromRGB(173, 177, 187)),
 				Material = Enum.Material.SmoothPlastic,
-			})
+			}
 		)
 		table.insert(
 			children,
-			Host.Part({
-				Name = "StudioBackdrop",
+			Host.Part "StudioBackdrop" {
 				Anchored = true,
 				CanCollide = false,
 				Size = Vector3.new(180, 100, 1),
 				CFrame = CFrame.new(0, 30, 12),
 				Color = moodColor(Color3.fromRGB(30, 31, 50), Color3.fromRGB(206, 211, 224)),
 				Material = Enum.Material.SmoothPlastic,
-			})
+			}
 		)
 		for _, side in { -1, 1 } do
 			table.insert(
 				children,
-				Host.Part({
-					Name = "AccentLight",
+				Host.Part "AccentLight" {
 					Anchored = true,
 					CanCollide = false,
 					Size = Vector3.new(0.06, 24, 0.06),
@@ -178,7 +175,7 @@ local lifetime = Compose.createRootOwner(function()
 					Color = Color3.fromRGB(148, 128, 232),
 					Material = Enum.Material.Neon,
 					Host.PointLight({ Color = Color3.fromRGB(140, 119, 227), Brightness = 2, Range = 32 }),
-				})
+				}
 			)
 		end
 		return Host.Model(children)
@@ -248,8 +245,7 @@ local lifetime = Compose.createRootOwner(function()
 			end,
 		})
 		local views = screens.create(Facet, runtime, sceneActions(false, package))
-		return Host.ScreenGui({
-			Name = "VirtualMonitorsDesktop",
+		return Host.ScreenGui "VirtualMonitorsDesktop" {
 			DisplayOrder = 10,
 			ResetOnSpawn = false,
 			ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets,
@@ -272,7 +268,7 @@ local lifetime = Compose.createRootOwner(function()
 					{ theme = package, reducedMotion = reducedMotion }
 				)
 			),
-		})
+		}
 	end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	local viewport = Facet.Roblox.createViewport(camera)
 	Compose.watch(function(use)

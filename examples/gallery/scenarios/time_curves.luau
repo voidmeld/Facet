@@ -63,21 +63,19 @@ return {
 			local children = {
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 12) }),
 				label("Title", "Time curves — a duration a spring cannot promise"),
-				UI.Toggle({ Name = "Reduced", label = "Reduce decorative motion", value = reduced }),
+				UI.Toggle "Reduced" { label = "Reduce decorative motion", value = reduced },
 				label("RaceHeading", "Cooldown: on time versus approaching"),
-				UI.Button({ Name = "RunRace", label = "Run the cooldown", onActivate = runRace }),
-				UI.ProgressView({
-					Name = "Cooldown",
+				UI.Button "RunRace" { label = "Run the cooldown", onActivate = runRace },
+				UI.ProgressView "Cooldown" {
 					label = "Tween — 0.5 seconds, linear",
 					value = cooldown,
 					showValue = true,
-				}),
-				UI.ProgressView({
-					Name = "Chasing",
+				},
+				UI.ProgressView "Chasing" {
 					label = "Spring — 0.5 second response",
 					value = chasing,
 					showValue = true,
-				}),
+				},
 				label("Stopwatch", function(use)
 					return string.format(
 						"Elapsed %.2f s · cooldown %.0f%% · spring %.0f%%",
@@ -87,7 +85,7 @@ return {
 					)
 				end),
 				label("GalleryHeading", "One 400 ms trip, four curves"),
-				UI.Button({ Name = "Launch", label = "Launch all four", onActivate = launch }),
+				UI.Button "Launch" { label = "Launch all four", onActivate = launch },
 			}
 			for _, lane in lanes do
 				table.insert(
@@ -97,13 +95,11 @@ return {
 						Size = D2.new(1, 0, 0, 68),
 						BackgroundTransparency = 1,
 						label("Caption", lane.name),
-						Host.Frame({
-							Name = "Track",
+						Host.Frame "Track" {
 							Position = D2.fromOffset(0, 32),
 							Size = D2.new(1, 0, 0, 32),
 							BackgroundTransparency = 1,
-							Host.Frame({
-								Name = "Marker",
+							Host.Frame "Marker" {
 								Size = D2.fromOffset(28, 28),
 								BorderSizePixel = 0,
 								BackgroundColor3 = C3.fromRGB(64, 144, 255),
@@ -111,21 +107,19 @@ return {
 									local v = decorative(lane.value, gallery, use)
 									return D2.new(v, -28 * v, 0, 0)
 								end,
-							}),
-						}),
+							},
+						},
 					})
 				)
 			end
 			table.insert(children, label("PanelHeading", "A 450 ms panel trip — position and height share one curve"))
-			table.insert(children, UI.Button({ Name = "FlyPanel", label = "Fly the panel", onActivate = fly }))
+			table.insert(children, UI.Button "FlyPanel" { label = "Fly the panel", onActivate = fly })
 			table.insert(
 				children,
-				Host.Frame({
-					Name = "PanelLane",
+				Host.Frame "PanelLane" {
 					Size = D2.new(1, 0, 0, 48),
 					BackgroundTransparency = 1,
-					Host.Frame({
-						Name = "Puck",
+					Host.Frame "Puck" {
 						Size = D2.fromOffset(32, 32),
 						BackgroundColor3 = C3.fromRGB(80, 180, 160),
 						BorderSizePixel = 0,
@@ -133,29 +127,27 @@ return {
 							local v = decorative(panelFlight, panel, use)
 							return D2.new(v, -32 * v, 0, 0)
 						end,
-					}),
-				})
+					},
+				}
 			)
 			table.insert(
 				children,
-				Host.Frame({
-					Name = "GrowingPanel",
+				Host.Frame "GrowingPanel" {
 					BackgroundColor3 = C3.fromRGB(80, 180, 160),
 					BorderSizePixel = 0,
 					Size = function(use)
 						return D2.new(1, 0, 0, 64 + 64 * decorative(panelFlight, panel, use))
 					end,
 					label("PanelCaption", "The plate doubles its height on the same curve, in the same action."),
-				})
+				}
 			)
-			return Host.ScrollingFrame({
-				Name = "TimeCurves",
+			return Host.ScrollingFrame "TimeCurves" {
 				Size = D2.fromScale(1, 1),
 				AutomaticCanvasSize = E.AutomaticSize.Y,
 				CanvasSize = D2.new(),
 				BackgroundTransparency = 1,
 				table.unpack(children),
-			})
+			}
 		end
 		return {
 			screen = screen,

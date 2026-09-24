@@ -238,8 +238,7 @@ function terminal.build(ctx, options)
 					LayoutOrder = index,
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 64),
-					Host.Frame({
-						Name = "Copy",
+					Host.Frame "Copy" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, -184, 1, 0),
 						Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 3) }),
@@ -250,7 +249,7 @@ function terminal.build(ctx, options)
 							return (if nextRunning then consumer.running else consumer.idle)
 								.. (if live ~= nextRunning then " (on Apply)" else "")
 						end, 36, 13),
-					}),
+					},
 					UI.Stepper({
 						Name = consumer.id .. "Step",
 						Position = UDim2.new(1, -172, 0, 8),
@@ -268,8 +267,7 @@ function terminal.build(ctx, options)
 				})
 			)
 		end
-		local root = Host.Frame({
-			Name = "OutpostTerminal",
+		local root = Host.Frame "OutpostTerminal" {
 			Size = UDim2.fromScale(1, 1),
 			Host.UIPadding({
 				PaddingLeft = UDim.new(0, 16),
@@ -334,7 +332,7 @@ function terminal.build(ctx, options)
 					end,
 				}),
 			}),
-		})
+		}
 		root:AddTag("facet-surface")
 		return root
 	end

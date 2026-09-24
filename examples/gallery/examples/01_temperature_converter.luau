@@ -38,8 +38,7 @@ function example.build(ctx: any)
 		return celsius:peek()
 	end
 	function built.screen()
-		return Host.Frame({
-			Name = "TempConverter",
+		return Host.Frame "TempConverter" {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			Host.UIPadding({
@@ -48,8 +47,7 @@ function example.build(ctx: any)
 				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 16),
 			}),
-			Host.ScrollingFrame({
-				Name = "Page",
+			Host.ScrollingFrame "Page" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -131,8 +129,8 @@ function example.build(ctx: any)
 					TextXAlignment = Enum.TextXAlignment.Left,
 				}),
 				UI.Button({ LayoutOrder = 6, Name = "Clear", label = "Clear", onActivate = clear }),
-			}),
-		})
+			},
+		}
 	end
 	return built
 end

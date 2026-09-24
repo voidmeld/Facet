@@ -87,27 +87,23 @@ return {
 		end
 		return {
 			screen = function()
-				return Host.Frame({
-					Name = "RowCapabilities",
+				return Host.Frame "RowCapabilities" {
 					Size = UDim2.fromScale(1, 1),
 					BackgroundTransparency = 1,
-					UI.Label({
-						Name = "Title",
+					UI.Label "Title" {
 						Text = COPY.title,
 						TextSize = 24,
 						Size = UDim2.new(1, 0, 0, 36),
 						BackgroundTransparency = 1,
-					}),
-					UI.Label({
-						Name = "Explanation",
+					},
+					UI.Label "Explanation" {
 						Text = "Pinned rows cannot move. Protected rows cannot be deleted. Locked rows cannot be selected.",
 						TextWrapped = true,
 						Position = UDim2.fromOffset(0, 40),
 						Size = UDim2.new(1, 0, 0, 56),
 						BackgroundTransparency = 1,
-					}),
-					UI.Table({
-						Name = "RunSheet",
+					},
+					UI.Table "RunSheet" {
 						Position = UDim2.fromOffset(0, 100),
 						Size = UDim2.new(1, 0, 1, -164),
 						from = rows,
@@ -159,16 +155,15 @@ return {
 								},
 							}
 						end,
-					}),
-					UI.Label({
-						Name = "Status",
+					},
+					UI.Label "Status" {
 						Position = UDim2.new(0, 0, 1, -56),
 						Size = UDim2.new(1, 0, 0, 56),
 						Text = message,
 						TextWrapped = true,
 						BackgroundTransparency = 1,
-					}),
-				})
+					},
+				}
 			end,
 			report = function()
 				return { rows = rows:peek(), selection = selection:peek(), message = message:peek() }

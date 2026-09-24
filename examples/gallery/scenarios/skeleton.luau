@@ -26,8 +26,7 @@ return {
 				rootPath, controller = nil, nil
 				table.clear(records)
 			end)
-			local root = Host.Frame({
-				Name = "SkeletonRecipe",
+			local root = Host.Frame "SkeletonRecipe" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -116,8 +115,7 @@ return {
 						Compose.cleanup(function()
 							table.clear(records)
 						end)
-						return Host.Frame({
-							Name = "Placeholders",
+						return Host.Frame "Placeholders" {
 							BackgroundTransparency = 1,
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
@@ -133,10 +131,9 @@ return {
 								Size = UDim2.new(1, 0, 0, 0),
 								AutomaticSize = Enum.AutomaticSize.Y,
 								Compose.show(first, function()
-									return UI.Skeleton({
-										Name = "Card",
+									return UI.Skeleton "Card" {
 										form = "box",
-									})
+									}
 								end),
 							}),
 							UI.Skeleton({
@@ -153,10 +150,9 @@ return {
 								form = "line",
 								lines = 3,
 							}),
-						})
+						}
 					end, function()
-						return UI.Label({
-							Name = "ReadyCopy",
+						return UI.Label "ReadyCopy" {
 							BackgroundTransparency = 1,
 							BorderSizePixel = 0,
 							Size = UDim2.new(1, 0, 0, 0),
@@ -165,17 +161,16 @@ return {
 							TextWrapped = true,
 							TextYAlignment = Enum.TextYAlignment.Top,
 							TextXAlignment = Enum.TextXAlignment.Left,
-						})
+						}
 					end),
 				}),
-			})
+			}
 			return root
 		end
 		return {
 			section = section,
 			screen = function()
-				return Host.Frame({
-					Name = "Skeleton",
+				return Host.Frame "Skeleton" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -184,16 +179,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						section(),
-					}),
-				})
+					},
+				}
 			end,
 			report = report,
 			steps = {

@@ -67,8 +67,7 @@ return {
 					})
 				)
 			end
-			return Host.Frame({
-				Name = "AvatarRecipe",
+			return Host.Frame "AvatarRecipe" {
 				BackgroundTransparency = 1,
 				Size = D2.new(1, 0, 0, 0),
 				AutomaticSize = E.AutomaticSize.Y,
@@ -79,8 +78,7 @@ return {
 					text = "Pictures fall back to initials. Presence keeps its meaning when the mark is hidden.",
 				}),
 				row("Faces", {
-					UI.Avatar({
-						Name = "Portrait",
+					UI.Avatar "Portrait" {
 						name = "Ada Quill",
 						presence = presence,
 						controlSize = size,
@@ -105,32 +103,29 @@ return {
 						ref = function(node)
 							record = node
 						end,
-					}),
-					UI.Avatar({ Name = "Initials", name = "Émile Noël", backplate = true, controlSize = size }),
-					UI.Avatar({ Name = "Icon", name = "Bo Marchetti", form = "icon", controlSize = size }),
+					},
+					UI.Avatar "Initials" { name = "Émile Noël", backplate = true, controlSize = size },
+					UI.Avatar "Icon" { name = "Bo Marchetti", form = "icon", controlSize = size },
 				}),
 				row("Requests", {
-					UI.Button({
-						Name = "Pending",
+					UI.Button "Pending" {
 						label = "Loading",
 						onActivate = function()
 							request("pending")
 						end,
-					}),
-					UI.Button({
-						Name = "Ready",
+					},
+					UI.Button "Ready" {
 						label = "Picture",
 						onActivate = function()
 							request("ready")
 						end,
-					}),
-					UI.Button({
-						Name = "Fail",
+					},
+					UI.Button "Fail" {
 						label = "Initials",
 						onActivate = function()
 							request("failed")
 						end,
-					}),
+					},
 				}),
 				row("Presence", choices),
 				row("Sizes", sizes),
@@ -140,19 +135,18 @@ return {
 						return "Selected " .. tostring(use(activations)) .. " times"
 					end,
 				}),
-			})
+			}
 		end
 		return {
 			section = section,
 			screen = function()
-				return Host.ScrollingFrame({
-					Name = "Avatar",
+				return Host.ScrollingFrame "Avatar" {
 					BackgroundTransparency = 1,
 					Size = D2.fromScale(1, 1),
 					CanvasSize = D2.new(),
 					AutomaticCanvasSize = E.AutomaticSize.Y,
 					section(),
-				})
+				}
 			end,
 			report = report,
 			steps = {

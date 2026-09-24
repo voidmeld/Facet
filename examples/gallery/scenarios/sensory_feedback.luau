@@ -10,10 +10,10 @@ return {
 			Compose.cell(0), Compose.cell("No feedback requested yet."), Compose.cell("Ready")
 		local history = {}
 		local effects = {
-			press = Host.HapticEffect({ Name = "PressEffect", Type = E.HapticEffectType.UIClick }),
-			release = Host.HapticEffect({ Name = "ReleaseEffect", Type = E.HapticEffectType.UIClick }),
-			selection = Host.HapticEffect({ Name = "SelectionEffect", Type = E.HapticEffectType.UIHover }),
-			custom = Host.HapticEffect({ Name = "CustomEffect", Type = E.HapticEffectType.Custom }),
+			press = Host.HapticEffect "PressEffect" { Type = E.HapticEffectType.UIClick },
+			release = Host.HapticEffect "ReleaseEffect" { Type = E.HapticEffectType.UIClick },
+			selection = Host.HapticEffect "SelectionEffect" { Type = E.HapticEffectType.UIHover },
+			custom = Host.HapticEffect "CustomEffect" { Type = E.HapticEffectType.Custom },
 		}
 		Compose.watch(function(use)
 			local amplitude = use(strength)
@@ -79,14 +79,13 @@ return {
 			})
 		end
 		local function pressButton(effect)
-			return UI.Button({
-				Name = "Press",
+			return UI.Button "Press" {
 				label = "Press and hold",
 				PressHapticEffect = if effect then Compose.static(effect) else nil,
 				onPointerDown = function()
 					record("press", true)
 				end,
-			})
+			}
 		end
 		local function report()
 			return {
@@ -115,8 +114,7 @@ return {
 				end,
 			},
 			screen = function()
-				return Host.ScrollingFrame({
-					Name = "SensoryFeedback",
+				return Host.ScrollingFrame "SensoryFeedback" {
 					Size = D2.fromScale(1, 1),
 					CanvasSize = D2.new(),
 					AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -138,7 +136,7 @@ return {
 						"Introduction",
 						"Try a press, a completed click, a selection and a custom double pulse. This demo opts in to haptics; turn it off to compare the same controls without feedback."
 					),
-					UI.Toggle({ Name = "PlayHaptics", value = playHaptics, label = "Play haptics" }),
+					UI.Toggle "PlayHaptics" { value = playHaptics, label = "Play haptics" },
 					text("Status", state),
 					text(
 						"Evidence",
@@ -158,51 +156,46 @@ return {
 						"ReleaseRow",
 						"2. Completed click",
 						"Press, drag outside and release to cancel. Only a completed click requests feedback.",
-						UI.Button({
-							Name = "Release",
+						UI.Button "Release" {
 							label = "Complete a click",
 							onActivate = function()
 								record("release")
 							end,
-						})
+						}
 					),
 					row(
 						"SelectionRow",
 						"3. Selection",
 						"A short hover pulse accompanies each accepted selection change.",
-						UI.Toggle({
-							Name = "Selection",
+						UI.Toggle "Selection" {
 							value = selected,
 							label = "Selected",
 							onChange = function(value)
 								selected:set(value)
 								record("selection")
 							end,
-						})
+						}
 					),
 					row(
 						"StrengthRow",
 						"4. Custom double pulse",
 						"Adjust the strength, then compare the two-pulse pattern with the buttons above.",
-						UI.Slider({
-							Name = "Strength",
+						UI.Slider "Strength" {
 							value = strength,
 							min = 0,
 							max = 1,
 							step = 0.1,
 							label = "Pulse strength",
-						})
+						}
 					),
-					UI.Button({
-
-						Name = "Custom",
+					UI.Button "Custom" {
 						label = "Play double pulse",
 						onActivate = function()
 							record("custom")
 						end,
-					}),
+					},
 					text("History", historyText),
-				})
+				}
 			end,
 		}
 	end,

@@ -119,8 +119,7 @@ function lab.build(ctx, modules)
 		selected:set("idle-baseline")
 		reset()
 	end
-	local toolbar = Host.Frame({
-		Name = "Toolbar",
+	local toolbar = Host.Frame "Toolbar" {
 		LayoutOrder = 1,
 		Size = T.UDim2.new(1, 0, 0, 0),
 		AutomaticSize = T.Enum.AutomaticSize.Y,
@@ -175,9 +174,8 @@ function lab.build(ctx, modules)
 		UI.Button({ label = "Ramp", Size = T.UDim2.fromOffset(80, 40), onActivate = ramp }),
 		UI.Button({ label = "Stop", Size = T.UDim2.fromOffset(80, 40), onActivate = stop }),
 		UI.Button({ label = "Capture", Size = T.UDim2.fromOffset(80, 40), onActivate = capture }),
-	})
-	local mount = Host.Frame({
-		Name = "Workload",
+	}
+	local mount = Host.Frame "Workload" {
 		Size = T.UDim2.new(1, 0, 0, 0),
 		LayoutOrder = 3,
 		Host.UIFlexItem({ FlexMode = T.Enum.UIFlexMode.Fill }),
@@ -345,7 +343,7 @@ function lab.build(ctx, modules)
 				return node
 			end,
 		}),
-	})
+	}
 	if ctx.probe then
 		ctx.probe({
 			select = function(id, count)
@@ -403,8 +401,7 @@ function lab.build(ctx, modules)
 	Compose.cleanup(function()
 		connection:Disconnect()
 	end)
-	local root = Host.Frame({
-		Name = "PerformanceLab",
+	local root = Host.Frame "PerformanceLab" {
 		Size = T.UDim2.fromScale(1, 1),
 		Host.UIPadding({
 			PaddingTop = T.UDim.new(0, 8),
@@ -416,7 +413,7 @@ function lab.build(ctx, modules)
 		toolbar,
 		UI.Label({ text = readout, LayoutOrder = 2, Size = T.UDim2.new(1, 0, 0, 40), TextWrapped = true }),
 		mount,
-	})
+	}
 	root:AddTag("facet-surface")
 	return root
 end

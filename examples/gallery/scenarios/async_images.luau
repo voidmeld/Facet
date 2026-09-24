@@ -30,8 +30,7 @@ return {
 		end
 		return {
 			screen = function()
-				return Host.ScrollingFrame({
-					Name = "AsyncImages",
+				return Host.ScrollingFrame "AsyncImages" {
 					BackgroundTransparency = 1,
 					Size = D2.fromScale(1, 1),
 					CanvasSize = D2.new(),
@@ -77,7 +76,7 @@ return {
 							states[2]:set("released")
 						end,
 					}),
-				})
+				}
 			end,
 			report = report,
 			steps = {

@@ -787,15 +787,13 @@ function example.build(ctx: any)
 						Size = function(use)
 							return UDim2.new(0, 44, 0, 44)
 						end,
-						Host.Frame({
-							Name = "plate",
+						Host.Frame "plate" {
 							BackgroundTransparency = 1,
 							Size = function(use)
 								return UDim2.new(1, 0, 1, 0)
 							end,
-						}),
-						UI.Label({
-							Name = "mark",
+						},
+						UI.Label "mark" {
 							BackgroundTransparency = 1,
 							BorderSizePixel = 0,
 							Size = UDim2.new(1, 0, 0, 0),
@@ -805,9 +803,8 @@ function example.build(ctx: any)
 							TextWrapped = true,
 							TextYAlignment = Enum.TextYAlignment.Top,
 							TextXAlignment = Enum.TextXAlignment.Left,
-						}),
-						UI.Button({
-							Name = "tap",
+						},
+						UI.Button "tap" {
 							Size = function(use)
 								return UDim2.new(1, 0, 1, 0)
 							end,
@@ -835,13 +832,12 @@ function example.build(ctx: any)
 								PaddingLeft = UDim.new(0, 0),
 								PaddingRight = UDim.new(0, 0),
 							}),
-						}),
+						},
 					})
 				)
 			end
 		end
-		local board = Host.Frame({
-			Name = "board",
+		local board = Host.Frame "board" {
 			Size = UDim2.new(1, 0, 0, 0),
 			BackgroundTransparency = 1,
 			AutomaticSize = Enum.AutomaticSize.Y,
@@ -852,7 +848,7 @@ function example.build(ctx: any)
 				FillDirectionMaxCells = cells.columns or 4,
 			}),
 			table.unpack(cells),
-		})
+		}
 		local rackTiles: { any } = { columns = RACK_SIZE, itemSizing = "uniform", gap = "xs" }
 		for i = 1, RACK_SIZE do
 			local slot = i
@@ -882,8 +878,7 @@ function example.build(ctx: any)
 				end,
 			})
 		end
-		local rack = Host.Frame({
-			Name = "rack",
+		local rack = Host.Frame "rack" {
 			Size = UDim2.new(1, 0, 0, 0),
 			Host.UISizeConstraint({ MaxSize = Vector2.new(360, math.huge) }),
 			BackgroundTransparency = 1,
@@ -895,9 +890,8 @@ function example.build(ctx: any)
 				FillDirectionMaxCells = rackTiles.columns or 4,
 			}),
 			table.unpack(rackTiles),
-		})
-		return Host.Frame({
-			Name = "TileGame",
+		}
+		return Host.Frame "TileGame" {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			Host.UIPadding({
@@ -906,8 +900,7 @@ function example.build(ctx: any)
 				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 16),
 			}),
-			Host.ScrollingFrame({
-				Name = "Page",
+			Host.ScrollingFrame "Page" {
 				BackgroundTransparency = 1,
 				Size = function(use)
 					return UDim2.new(1, 0, 1, 0)
@@ -920,9 +913,7 @@ function example.build(ctx: any)
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					Padding = UDim.new(0, 8),
 				}),
-				UI.Label({
-
-					Name = "Title",
+				UI.Label "Title" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -932,10 +923,8 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				Host.Frame({
-
-					Name = "Stats",
+				},
+				Host.Frame "Stats" {
 					BackgroundTransparency = 1,
 					Size = function(use)
 						return UDim2.new(1, 0, 0, 0)
@@ -973,10 +962,8 @@ function example.build(ctx: any)
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					}),
-				}),
-				UI.Label({
-
-					Name = "Hint",
+				},
+				UI.Label "Hint" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -986,10 +973,8 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "Word",
+				},
+				UI.Label "Word" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -999,11 +984,9 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 				board,
-				UI.Label({
-
-					Name = "RackLabel",
+				UI.Label "RackLabel" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -1013,11 +996,9 @@ function example.build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 				rack,
-				Host.Frame({
-
-					Name = "Actions",
+				Host.Frame "Actions" {
 					BackgroundTransparency = 1,
 					Size = function(use)
 						return UDim2.new(1, 0, 0, 0)
@@ -1041,17 +1022,15 @@ function example.build(ctx: any)
 						label = "Undo turn",
 						onActivate = undo,
 					}),
-				}),
-				UI.Button({
-
-					Name = "Reset",
+				},
+				UI.Button "Reset" {
 					label = "Start over",
 					onActivate = function()
 						restart(DEFAULT_SEED)
 					end,
-				}),
-			}),
-		})
+				},
+			},
+		}
 	end
 
 	local focusedCell = function(): (number?, number?)
@@ -1096,13 +1075,12 @@ function example.build(ctx: any)
 			})
 		)
 	end
-	Host.InputContext({
-		Name = "CrosswordInput",
+	Host.InputContext "CrosswordInput" {
 		Parent = ctx.inputTarget,
 		Priority = 2000,
 		Sink = true,
 		table.unpack(bindings),
-	})
+	}
 
 	return {
 		title = example.title,

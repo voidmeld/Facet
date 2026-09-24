@@ -20,8 +20,7 @@ return {
 			status:set("The save is ready to replace.")
 		end
 		local function Example()
-			return Host.Frame({
-				Name = "Alert",
+			return Host.Frame "Alert" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -30,8 +29,7 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -89,9 +87,8 @@ return {
 						label = "Reset",
 						onActivate = reset,
 					}),
-				}),
-				UI.Alert({
-					Name = "ReplaceSave",
+				},
+				UI.Alert "ReplaceSave" {
 					title = "Replace this save?",
 					severity = "critical",
 					message = "Your current progress will replace the previous checkpoint.",
@@ -114,8 +111,8 @@ return {
 							end,
 						},
 					},
-				}),
-			})
+				},
+			}
 		end
 		return {
 			screen = Example,

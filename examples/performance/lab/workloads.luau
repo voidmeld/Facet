@@ -103,8 +103,7 @@ function workloads.create(ctx, name, dataset)
 		detailShown:set(true)
 	end
 	function state.disclosure()
-		return UI.Alert({
-			Name = "RowDetail",
+		return UI.Alert "RowDetail" {
 			isPresented = detailShown,
 			title = Compose.formula(function(use)
 				local item = use(opened)
@@ -115,7 +114,7 @@ function workloads.create(ctx, name, dataset)
 				return if item then item.detail else ""
 			end),
 			actions = { { id = "close", label = "Close" } },
-		})
+		}
 	end
 	local function readText(value, index)
 		return Host.TextLabel({
@@ -388,15 +387,14 @@ function workloads.create(ctx, name, dataset)
 			return stack(children)
 		elseif name == "animation-interruption" then
 			state.value, state.current = bindCell(0), 0
-			return Host.TextLabel({
-				Name = "Meter",
+			return Host.TextLabel "Meter" {
 				Text = function(use)
 					return string.format("%.1f%%", use(state.value) * 100)
 				end,
 				TextSize = 20,
 				BackgroundTransparency = 1,
 				Size = D2.fromScale(1, 1),
-			})
+			}
 		elseif name == "locale-textsize-change" or name == "picker-segmented-textsize" then
 			state.expanded, state.textSize = bindCell(false), bindCell(1)
 			state.locale = Compose.cell("en-us")
@@ -562,10 +560,10 @@ function workloads.create(ctx, name, dataset)
 			local sheet =
 				ctx.Facet.themes.createStyleSheet(runtime, state.palette, { types = types, theme = state.themeName })
 			state.themeControls = {
-				themed.Label({ Name = "Head", text = "Garage", TextSize = 20 }),
-				themed.Button({ Name = "Go", label = "Go", onActivate = function() end }),
-				themed.Toggle({ Name = "Flag", label = "Flag", value = Compose.cell(true) }),
-				themed.ProgressView({ Name = "Bar", value = 0.6 }),
+				themed.Label "Head" { text = "Garage", TextSize = 20 },
+				themed.Button "Go" { label = "Go", onActivate = function() end },
+				themed.Toggle "Flag" { label = "Flag", value = Compose.cell(true) },
+				themed.ProgressView "Bar" { value = 0.6 },
 			}
 			state.themeSheet = sheet
 			return stack({
@@ -634,8 +632,7 @@ function workloads.create(ctx, name, dataset)
 				state.markers = Compose.cell(markers)
 				table.insert(
 					children,
-					Host.Frame({
-						Name = "Markers",
+					Host.Frame "Markers" {
 						BackgroundTransparency = 1,
 						Size = D2.new(1, 0, 0, 6),
 						Compose.keyed({
@@ -647,7 +644,7 @@ function workloads.create(ctx, name, dataset)
 								return Host.Frame({ Name = `Dot-{current:peek().id}`, Size = D2.fromOffset(6, 6) })
 							end,
 						}),
-					})
+					}
 				)
 				for index = 1, 4 do
 					local button = UI.Button({ label = `Action {index}`, onActivate = state.activate })

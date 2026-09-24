@@ -26,8 +26,7 @@ return {
 			Compose.cleanup(function()
 				rootPath, controller, record = nil, nil, nil
 			end)
-			local root = Host.Frame({
-				Name = "BadgeRecipe",
+			local root = Host.Frame "BadgeRecipe" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -155,7 +154,7 @@ return {
 						end,
 					}),
 				}),
-			})
+			}
 			return root
 		end
 		return {
@@ -163,8 +162,7 @@ return {
 			reset = reset,
 			report = report,
 			screen = function()
-				return Host.Frame({
-					Name = "Badge",
+				return Host.Frame "Badge" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -173,16 +171,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						section(),
-					}),
-				})
+					},
+				}
 			end,
 			steps = {
 				neutral = function()

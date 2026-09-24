@@ -68,12 +68,11 @@ local function key(item)
 end
 
 local function button(UI, current)
-	return UI.Button({
-		Name = "Action",
+	return UI.Button "Action" {
 		label = function(use)
 			return use(current).label
 		end,
-	})
+	}
 end
 
 t.describe("Compose native collections", function()
@@ -167,13 +166,12 @@ t.describe("Compose native collections", function()
 					return item.id == 51
 				end,
 				render = function(current)
-					return runtime.constructors.TextBox({
-						Name = "Editor",
+					return runtime.constructors.TextBox "Editor" {
 						Text = function(use)
 							return use(current).label
 						end,
 						Selectable = true,
-					})
+					}
 				end,
 			})
 		end, target)
@@ -270,11 +268,10 @@ t.describe("Compose native collections", function()
 				measure = true,
 				status = status,
 				render = function()
-					return runtime.constructors.Frame({
-						Name = "Measured",
+					return runtime.constructors.Frame "Measured" {
 						AutomaticSize = engine.types.Enum.AutomaticSize.Y,
 						Size = engine.types.UDim2.new(1, 0, 0, 0),
-					})
+					}
 				end,
 			})
 		end, target)

@@ -869,15 +869,14 @@ function themes.skin(
 		local package = read(packageOrReadable) or neutral
 		local recipe = (package.chrome or {})[slot]
 		if recipe == nil or recipe.kind == "native" or recipe.kind == "none" then
-			local root = Host.Frame({
-				Name = "Skin",
+			local root = Host.Frame "Skin" {
 				Size = settings.Size or D2.fromScale(1, 1),
 				AnchorPoint = settings.AnchorPoint or V2.new(0, 0),
 				Position = settings.Position or D2.fromScale(0, 0),
 				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				ZIndex = settings.ZIndex or 0,
-			})
+			}
 			local declaredShadow = recipe and recipe.shadow
 			local shadow: ThemeTypes.Shadow? = if type(declaredShadow) == "string"
 				then (package.style.shadows or {})[declaredShadow] or shadowPresets[declaredShadow]
@@ -897,8 +896,7 @@ function themes.skin(
 					return D2.new(x, xo, y, yo)
 				end
 				runtime.mount(function()
-					return Host.UIShadow({
-						Name = "ChromeShadow",
+					return Host.UIShadow "ChromeShadow" {
 						Color = color(types, shadow.color or { r = 0, g = 0, b = 0 }),
 						Transparency = shadow.transparency or 0.5,
 						ZIndex = shadow.zIndex or -1,
@@ -906,7 +904,7 @@ function themes.skin(
 						BlurRadius = types.UDim.new(axis(shadow.blurRadius)),
 						Offset = pair(shadow.offset),
 						Spread = pair(shadow.spread),
-					})
+					}
 				end, settings.target or root)
 			end
 			return decoration(runtime, types, settings.target, root) :: Frame
@@ -1122,15 +1120,14 @@ function themes.skin(
 							return types.UDim.new(0, inset.bottom or 0)
 						end,
 					}
-					local label = Host.TextLabel({
-						Name = "PlaqueCaption",
+					local label = Host.TextLabel "PlaqueCaption" {
 						Text = settings.label,
 						Size = D2.fromScale(1, 1),
 						BackgroundTransparency = 1,
 						ZIndex = 1,
 						TextXAlignment = types.Enum.TextXAlignment.Center,
 						Host.UIPadding(padding),
-					})
+					}
 					label:AddTag("facet-skin-caption-text")
 					return label
 				end)
@@ -1185,8 +1182,7 @@ function themes.skin(
 	local activeLayers: { ImageLayer } = {}
 	local slots: Compose.Cell<{ number }> = Compose.cell({})
 	local mounted: { [number]: MountedImage } = {}
-	local root = Host.Frame({
-		Name = "Skin",
+	local root = Host.Frame "Skin" {
 		Size = settings.Size or D2.fromScale(1, 1),
 		AnchorPoint = settings.AnchorPoint or V2.new(0, 0),
 		Position = settings.Position or D2.fromScale(0, 0),
@@ -1205,7 +1201,7 @@ function themes.skin(
 				return record.node
 			end,
 		}),
-	})
+	}
 	Compose.watch(function(use: Compose.Use)
 		local active = buildLayers(use)
 		activeLayers = active

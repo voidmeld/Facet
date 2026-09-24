@@ -243,8 +243,7 @@ function scenes.staticAvatar(runtime: any, target: Instance, angle: any, palette
 		animatedAngle = runtime.spring(function(use)
 			return use(angle)
 		end, { period = 0.55, damping = 0.9 })
-		return Host.Model({
-			Name = "Explorer",
+		return Host.Model "Explorer" {
 
 			piece("Shirt", Vector3.new(0.62, 1.55, 0.12), Vector3.new(0, 2.52, -0.49), Color3.fromRGB(238, 226, 202)),
 			piece("JacketZip", Vector3.new(0.045, 1.52, 0.04), Vector3.new(0, 2.50, -0.58), Color3.fromRGB(79, 80, 67)),
@@ -330,7 +329,7 @@ function scenes.staticAvatar(runtime: any, target: Instance, angle: any, palette
 				Color3.fromRGB(218, 195, 145),
 				{ Transparency = visibility }
 			),
-		})
+		}
 	end, target)
 end
 local avatarTemplate

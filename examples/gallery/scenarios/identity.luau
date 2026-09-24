@@ -20,8 +20,7 @@ return {
 			reset = reset,
 			steps = { reset = reset },
 			screen = function()
-				return Host.Frame({
-					Name = "Identity",
+				return Host.Frame "Identity" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -30,8 +29,7 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -43,8 +41,7 @@ return {
 							PaddingLeft = UDim.new(0, 8),
 							PaddingRight = UDim.new(0, 8),
 						}),
-						Host.Frame({
-							Name = "Recipes",
+						Host.Frame "Recipes" {
 							BackgroundTransparency = 1,
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
@@ -53,17 +50,15 @@ return {
 								SortOrder = Enum.SortOrder.LayoutOrder,
 								Padding = UDim.new(0, 24),
 							}),
-							UI.Button({
-
-								Name = "Reset",
+							UI.Button "Reset" {
 								label = "Reset identity",
 								onActivate = reset,
-							}),
+							},
 							avatar.section(),
 							group.section(),
-						}),
-					}),
-				})
+						},
+					},
+				}
 			end,
 			report = function()
 				local face, roster = avatar.report(), group.report()

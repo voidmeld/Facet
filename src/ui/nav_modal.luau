@@ -58,7 +58,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 	local function skin(panel: GuiObject, slot: string?): GuiObject
 		local _, art = ctx.skin(panel, slot or "panel")
 		if art and panel:FindFirstChildWhichIsA("UIListLayout") then
-			local decoration = Host.Folder({ Name = "Chrome" })
+			local decoration = Host.Folder "Chrome" {}
 			attach(panel, { decoration })
 			art.Parent = decoration
 		end
@@ -92,8 +92,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 			Size = D2.fromScale(1, 1),
 			BackgroundTransparency = 1,
 			ZIndex = spec.ZIndex or 100,
-			Host.TextButton({
-				Name = "DismissOutside",
+			Host.TextButton "DismissOutside" {
 				Size = D2.fromScale(1, 1),
 				Text = "",
 				BackgroundTransparency = function(use: Core.Use)
@@ -127,7 +126,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 						end
 					end
 				end,
-			}) :: Instance,
+			} :: Instance,
 			panel,
 		}
 		root = Host.Frame(props)
@@ -260,8 +259,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end,
 			render = function(current)
 				local function render(phase: Nav.PresencePhase?): Folder
-					return Host.Folder({
-						Name = "OverlayPortal",
+					return Host.Folder "OverlayPortal" {
 						Compose.portal(current:peek(), function()
 							if options and options.failure then
 								return {
@@ -274,14 +272,13 @@ return function(ctx: Types.Context): Nav.Surfaces
 							end
 							return { build(phase) }
 						end),
-					})
+					}
 				end
-				return Host.Folder({
-					Name = "Presentation",
+				return Host.Folder "Presentation" {
 					if options and options.presence
 						then Compose.presence(condition, render, options.presence)
 						else Compose.show(condition, render),
-				})
+				}
 			end,
 		})
 	end

@@ -234,13 +234,12 @@ return function<V, K>(
 				end,
 			} :: EngineTypes.Attributes,
 			handle :: ComposeTypes.Child,
-			Host.Frame({
-				Name = "Cells",
+			Host.Frame "Cells" {
 				Position = D2.fromOffset(56, 0),
 				Size = D2.new(1, -56, 1, 0),
 				BackgroundTransparency = 1,
 				row,
-			}),
+			},
 		}
 		return Host.Frame(nativeProps)
 	end
@@ -384,15 +383,14 @@ return function<V, K>(
 					Size = D2.fromScale(1, 1),
 					BackgroundTransparency = 1,
 					ctx.styled(
-						Host.Frame({
-							Name = "DropLine",
+						Host.Frame "DropLine" {
 							Size = if horizontal then D2.new(0, 2, 1, 0) else D2.new(1, 0, 0, 2),
 							BorderSizePixel = 0,
 							ZIndex = 8,
 							Position = function(use: ComposeTypes.Use)
 								return if horizontal then D2.fromOffset(dropY(use), 0) else D2.fromOffset(0, dropY(use))
 							end,
-						}),
+						},
 						"divider"
 					),
 					ctx.styled(

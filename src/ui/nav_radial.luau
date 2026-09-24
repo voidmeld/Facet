@@ -206,8 +206,7 @@ return function(
 			end
 			local guiState = ctx.observe(node, "GuiState")
 			surfaces.attach(node, {
-				Host.ImageLabel({
-					Name = "RadialSkin",
+				Host.ImageLabel "RadialSkin" {
 					Size = D2.fromScale(1, 1),
 					BackgroundTransparency = 1,
 					ZIndex = node.ZIndex - 1,
@@ -223,7 +222,7 @@ return function(
 							or definition.default
 							or ""
 					end,
-				}),
+				},
 			})
 		end
 		local root = Host.Frame(ctx.props(spec, {
@@ -263,8 +262,7 @@ return function(
 		}))
 		if spec.launcher ~= false then
 			surfaces.attach(root, {
-				UI.Button({
-					Name = "Launcher",
+				UI.Button "Launcher" {
 					label = spec.label or "Quick actions",
 					icon = spec.icon,
 					enabled = spec.enabled,
@@ -286,7 +284,7 @@ return function(
 							open()
 						end
 					end,
-				}),
+				},
 			})
 		end
 		surfaces.attach(root, {
@@ -708,12 +706,11 @@ return function(
 										return use(candidate) == currentSector(use).key
 									end)
 									local measured = ctx.observe(button, "TextBounds")
-									local paint = Host.Path2D({
-										Name = "Sector",
+									local paint = Host.Path2D "Sector" {
 										Thickness = sector.outer - sector.inner,
 										Closed = false,
 										ZIndex = 102,
-									})
+									}
 									ctx.styled(paint, "radial-sector")
 									local wrapper = Host.CanvasGroup({
 										Name = "Sector-" .. sector.id,
@@ -734,14 +731,13 @@ return function(
 										end,
 										button,
 									})
-									local shape = Host.Frame({
-										Name = "Paint",
+									local shape = Host.Frame "Paint" {
 										BackgroundTransparency = 1,
 										Visible = function(use: Reactive.Use)
 											return appearance == "wedges" and not currentSector(use).list
 										end,
 										paint,
-									})
+									}
 									surfaces.attach(wrapper, { shape })
 									Compose.watch(function(use: Reactive.Use)
 										local live, at = currentSector(use), use(center)
@@ -796,8 +792,7 @@ return function(
 				end
 				if spec.center ~= "empty" and spec.center ~= "content" then
 					surfaces.attach(panel, {
-						UI.Button({
-							Name = "Center",
+						UI.Button "Center" {
 							LayoutOrder = -1,
 							label = spec.centerLabel or (if spec.center == "root" then "Home" else "Back"),
 							Position = function(use: Reactive.Use)
@@ -812,7 +807,7 @@ return function(
 							end,
 							ZIndex = 105,
 							onActivate = centerAction,
-						}),
+						},
 					})
 				elseif spec.center == "content" and spec.centerContent then
 					local node = if type(spec.centerContent) == "function"

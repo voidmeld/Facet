@@ -159,8 +159,7 @@ return function(ctx: any, options: any)
 					PaddingBottom = D.new(0, 10),
 				}),
 				Host.UIListLayout({ Padding = D.new(0, 4), SortOrder = E.SortOrder.LayoutOrder }),
-				UI.Label({
-					Name = "PostTitle",
+				UI.Label "PostTitle" {
 					LayoutOrder = 1,
 					Text = function(use)
 						return use(current).label
@@ -173,9 +172,8 @@ return function(ctx: any, options: any)
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					BackgroundTransparency = 1,
-				}),
-				UI.Label({
-					Name = "PostBody",
+				},
+				UI.Label "PostBody" {
 					LayoutOrder = 2,
 					Text = function(use)
 						return use(current).description
@@ -187,7 +185,7 @@ return function(ctx: any, options: any)
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					BackgroundTransparency = 1,
-				}),
+				},
 			})
 		end
 		local button = UI.Button({
@@ -316,8 +314,7 @@ return function(ctx: any, options: any)
 						label = "Subject",
 						minWidth = 160,
 						render = function(current, _, key)
-							return UI.Label({
-								Name = "Message",
+							return UI.Label "Message" {
 								Text = function(use)
 									return (if use(readRows)[key] then "Read · " else "Unread · ")
 										.. (if use(flaggedRows)[key] then "Flagged · " else "")
@@ -328,7 +325,7 @@ return function(ctx: any, options: any)
 								TextWrapped = true,
 								Size = D2.fromScale(1, 1),
 								BackgroundTransparency = 1,
-							})
+							}
 						end,
 					},
 				}
@@ -409,16 +406,14 @@ return function(ctx: any, options: any)
 				Wraps = true,
 			})
 		)
-		local actionsFrame = Host.Frame({
-			Name = "Actions",
+		local actionsFrame = Host.Frame "Actions" {
 			LayoutOrder = 2,
 			Size = D2.new(1, 0, 0, 0),
 			AutomaticSize = E.AutomaticSize.Y,
 			BackgroundTransparency = 1,
 			table.unpack(buttons),
-		})
-		local titleProbe = UI.Label({
-			Name = "TitleLineMeasure",
+		}
+		local titleProbe = UI.Label "TitleLineMeasure" {
 			Visible = false,
 			Text = "Ag",
 			TextSize = function(use)
@@ -426,9 +421,8 @@ return function(ctx: any, options: any)
 			end,
 			AutomaticSize = E.AutomaticSize.XY,
 			Size = D2.fromOffset(0, 0),
-		})
-		local bodyProbe = UI.Label({
-			Name = "BodyLineMeasure",
+		}
+		local bodyProbe = UI.Label "BodyLineMeasure" {
 			Visible = false,
 			Text = "Ag",
 			TextSize = function(use)
@@ -436,7 +430,7 @@ return function(ctx: any, options: any)
 			end,
 			AutomaticSize = E.AutomaticSize.XY,
 			Size = D2.fromOffset(0, 0),
-		})
+		}
 		local titleBounds, bodyBounds = observe(titleProbe, "TextBounds"), observe(bodyProbe, "TextBounds")
 		Compose.watch(function(use)
 			titleLine:set(use(titleBounds).Y)
@@ -447,15 +441,13 @@ return function(ctx: any, options: any)
 			Size = D2.fromScale(1, 1),
 			BackgroundTransparency = 1,
 			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
-			Host.Frame({
-				Name = "Toolbar",
+			Host.Frame "Toolbar" {
 				LayoutOrder = 1,
 				Size = D2.new(1, 0, 0, 0),
 				AutomaticSize = E.AutomaticSize.Y,
 				BackgroundTransparency = 1,
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
-				UI.Label({
-					Name = "Title",
+				UI.Label "Title" {
 					LayoutOrder = 1,
 					Text = options.title,
 					TextSize = 24,
@@ -463,10 +455,9 @@ return function(ctx: any, options: any)
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					BackgroundTransparency = 1,
-				}),
+				},
 				actionsFrame,
-				UI.Label({
-					Name = "Status",
+				UI.Label "Status" {
 					LayoutOrder = 3,
 					Text = function(use)
 						local snapshot, count = use(status), 0
@@ -486,8 +477,8 @@ return function(ctx: any, options: any)
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					BackgroundTransparency = 1,
-				}),
-			}),
+				},
+			},
 			collection,
 			titleProbe,
 			bodyProbe,

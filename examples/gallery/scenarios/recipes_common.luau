@@ -120,17 +120,15 @@ return {
 			if opts.icon ~= nil then
 				table.insert(
 					children,
-					UI.Label({
-						Name = "Icon",
+					UI.Label "Icon" {
 						label = opts.iconLabel or opts.title,
 						icon = opts.icon,
-					})
+					}
 				)
 			end
 			table.insert(
 				children,
-				UI.Label({
-					Name = "Title",
+				UI.Label "Title" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -140,12 +138,11 @@ return {
 					TextXAlignment = Enum.TextXAlignment.Center,
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
-				})
+				}
 			)
 			table.insert(
 				children,
-				UI.Label({
-					Name = "Message",
+				UI.Label "Message" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -154,16 +151,15 @@ return {
 					TextXAlignment = Enum.TextXAlignment.Center,
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
-				})
+				}
 			)
 			table.insert(
 				children,
-				UI.Button({
-					Name = "Action",
+				UI.Button "Action" {
 					label = opts.actionLabel,
 					appearance = "soft",
 					onActivate = opts.onAction,
-				})
+				}
 			)
 			return Host.Frame({
 				Name = id,
@@ -285,8 +281,7 @@ return {
 					return value
 				end
 				local release, measure = ctx.runtime.mount(function()
-					return Host.TextLabel({
-						Name = "NaturalWidth",
+					return Host.TextLabel "NaturalWidth" {
 						Text = label,
 						Visible = false,
 						TextWrapped = false,
@@ -294,7 +289,7 @@ return {
 						AutomaticSize = Enum.AutomaticSize.XY,
 						FontFace = styled("FontFace"),
 						TextSize = styled("TextSize"),
-					})
+					}
 				end, button)
 				Compose.cleanup(release)
 				local function measureChanged()
@@ -308,8 +303,7 @@ return {
 				return button
 			end
 			local function actionRow()
-				local row = Host.Frame({
-					Name = "Actions",
+				local row = Host.Frame "Actions" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -330,7 +324,7 @@ return {
 					actionButton(1, "Cancel", "Cancel", "cancel", nil),
 					actionButton(2, "Save", "Save changes to this profile", nil, "emphasis"),
 					actionButton(3, "Delete", "Delete profile", "destructive", "utility"),
-				})
+				}
 				local function resized()
 					actionsWidth:set(row.AbsoluteSize.X)
 				end
@@ -359,8 +353,7 @@ return {
 						end
 					end,
 					content = function()
-						return UI.Label({
-							Name = "Body",
+						return UI.Label "Body" {
 							BackgroundTransparency = 1,
 							BorderSizePixel = 0,
 							Size = UDim2.new(1, 0, 0, 0),
@@ -369,7 +362,7 @@ return {
 							TextWrapped = true,
 							TextYAlignment = Enum.TextYAlignment.Top,
 							TextXAlignment = Enum.TextXAlignment.Left,
-						})
+						}
 					end,
 				})
 			end
@@ -408,8 +401,7 @@ return {
 				})
 			end
 
-			local root = Host.Frame({
-				Name = "Page",
+			local root = Host.Frame "Page" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -435,9 +427,7 @@ return {
 					"CheckboxNote",
 					"Independent settings, not a single choice. Use a Picker instead the moment only one of these can be true at a time."
 				),
-				Host.Frame({
-
-					Name = "CheckboxGroup",
+				Host.Frame "CheckboxGroup" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -450,10 +440,8 @@ return {
 					checkItem("fuel", "Fuel use"),
 					checkItem("damage", "Damage"),
 					checkItem("weather", "Weather"),
-				}),
-				Host.Frame({
-
-					Name = "WrapChecks",
+				},
+				Host.Frame "WrapChecks" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -467,12 +455,10 @@ return {
 					checkItem("fuel", "Fuel use", UDim.new(0, 0)),
 					checkItem("damage", "Damage", UDim.new(0, 0)),
 					checkItem("weather", "Weather", UDim.new(0, 0)),
-				}),
+				},
 				heading("ChipHeading", "Chip group"),
 				note("ChipWrapNote", "Wraps to a new line when it runs out of room."),
-				Host.Frame({
-
-					Name = "WrapChips",
+				Host.Frame "WrapChips" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -498,22 +484,19 @@ return {
 							return node
 						end,
 					}),
-				}),
+				},
 				note(
 					"ChipRailNote",
 					"One scrolling row instead, for a long list on a narrow screen. A keyboard or gamepad focus move keeps the picked chip in view with no extra wiring."
 				),
-				Host.ScrollingFrame({
-
-					Name = "RailChips",
+				Host.ScrollingFrame "RailChips" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					AutomaticCanvasSize = Enum.AutomaticSize.X,
 					CanvasSize = UDim2.new(),
 					ScrollBarThickness = 6,
-					Host.Frame({
-						Name = "Row",
+					Host.Frame "Row" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(0, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.XY,
@@ -532,8 +515,8 @@ return {
 								return chipItem(tag, railSelected)
 							end,
 						}),
-					}),
-				}),
+					},
+				},
 				heading("EmptyHeading", "Empty state"),
 				note(
 					"EmptyNote",
@@ -576,9 +559,7 @@ return {
 				dividerExample("DividerBoth", "Leading and trailing", { left = "m", right = "m" }),
 				dividerExample("DividerHeavy", "Heavy", 0, 3),
 				heading("AccordionHeading", "Single-open accordion"),
-				Host.Frame({
-
-					Name = "Accordion",
+				Host.Frame "Accordion" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -590,8 +571,8 @@ return {
 					accordionItem("Rules", "Race rules", "Standard lap count, no shortcuts, collisions on."),
 					accordionItem("Setup", "Car setup", "Tire compound, gear ratio and ride height for this track."),
 					accordionItem("Rewards", "Rewards", "Podium finishes bank currency toward the next kart unlock."),
-				}),
-			})
+				},
+			}
 			return root
 		end
 		local function reset()
@@ -616,8 +597,7 @@ return {
 			report = report,
 			reset = reset,
 			screen = function()
-				return Host.Frame({
-					Name = "Recipes",
+				return Host.Frame "Recipes" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -626,16 +606,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						Page(),
-					}),
-				})
+					},
+				}
 			end,
 			steps = {
 				narrowActions = function()

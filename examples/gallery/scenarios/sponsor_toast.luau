@@ -184,12 +184,10 @@ return {
 			}
 		end
 		local function screen()
-			local root = Host.Frame({
-				Name = "ToastLab",
+			local root = Host.Frame "ToastLab" {
 				Size = D2.fromScale(1, 1),
 				BackgroundTransparency = 1,
-				Host.ScrollingFrame({
-					Name = "Actions",
+				Host.ScrollingFrame "Actions" {
 					Size = D2.fromScale(1, 1),
 					BackgroundTransparency = 1,
 					AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -200,20 +198,17 @@ return {
 						Text = "Show a toast, then try Test input. Notifications leave the controls below usable.",
 						TextWrapped = true,
 					}),
-					UI.Picker({
-						Name = "Edge",
+					UI.Picker "Edge" {
 						label = "Edge for new stacks",
 						selected = edge,
 						options = { { value = "top", label = "Top" }, { value = "bottom", label = "Bottom" } },
-					}),
-					UI.Picker({
-						Name = "Width",
+					},
+					UI.Picker "Width" {
 						label = "Toast width",
 						selected = widthMode,
 						options = { { value = "fill", label = "Wide" }, { value = "hug", label = "Fit content" } },
-					}),
-					Host.Frame({
-						Name = "Commands",
+					},
+					Host.Frame "Commands" {
 						Size = D2.new(1, 0, 0, 0),
 						AutomaticSize = E.AutomaticSize.Y,
 						BackgroundTransparency = 1,
@@ -223,9 +218,8 @@ return {
 							Wraps = true,
 							Padding = D.new(0, 8),
 						}),
-						UI.Button({ Name = "Send", label = "Show toast", onActivate = send }),
-						UI.Button({
-							Name = "Pair",
+						UI.Button "Send" { label = "Show toast", onActivate = send },
+						UI.Button "Pair" {
 							label = "Show pair",
 							onActivate = function()
 								show(
@@ -239,41 +233,36 @@ return {
 									{ duration = 8, readFloor = 0 }
 								)
 							end,
-						}),
-						UI.Button({ Name = "Burst", label = "Burst", onActivate = burst }),
-						UI.Button({
-							Name = "Priority",
+						},
+						UI.Button "Burst" { label = "Burst", onActivate = burst },
+						UI.Button "Priority" {
 							label = "Priority",
 							onActivate = function()
 								show("Urgent", "Arrived during another toast's read floor", { priority = 9 })
 							end,
-						}),
-						UI.Button({
-							Name = "Supersede",
+						},
+						UI.Button "Supersede" {
 							label = "Supersede",
 							onActivate = function()
 								show("Subject", "Revision " .. (superseded + 1), { subject = "lap-time" })
 							end,
-						}),
-						UI.Button({
-							Name = "Clear",
+						},
+						UI.Button "Clear" {
 							label = "Dismiss messages",
 							onActivate = function()
 								dismiss()
 							end,
-						}),
-					}),
-					UI.Button({
-						Name = "Beneath",
+						},
+					},
+					UI.Button "Beneath" {
 						label = function(use)
 							return "Test input: " .. use(presses)
 						end,
 						onActivate = function()
 							presses:set(presses:peek() + 1)
 						end,
-					}),
-					UI.Label({
-						Name = "Status",
+					},
+					UI.Label "Status" {
 						Text = function(use)
 							use(rows)
 							local r = report()
@@ -285,10 +274,9 @@ return {
 							)
 						end,
 						TextWrapped = true,
-					}),
-				}),
-				Host.Frame({
-					Name = "Messages",
+					},
+				},
+				Host.Frame "Messages" {
 					BackgroundTransparency = 1,
 					Active = false,
 					ZIndex = 10,
@@ -358,8 +346,7 @@ return {
 								end)
 							end
 							measure()
-							local card = Host.CanvasGroup({
-								Name = "Toast",
+							local card = Host.CanvasGroup "Toast" {
 								Active = false,
 								Selectable = false,
 								AutomaticSize = E.AutomaticSize.Y,
@@ -399,25 +386,23 @@ return {
 									PaddingBottom = D.new(0, 8),
 								}),
 								Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 4) }),
-								UI.Label({
-									Name = "Title",
+								UI.Label "Title" {
 									Text = function(use)
 										return use(current).title
 									end,
 									TextWrapped = true,
 									Size = D2.new(1, 0, 0, 0),
 									AutomaticSize = E.AutomaticSize.Y,
-								}),
-								UI.Label({
-									Name = "Detail",
+								},
+								UI.Label "Detail" {
 									Text = function(use)
 										return use(current).detail
 									end,
 									TextWrapped = true,
 									Size = D2.new(1, 0, 0, 0),
 									AutomaticSize = E.AutomaticSize.Y,
-								}),
-							})
+								},
+							}
 							local connection = card:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 								if card.AbsoluteSize.Y > 0 and heights:peek()[id] ~= card.AbsoluteSize.Y then
 									local next = table.clone(heights:peek())
@@ -435,8 +420,8 @@ return {
 							return card
 						end,
 					}),
-				}),
-			})
+				},
+			}
 			local messages = root:FindFirstChild("Messages")
 			local connection = messages:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 				if messages.AbsoluteSize.X > 0 then

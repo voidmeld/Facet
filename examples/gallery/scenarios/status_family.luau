@@ -18,8 +18,7 @@ return {
 		end
 		return {
 			screen = function()
-				return Host.Frame({
-					Name = "StatusFamily",
+				return Host.Frame "StatusFamily" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -28,15 +27,13 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
-						Host.Frame({
-							Name = "Recipes",
+						Host.Frame "Recipes" {
 							BackgroundTransparency = 1,
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
@@ -45,17 +42,15 @@ return {
 								SortOrder = Enum.SortOrder.LayoutOrder,
 								Padding = UDim.new(0, 24),
 							}),
-							UI.Button({
-
-								Name = "Reset",
+							UI.Button "Reset" {
 								label = "Reset status",
 								onActivate = reset,
-							}),
+							},
 							marks.section(),
 							badges.section(),
-						}),
-					}),
-				})
+						},
+					},
+				}
 			end,
 			reset = reset,
 			steps = { reset = reset },

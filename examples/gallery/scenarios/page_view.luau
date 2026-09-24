@@ -34,8 +34,7 @@ return {
 				table.insert(pages, {
 					id = key,
 					title = copy[key],
-					content = Host.Frame({
-						Name = "Course",
+					content = Host.Frame "Course" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -61,13 +60,12 @@ return {
 							Name = "Preview",
 							BackgroundTransparency = 1,
 							Size = UDim2.new(1, 0, 0, 120),
-							Host.Frame({
-								Name = "Backdrop",
+							Host.Frame "Backdrop" {
 								BackgroundTransparency = 1,
 								Size = UDim2.new(1, 0, 1, 0),
-							}),
+							},
 							(function()
-								local path = Host.Path2D({ Name = "Circuit", Thickness = 4 })
+								local path = Host.Path2D "Circuit" { Thickness = 4 }
 								local points = {
 									{ x = 0.15, y = 0.5 },
 									{ x = 0.35, y = 0.2 },
@@ -106,11 +104,10 @@ return {
 								picked:set(copy[key])
 							end,
 						}),
-					}),
+					},
 				})
 			end
-			return Host.Frame({
-				Name = "PageView",
+			return Host.Frame "PageView" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -119,8 +116,7 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -183,8 +179,8 @@ return {
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					}),
-				}),
-			})
+				},
+			}
 		end
 		return {
 			screen = screen,

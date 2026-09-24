@@ -53,7 +53,7 @@ local function fixture(build)
 			theme = ctx.theme,
 			reducedMotion = ctx.reducedMotion,
 		})
-		return ctx.Host.ScreenGui({ Name = "GalleryTest", build(ctx) })
+		return ctx.Host.ScreenGui "GalleryTest" { build(ctx) }
 	end, target)
 	return ctx, root, function()
 		stop()
@@ -175,7 +175,7 @@ t.describe("native gallery shell parity", function()
 
 	t.it("keeps gallery motion preview synchronized with native accessibility preferences", function()
 		local ctx, _, stop = fixture(function(context)
-			return context.Host.Frame({ Name = "MotionTest" })
+			return context.Host.Frame "MotionTest" {}
 		end)
 		t.expect(ctx.reducedMotion:peek()).toBe(false)
 		ctx.motionPreference:set(true)

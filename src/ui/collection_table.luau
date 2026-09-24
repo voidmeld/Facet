@@ -573,8 +573,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 					Compose.show(function(use: ComposeTypes.Use)
 						return use(disclosureWidth) > 0
 					end, function()
-						return UI.CollapsibleView({
-							Name = "Details",
+						return UI.CollapsibleView "Details" {
 							label = "More",
 							expanded = Compose.cell(false),
 							Size = D2.new(0, 48, 1, 0),
@@ -628,7 +627,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 									}),
 								}, { Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 							end,
-						})
+						}
 					end),
 				}
 				row = Host.Frame(rowProps)

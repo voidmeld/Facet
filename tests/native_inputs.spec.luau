@@ -354,9 +354,9 @@ t.describe("native input controls", function()
 		local value = Compose.cell(0.5)
 		local node, stop, engine = world(function(UI, engine, runtime)
 			return runtime.constructors.Frame({
-				UI.Slider({ Name = "Inline", value = value, Size = engine.types.UDim2.fromOffset(80, 36) }),
-				UI.Slider({ Name = "Row", value = value, row = { title = "Volume", description = "Playback level" } }),
-				UI.Slider({ Name = "Fixed", value = value, AutomaticSize = engine.types.Enum.AutomaticSize.None }),
+				UI.Slider "Inline" { value = value, Size = engine.types.UDim2.fromOffset(80, 36) },
+				UI.Slider "Row" { value = value, row = { title = "Volume", description = "Playback level" } },
+				UI.Slider "Fixed" { value = value, AutomaticSize = engine.types.Enum.AutomaticSize.None },
 			})
 		end)
 		local inline, row, fixed = find(node, "Inline"), find(node, "Row"), find(node, "Fixed")
@@ -895,7 +895,7 @@ t.describe("native input controls", function()
 	t.it("removes keyed chips toward the next then previous native target and caller fallback", function()
 		local items, gui, fallback = Compose.cell({ "A", "B", "C" }), nil, nil
 		local node, stop = world(function(UI, engine, runtime)
-			fallback = runtime.constructors.TextButton({ Name = "Fallback" })
+			fallback = runtime.constructors.TextButton "Fallback" {}
 			return runtime.constructors.Frame({
 				fallback,
 				Compose.keyed({
@@ -943,18 +943,17 @@ t.describe("native input controls", function()
 	t.it("does not steal focus after a delayed chip removal request", function()
 		local show, gui, fallback, other = Compose.cell(true), nil, nil, nil
 		local node, stop = world(function(UI, engine, runtime)
-			fallback = runtime.constructors.TextButton({ Name = "Fallback" })
-			other = runtime.constructors.TextButton({ Name = "Other" })
+			fallback = runtime.constructors.TextButton "Fallback" {}
+			other = runtime.constructors.TextButton "Other" {}
 			return runtime.constructors.Frame({
 				fallback,
 				other,
 				Compose.show(show, function()
-					return UI.Chip({
-						Name = "Delayed",
+					return UI.Chip "Delayed" {
 						label = "Delayed",
 						removeFocusFallback = fallback,
 						onRemove = function() end,
-					})
+					}
 				end),
 			})
 		end, function(engine)
@@ -1058,8 +1057,8 @@ t.describe("native input controls", function()
 		local firstEnabled = Compose.cell(false)
 		local node, stop, engine = world(function(UI, _, runtime)
 			return runtime.constructors.Frame({
-				UI.Button({ Name = "First", dialogAction = "default", enabled = firstEnabled }),
-				UI.Button({ Name = "Second", dialogAction = "default" }),
+				UI.Button "First" { dialogAction = "default", enabled = firstEnabled },
+				UI.Button "Second" { dialogAction = "default" },
 			})
 		end)
 		local contexts = {}
@@ -1146,14 +1145,13 @@ t.describe("native input controls", function()
 		local value, commits = Compose.cell("line one\nline two"), 0
 		local node, stop, engine = world(function(UI, _, runtime)
 			return runtime.constructors.Frame({
-				UI.TextInput({
-					Name = "Editor",
+				UI.TextInput "Editor" {
 					value = value,
 					multiline = true,
 					onCommit = function()
 						commits += 1
 					end,
-				}),
+				},
 			})
 		end)
 		local editor = find(node, "Editor")
@@ -1181,10 +1179,10 @@ t.describe("native input controls", function()
 	t.it("keeps composite control roots transparent instead of exposing native stock plates", function()
 		local node, stop = world(function(UI, _, runtime)
 			return runtime.constructors.Frame({
-				UI.Stepper({ Name = "Stepper", value = Compose.cell(0) }),
-				UI.Slider({ Name = "Slider", value = Compose.cell(0) }),
-				UI.Rating({ Name = "Rating", value = Compose.cell(0) }),
-				UI.LevelPicker({ Name = "Level", value = Compose.cell(0) }),
+				UI.Stepper "Stepper" { value = Compose.cell(0) },
+				UI.Slider "Slider" { value = Compose.cell(0) },
+				UI.Rating "Rating" { value = Compose.cell(0) },
+				UI.LevelPicker "Level" { value = Compose.cell(0) },
 			})
 		end)
 		for _, name in { "Stepper", "Slider", "Rating", "Level" } do
@@ -1198,21 +1196,19 @@ t.describe("native input controls", function()
 		local firstEnabled = Compose.cell(true)
 		local node, stop, engine = world(function(UI, _, runtime)
 			return runtime.constructors.Frame({
-				UI.Button({
-					Name = "First",
+				UI.Button "First" {
 					label = "First",
 					enabled = firstEnabled,
 					onActivate = function()
 						activated += 1
 					end,
-				}),
-				UI.Button({
-					Name = "Second",
+				},
+				UI.Button "Second" {
 					label = "Second",
 					onActivate = function()
 						activated += 10
 					end,
-				}),
+				},
 			})
 		end)
 		local first, second = find(node, "First"), find(node, "Second")
@@ -1263,20 +1259,18 @@ t.describe("native input controls", function()
 		local gui, firstCalls, secondCalls = nil, 0, 0
 		local node, stop = world(function(UI, _, runtime)
 			return runtime.constructors.Frame({
-				UI.Button({
-					Name = "First",
+				UI.Button "First" {
 					label = "First",
 					onActivate = function()
 						firstCalls += 1
 					end,
-				}),
-				UI.Button({
-					Name = "Second",
+				},
+				UI.Button "Second" {
 					label = "Second",
 					onActivate = function()
 						secondCalls += 1
 					end,
-				}),
+				},
 			})
 		end, function(engine)
 			gui = engine.new("GuiService")
@@ -1395,8 +1389,8 @@ t.describe("native input controls", function()
 		local enabled = Compose.cell(true)
 		local node, stop, engine = world(function(UI, _, runtime)
 			return runtime.constructors.Frame({
-				UI.Stepper({ Name = "Stepper", value = stepperValue, max = 10, enabled = enabled }),
-				UI.Slider({ Name = "Slider", value = sliderValue }),
+				UI.Stepper "Stepper" { value = stepperValue, max = 10, enabled = enabled },
+				UI.Slider "Slider" { value = sliderValue },
 			})
 		end, function(engine)
 			gui = engine.new("GuiService")

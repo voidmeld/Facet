@@ -11,12 +11,10 @@ function desktop.create(Facet: any, runtime: any, views: any, model: any, progre
 		for _, name in { "Discover", "Avatar", "Chat" } do
 			table.insert(tabs, { id = name, label = name, content = views[name] })
 		end
-		return Host.Frame({
-			Name = "Desktop",
+		return Host.Frame "Desktop" {
 			Size = UDim2.fromScale(1, 1),
 			BackgroundTransparency = 1,
-			UI.TabView({
-				Name = "Apps",
+			UI.TabView "Apps" {
 				selection = model.selectedTab,
 				tabs = tabs,
 				style = "sidebarAdaptable",
@@ -25,23 +23,22 @@ function desktop.create(Facet: any, runtime: any, views: any, model: any, progre
 				transition = { seconds = 0.18 },
 				retention = "top",
 				Size = UDim2.fromScale(1, 1),
-			}),
+			},
 			Compose.show(function(use)
 				return use(progress) < 1
 			end, function()
-				local veil = Host.Frame({
-					Name = "PresentationVeil",
+				local veil = Host.Frame "PresentationVeil" {
 					Size = UDim2.fromScale(1, 1),
 					ZIndex = 100,
 					BorderSizePixel = 0,
 					BackgroundTransparency = function(use)
 						return math.clamp((use(progress) - 0.45) / 0.55, 0, 1)
 					end,
-				})
+				}
 				veil:AddTag("facet-surface")
 				return veil
 			end),
-		})
+		}
 	end
 end
 return desktop

@@ -59,7 +59,7 @@ local function mount(name, kind)
 		if built.dispose then
 			Compose.cleanup(built.dispose)
 		end
-		return ctx.Host.ScreenGui({ Name = "DemoScreen", built.screen() })
+		return ctx.Host.ScreenGui "DemoScreen" { built.screen() }
 	end, target)
 	return built, node, function()
 		stop()

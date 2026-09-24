@@ -185,13 +185,12 @@ return {
 		end
 		rich.Clock = function()
 			return stack("ClockFull", {
-				UI.ProgressView({
-					Name = "TimerRing",
+				UI.ProgressView "TimerRing" {
 					value = roundLeft,
 					presentation = "circular",
 					diameter = 72,
 					Size = D2.fromOffset(72, 72),
-				}),
+				},
 				text("TimerText", function(use)
 					return timerText("full", use)
 				end, 26),
@@ -222,13 +221,12 @@ return {
 		rich.Health = function()
 			return stack("HealthFull", {
 				text("HealthLabel", copy.healthLabel),
-				UI.ProgressView({
-					Name = "HealthBar",
+				UI.ProgressView "HealthBar" {
 					value = health,
 					segments = 4,
 					trail = { delay = 0.2, duration = 0.3 },
 					Size = D2.new(1, 0, 0, 14),
-				}),
+				},
 				text("HealthNum", function(use)
 					return tostring(math.floor(use(health) * 100 + 0.5))
 				end, 22),
@@ -311,8 +309,7 @@ return {
 		end
 		return {
 			screen = function()
-				local body = Host.Frame({
-					Name = "HudBody",
+				local body = Host.Frame "HudBody" {
 					LayoutOrder = 5,
 					BackgroundTransparency = 1,
 					Size = D2.new(1, 0, 0, 0),
@@ -326,7 +323,7 @@ return {
 					lane("Left", { "Tasks", "Health", "Feed" }),
 					lane("Center", { "Clock" }),
 					lane("Right", { "Rail", "Readout", "Weapon", "Actions" }),
-				})
+				}
 				local connection = body:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 					bodySize:set(body.AbsoluteSize)
 				end)
@@ -334,8 +331,7 @@ return {
 					connection:Disconnect()
 				end)
 				bodySize:set(body.AbsoluteSize)
-				return Host.Frame({
-					Name = "HudScreen",
+				return Host.Frame "HudScreen" {
 					Size = D2.fromScale(1, 1),
 					BackgroundTransparency = 1,
 					Host.UIPadding({
@@ -345,15 +341,13 @@ return {
 						PaddingRight = D.new(0, 12),
 					}),
 					Host.UIListLayout({ Padding = D.new(0, 8), SortOrder = E.SortOrder.LayoutOrder }),
-					Host.Frame({
-						Name = "BrowserChrome",
+					Host.Frame "BrowserChrome" {
 						LayoutOrder = 1,
 						Visible = urlBar,
 						Size = D2.new(1, 0, 0, 64),
 						text("Address", copy.urlBarField, 16),
-					}),
-					Host.Frame({
-						Name = "Rounds",
+					},
+					Host.Frame "Rounds" {
 						LayoutOrder = 2,
 						Size = D2.new(1, 0, 0, 48),
 						BackgroundTransparency = 1,
@@ -362,15 +356,13 @@ return {
 							Padding = D.new(0, 8),
 							SortOrder = E.SortOrder.LayoutOrder,
 						}),
-						UI.Menu({
-							Name = "HudActions",
-							trigger = UI.Button({
-								Name = "HudActionsTrigger",
+						UI.Menu "HudActions" {
+							trigger = UI.Button "HudActionsTrigger" {
 								label = "",
 								name = copy.round1,
 								icon = "menu",
 								Size = D2.fromOffset(44, 44),
-							}),
+							},
 							AutomaticSize = E.AutomaticSize.None,
 							Size = D2.fromOffset(44, 44),
 							items = {
@@ -378,9 +370,8 @@ return {
 								{ id = "heal", label = "Restore health", onSelect = steps.heal },
 								{ id = "notice", label = "Show notification", onSelect = steps.notify },
 							},
-						}),
-						UI.Button({
-							Name = "Report",
+						},
+						UI.Button "Report" {
 							label = "",
 							name = copy.round2,
 							icon = "more",
@@ -389,46 +380,40 @@ return {
 							onActivate = function()
 								reportOpen:set(true)
 							end,
-						}),
-						UI.Button({
-							Name = "Overflow",
+						},
+						UI.Button "Overflow" {
 							label = "",
 							name = copy.round3,
 							icon = "more",
 							shape = "circle",
 							Size = D2.fromOffset(44, 44),
 							onActivate = steps.openOverflow,
-						}),
-						UI.Label({
-							Name = "Objective",
+						},
+						UI.Label "Objective" {
 							label = function(use)
 								return if use(offer).width < 360 then copy.objectiveShort else copy.objective
 							end,
 							TextWrapped = true,
 							Size = D2.new(1, -156, 1, 0),
-						}),
-					}),
-					Host.Frame({
-						Name = "ChromeControls",
+						},
+					},
+					Host.Frame "ChromeControls" {
 						LayoutOrder = 3,
 						BackgroundTransparency = 1,
 						Size = D2.new(1, 0, 0, 40),
 						Host.UIListLayout({ FillDirection = E.FillDirection.Horizontal, Padding = D.new(0, 8) }),
-						UI.Toggle({
-							Name = "UrlBar",
+						UI.Toggle "UrlBar" {
 							label = copy.urlBarOn,
 							value = urlBar,
 							Size = D2.new(0.5, -4, 1, 0),
-						}),
-						UI.Button({
-							Name = "Tick",
+						},
+						UI.Button "Tick" {
 							label = "Advance clock",
 							onActivate = steps.tickRound,
 							Size = D2.new(0.5, -4, 1, 0),
-						}),
-					}),
-					Host.Frame({
-						Name = "Notice",
+						},
+					},
+					Host.Frame "Notice" {
 						LayoutOrder = 4,
 						Visible = function(use)
 							return use(notice) ~= nil
@@ -441,16 +426,14 @@ return {
 							onActivate = steps.clearNotice,
 							Size = D2.fromScale(1, 1),
 						}),
-					}),
+					},
 					body,
-					UI.Sheet({
-						Name = "HudOverflow",
+					UI.Sheet "HudOverflow" {
 						isPresented = overflow,
 						detent = Compose.cell("large"),
 						title = copy.overflowTitle,
 						content = function()
-							return Host.ScrollingFrame({
-								Name = "OverflowBody",
+							return Host.ScrollingFrame "OverflowBody" {
 								BackgroundTransparency = 1,
 								Size = D2.fromScale(1, 1),
 								CanvasSize = D2.fromOffset(0, 0),
@@ -471,17 +454,16 @@ return {
 										return node
 									end,
 								}),
-							})
+							}
 						end,
-					}),
-					UI.Alert({
-						Name = "ReportDialog",
+					},
+					UI.Alert "ReportDialog" {
 						isPresented = reportOpen,
 						title = "Round report",
 						message = "Your report was recorded.",
 						actions = { { id = "close", label = "Done", role = "cancel" } },
-					}),
-				})
+					},
+				}
 			end,
 			steps = steps,
 			model = {

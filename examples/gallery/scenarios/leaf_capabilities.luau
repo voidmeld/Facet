@@ -35,8 +35,7 @@ return {
 			end
 
 			local board = {
-				UI.Label({
-					Name = "BoardNote",
+				UI.Label "BoardNote" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -45,7 +44,7 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 			}
 			for row = 1, 3 do
 				local tiles = {}
@@ -58,8 +57,7 @@ return {
 							BackgroundTransparency = 1,
 							Size = UDim2.new(0, 140, 0, 56),
 							AutomaticSize = Enum.AutomaticSize.Y,
-							UI.Label({
-								Name = "Label",
+							UI.Label "Label" {
 								BackgroundTransparency = 1,
 								BorderSizePixel = 0,
 								Size = UDim2.new(1, 0, 0, 0),
@@ -75,7 +73,7 @@ return {
 									PaddingLeft = UDim.new(0, 4),
 									PaddingRight = UDim.new(0, 4),
 								}),
-							}),
+							},
 						})
 					)
 				end
@@ -96,8 +94,7 @@ return {
 				)
 			end
 
-			return Host.Frame({
-				Name = "Body",
+			return Host.Frame "Body" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 0),
 				AutomaticSize = Enum.AutomaticSize.Y,
@@ -106,9 +103,7 @@ return {
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					Padding = UDim.new(0, 16),
 				}),
-				UI.Label({
-
-					Name = "Title",
+				UI.Label "Title" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -118,10 +113,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				Host.Frame({
-
-					Name = "Actions",
+				},
+				Host.Frame "Actions" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(0, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.XY,
@@ -151,10 +144,8 @@ return {
 							frozen:set(not frozen:peek())
 						end,
 					}),
-				}),
-				UI.Label({
-
-					Name = "MarkupHeading",
+				},
+				UI.Label "MarkupHeading" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -164,10 +155,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "Plain",
+				},
+				UI.Label "Plain" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -182,10 +171,8 @@ return {
 						PaddingLeft = UDim.new(0, 4),
 						PaddingRight = UDim.new(0, 4),
 					}),
-				}),
-				UI.Label({
-
-					Name = "Marked",
+				},
+				UI.Label "Marked" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -201,10 +188,8 @@ return {
 						PaddingLeft = UDim.new(0, 4),
 						PaddingRight = UDim.new(0, 4),
 					}),
-				}),
-				UI.Label({
-
-					Name = "Bold",
+				},
+				UI.Label "Bold" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -220,10 +205,8 @@ return {
 						PaddingLeft = UDim.new(0, 4),
 						PaddingRight = UDim.new(0, 4),
 					}),
-				}),
-				UI.Label({
-
-					Name = "Heavy",
+				},
+				UI.Label "Heavy" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -239,10 +222,8 @@ return {
 						PaddingLeft = UDim.new(0, 4),
 						PaddingRight = UDim.new(0, 4),
 					}),
-				}),
-				UI.Label({
-
-					Name = "Escaped",
+				},
+				UI.Label "Escaped" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -252,10 +233,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "Rtl",
+				},
+				UI.Label "Rtl" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -264,10 +243,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "CutHeading",
+				},
+				UI.Label "CutHeading" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -277,10 +254,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "CutEnd",
+				},
+				UI.Label "CutEnd" {
 					ref = function(node)
 						nodes.CutEnd = node
 					end,
@@ -294,10 +269,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "CutMiddle",
+				},
+				UI.Label "CutMiddle" {
 					ref = function(node)
 						nodes.CutMiddle = node
 					end,
@@ -311,10 +284,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "PictureHeading",
+				},
+				UI.Label "PictureHeading" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -324,10 +295,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				Host.Frame({
-
-					Name = "Pictures",
+				},
+				Host.Frame "Pictures" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(0, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.XY,
@@ -356,10 +325,8 @@ return {
 						Size = UDim2.new(0, 96, 0, 64),
 						Image = ART,
 					}),
-				}),
-				UI.Label({
-
-					Name = "BoardHeading",
+				},
+				UI.Label "BoardHeading" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -369,7 +336,7 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 				(function()
 					local node = Host.ScrollingFrame({
 						LayoutOrder = 16,
@@ -399,14 +366,13 @@ return {
 					nodes.Board = node
 					return node
 				end)(),
-			})
+			}
 		end
 
 		local built: any
 		built = {
 			screen = function()
-				return Host.Frame({
-					Name = "LeafCapabilities",
+				return Host.Frame "LeafCapabilities" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					Host.UIPadding({
@@ -415,16 +381,15 @@ return {
 						PaddingLeft = UDim.new(0, 16),
 						PaddingRight = UDim.new(0, 16),
 					}),
-					Host.ScrollingFrame({
-						Name = "Content",
+					Host.ScrollingFrame "Content" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						AutomaticCanvasSize = Enum.AutomaticSize.Y,
 						CanvasSize = UDim2.new(),
 						ScrollBarThickness = 6,
 						Page(),
-					}),
-				})
+					},
+				}
 			end,
 			steps = {
 

@@ -160,13 +160,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					Compose.show(function(use: Compose.Use)
 						return read(spec.appearance, use) == "status"
 					end, function()
-						return UI.StatusIndicator({
-							Name = "Status",
+						return UI.StatusIndicator "Status" {
 							status = spec.status,
 							diameter = 10,
 							Position = D2.new(0, 0, 0.5, 0),
 							AnchorPoint = V2.new(0, 0.5),
-						})
+						}
 					end),
 				}
 			end, node)
@@ -256,13 +255,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					return use(form) == "ring"
 				end, function()
 					return ctx.styled(
-						Host.Frame({
-							Name = "Center",
+						Host.Frame "Center" {
 							Size = D2.new(1, -4, 1, -4),
 							Position = D2.fromOffset(2, 2),
 							BorderSizePixel = 0,
 							Host.UICorner({ CornerRadius = D.new(1, 0) }),
-						}),
+						},
 						"surface"
 					)
 				end),
@@ -281,12 +279,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			table.insert(
 				native,
 				ctx.styled(
-					Host.UIStroke({
-						Name = "Cutout",
+					Host.UIStroke "Cutout" {
 						ApplyStrokeMode = E.ApplyStrokeMode.Border,
 						BorderStrokePosition = E.BorderStrokePosition.Inner,
 						Thickness = 1,
-					}),
+					},
 					"cutout"
 				)
 			)
@@ -404,8 +401,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				table.insert(
 					track,
 					ctx.styled(
-						Host.Frame({
-							Name = "Trail",
+						Host.Frame "Trail" {
 							BackgroundTransparency = 0.6,
 							BorderSizePixel = 0,
 							ZIndex = 0,
@@ -425,7 +421,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 									then (if vertical(use) then D2.fromScale(0, 1) else D2.fromScale(1, 0))
 									else D2.fromScale(0, 0)
 							end,
-						}),
+						},
 						"fill"
 					)
 				)
@@ -619,8 +615,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 						return D2.new(0.5, 0, 0, if use(centered) then diameter(use) / 2 else diameter(use) + 8)
 					end,
 				})
-				content = Host.Frame({
-					Name = "Gauge",
+				content = Host.Frame "Gauge" {
 					BackgroundTransparency = 1,
 					ClipsDescendants = false,
 					Size = function(use: Compose.Use)
@@ -632,7 +627,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					end,
 					content,
 					readout,
-				})
+				}
 				readout = nil
 			end
 		end
@@ -704,8 +699,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 						then D2.fromOffset(pixels, pixels)
 						else D2.new(if count > 1 and index == count then 0.6 else 1, 0, 0, pixels)
 				end,
-				Host.UIGradient({
-					Name = "Shimmer",
+				Host.UIGradient "Shimmer" {
 					Enabled = function(use: Compose.Use)
 						return not read(ctx.config.reducedMotion, use)
 					end,
@@ -717,7 +711,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 						types.NumberSequenceKeypoint.new(0.5, 0),
 						types.NumberSequenceKeypoint.new(1, 0.4),
 					}),
-				}),
+				},
 			}
 			if form == "circle" then
 				table.insert(native, Host.UICorner({ CornerRadius = D.new(1, 0) }))
@@ -990,8 +984,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end
 		if spec.presence and spec.presenceMark ~= false and spec.form ~= "icon" then
 			runtime.mount(function()
-				return UI.StatusIndicator({
-					Name = "Presence",
+				return UI.StatusIndicator "Presence" {
 					diameter = 12,
 					cutout = true,
 					Visible = function(use: Compose.Use)
@@ -1009,7 +1002,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 							use
 						)] or "neutral"
 					end,
-				})
+				}
 			end, root)
 		end
 		return root
@@ -1154,7 +1147,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end)
 
 	UI.Stage = ctx.construct(function(spec: Media.StageProps): ViewportFrame
-		local world = Host.WorldModel({ Name = "World" })
+		local world = Host.WorldModel "World" {}
 		local externalCamera = spec.camera
 			and (
 				typeof(spec.camera) == "Instance"
@@ -1166,12 +1159,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			)
 		local camera = if externalCamera
 			then spec.camera :: Camera
-			else Host.Camera({
-				Name = "Camera",
+			else Host.Camera "Camera" {
 				FieldOfView = bind(spec.fieldOfView, 45),
 				CFrame = (spec.camera :: Types.Value<CFrame>?)
 					or types.CFrame.lookAt(types.Vector3.new(0, 2, 8), types.Vector3.new(0, 0, 0)),
-			})
+			}
 		local native = ctx.props(
 			spec,
 			{ "content", "camera", "fieldOfView" },

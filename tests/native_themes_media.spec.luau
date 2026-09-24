@@ -328,7 +328,7 @@ t.describe("native themes and media", function()
 			stage = UI.Stage({
 				content = function(sceneRuntime, world)
 					return sceneRuntime.mount(function()
-						return sceneRuntime.constructors.Part({ Name = "Model" })
+						return sceneRuntime.constructors.Part "Model" {}
 					end, world)
 				end,
 			})

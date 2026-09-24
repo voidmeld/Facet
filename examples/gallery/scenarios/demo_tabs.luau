@@ -43,24 +43,22 @@ return function(ctx: any, id: string, groups: { any })
 			accessories = if outer
 				then {
 					head = function()
-						return UI.Button({
-							Name = "UseTopTabs",
+						return UI.Button "UseTopTabs" {
 							label = "Use top tabs",
 							Size = UDim2.new(1, 0, 0, 40),
 							onActivate = function()
 								preference:set("topBar")
 							end,
-						})
+						}
 					end,
 					trailing = function()
-						return UI.Button({
-							Name = "UseSidebar",
+						return UI.Button "UseSidebar" {
 							label = "Use sidebar",
 							Size = UDim2.fromOffset(128, 40),
 							onActivate = function()
 								preference:set("sidebar")
 							end,
-						})
+						}
 					end,
 				}
 				else nil,

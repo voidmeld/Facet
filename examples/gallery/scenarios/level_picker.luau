@@ -143,8 +143,7 @@ return {
 		local function screen()
 			local page: { any } = {
 
-				UI.Label({
-					Name = "Title",
+				UI.Label "Title" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -154,9 +153,8 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-					Name = "Intro",
+				},
+				UI.Label "Intro" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -166,15 +164,14 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 			}
 			for _, node in rows() do
 				table.insert(page, node)
 			end
 			table.insert(
 				page,
-				Host.Frame({
-					Name = "Readout",
+				Host.Frame "Readout" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -215,12 +212,11 @@ return {
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					}),
-				})
+				}
 			)
 			table.insert(
 				page,
-				UI.Label({
-					Name = "Note",
+				UI.Label "Note" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -230,11 +226,10 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				})
+				}
 			)
 
-			return Host.Frame({
-				Name = "LevelPickerDemo",
+			return Host.Frame "LevelPickerDemo" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -243,8 +238,7 @@ return {
 					PaddingLeft = UDim.new(0, 12),
 					PaddingRight = UDim.new(0, 12),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					Size = UDim2.new(1, 0, 0, 0),
 					BackgroundTransparency = 1,
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -255,8 +249,8 @@ return {
 						Padding = UDim.new(0, 8),
 					}),
 					table.unpack(page),
-				}),
-			})
+				},
+			}
 		end
 
 		return {

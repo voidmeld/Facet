@@ -42,8 +42,7 @@ return {
 			status:set(copy.status)
 		end
 		local function Briefing()
-			return Host.Frame({
-				Name = "Sheet",
+			return Host.Frame "Sheet" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -52,8 +51,7 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -105,16 +103,14 @@ return {
 						label = copy.open,
 						onActivate = open,
 					}),
-				}),
-				UI.Sheet({
-					Name = "Briefing",
+				},
+				UI.Sheet "Briefing" {
 					title = copy.briefing,
 					isPresented = presented,
 					detent = detent,
 					detents = { { id = "compact", fraction = 0.35 }, "medium", "large" },
 					content = function()
-						return Host.Frame({
-							Name = "Details",
+						return Host.Frame "Details" {
 							BackgroundTransparency = 1,
 							Size = UDim2.new(1, 0, 0, 0),
 							AutomaticSize = Enum.AutomaticSize.Y,
@@ -174,10 +170,10 @@ return {
 									close()
 								end,
 							}),
-						})
+						}
 					end,
-				}),
-			})
+				},
+			}
 		end
 		return {
 			screen = Briefing,

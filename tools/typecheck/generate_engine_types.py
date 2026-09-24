@@ -100,7 +100,7 @@ def generate(definitions, schema):
     for name in CLASSES:
         if name in {'GuiObject', 'GuiButton'}:
             continue
-        result.append(f'\t{name}: ({name}NativeProps) -> {name},')
+        result.append(f'\t{name}: Constructor<{name}NativeProps, {name}>,')
     result += ['}', '', 'return {}', '']
     formatted = subprocess.run(['stylua', '-'], input='\n'.join(result), text=True, capture_output=True, check=True).stdout
     return formatted, ordered

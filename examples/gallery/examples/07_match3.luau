@@ -390,15 +390,13 @@ local function build(ctx: any)
 			Position = function(use)
 				return if use(reducedMotion) then use(targetPosition) else use(movingPosition)
 			end,
-			Host.ImageLabel({
-				Name = "img",
+			Host.ImageLabel "img" {
 				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				Size = UDim2.new(1, 0, 1, 0),
 				Image = image,
-			}),
-			UI.Button({
-				Name = "hit",
+			},
+			UI.Button "hit" {
 				ref = function(node)
 					tile.hit = node
 				end,
@@ -409,15 +407,14 @@ local function build(ctx: any)
 				label = fallbackLabel,
 				selected = picked,
 				TextSize = 16,
-				Host.UIStroke({
-					Name = "Selection",
+				Host.UIStroke "Selection" {
 					Thickness = 3,
 					Color = Color3.new(1, 1, 1),
 					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 					Transparency = function(use)
 						return if use(picked) then 0 else 1
 					end,
-				}),
+				},
 				onActivate = function(input)
 					if
 						input
@@ -430,8 +427,7 @@ local function build(ctx: any)
 					end
 					activateTile(tile)
 				end,
-				Host.UIDragDetector({
-					Name = "SwapDrag",
+				Host.UIDragDetector "SwapDrag" {
 					ResponseStyle = Enum.UIDragDetectorResponseStyle.CustomOffset,
 					Enabled = function(use)
 						return not use(resolving)
@@ -474,13 +470,12 @@ local function build(ctx: any)
 							end
 						end
 					end,
-				}),
-			}),
+				},
+			},
 		})
 	end
 	local function boardView()
-		local node = Host.Frame({
-			Name = "board",
+		local node = Host.Frame "board" {
 			BackgroundTransparency = 1,
 			Size = function(use)
 				return UDim2.new(0, COLS * 48, 0, ROWS * 48)
@@ -492,7 +487,7 @@ local function build(ctx: any)
 				end,
 				render = TileView,
 			}),
-		})
+		}
 		syncSelection()
 		return node
 	end
@@ -775,8 +770,7 @@ local function build(ctx: any)
 		local movesText = Compose.formula(function(use)
 			return `{use(moves)} swaps`
 		end)
-		return Host.Frame({
-			Name = "Match3",
+		return Host.Frame "Match3" {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			Host.UIPadding({
@@ -785,8 +779,7 @@ local function build(ctx: any)
 				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 16),
 			}),
-			Host.ScrollingFrame({
-				Name = "Page",
+			Host.ScrollingFrame "Page" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -797,9 +790,7 @@ local function build(ctx: any)
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					Padding = UDim.new(0, 8),
 				}),
-				UI.Label({
-
-					Name = "Title",
+				UI.Label "Title" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -809,10 +800,8 @@ local function build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				UI.Label({
-
-					Name = "Hint",
+				},
+				UI.Label "Hint" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -822,10 +811,8 @@ local function build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				Host.Frame({
-
-					Name = "Stats",
+				},
+				Host.Frame "Stats" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(0, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.XY,
@@ -861,11 +848,9 @@ local function build(ctx: any)
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
 					}),
-				}),
+				},
 				boardView(),
-				UI.Label({
-
-					Name = "ArtStatus",
+				UI.Label "ArtStatus" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -875,10 +860,8 @@ local function build(ctx: any)
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
-				Host.Frame({
-
-					Name = "Art",
+				},
+				Host.Frame "Art" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
@@ -910,15 +893,13 @@ local function build(ctx: any)
 						label = "Fail a load",
 						onActivate = failArt,
 					}),
-				}),
-				UI.Button({
-
-					Name = "Reset",
+				},
+				UI.Button "Reset" {
 					label = "New board",
 					onActivate = reset,
-				}),
-			}),
-		})
+				},
+			},
+		}
 	end
 	local function tilePath(id: number): string
 		return `/Match3/Page/board/tiles/tile{id}`

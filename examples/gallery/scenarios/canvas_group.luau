@@ -42,8 +42,7 @@ return {
 					})
 				)
 			end
-			return Host.ScrollingFrame({
-				Name = "CanvasGroupDemo",
+			return Host.ScrollingFrame "CanvasGroupDemo" {
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -101,7 +100,7 @@ return {
 					GroupTransparency = fade,
 					UI.Label({ label = "Compose owns the tween; CanvasGroup owns the compositing." }),
 				}),
-			})
+			}
 		end
 		return {
 			screen = screen,

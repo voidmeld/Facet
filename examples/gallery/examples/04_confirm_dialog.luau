@@ -50,8 +50,7 @@ function example.build(ctx: any)
 	end
 	built.openDialog, built.restore = openDialog, restore
 	function built.screen()
-		return Host.Frame({
-			Name = "DangerScreen",
+		return Host.Frame "DangerScreen" {
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
 			Host.UIPadding({
@@ -60,8 +59,7 @@ function example.build(ctx: any)
 				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 16),
 			}),
-			Host.ScrollingFrame({
-				Name = "Page",
+			Host.ScrollingFrame "Page" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -113,9 +111,8 @@ function example.build(ctx: any)
 					label = "Restore the save",
 					onActivate = restore,
 				}),
-			}),
-			UI.Alert({
-				Name = "ConfirmDialog",
+			},
+			UI.Alert "ConfirmDialog" {
 				title = "Delete this save?",
 				severity = "critical",
 				message = "This cannot be undone.",
@@ -142,8 +139,8 @@ function example.build(ctx: any)
 						end,
 					},
 				},
-			}),
-		})
+			},
+		}
 	end
 	return built
 end

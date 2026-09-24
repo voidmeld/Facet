@@ -118,8 +118,7 @@ function motion.create(ctx, name, _dataset)
 				state.beatIndex = reached
 			end)
 			local height = math.max(120, math.floor(ctx.viewport.h * 0.5))
-			state.list = UI.VirtualList({
-				Name = "Roster",
+			state.list = UI.VirtualList "Roster" {
 				from = state.rows,
 				key = function(item)
 					return item.id
@@ -135,7 +134,7 @@ function motion.create(ctx, name, _dataset)
 						return use(current).name
 					end, 15, "Name")
 				end,
-			})
+			}
 			if ctx.engine then
 				state.list.AbsoluteSize = types.Vector2.new(ctx.viewport.w, height)
 				state.list.AbsoluteWindowSize = types.Vector2.new(ctx.viewport.w, height)
@@ -204,17 +203,15 @@ function motion.create(ctx, name, _dataset)
 				state.entry:restart()
 			end
 		end)
-		state.field = UI.TextInput({ Name = "Name", value = Compose.cell(""), invalid = state.invalid })
-		state.button = UI.Button({
-			Name = "Go",
+		state.field = UI.TextInput "Name" { value = Compose.cell(""), invalid = state.invalid }
+		state.button = UI.Button "Go" {
 			label = "Go",
 			pop = true,
 			onActivate = function()
 				state.pops += 1
 			end,
-		})
-		state.disclosure = UI.DisclosureGroup({
-			Name = "Adv",
+		}
+		state.disclosure = UI.DisclosureGroup "Adv" {
 			label = "Advanced",
 			expanded = state.expanded,
 			onToggle = function(value)
@@ -223,9 +220,8 @@ function motion.create(ctx, name, _dataset)
 			content = function()
 				return label("body", 14, "Body")
 			end,
-		})
-		local list = Host.Frame({
-			Name = "List",
+		}
+		local list = Host.Frame "List" {
 			Size = D2.new(1, 0, 0, 600),
 			BackgroundTransparency = 1,
 			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder }),
@@ -254,7 +250,7 @@ function motion.create(ctx, name, _dataset)
 					return group
 				end,
 			}),
-		})
+		}
 		return screen({ state.field, state.button, state.disclosure, list })
 	end
 	function state.step()

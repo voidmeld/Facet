@@ -224,9 +224,7 @@ return {
 					PaddingRight = UDim.new(0, 8),
 				}),
 				menu,
-				UI.Label({
-
-					Name = "Routes",
+				UI.Label "Routes" {
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 0),
@@ -236,7 +234,7 @@ return {
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
-				}),
+				},
 			})
 		end
 
@@ -296,8 +294,7 @@ return {
 			for _, entry in CARDS do
 				table.insert(cardRow, card(entry, conditions))
 			end
-			return Host.Frame({
-				Name = "MenuDemo",
+			return Host.Frame "MenuDemo" {
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				Host.UIPadding({
@@ -306,8 +303,7 @@ return {
 					PaddingLeft = UDim.new(0, 4),
 					PaddingRight = UDim.new(0, 4),
 				}),
-				Host.ScrollingFrame({
-					Name = "Page",
+				Host.ScrollingFrame "Page" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 1, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -318,9 +314,7 @@ return {
 						SortOrder = Enum.SortOrder.LayoutOrder,
 						Padding = UDim.new(0, 4),
 					}),
-					UI.Label({
-
-						Name = "Title",
+					UI.Label "Title" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -330,10 +324,8 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-					UI.Label({
-
-						Name = "Intro",
+					},
+					UI.Label "Intro" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -343,10 +335,8 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
-					Host.Frame({
-
-						Name = "Cards",
+					},
+					Host.Frame "Cards" {
 						Size = UDim2.new(1, 0, 0, 0),
 						BackgroundTransparency = 1,
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -356,10 +346,8 @@ return {
 							Padding = UDim.new(0, 8),
 						}),
 						table.unpack(cardRow),
-					}),
-					Host.Frame({
-
-						Name = "IdiomBox",
+					},
+					Host.Frame "IdiomBox" {
 						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
@@ -399,14 +387,12 @@ return {
 							TextYAlignment = Enum.TextYAlignment.Top,
 							TextXAlignment = Enum.TextXAlignment.Left,
 						}),
-					}),
+					},
 					readout("Opened", COPY.openedTitle, lastOpen),
 					readout("State", COPY.stateTitle, stateLine),
 					readout("Counts", COPY.countsTitle, countsLine),
 					readout("Ran", COPY.ranTitle, ran),
-					UI.Label({
-
-						Name = "DepthNote",
+					UI.Label "DepthNote" {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(1, 0, 0, 0),
@@ -416,10 +402,10 @@ return {
 						TextWrapped = true,
 						TextYAlignment = Enum.TextYAlignment.Top,
 						TextXAlignment = Enum.TextXAlignment.Left,
-					}),
+					},
 					readout("Honest", COPY.honestTitle, COPY.honest),
-				}),
-			})
+				},
+			}
 		end
 
 		return {

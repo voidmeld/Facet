@@ -301,8 +301,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				setOpen(nil)
 			end
 		end)
-		local contentMenu = UI.Menu({
-			Name = "ContextActions",
+		local contentMenu = UI.Menu "ContextActions" {
 			trigger = content,
 			items = menuItems,
 			isPresented = menuOpen,
@@ -312,15 +311,14 @@ return function(ctx: Types.Context, UI: Controls): ()
 			onOpen = function()
 				setOpen(nil)
 			end,
-		})
+		}
 		root = Host.Frame(ctx.props(spec, behavior, {
 			Size = D2.new(1, 0, 0, 44),
 			BackgroundTransparency = 1,
 			ClipsDescendants = true,
 			tray("leading") :: ComposeTypes.Child,
 			tray("trailing"),
-			Host.Frame({
-				Name = "Content",
+			Host.Frame "Content" {
 				Size = function(use: ComposeTypes.Use)
 					return D2.new(1, if read(spec.editing, use) then -use(editWidth) else 0, 1, 0)
 				end,
@@ -330,7 +328,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 					return D2.fromOffset(gutter + paintedOffset(use), 0)
 				end,
 				contentMenu,
-			}),
+			},
 			Host.UIDragDetector({
 				Enabled = function(use: ComposeTypes.Use)
 					return use(committing) == nil

@@ -56,7 +56,7 @@ t.describe("native stress invariants", function()
 			local shown = Compose.cell(false)
 			local stop = runtime.mount(function()
 				return runtime.constructors.Frame({
-					UI.Button({ Name = "Base", label = "Open" }),
+					UI.Button "Base" { label = "Open" },
 					UI.Alert({ isPresented = shown, title = "Confirm", actions = { { id = "ok", label = "OK" } } }),
 				})
 			end, root)
@@ -129,12 +129,11 @@ t.describe("native stress invariants", function()
 					overscan = 0,
 					status = status,
 					render = function(current)
-						return UI.Button({
-							Name = "Value",
+						return UI.Button "Value" {
 							label = function(use)
 								return use(current).label
 							end,
-						})
+						}
 					end,
 				})
 			end, root)

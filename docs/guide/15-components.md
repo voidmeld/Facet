@@ -6,7 +6,8 @@ A component is a function that returns a native Instance.
 - Make native objects with `Host = runtime.constructors`.
 - Make both inside a Compose owner. This is usually the function that you give
   to `runtime.mount`.
-- Use constructor names or `Name`, numeric children and native property names.
+- Put a semantic name directly after the constructor: `Host.Frame "Toolbar" { ... }` or `UI.Button "Save" { ... }`. Do not write `Name = "..."` for a fixed name. Use `Name` only when the name is computed.
+- Use numeric children and native property names.
 
 ## State and requests
 

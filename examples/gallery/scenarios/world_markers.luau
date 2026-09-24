@@ -56,8 +56,7 @@ return {
 						onActivate = function()
 							selected:set(geometry:peek()[index].label)
 						end,
-						Host.ImageLabel({
-							Name = "Direction",
+						Host.ImageLabel "Direction" {
 							BackgroundTransparency = 1,
 							Size = D2.fromOffset(16, 16),
 							Position = D2.new(1, -18, 0.5, -8),
@@ -66,16 +65,14 @@ return {
 							Visible = function(use)
 								return use(geometry)[index].edge
 							end,
-						}),
+						},
 					})
 				)
 			end
-			local map = Host.Frame({
-				Name = "Map",
+			local map = Host.Frame "Map" {
 				Size = D2.new(1, 0, 0, 360),
 				BackgroundTransparency = 1,
-				Host.Frame({
-					Name = "HudReservation",
+				Host.Frame "HudReservation" {
 					Size = D2.new(1, 0, 0, 56),
 					BackgroundColor3 = C3.fromRGB(32, 45, 65),
 					BorderSizePixel = 0,
@@ -84,9 +81,9 @@ return {
 						Size = D2.fromScale(1, 1),
 						TextWrapped = true,
 					}),
-				}),
+				},
 				table.unpack(pins),
-			})
+			}
 			local function measure()
 				if map.AbsoluteSize.X > 0 then
 					size:set(map.AbsoluteSize)
@@ -97,8 +94,7 @@ return {
 			Compose.cleanup(function()
 				connection:Disconnect()
 			end)
-			return Host.ScrollingFrame({
-				Name = "WorldMarkers",
+			return Host.ScrollingFrame "WorldMarkers" {
 				Size = D2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				AutomaticCanvasSize = E.AutomaticSize.Y,
@@ -106,11 +102,11 @@ return {
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 12) }),
 				UI.Label({ Text = "A · Objective   B · Ally   C · Supplies", TextWrapped = true }),
 				map,
-				UI.Toggle({ Name = "Move", label = "Move objective offscreen", value = shifted }),
-				UI.Toggle({ Name = "Crowd", label = "Bring markers together", value = crowded }),
-				UI.Toggle({ Name = "Hide", label = "Occlude supplies", value = hidden }),
-				UI.Label({ Name = "Selected", Text = selected, TextWrapped = true }),
-			})
+				UI.Toggle "Move" { label = "Move objective offscreen", value = shifted },
+				UI.Toggle "Crowd" { label = "Bring markers together", value = crowded },
+				UI.Toggle "Hide" { label = "Occlude supplies", value = hidden },
+				UI.Label "Selected" { Text = selected, TextWrapped = true },
+			}
 		end
 		return {
 			screen = screen,

@@ -14,13 +14,12 @@ return {
 			return if wide(use) then UDim2.new(0.5, -12, 0, 0) else UDim2.new(1, 0, 0, 0)
 		end
 		local function divider()
-			return Host.Frame({
-				Name = "Divider",
+			return Host.Frame "Divider" {
 				Size = UDim2.new(1, 0, 0, 1),
 				BackgroundColor3 = Color3.fromRGB(112, 120, 135),
 				BackgroundTransparency = 0.6,
 				BorderSizePixel = 0,
-			})
+			}
 		end
 		local function label(name, text, role)
 			return UI.Label({
@@ -66,25 +65,22 @@ return {
 					Name = "Tile" .. i,
 					LayoutOrder = i,
 					Size = UDim2.new(0.25, -6, 0, 44),
-					UI.Badge({
-						Name = "Count",
+					UI.Badge "Count" {
 						label = count,
 						Size = UDim2.fromOffset(28, 28),
 						AnchorPoint = Vector2.new(1, 0),
 						Position = UDim2.new(1, -6, 0, 6),
-					}),
+					},
 				})
 				tile:AddTag("facet-control")
 				table.insert(tiles, tile)
 			end
-			local media = Host.Frame({
-				Name = "Media",
+			local media = Host.Frame "Media" {
 				Size = UDim2.new(1, 0, 0, 0),
 				Host.UIAspectRatioConstraint({ AspectRatio = 16 / 9, DominantAxis = Enum.DominantAxis.Width }),
-			})
+			}
 			media:AddTag("facet-panel")
-			return Host.Frame({
-				Name = "AdaptiveScreen",
+			return Host.Frame "AdaptiveScreen" {
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 				Host.UIPadding({
@@ -93,29 +89,25 @@ return {
 					PaddingLeft = UDim.new(0, 16),
 					PaddingRight = UDim.new(0, 16),
 				}),
-				Host.ScrollingFrame({
-					Name = "BodyScroll",
+				Host.ScrollingFrame "BodyScroll" {
 					Size = UDim2.new(1, 0, 1, -60),
 					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 					CanvasSize = UDim2.new(),
 					ScrollBarThickness = 6,
-					Host.Frame({
-						Name = "Body",
+					Host.Frame "Body" {
 						Size = UDim2.new(1, 0, 0, 0),
 						AutomaticSize = Enum.AutomaticSize.Y,
 						BackgroundTransparency = 1,
-						Host.UIListLayout({
-							Name = "Columns",
+						Host.UIListLayout "Columns" {
 							FillDirection = function(use)
 								return if wide(use) then Enum.FillDirection.Horizontal else Enum.FillDirection.Vertical
 							end,
 							Padding = UDim.new(0, 24),
 							SortOrder = Enum.SortOrder.LayoutOrder,
-						}),
-						Host.Frame({
-							Name = "Settings",
+						},
+						Host.Frame "Settings" {
 							Size = columnSize,
 							AutomaticSize = Enum.AutomaticSize.Y,
 							BackgroundTransparency = 1,
@@ -123,27 +115,21 @@ return {
 							Host.UIListLayout({ Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder }),
 							label("Heading", "Settings", "heading"),
 							divider(),
-							UI.Stepper({
-
-								Name = "Volume",
+							UI.Stepper "Volume" {
 								label = "Volume",
 								value = volume,
 								min = 0,
 								max = 10,
 								step = 1,
-							}),
-							UI.Slider({
-
-								Name = "Brightness",
+							},
+							UI.Slider "Brightness" {
 								label = "Brightness",
 								value = brightness,
 								min = 0,
 								max = 100,
 								step = 5,
-							}),
-							UI.Picker({
-
-								Name = "Quality",
+							},
+							UI.Picker "Quality" {
 								label = "Quality",
 								selected = quality,
 								options = {
@@ -151,33 +137,27 @@ return {
 									{ value = "balanced", label = "Balanced" },
 									{ value = "fidelity", label = "Fidelity" },
 								},
-							}),
+							},
 							divider(),
 							label("NavHeading", "Icon segments, and the vertical rail", "caption"),
-							UI.Picker({
-
-								Name = "NavPill",
+							UI.Picker "NavPill" {
 								selected = section,
 								options = navOptions,
 								style = "segmented",
 								iconOnly = true,
-							}),
-							Host.Frame({
-
-								Name = "NavRailRow",
+							},
+							Host.Frame "NavRailRow" {
 								Size = UDim2.new(1, 0, 0, 132),
 								BackgroundTransparency = 1,
-								UI.Picker({
-									Name = "NavRail",
+								UI.Picker "NavRail" {
 									selected = section,
 									options = navOptions,
 									style = "segmented",
 									axis = "y",
 									iconOnly = true,
 									Size = UDim2.fromOffset(52, 132),
-								}),
-								UI.Label({
-									Name = "NavReadout",
+								},
+								UI.Label "NavReadout" {
 									label = function(use)
 										return `Selected: {use(section)} — the pill and the rail share this selection.`
 									end,
@@ -186,12 +166,10 @@ return {
 									TextWrapped = true,
 									Position = UDim2.fromOffset(64, 0),
 									Size = UDim2.new(1, -64, 1, 0),
-								}),
-							}),
+								},
+							},
 							divider(),
-							UI.DisclosureGroup({
-
-								Name = "Advanced",
+							UI.DisclosureGroup "Advanced" {
 								label = "Advanced",
 								description = "Optional rendering and privacy settings",
 								icon = "settings",
@@ -199,8 +177,7 @@ return {
 								appearance = "divided",
 								expanded = advanced,
 								content = function()
-									return Host.Frame({
-										Name = "AdvancedBody",
+									return Host.Frame "AdvancedBody" {
 										Size = UDim2.new(1, 0, 0, 0),
 										AutomaticSize = Enum.AutomaticSize.Y,
 										BackgroundTransparency = 1,
@@ -224,12 +201,11 @@ return {
 											hint = "Send anonymous play statistics",
 											indicatorPosition = "leading",
 										}),
-									})
+									}
 								end,
-							}),
-						}),
-						Host.Frame({
-							Name = "Hud",
+							},
+						},
+						Host.Frame "Hud" {
 							Size = columnSize,
 							AutomaticSize = Enum.AutomaticSize.Y,
 							BackgroundTransparency = 1,
@@ -237,39 +213,32 @@ return {
 							Host.UIListLayout({ Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder }),
 							label("HudHeading", "Status", "heading"),
 							divider(),
-							Host.Frame({
-
-								Name = "Toolbar",
+							Host.Frame "Toolbar" {
 								Size = UDim2.new(1, 0, 0, 40),
 								BackgroundTransparency = 1,
-								UI.Button({
-									Name = "TbBack",
+								UI.Button "TbBack" {
 									label = "Back",
 									Size = UDim2.fromOffset(76, 40),
 									onActivate = noop,
-								}),
-								UI.Button({
-									Name = "TbPlay",
+								},
+								UI.Button "TbPlay" {
 									label = "Play",
 									Position = UDim2.fromOffset(84, 0),
 									Size = UDim2.fromOffset(80, 40),
 									onActivate = function()
 										progress:set(math.min(1, progress:peek() + 0.1))
 									end,
-								}),
-								UI.Button({
-									Name = "TbMore",
+								},
+								UI.Button "TbMore" {
 									label = "More",
 									icon = "more",
 									AnchorPoint = Vector2.new(1, 0),
 									Position = UDim2.fromScale(1, 0),
 									Size = UDim2.fromOffset(80, 40),
 									onActivate = noop,
-								}),
-							}),
-							Host.Frame({
-
-								Name = "CompactRow",
+								},
+							},
+							Host.Frame "CompactRow" {
 								Size = UDim2.new(1, 0, 0, 40),
 								BackgroundTransparency = 1,
 								Host.UIListLayout({
@@ -307,21 +276,17 @@ return {
 									Size = UDim2.fromOffset(52, 40),
 									onActivate = noop,
 								}),
-							}),
-							UI.ProgressView({
-
-								Name = "Download",
+							},
+							UI.ProgressView "Download" {
 								label = "Download",
 								value = progress,
 								showValue = true,
-							}),
+							},
 							label("SaveLabel", function(use)
 								return if use(saved) then "Settings saved." else "Save changes"
 							end),
 							media,
-							Host.Frame({
-
-								Name = "Stats",
+							Host.Frame "Stats" {
 								Size = UDim2.new(1, 0, 0, 0),
 								AutomaticSize = Enum.AutomaticSize.Y,
 								BackgroundTransparency = 1,
@@ -332,10 +297,8 @@ return {
 									CellPadding = UDim2.fromOffset(4, 4),
 								}),
 								table.unpack(stats),
-							}),
-							Host.Frame({
-
-								Name = "Tiles",
+							},
+							Host.Frame "Tiles" {
 								Size = UDim2.new(1, 0, 0, 44),
 								BackgroundTransparency = 1,
 								Host.UIListLayout({
@@ -344,12 +307,10 @@ return {
 									Padding = UDim.new(0, 8),
 								}),
 								table.unpack(tiles),
-							}),
+							},
 							divider(),
 							label("VocabHeading", "Layout vocabulary", "heading"),
-							Host.Frame({
-
-								Name = "Legend",
+							Host.Frame "Legend" {
 								Size = UDim2.new(1, 0, 0, 24),
 								BackgroundTransparency = 1,
 								Host.UIGridLayout({
@@ -360,10 +321,8 @@ return {
 								label("LegendLow", "Optional", "caption"),
 								label("LegendMid", "Useful", "caption"),
 								label("LegendHigh", "Essential", "caption"),
-							}),
-							Host.Frame({
-
-								Name = "Shrink",
+							},
+							Host.Frame "Shrink" {
 								Size = UDim2.new(1, 0, 0, 24),
 								BackgroundTransparency = 1,
 								Host.UIListLayout({
@@ -393,11 +352,9 @@ return {
 									BackgroundColor3 = Color3.fromRGB(85, 110, 155),
 									Host.UIFlexItem({ FlexMode = Enum.UIFlexMode.None }),
 								}),
-							}),
+							},
 							label("SpecTitle", "Row grid", "caption"),
-							Host.Frame({
-
-								Name = "Specs",
+							Host.Frame "Specs" {
 								Size = UDim2.new(1, 0, 0, 48),
 								BackgroundTransparency = 1,
 								Host.UIGridLayout({
@@ -409,12 +366,11 @@ return {
 								label("SpecAVal", "align", "caption"),
 								label("SpecBKey", "Span", "caption"),
 								label("SpecBVal", "the header", "caption"),
-							}),
-						}),
-					}),
-				}),
-				Host.Frame({
-					Name = "Actions",
+							},
+						},
+					},
+				},
+				Host.Frame "Actions" {
 					AnchorPoint = Vector2.new(0.5, 1),
 					Position = UDim2.fromScale(0.5, 1),
 					Size = UDim2.new(1, 0, 0, 44),
@@ -449,8 +405,8 @@ return {
 							reset()
 						end,
 					}),
-				}),
-			})
+				},
+			}
 		end
 		return {
 			screen = screen,

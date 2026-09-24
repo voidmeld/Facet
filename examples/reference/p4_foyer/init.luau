@@ -48,8 +48,7 @@ function Foyer.build(ctx)
 		end
 	end)
 	local function image(key, size)
-		return UI.AsyncImage({
-			Name = "Artwork",
+		return UI.AsyncImage "Artwork" {
 			source = key,
 			Size = size or D2.new(1, 0, 0, 140),
 			failureLabel = "Artwork unavailable",
@@ -61,7 +60,7 @@ function Foyer.build(ctx)
 					reject("scripted-failure")
 				end
 			end,
-		})
+		}
 	end
 	local function tile(item)
 		return view.column(item.id, {
@@ -74,8 +73,7 @@ function Foyer.build(ctx)
 		})
 	end
 	local function tiles(items)
-		return UI.VirtualGrid({
-			Name = "Worlds",
+		return UI.VirtualGrid "Worlds" {
 			from = function()
 				return items
 			end,
@@ -91,12 +89,12 @@ function Foyer.build(ctx)
 			render = function(current)
 				return tile(current:peek())
 			end,
-		})
+		}
 	end
 	local function feed()
 		return view.page("Feed", {
 			view.text("Foyer", 30),
-			UI.TextInput({ Name = "Search", value = query, placeholder = text("search.ph") }),
+			UI.TextInput "Search" { value = query, placeholder = text("search.ph") },
 			view.action("Refresh", text("refresh.label"), services.refresh, function(use)
 				return use(services.refreshStatus) ~= "pending"
 			end),
@@ -106,11 +104,10 @@ function Foyer.build(ctx)
 				services.clearNotices()
 				notifications:set(true)
 			end),
-			UI.Picker({
-				Name = "FeedSelection",
+			UI.Picker "FeedSelection" {
 				selected = tab,
 				options = { { value = "forYou", label = "For you" }, { value = "charts", label = "Charts" } },
-			}),
+			},
 			Compose.show(function(use)
 				return use(query) ~= ""
 			end, function()
@@ -189,12 +186,10 @@ function Foyer.build(ctx)
 		})
 	end
 	local function screen()
-		return Host.Frame({
-			Name = "Foyer",
+		return Host.Frame "Foyer" {
 			BackgroundTransparency = 1,
 			Size = D2.fromScale(1, 1),
-			UI.TabView({
-				Name = "Destinations",
+			UI.TabView "Destinations" {
 				style = "sidebarAdaptable",
 				selection = destination,
 				Size = D2.new(1, 0, 1, -64),
@@ -219,27 +214,25 @@ function Foyer.build(ctx)
 							return view.page("Profile", {
 								view.text(text("profile.label"), 28),
 								view.text(text("profile.caption")),
-								UI.Picker({
-									Name = "Locale",
+								UI.Picker "Locale" {
 									selected = locale,
 									options = {
 										{ value = "en", label = "English" },
 										{ value = "xa", label = "Expanded" },
 									},
-								}),
+								},
 							})
 						end,
 					},
 				},
-			}),
+			},
 			UI.Label({
 				label = notice,
 				TextWrapped = true,
 				Position = D2.new(0, 16, 1, -60),
 				Size = D2.new(1, -32, 0, 56),
 			}),
-			UI.Sheet({
-				Name = "WorldDetail",
+			UI.Sheet "WorldDetail" {
 				title = "World",
 				isPresented = detailOpen,
 				detent = Compose.cell("large"),
@@ -263,31 +256,28 @@ function Foyer.build(ctx)
 						end),
 					})
 				end,
-			}),
-			UI.Sheet({
-				Name = "Section",
+			},
+			UI.Sheet "Section" {
 				title = "Explore worlds",
 				isPresented = sectionOpen,
 				detent = Compose.cell("large"),
 				content = function()
 					return tiles(expanded:peek().tiles)
 				end,
-			}),
-			UI.Sheet({
-				Name = "Notifications",
+			},
+			UI.Sheet "Notifications" {
 				title = text("notices.title"),
 				isPresented = notifications,
 				detent = Compose.cell("medium"),
 				content = mailbox,
-			}),
-			UI.Alert({
-				Name = "Invite",
+			},
+			UI.Alert "Invite" {
 				isPresented = invite,
 				title = text("invite.label"),
 				message = text("invite.stub"),
 				actions = { { id = "close", label = text("close.label"), role = "cancel" } },
-			}),
-		})
+			},
+		}
 	end
 	return {
 		screen = screen,

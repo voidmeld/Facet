@@ -74,13 +74,12 @@ return {
 				frame:AddTag("facet-control")
 				table.insert(children, frame)
 			end
-			local cells = Host.Frame({
-				Name = "Cells",
+			local cells = Host.Frame "Cells" {
 				Size = D2.new(1, 0, 0, 0),
 				AutomaticSize = E.AutomaticSize.Y,
 				BackgroundTransparency = 1,
 				table.unpack(children),
-			})
+			}
 			observe(cells, "AbsoluteSize", bodySize)
 			local lanes = {}
 			for index = 1, 12 do
@@ -115,8 +114,7 @@ return {
 					PaddingBottom = D.new(0, 12),
 				}),
 				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
-				UI.Label({
-					Name = "Heading",
+				UI.Label "Heading" {
 					Text = function(use)
 						local g = use(geometry)
 						return string.format("%s · %d px · %d columns", name, g.width, g.columns)
@@ -124,22 +122,20 @@ return {
 					TextWrapped = true,
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
-				}),
-				Host.Frame({
-					Name = "Grid",
+				},
+				Host.Frame "Grid" {
 					BackgroundTransparency = 1,
 					Size = function(use)
 						return D2.new(1, 0, 0, use(bodySize).Y)
 					end,
 					cells,
-					Host.Frame({
-						Name = "Guides",
+					Host.Frame "Guides" {
 						BackgroundTransparency = 1,
 						Size = D2.fromScale(1, 1),
 						ZIndex = 2,
 						table.unpack(lanes),
-					}),
-				}),
+					},
+				},
 			})
 			if maxWidth then
 				ctx.runtime.decorate(root:FindFirstChildWhichIsA("UISizeConstraint"), {
@@ -154,8 +150,7 @@ return {
 		end
 		return {
 			screen = function()
-				return Host.ScrollingFrame({
-					Name = "ContainerGrid",
+				return Host.ScrollingFrame "ContainerGrid" {
 					Size = D2.fromScale(1, 1),
 					AutomaticCanvasSize = E.AutomaticSize.Y,
 					CanvasSize = D2.new(),
@@ -166,8 +161,7 @@ return {
 						Text = "Each panel reads its own width; its cells use the actual space inside the frame.",
 						TextWrapped = true,
 					}),
-					Host.Frame({
-						Name = "Actions",
+					Host.Frame "Actions" {
 						Size = D2.new(1, 0, 0, 0),
 						AutomaticSize = E.AutomaticSize.Y,
 						BackgroundTransparency = 1,
@@ -177,32 +171,29 @@ return {
 							Wraps = true,
 							Padding = D.new(0, 8),
 						}),
-						UI.Button({
-							Name = "Resize",
+						UI.Button "Resize" {
 							label = "Resize sidebar",
 							onActivate = function()
 								sidebarWidth:set(if sidebarWidth:peek() == 360 then 1040 else 360)
 							end,
-						}),
-						UI.Button({
-							Name = "GuidesToggle",
+						},
+						UI.Button "GuidesToggle" {
 							label = "Toggle grid guides",
 							onActivate = function()
 								guides:set(not guides:peek())
 							end,
-						}),
-						UI.Button({
-							Name = "Replays",
+						},
+						UI.Button "Replays" {
 							label = "Toggle replays",
 							onActivate = function()
 								media:set(not media:peek())
 							end,
-						}),
-					}),
+						},
+					},
 					panel("Sidebar", 1, sidebarWidth),
 					panel("Column", 0.65),
 					panel("Board", 1),
-				})
+				}
 			end,
 			report = function()
 				local result = { guides = guides:peek(), media = media:peek(), sidebarWidth = sidebarWidth:peek() }

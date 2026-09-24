@@ -8,13 +8,11 @@ function screen.build(Facet: any, runtime: any, options: any?)
 	local count = Compose.cell(0)
 	local sound = Compose.cell(true)
 	local visible = Compose.cell(true)
-	return Host.Frame({
-		Name = "Consumer",
+	return Host.Frame "Consumer" {
 		Size = types.UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		Compose.show(visible, function()
-			return Host.Frame({
-				Name = "Panel",
+			return Host.Frame "Panel" {
 				Size = types.UDim2.new(1, -32, 0, 0),
 				Position = types.UDim2.fromOffset(16, 16),
 				AutomaticSize = types.Enum.AutomaticSize.Y,
@@ -65,8 +63,8 @@ function screen.build(Facet: any, runtime: any, options: any?)
 						visible:set(false)
 					end,
 				}),
-			})
+			}
 		end),
-	})
+	}
 end
 return screen
