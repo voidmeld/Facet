@@ -74,7 +74,7 @@ local lifetime = Compose.createRootOwner(function()
 	local stopWorld = runtime.mount(function()
 		modeMotion = runtime.tween(function(use)
 			return if use(mode) == "Screen" then 1 else 0
-		end, { seconds = 0.48 })
+		end, { seconds = 0.6, ease = Compose.easing.inOutCubic })
 		cameraMotion = runtime.spring(function(use)
 			return use(cameraGoal)
 		end, { period = 0.65, damping = 1 })
@@ -110,22 +110,74 @@ local lifetime = Compose.createRootOwner(function()
 			})
 			parts[name] = panel
 			table.insert(children, panel)
-			table.insert(
-				children,
-				Host.Part({
-					Name = name .. "Enclosure",
-					Anchored = true,
-					CanCollide = false,
-					Size = Vector3.new(10.96, 10.8 * screens.CANVAS.h / screens.CANVAS.w + 0.16, 0.2),
-					CFrame = function(use)
-						local progress = if use(reducedMotion) then use(entrance) else use(arrival)
-						return frame * CFrame.new(0, -2 * (1 - progress), 0.14 + 1.5 * (1 - progress))
-					end,
-					Color = Color3.fromRGB(35, 38, 47),
-					Material = Enum.Material.Metal,
-				})
-			)
-
+			local screenHeight = 10.8 * screens.CANVAS.h / screens.CANVAS.w
+			local function arrived(offset)
+				return function(use)
+					local progress = if use(reducedMotion) then use(entrance) else use(arrival)
+					return frame * CFrame.new(0, -2 * (1 - progress), 1.5 * (1 - progress)) * offset
+				end
+			end
+			for _, piece in
+				{
+					{
+						"Bezel",
+						Vector3.new(11.04, screenHeight + 0.24, 0.1),
+						CFrame.new(0, 0, 0.1),
+						Color3.fromRGB(14, 14, 17),
+						Enum.Material.Glass,
+					},
+					{
+						"Housing",
+						Vector3.new(11.04, screenHeight + 0.24, 0.22),
+						CFrame.new(0, 0, 0.26),
+						Color3.fromRGB(58, 60, 66),
+						Enum.Material.Metal,
+					},
+					{
+						"Back",
+						Vector3.new(7.2, screenHeight * 0.62, 0.34),
+						CFrame.new(0, -0.3, 0.52),
+						Color3.fromRGB(52, 54, 60),
+						Enum.Material.Metal,
+					},
+				}
+			do
+				table.insert(
+					children,
+					Host.Part({
+						Name = name .. piece[1],
+						Anchored = true,
+						CanCollide = false,
+						Size = piece[2],
+						CFrame = arrived(piece[3]),
+						Color = piece[4],
+						Material = piece[5],
+					})
+				)
+			end
+			for _, piece in
+				{
+					{
+						"Neck",
+						Vector3.new(1.1, 6.6, 0.18),
+						CFrame.new(0, -3.7, 0.86) * CFrame.Angles(math.rad(-4), 0, 0),
+					},
+					{ "Foot", Vector3.new(3.6, 0.14, 2.8), CFrame.new(0, -6.93, 1.3) },
+				}
+			do
+				table.insert(
+					children,
+					Host.Part({
+						Name = name .. "Stand" .. piece[1],
+						Anchored = true,
+						CanCollide = false,
+						Size = piece[2],
+						CFrame = frame * piece[3],
+						Color = Color3.fromRGB(170, 172, 178),
+						Material = Enum.Material.Metal,
+					})
+				)
+			end
 			table.insert(
 				children,
 				Host.Part({
@@ -140,7 +192,7 @@ local lifetime = Compose.createRootOwner(function()
 							then Color3.fromRGB(120, 214, 182)
 							else Color3.fromRGB(170, 150, 255),
 						Brightness = function(use)
-							return if use(dark) then 1.6 else 0.5
+							return if use(dark) then 1.6 else 0.25
 						end,
 						Range = 22,
 						Shadows = false,
@@ -169,20 +221,6 @@ local lifetime = Compose.createRootOwner(function()
 				Material = Enum.Material.Plaster,
 			}
 		)
-		for _, side in { -1, 1 } do
-			table.insert(
-				children,
-				Host.Part "AccentLight" {
-					Anchored = true,
-					CanCollide = false,
-					Size = Vector3.new(0.06, 24, 0.06),
-					CFrame = CFrame.new(side * 20, 8, 9),
-					Color = Color3.fromRGB(148, 128, 232),
-					Material = Enum.Material.Neon,
-					Host.PointLight({ Color = Color3.fromRGB(140, 119, 227), Brightness = 2, Range = 32 }),
-				}
-			)
-		end
 		return Host.Model(children)
 	end, workspace)
 
@@ -234,7 +272,9 @@ local lifetime = Compose.createRootOwner(function()
 				SizingMode = Enum.SurfaceGuiSizingMode.FixedSize,
 				CanvasSize = Vector2.new(screens.CANVAS.w, screens.CANVAS.h),
 				LightInfluence = 0,
-				Brightness = 1.3,
+				Brightness = function(use)
+					return if use(dark) then 1.3 else 1.1
+				end,
 				MaxDistance = 100,
 				ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 				Enabled = function(use)
@@ -242,9 +282,7 @@ local lifetime = Compose.createRootOwner(function()
 				end,
 				sheet,
 				Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
-				Compose.show(function(use)
-					return use(modeProgress) < 1
-				end, views[name]),
+				views[name](),
 			})
 		end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	end
@@ -257,6 +295,27 @@ local lifetime = Compose.createRootOwner(function()
 			end,
 		})
 		local views = screens.create(Facet, runtime, sceneActions(false, package))
+		local backdrop = Host.Frame "Backdrop" {
+			Size = UDim2.fromScale(1, 1),
+			BorderSizePixel = 0,
+			BackgroundTransparency = function(use)
+				local t = math.clamp((use(modeProgress) - 0.55) / 0.45, 0, 1)
+				return 1 - t * t * (3 - 2 * t)
+			end,
+		}
+		backdrop:AddTag("facet-surface")
+		Host.ScreenGui "VirtualMonitorsBackdrop" {
+			Parent = players.LocalPlayer:WaitForChild("PlayerGui"),
+			DisplayOrder = 9,
+			ResetOnSpawn = false,
+			ScreenInsets = Enum.ScreenInsets.None,
+			Enabled = function(use)
+				return use(modeProgress) > 0
+			end,
+			sheet,
+			Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
+			backdrop,
+		}
 		return Host.ScreenGui "VirtualMonitorsDesktop" {
 			DisplayOrder = 10,
 			ResetOnSpawn = false,
@@ -267,19 +326,14 @@ local lifetime = Compose.createRootOwner(function()
 			end,
 			sheet,
 			Host.StyleLink({ StyleSheet = Compose.static(sheet) }),
-			Compose.show(
-				function(use)
-					return use(modeProgress) > 0
-				end,
-				desktop.create(
-					Facet,
-					runtime,
-					views,
-					model,
-					modeProgress,
-					{ theme = package, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
-				)
-			),
+			desktop.create(
+				Facet,
+				runtime,
+				views,
+				model,
+				modeProgress,
+				{ theme = package, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
+			)(),
 		}
 	end, players.LocalPlayer:WaitForChild("PlayerGui"))
 	local viewport = Facet.Roblox.createViewport(camera)
@@ -320,6 +374,20 @@ local lifetime = Compose.createRootOwner(function()
 	end)
 	entrance:set(1)
 	frameCamera()
+	Host.BindableFunction "VirtualMonitorsAPI" {
+		Parent = workspace,
+		OnInvoke = Compose.static(function(command, argument)
+			if command == "mode" and (argument == "Screen" or argument == "Spatial") then
+				model.modeChosen = true
+				mode:set(argument)
+			elseif command == "dark" then
+				dark:set(argument == true)
+			elseif command == "focus" then
+				model.focus(argument)
+			end
+			return { mode = mode:peek(), dark = dark:peek(), focused = model.focused:peek() }
+		end),
+	}
 end, runtime.reactor)
 script.Destroying:Connect(function()
 	lifetime.dispose()

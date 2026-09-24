@@ -317,12 +317,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end,
 			Size = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar"
-					then D2.new(0, railWidth(use), 1, -use(headHeight) - use(footHeight))
+					then D2.new(0, railWidth(use) - 16, 1, -use(headHeight) - use(footHeight))
 					else D2.new(1, -use(trailingWidth), 0, 44)
 			end,
 			Position = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar"
-					then D2.fromOffset(0, use(headHeight))
+					then D2.fromOffset(8, use(headHeight))
 					elseif string.find(use(placement), "bottom") then D2.new(0, 0, 1, -44)
 					else D2.fromOffset(0, 0)
 			end,

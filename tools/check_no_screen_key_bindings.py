@@ -40,6 +40,10 @@ PINS = {
         1,
         "the crossword declares its letter keys in its own sinking InputContext under ctx.inputTarget",
     ),
+    "examples/virtual_monitors/screens.luau": (
+        1,
+        "Discover owns the Slash InputAction that its ShortcutHint describes and that focuses the search field, as docs/reference/api.md documents for the hint's action option",
+    ),
     "examples/gallery/scenarios/shortcut_hint.luau": (
         3,
         "the ShortcutHint recipe owns the InputAction that the hint describes, as docs/reference/api.md documents for its action option",
