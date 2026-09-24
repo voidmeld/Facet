@@ -162,4 +162,52 @@ t.describe("native gallery pickers and fields", function()
 		expect(table.concat(headings, " ")).toBe("Crew Rivals")
 		s.stop()
 	end)
+	t.it("the Pickers tab commits colours and dates, and a refused proposal never paints", function()
+		local s = scenario("pickers")
+		local function hex(c: any): string
+			return string.format(
+				"#%02X%02X%02X",
+				math.floor(c.R * 255 + 0.5),
+				math.floor(c.G * 255 + 0.5),
+				math.floor(c.B * 255 + 0.5)
+			)
+		end
+		local function cells(): { any }
+			local out = {}
+			for _, child in find(s.target, "Swatches"):GetChildren() do
+				if child:IsA("GuiObject") then
+					table.insert(out, child)
+				end
+			end
+			table.sort(out, function(a, b)
+				return a.LayoutOrder < b.LayoutOrder
+			end)
+			return out
+		end
+		for _, name in { "Accent", "Body", "Trim", "Livery", "Fog", "RaceDay", "Starts", "Window" } do
+			expect(`{name} {find(s.node, name) ~= nil}`).toBe(`{name} true`)
+		end
+		expect(find(find(s.node, "Accent"), "Well")).toBeNil()
+		expect(find(find(s.node, "Fog"), "Well")).toBeNil()
+		expect(find(find(s.node, "Body"), "Title").Text).toBe("Kart body")
+		expect(find(s.node, "Committed").Text).toBe("Committed: nothing yet")
+		local trim = find(s.node, "Trim")
+		local well = find(trim, "Well")
+		expect(well:GetAttribute("label")).toBe("#FFC400")
+		well.Activated.fire()
+		local team = cells()
+		expect(#team >= 4).toBe(true)
+		team[4].Activated.fire()
+		expect(s.built.report().trim).toBe("#00AA8C")
+		expect(find(s.node, "Committed").Text).toBe("Committed: #00AA8C")
+		expect(hex(find(find(well, "Swatch"), "Plate").BackgroundColor3)).toBe("#00AA8C")
+		expect(s.built.steps.refuse().refuse).toBe(true)
+		cells()[2].Activated.fire()
+		expect(s.built.report().trim).toBe("#00AA8C")
+		expect(hex(find(find(well, "Swatch"), "Plate").BackgroundColor3)).toBe("#00AA8C")
+		expect(s.built.report().raceDay).toBe("10/04/2026")
+		expect(find(find(s.node, "RaceDay"), "Field") ~= nil).toBe(true)
+		s.stop()
+		expect(#s.target:GetChildren()).toBe(0)
+	end)
 end)

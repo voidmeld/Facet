@@ -29,6 +29,7 @@ local names = {
 	"outpost_terminal",
 	"page_view",
 	"paging",
+	"pickers",
 	"preferred_transparency",
 	"progress_ring",
 	"radial_menu",
