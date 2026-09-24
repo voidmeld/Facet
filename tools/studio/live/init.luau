@@ -326,6 +326,62 @@ function live.run(suite: string, options: { [string]: any }?): string
 	})
 end
 
+function live.begin(suite: string, id: string): string
+	live.release()
+	local Facet = (require :: any)(storage:WaitForChild("Facet"))
+	local chosen
+	for _, case in live.cases(suite) do
+		if case.id == id then
+			chosen = case
+		end
+	end
+	assert(chosen and chosen.setup, "no interactive case " .. id)
+	local record = { id = chosen.id, contracts = chosen.contracts or {}, checks = {}, notes = {}, steps = {} }
+	local t = newCase(Facet, themeModules(Facet), record)
+	local value = chosen.setup(t)
+	shared.FacetLiveHold = { cleanup = t.cleanup, value = value }
+	shared.FacetLiveSession = { suite = suite, case = chosen, record = record, t = t, value = value }
+	return HttpService:JSONEncode(record)
+end
+
+function live.step(name: string): string
+	local session = assert(shared.FacetLiveSession, "call live.begin first")
+	local before = #session.record.checks
+	table.insert(session.record.steps, name)
+	local ok, problem = xpcall(session.case.steps[name], debug.traceback, session.t, session.value)
+	if not ok then
+		session.t.check(name .. " ran", false, tostring(problem))
+	end
+	local lines = {}
+	for index = before + 1, #session.record.checks do
+		local check = session.record.checks[index]
+		table.insert(lines, `{if check.ok then "ok  " else "FAIL"} {check.name} {HttpService:JSONEncode(check.detail)}`)
+	end
+	return table.concat(lines, "\n")
+end
+
+function live.finish(tag: string): string
+	local session = assert(shared.FacetLiveSession, "call live.begin first")
+	shared.FacetLiveSession = nil
+	live.release()
+	local record = session.record
+	local good = #record.checks > 0
+	for _, check in record.checks do
+		good = good and check.ok
+	end
+	record.ok = good
+	local json = HttpService:JSONEncode({
+		schema = "facet-live-assertions/1",
+		suite = session.suite,
+		environment = environment(),
+		passed = if good then 1 else 0,
+		failed = if good then 0 else 1,
+		cases = { record },
+	})
+	live.save(`{session.suite}-{record.id}-{tag}`, json)
+	return live.summary(json)
+end
+
 function live.release()
 	local hold = shared.FacetLiveHold
 	shared.FacetLiveHold = nil

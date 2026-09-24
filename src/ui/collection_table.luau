@@ -417,6 +417,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local header = Host.Frame(headerProps)
 		local headerExtent = ctx.observe(headerLayout, "AbsoluteContentSize")
 		local reorderGutter = if spec.reorderable then 56 else 0
+		local editGutter = Compose.cell(0)
 		local wrapReorder: ((GuiObject, ComposeTypes.Readable<V>, K) -> Frame)?
 		local overlayReorder: ((boolean?) -> Frame)?
 		if spec.reorderable then
@@ -647,7 +648,18 @@ return function(ctx: Types.Context, UI: Controls): ()
 					actionSpec.Size = D2.fromScale(1, 1)
 					actionSpec.reducedMotion = spec.reducedMotion
 					actionSpec.editing = spec.editing
-					return UI.RowActions(actionSpec)
+					local node = UI.RowActions(actionSpec)
+					local gutter = node:FindFirstChild("EditGutter")
+					if gutter and gutter:IsA("GuiObject") then
+						local value = ctx.observe(gutter, "Position")
+						Compose.watch(function(use: ComposeTypes.Use)
+							local width = use(value).X.Offset
+							if editGutter:peek() ~= width then
+								editGutter:set(width)
+							end
+						end)
+					end
+					return node
 				end
 				return row
 			end,
@@ -661,13 +673,13 @@ return function(ctx: Types.Context, UI: Controls): ()
 		end)
 		runtime.decorate(header, {
 			Position = function(use: ComposeTypes.Use)
-				return D2.fromOffset(reorderGutter - use(position).X, 0)
+				return D2.fromOffset(reorderGutter + use(editGutter) - use(position).X, 0)
 			end,
 			Size = function(use: ComposeTypes.Use)
-				local width = use(window).X
+				local width, inset = use(window).X, reorderGutter + use(editGutter)
 				return if width > 0
-					then D2.fromOffset(math.max(0, width - reorderGutter - use(disclosureWidth)), use(headerHeight))
-					else D2.new(1, -reorderGutter - use(disclosureWidth), 0, use(headerHeight))
+					then D2.fromOffset(math.max(0, width - inset - use(disclosureWidth)), use(headerHeight))
+					else D2.new(1, -inset - use(disclosureWidth), 0, use(headerHeight))
 			end,
 		})
 		return ctx.styled(

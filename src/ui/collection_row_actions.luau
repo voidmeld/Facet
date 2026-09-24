@@ -350,12 +350,19 @@ return function(ctx: Types.Context, UI: Controls): ()
 				setOpen(nil)
 			end,
 		}
+		local gutterValue = Host.Frame "EditGutter" {
+			Visible = false,
+			Size = D2.fromOffset(0, 0),
+			BackgroundTransparency = 1,
+			Position = D2.fromOffset(0, 0),
+		}
 		root = Host.Frame(ctx.props(spec, behavior, {
 			Size = D2.new(1, 0, 0, 44),
 			BackgroundTransparency = 1,
 			ClipsDescendants = true,
 			tray("leading") :: ComposeTypes.Child,
 			tray("trailing"),
+			gutterValue,
 			Host.Frame "Content" {
 				Size = function(use: ComposeTypes.Use)
 					return D2.new(1, if read(spec.editing, use) then -use(editWidth) else 0, 1, 0)
@@ -496,6 +503,14 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end
 		end, { priority = 300 })
 		if spec.editing then
+			runtime.decorate(gutterValue, {
+				Position = function(use: ComposeTypes.Use)
+					return D2.fromOffset(
+						if read(spec.editing, use) == true and destructive(use) ~= nil then use(editWidth) else 0,
+						0
+					)
+				end,
+			})
 			runtime.mountFragment(function()
 				return {
 					Compose.show(function(use: ComposeTypes.Use)

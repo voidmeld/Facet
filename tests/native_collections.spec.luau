@@ -1439,4 +1439,59 @@ t.describe("Compose native collections", function()
 		stop()
 		runtime.dispose()
 	end)
+	t.it("moves the table header with the edit gutter that its row actions reserve", function()
+		local engine, runtime, UI, target = setup()
+		local editing = Compose.cell(false)
+		local stop, node = runtime.mount(function()
+			return UI.Table({
+				from = records(3),
+				key = key,
+				editing = editing,
+				columns = {
+					{
+						id = "name",
+						label = "Name",
+						value = function(item)
+							return item.id
+						end,
+					},
+					{
+						id = "laps",
+						label = "Laps",
+						width = 64,
+						value = function(item)
+							return item.id
+						end,
+					},
+				},
+				rowActions = function()
+					return {
+						trailing = {
+							{ id = "delete", label = "Delete", role = "destructive", onActivate = function() end },
+						},
+					}
+				end,
+			})
+		end, target)
+		local body = node:FindFirstChildWhichIsA("ScrollingFrame", true)
+		body.AbsoluteWindowSize = engine.types.Vector2.new(456, 300)
+		local header = node:FindFirstChild("Header", true)
+		t.expect(header.Position.X.Offset).toBe(0)
+		for _, descendant in node:GetDescendants() do
+			if descendant.Name == "EditGutter" then
+				descendant.Parent.AbsoluteSize = engine.types.Vector2.new(456, 44)
+			end
+		end
+		editing:set(true)
+		local gutter = node:FindFirstChild("EditGutter", true)
+		local reserved = gutter.Position.X.Offset
+		t.expect(gutter.Visible).toBe(false)
+		t.expect(reserved >= 72).toBe(true)
+		t.expect(header.Position.X.Offset).toBe(reserved)
+		t.expect(header.Size.X.Offset).toBe(456 - reserved)
+		editing:set(false)
+		t.expect(header.Position.X.Offset).toBe(0)
+		stop()
+		runtime.dispose()
+	end)
 end)
