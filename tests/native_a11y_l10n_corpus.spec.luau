@@ -287,6 +287,17 @@ local fixtures: { [string]: (Host: any, engine: any) -> any } = {
 	NumberInput = function()
 		return { value = Compose.cell("1"), numericValue = Compose.cell(1), label = "Laps", stepButtons = true }
 	end,
+	DateTimePicker = function()
+		return {
+			value = Compose.cell({ year = 2026, month = 9, day = 23 }),
+			onChange = function() end,
+			label = "Race day",
+			style = "inline",
+			clock = function()
+				return { year = 2026, month = 9, day = 23 }
+			end,
+		}
+	end,
 	ShortcutHint = function()
 		return { keys = { { "Ctrl", "K" } } }
 	end,

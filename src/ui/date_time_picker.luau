@@ -1676,7 +1676,6 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 					Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
 				})
 				ctx.styled(box, "text")
-				box:AddTag("facet-field-editor")
 				entry = box
 				Compose.cleanup(function()
 					if entry == box then
