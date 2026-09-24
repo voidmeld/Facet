@@ -279,10 +279,14 @@ return function(
 		local pageButtons: { [number]: TextButton } = {}
 		local arrowButtons: { [string]: TextButton } = {}
 		local lostFocus = false
+		local lost = Compose.cell(0)
 		local function watchFocus(button: TextButton)
 			Compose.cleanup(function()
 				if gui and gui.SelectedObject == button then
 					lostFocus = true
+					lost:update(function(count: number): number
+						return count + 1
+					end)
 				end
 			end)
 		end
@@ -442,8 +446,33 @@ return function(
 		Compose.watch(function(use: ComposeTypes.Use)
 			offered:set(use(rootSize).X)
 		end)
+		local function neighbour(): GuiObject?
+			local layer = root:FindFirstAncestorWhichIsA("LayerCollector")
+			if layer == nil then
+				return nil
+			end
+			local centre = root.AbsolutePosition + root.AbsoluteSize / 2
+			local best: GuiObject?, distance = nil, math.huge
+			for _, node in layer:GetDescendants() do
+				if
+					node:IsA("GuiObject")
+					and node.Selectable
+					and node.Visible
+					and not node:IsDescendantOf(root)
+					and node.AbsoluteSize.X > 0
+					and node.AbsoluteSize.Y > 0
+				then
+					local gap = (node.AbsolutePosition + node.AbsoluteSize / 2 - centre).Magnitude
+					if gap < distance then
+						best, distance = node, gap
+					end
+				end
+			end
+			return best
+		end
 		Compose.watch(function(use: ComposeTypes.Use)
 			use(entries)
+			use(lost)
 			local st = use(state)
 			if not gui then
 				return
@@ -459,7 +488,10 @@ return function(
 				return
 			end
 			lostFocus = false
-			local landing: TextButton? = if st.current then pageButtons[st.current] else nil
+			local landing: GuiObject? = if st.current then pageButtons[st.current] else nil
+			if landing and landing.Parent == nil then
+				landing = nil
+			end
 			if landing == nil then
 				for _, kind in ARROWS do
 					local button = arrowButtons[kind]
@@ -469,8 +501,13 @@ return function(
 					end
 				end
 			end
+			if landing == nil then
+				landing = neighbour()
+			end
 			if landing then
-				gui.SelectedObject = landing
+				pcall(function()
+					gui.SelectedObject = landing
+				end)
 			end
 		end)
 		root:SetAttribute("FacetSelectionOwner", true)

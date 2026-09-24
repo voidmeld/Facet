@@ -1278,7 +1278,9 @@ Each page is a compact Button in a slot that is at least the target size
 The label keeps the width of the widest label that the count can make, so the
 arrows do not move when the page gains a digit. Page nodes are keyed by page
 number. When the selected page leaves the window, or a selected arrow becomes
-disabled at an edge, the selection moves to the current page. `rtl` reverses
+disabled at an edge, the selection moves to the current page. When the row has
+no live page or arrow, for example when the count drops to zero, the selection
+moves to the nearest selectable object outside the row. `rtl` reverses
 the row once. The root is a Frame that fills its width. `AutomaticSize` on X
 causes an error, because the window narrows to the width that it gets.
 
