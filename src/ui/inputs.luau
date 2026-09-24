@@ -3,6 +3,7 @@ local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local decoration = require("./native_decoration")
 local help = require("./help")
+local activation = require("./activation")
 local valueModel = require("./input_value")
 local textField = require("./text_field")
 local InputTypes = require("./input_types")
@@ -361,7 +362,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local iconState: ComposeTypes.Cell<ThemeTypes.SkinState>?
 		if spec.icon or spec.trailingIcon then
 			local initial: ThemeTypes.SkinState = "default"
-			iconState = Compose.cell(initial) :: ComposeTypes.Cell<ThemeTypes.SkinState>
+			iconState = Compose.cell(initial)
 		end
 		local held, repeated, elapsed = false, false, 0
 		local repeatDelay, repeatInterval = spec.repeatDelay or 0.4, spec.repeatInterval or 0.1
@@ -370,12 +371,16 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.Button: repeat timings must be finite and positive"
 		)
 		local function activate(...)
-			if enabled(spec) and node and ctx.available(node) and spec.onActivate then
+			local live = enabled(spec)
+			if live and node and ctx.available(node) and spec.onActivate then
 				if popTimeline and popReduced and not held and not popReduced() then
 					popStart:set(popScale:peek())
 					popTimeline:restart()
 				end
 				spec.onActivate(...)
+			end
+			if live and node and ctx.available(node) then
+				activation.notify(node, ...)
 			end
 		end
 		local function shortcutActive(use)
@@ -647,6 +652,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			p.PressHapticEffect = Compose.static(pressHaptic)
 		end
 		node = ctx.styled(Host.TextButton(p), "button")
+		activation.mark(node)
 		if hapticSwitch then
 			Compose.watch(function(use: ComposeTypes.Use)
 				node.PressHapticEffect = (if read(spec.haptic, use) == true then pressHaptic else nil) :: HapticEffect
@@ -1612,6 +1618,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end
 			table.insert(p, ctx.row(contents, { Name = "Content" }))
 		end
+		if p.haptic == nil and spec.selected ~= nil then
+			p.haptic = true
+		end
 		node = ctx.styled(UI.Button(p), "chip")
 		if removable then
 			attributes(
@@ -1638,9 +1647,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 				return input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace)
 			end
-			local focused: ComposeTypes.Readable<Instance?> = if gui
-				then (ctx.observe(gui, "SelectedObject") :: unknown) :: ComposeTypes.Readable<Instance?>
-				else (Compose.cell(nil :: Instance?) :: unknown) :: ComposeTypes.Readable<Instance?>
+			local focused: ComposeTypes.Readable<GuiObject?> = if gui
+				then ctx.observe(gui, "SelectedObject")
+				else Compose.cell(nil :: GuiObject?)
 			local wasFocused = false
 			Compose.watch(function(use: ComposeTypes.Use)
 				local now = use(focused) == (node :: Instance)

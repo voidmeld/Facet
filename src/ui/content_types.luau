@@ -68,12 +68,13 @@ export type CardControls = Diagnostics & {
 	revealExtent: ComposeTypes.Readable<{ body: number }>?,
 }
 export type CardSpec = Types.FrameProps & {
-	image: Value<string>,
+	image: Value<string>?,
+	artwork: (() -> GuiObject)?,
 	title: Value<string>,
 	caption: Value<string>?,
 	imageAspectRatio: number?,
 	imageFraming: ("fit" | "crop")?,
-	onActivate: (() -> ())?,
+	onActivate: ((input: InputObject?) -> ())?,
 	primaryAction: CardAction?,
 	menu: CardMenu?,
 	reveal: ("automatic" | "always")?,

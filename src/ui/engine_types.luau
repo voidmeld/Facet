@@ -1,7 +1,7 @@
 --!strict
 local Compose = require("../vendor/compose/core")
 
-export type Value<T> = Compose.Given<T>
+export type Value<T> = T | Compose.Readable<T> | Compose.Formula<T> | Compose.Body<T>
 export type StaticValue = typeof(Compose.static(nil))
 export type Constructor<P, N> = ((P) -> N) & ((string) -> (P) -> N)
 export type AttributeValue =
@@ -704,6 +704,13 @@ export type UIStrokeProperties = UIComponentProperties & {
 export type UIStrokeNativeProps = UIStrokeProperties & { [number]: Compose.Child }
 export type UIStrokeProps = UIStrokeNativeProps & { ref: ((UIStroke) -> ())? }
 
+export type UITextSizeConstraintProperties = UIConstraintProperties & {
+	MaxTextSize: ValueNumber?,
+	MinTextSize: ValueNumber?,
+}
+export type UITextSizeConstraintNativeProps = UITextSizeConstraintProperties & { [number]: Compose.Child }
+export type UITextSizeConstraintProps = UITextSizeConstraintNativeProps & { ref: ((UITextSizeConstraint) -> ())? }
+
 export type ViewportFrameProperties = GuiObjectProperties & {
 	Ambient: ValueColor3?,
 	CurrentCamera: (ValueCamera | StaticValue)?,
@@ -776,6 +783,7 @@ export type Observe =
 	& ((InputContext, "Enabled") -> Compose.Cell<boolean>)
 	& ((Instance, "Parent") -> Compose.Cell<Instance?>)
 	& ((LayerCollector, "Enabled") -> Compose.Cell<boolean>)
+	& ((ScrollingFrame, "AbsoluteCanvasSize") -> Compose.Cell<Vector2>)
 	& ((ScrollingFrame, "AbsoluteWindowSize") -> Compose.Cell<Vector2>)
 	& ((ScrollingFrame, "CanvasPosition") -> Compose.Cell<Vector2>)
 	& ((TextBox, "FontFace") -> Compose.Cell<Font>)
@@ -822,6 +830,8 @@ export type Observe =
 	& ((UserInputService, "GamepadEnabled") -> Compose.Cell<boolean>)
 	& ((UserInputService, "KeyboardEnabled") -> Compose.Cell<boolean>)
 	& ((UserInputService, "MouseEnabled") -> Compose.Cell<boolean>)
+	& ((UserInputService, "OnScreenKeyboardSize") -> Compose.Cell<Vector2>)
+	& ((UserInputService, "OnScreenKeyboardVisible") -> Compose.Cell<boolean>)
 	& ((UserInputService, "PreferredInput") -> Compose.Cell<Enum.PreferredInput>)
 	& ((UserInputService, "TouchEnabled") -> Compose.Cell<boolean>)
 
@@ -858,6 +868,7 @@ export type Host = {
 	UIShadow: Constructor<UIShadowNativeProps, UIShadow>,
 	UISizeConstraint: Constructor<UISizeConstraintNativeProps, UISizeConstraint>,
 	UIStroke: Constructor<UIStrokeNativeProps, UIStroke>,
+	UITextSizeConstraint: Constructor<UITextSizeConstraintNativeProps, UITextSizeConstraint>,
 	ViewportFrame: Constructor<ViewportFrameNativeProps, ViewportFrame>,
 	WorldModel: Constructor<WorldModelNativeProps, WorldModel>,
 }

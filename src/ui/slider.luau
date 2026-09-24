@@ -298,6 +298,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 		local function single(use: ComposeTypes.Use?): number
 			return read(spec.value :: Shared.Value<number>, use)
 		end
+		local detent = ctx.config.pressHaptic
 		local function proposeSingle(value: number): boolean
 			if not h.enabled(spec) then
 				return false
@@ -312,7 +313,6 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 				(spec.value :: ComposeTypes.Cell<number>):set(nextValue)
 			end
 			local moved = single() == nextValue
-			local detent = ctx.config.pressHaptic
 			if moved and detent and spec.step ~= nil then
 				detent:Play()
 			end
@@ -330,6 +330,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 				spec.onChange({ lower = nextPair.lower, upper = nextPair.upper }, { thumb = thumb })
 			else
 				(spec.value :: ComposeTypes.Cell<Range>):set({ lower = nextPair.lower, upper = nextPair.upper })
+			end
+			if detent and spec.step ~= nil then
+				detent:Play()
 			end
 			return true
 		end
@@ -669,7 +672,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 						local side = if thumb == "lower" then "lower" else "upper"
 						return if named and named ~= "" then `{named} {side}` else `Range {side}`
 					end,
-					value = (proxy.value :: unknown) :: Shared.Value<Shared.AttributeValue?>,
+					value = function(use: ComposeTypes.Use): number
+						return read(proxy.value, use)
+					end,
 					minimum = model.min,
 					maximum = model.max,
 				})

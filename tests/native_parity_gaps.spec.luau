@@ -131,6 +131,27 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 				actions = { { id = "ok", label = "OK", role = "default" } },
 			}
 		end,
+		Dialog = function()
+			return { isPresented = Compose.cell(false), closeButton = false, title = "Title" }
+		end,
+		Snackbar = function()
+			return { isPresented = Compose.cell(false), message = "Saved", closeButton = false }
+		end,
+		Notice = function()
+			return { message = "Saved" }
+		end,
+		NavBar = function()
+			return { title = "Tracks" }
+		end,
+		Popover = function()
+			return {
+				isPresented = Compose.cell(false),
+				source = { rect = { x = 0, y = 0, w = 10, h = 10 } },
+				content = function()
+					return Host.Frame({})
+				end,
+			}
+		end,
 		AsyncImage = function()
 			return { image = "rbxassetid://1" }
 		end,
@@ -235,6 +256,9 @@ local function minimalSpecs(Host: any): { [string]: () -> { [string]: any } }
 		Stage = function()
 			return {}
 		end,
+		ErrorBoundary = function()
+			return { view = content, fallback = content }
+		end,
 		Pagination = function()
 			return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
 		end,
@@ -314,8 +338,10 @@ t.describe("native parity gaps", function()
 		end
 		table.sort(names)
 		local published: { string } = {}
-		for name in string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.(%u[%w_]*) : function") do
-			table.insert(published, name)
+		for name in string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function") do
+			if name ~= "fill" and name ~= "badged" then
+				table.insert(published, name)
+			end
 		end
 		table.sort(published)
 		t.expect(table.concat(names, " ")).toBe(table.concat(published, " "))

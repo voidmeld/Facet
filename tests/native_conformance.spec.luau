@@ -87,6 +87,16 @@ local fixtures = {
 	AvatarGroup = function()
 		return { items = { { id = "a", name = "Ada" } } }
 	end,
+	ErrorBoundary = function(Host)
+		return {
+			view = function()
+				return Host.Frame({})
+			end,
+			fallback = function()
+				return Host.Frame({})
+			end,
+		}
+	end,
 	Stage = function()
 		return {}
 	end,
@@ -153,6 +163,27 @@ local fixtures = {
 	end,
 	Alert = function()
 		return { title = "Confirm", isPresented = Compose.cell(false), actions = { { id = "ok", label = "OK" } } }
+	end,
+	Dialog = function()
+		return { title = "Confirm", isPresented = Compose.cell(false), closeButton = false }
+	end,
+	Snackbar = function()
+		return { isPresented = Compose.cell(false), message = "Saved", closeButton = false }
+	end,
+	Notice = function()
+		return { message = "Saved" }
+	end,
+	NavBar = function()
+		return { title = "Tracks" }
+	end,
+	Popover = function(Host)
+		return {
+			isPresented = Compose.cell(false),
+			source = { rect = { x = 0, y = 0, w = 10, h = 10 } },
+			content = function()
+				return Host.Frame({})
+			end,
+		}
 	end,
 	Sheet = function(Host)
 		return {

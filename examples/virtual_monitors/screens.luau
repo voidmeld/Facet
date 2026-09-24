@@ -2,7 +2,7 @@
 local screens = { CANVAS = { w = 920, h = 640 } }
 
 function screens.create(Facet: any, runtime: any, actions: any)
-	local Compose, Host = Facet.Compose, runtime.constructors
+	local Compose, Host, civil = Facet.Compose, runtime.constructors, Facet.civilDate
 	local model = actions.model
 	local types = actions.types or getfenv(0)
 	local D, D2, V2, C3, CF, E = types.UDim, types.UDim2, types.Vector2, types.Color3, types.CFrame, types.Enum
@@ -23,147 +23,43 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			touchEnabled:set(inputService.TouchEnabled == true)
 		end))
 	end
+	local clock = actions.clock or civil.systemClock()
 	local dropTarget
 	local selectedCard = Compose.cell(nil)
 	local function rounded(radius)
 		return Host.UICorner({ CornerRadius = D.new(0, radius or 12) })
 	end
-	local function padding(value)
-		return Host.UIPadding({
-			PaddingLeft = D.new(0, value),
-			PaddingRight = D.new(0, value),
-			PaddingTop = D.new(0, value),
-			PaddingBottom = D.new(0, value),
-		})
+	local function merged(spec, props)
+		for key, value in props or {} do
+			if type(key) == "number" then
+				table.insert(spec, value)
+			else
+				spec[key] = value
+			end
+		end
+		return spec
 	end
-	local function text(name, value, size, props, tag)
-		local spec = {
+	local function words(name, value, role, props)
+		return UI.Label(merged({
 			Name = name,
-			Text = value,
-			TextSize = size or 18,
-			Font = E.Font.BuilderSans,
-			TextXAlignment = E.TextXAlignment.Left,
-			TextYAlignment = E.TextYAlignment.Top,
+			text = value,
+			textRole = role or "body",
 			TextWrapped = true,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
+			TextYAlignment = E.TextYAlignment.Top,
 			Size = D2.new(1, 0, 0, 0),
 			AutomaticSize = E.AutomaticSize.Y,
-		}
-		for key, value in props or {} do
-			if type(key) == "number" then
-				table.insert(spec, value)
-			else
-				spec[key] = value
-			end
-		end
-		local node = Host.TextLabel(spec)
-		node:AddTag("facet-text")
-		if tag then
-			node:AddTag(tag)
-		end
-		return node
+		}, props))
 	end
-	local function row(name, children, props)
-		local spec = {
-			Name = name,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Size = D2.new(1, 0, 0, 38),
-			Host.UIListLayout({
-				FillDirection = E.FillDirection.Horizontal,
-				SortOrder = E.SortOrder.LayoutOrder,
-				VerticalAlignment = E.VerticalAlignment.Center,
-				Padding = D.new(0, 8),
-			}),
-		}
-		for index, child in children do
-			runtime.decorate(child, { LayoutOrder = index })
-			table.insert(spec, child)
-		end
-		for key, value in props or {} do
-			if type(key) == "number" then
-				table.insert(spec, value)
-			else
-				spec[key] = value
-			end
-		end
-		return Host.Frame(spec)
-	end
-	local function scrollRow(name, children, props)
-		local spec = {
-			Name = name,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Size = D2.new(1, 0, 0, 40),
-			CanvasSize = D2.fromOffset(0, 0),
-			AutomaticCanvasSize = E.AutomaticSize.X,
-			ScrollingDirection = E.ScrollingDirection.X,
-			ScrollBarThickness = 2,
-			Host.UIListLayout({
-				FillDirection = E.FillDirection.Horizontal,
-				SortOrder = E.SortOrder.LayoutOrder,
-				VerticalAlignment = E.VerticalAlignment.Center,
-				Padding = D.new(0, 8),
-			}),
-		}
-		for index, child in children do
-			runtime.decorate(child, { LayoutOrder = index })
-			table.insert(spec, child)
-		end
-		for key, value in props or {} do
-			if type(key) == "number" then
-				table.insert(spec, value)
-			else
-				spec[key] = value
-			end
-		end
-		return Host.ScrollingFrame(spec)
-	end
-	local function column(name, children, props, tag)
-		local spec = {
-			Name = name,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Size = D2.new(1, 0, 0, 0),
-			AutomaticSize = E.AutomaticSize.Y,
-			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 10) }),
-		}
-		for index, child in children do
-			if type(child) ~= "function" then
-				runtime.decorate(child, { LayoutOrder = index })
-			end
-			table.insert(spec, child)
-		end
-		for key, value in props or {} do
-			if type(key) == "number" then
-				table.insert(spec, value)
-			else
-				spec[key] = value
-			end
-		end
-		if tag then
-			spec.BackgroundTransparency = nil
-		end
-		local node = Host.Frame(spec)
-		if tag then
-			node:AddTag(tag)
-		end
-		return node
+	local function quiet(name, value, role, props)
+		local spec = merged({ role = "secondary" }, props)
+		return words(name, value, role or "caption", spec)
 	end
 	local function button(name, label, activate, props)
-		local spec = { Name = name, label = label, onActivate = activate, Size = D2.fromOffset(0, 36), TextSize = 16 }
-		for key, value in props or {} do
-			if type(key) == "number" then
-				table.insert(spec, value)
-			else
-				spec[key] = value
-			end
-		end
-		return UI.Button(spec)
+		return UI.Button(
+			merged({ Name = name, label = label, onActivate = activate, Size = D2.fromOffset(0, 36) }, props)
+		)
 	end
-	local function observeSize(node)
-		local value = Compose.cell(V2.new(screens.CANVAS.w, screens.CANVAS.h))
+	local function measure(node, value)
 		local observation = runtime.host.observation
 		Compose.cleanup(observation.observeProperty(node, "AbsoluteSize", function()
 			local size = observation.readProperty(node, "AbsoluteSize")
@@ -171,6 +67,11 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				value:set(size)
 			end
 		end))
+		return node
+	end
+	local function observeSize(node)
+		local value = Compose.cell(V2.new(screens.CANVAS.w, screens.CANVAS.h))
+		measure(node, value)
 		return value
 	end
 	local function collection(kind, spec, source)
@@ -194,7 +95,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		return node
 	end
 	local function stage(name, contentBuilder, props)
-		local spec = {
+		local spec = merged({
 			Name = name,
 			Size = D2.fromScale(1, 1),
 			BorderSizePixel = 0,
@@ -205,32 +106,78 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			LightDirection = types.Vector3.new(-1, -1, -0.5),
 			content = contentBuilder,
 			rounded(),
-		}
-		for key, value in props or {} do
-			if type(key) == "number" then
-				table.insert(spec, value)
-			else
-				spec[key] = value
-			end
-		end
+		}, props)
 		return Compose.boundary(function()
 			return UI.Stage(spec)
 		end, function()
-			return text(
-				name .. "Unavailable",
-				"Preview unavailable",
-				16,
-				{ Size = spec.Size, Position = spec.Position, AutomaticSize = E.AutomaticSize.None }
-			)
+			return UI.Label({
+				Name = name .. "Unavailable",
+				text = "Preview unavailable",
+				textRole = "label",
+				role = "secondary",
+				Size = spec.Size,
+				Position = spec.Position,
+				AutomaticSize = E.AutomaticSize.None,
+			})
 		end)
 	end
-	local function shell(name, body)
+	local function panelShadow()
+		return Facet.themes.skin(runtime, actions.theme, "monitorPanel", { types = types })
+	end
+	local function toastFor(app)
+		local source = model.toasts[app]
+		return Compose.keyed({
+			from = function(use)
+				local toast = use(source)
+				return if toast then { toast } else {}
+			end,
+			key = function(toast)
+				return toast.serial
+			end,
+			render = function(current)
+				local toast = current:peek()
+				local presented = Compose.formula(function(use)
+					local live = use(source)
+					return live ~= nil and live.serial == toast.serial
+				end)
+				return UI.Snackbar(app .. "Toast")({
+					isPresented = presented,
+					onPresentedChange = function(value)
+						if not value then
+							model.dismissToast(app, toast.serial)
+						end
+					end,
+					message = toast.message,
+					duration = 5,
+					action = if toast.undo
+						then {
+							label = "Undo",
+							onActivate = function()
+								toast.undo()
+								model.dismissToast(app, toast.serial)
+							end,
+						}
+						else nil,
+				})
+			end,
+		})
+	end
+	local function shell(name, build)
 		local about = Compose.cell(false)
+		local statusOpen = Compose.cell(false)
 		local width = Compose.cell(920)
-		local actionsRow = {}
+		local function wide(use)
+			return use(width) >= 860
+		end
+		local function switchAppearance()
+			model.dark:update(function(value)
+				return not value
+			end)
+		end
+		local chrome = { Name = "Chrome", gap = "s", align = "center", Visible = wide }
 		if actions.spatial then
 			table.insert(
-				actionsRow,
+				chrome,
 				button("Focus", function(use)
 					return if use(model.focused) == name then "All monitors" else "Focus"
 				end, function()
@@ -239,108 +186,116 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			)
 		end
 		table.insert(
-			actionsRow,
+			chrome,
 			button("Presentation", function(use)
 				return if use(model.mode) == "Spatial" then "Screen mode" else "Spatial mode"
 			end, model.toggleMode)
 		)
 		table.insert(
-			actionsRow,
+			chrome,
 			button("Appearance", function(use)
 				return if use(model.dark) then "Light mode" else "Dark mode"
-			end, function()
-				model.dark:update(function(value)
-					return not value
-				end)
-			end)
+			end, switchAppearance)
 		)
 		table.insert(
-			actionsRow,
+			chrome,
 			button("About", "About", function()
 				about:set(true)
 			end)
 		)
 		local player = actions.player
-		table.insert(
-			actionsRow,
-			UI.Avatar "Profile" {
-				name = if player then player.DisplayName else "You",
-				userId = if player and player.UserId > 0 then player.UserId else nil,
-				presence = "online",
-				diameter = 36,
-			}
-		)
-		local chrome = scrollRow("Chrome", actionsRow, {
-			Position = D2.new(0.3, 0, 0, 8),
-			Size = D2.new(0.7, -16, 0, 42),
-			Visible = function(use)
-				return use(width) >= 650
+		local displayName = if player then player.DisplayName else "You"
+		local profile = UI.Avatar "Profile" {
+			name = displayName,
+			userId = if player and player.UserId > 0 then player.UserId else nil,
+			presence = model.presence,
+			diameter = 36,
+			onActivate = function()
+				statusOpen:set(true)
 			end,
-		})
-		runtime.decorate(chrome:FindFirstChildWhichIsA("UIListLayout"), {
-			HorizontalAlignment = E.HorizontalAlignment.Right,
-		})
-		local root = Host.Frame({
-			Name = name,
-			Size = D2.fromScale(1, 1),
-			BorderSizePixel = 0,
+		}
+		local presenceWords = { online = "Online", away = "Away", busy = "Busy" }
+		local root = UI.ZStack(name)({
+			width = "fill",
+			height = "fill",
+			BackgroundTransparency = 0,
 			SelectionGroup = true,
 			ClipsDescendants = true,
-			text("Title", if name == "Chat" then "Assistant" else name, 27, {
-				Position = D2.fromOffset(16, 12),
-				Size = function(use)
-					return if use(width) < 650 then D2.new(1, -132, 0, 36) else D2.new(0.3, -20, 0, 36)
-				end,
-				AutomaticSize = E.AutomaticSize.None,
-				TextTruncate = E.TextTruncate.AtEnd,
-				Font = E.Font.BuilderSansBold,
-			}),
-			chrome,
-			UI.Menu "ActionsMenu" {
-				label = "Menu",
-				Position = D2.new(1, -100, 0, 8),
-				Visible = function(use)
-					return use(width) < 650
-				end,
-				items = {
-					{ id = "Presentation", label = "Switch presentation", onSelect = model.toggleMode },
-					{
-						id = "Appearance",
-						label = "Switch appearance",
-						onSelect = function()
-							model.dark:update(function(value)
-								return not value
-							end)
-						end,
-					},
-					{
-						id = "About",
-						label = "About",
-						onSelect = function()
-							about:set(true)
-						end,
-					},
-					if actions.spatial
-						then {
-							id = "Focus",
-							label = function(use)
-								return if use(model.focused) == name then "All monitors" else "Focus"
+			UI.Screen "Page" {
+				gap = "s",
+				padding = { top = "s", right = "m", bottom = "m", left = "m" },
+				UI.NavBar "Header" {
+					title = if name == "Chat" then "Assistant" else name,
+					titleSize = "heading",
+					trailing = UI.HStack "HeaderActions" {
+						gap = "s",
+						align = "center",
+						UI.HStack(chrome),
+						UI.Menu "ActionsMenu" {
+							label = "Menu",
+							Visible = function(use)
+								return not wide(use)
 							end,
-							onSelect = function()
-								model.focus(name)
-							end,
-						}
-						else nil,
+							items = {
+								{ id = "Presentation", label = "Switch presentation", onSelect = model.toggleMode },
+								{ id = "Appearance", label = "Switch appearance", onSelect = switchAppearance },
+								{
+									id = "About",
+									label = "About",
+									onSelect = function()
+										about:set(true)
+									end,
+								},
+								if actions.spatial
+									then {
+										id = "Focus",
+										label = function(use)
+											return if use(model.focused) == name then "All monitors" else "Focus"
+										end,
+										onSelect = function()
+											model.focus(name)
+										end,
+									}
+									else nil,
+							},
+						},
+						profile,
+					},
 				},
-			},
-			Host.Frame "Content" {
-				Position = D2.fromOffset(16, 62),
-				Size = D2.new(1, -32, 1, -78),
-				BackgroundTransparency = 1,
-				Interactable = function(use)
-					return not actions.spatial or use(model.focused) == name
-				end,
-				body,
+				Host.Frame "Content" {
+					BackgroundTransparency = 1,
+					Size = D2.fromScale(1, 0),
+					Interactable = function(use)
+						return not actions.spatial or use(model.focused) == name
+					end,
+					UI.fill(),
+					UI.ErrorBoundary "AppBoundary" {
+						width = "fill",
+						height = "fill",
+						view = function()
+							local body, extra = build()
+							return UI.ZStack "AppContent" { width = "fill", height = "fill", body, extra }
+						end,
+						fallback = function(_, retry)
+							return UI.VStack "AppFailure" {
+								width = "fill",
+								gap = "s",
+								padding = "l",
+								words(
+									"FailureTitle",
+									`{if name == "Chat" then "Assistant" else name} stopped`,
+									"heading"
+								),
+								quiet(
+									"FailureMessage",
+									"Something in this app failed. Your saved games, notes and messages are safe.",
+									"label"
+								),
+								button("Retry", "Try again", retry),
+							}
+						end,
+					},
+				},
 			},
 			button("WakeMonitor", "", function()
 				model.focus(name)
@@ -354,11 +309,83 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					return actions.spatial == true and use(model.focused) ~= name
 				end,
 			}),
-			UI.Alert "AboutDialog" {
+			UI.Popover "StatusPopover" {
+				source = { node = profile },
+				isPresented = statusOpen,
+				onPresentedChange = function(value)
+					statusOpen:set(value)
+				end,
+				edge = "bottom",
+				align = "end",
+				maxWidth = 280,
+				content = function()
+					return UI.VStack "PresenceCard" {
+						width = "fill",
+						gap = "s",
+						UI.HStack "Identity" {
+							gap = "s",
+							align = "center",
+							UI.StatusIndicator "PresenceDot" {
+								status = function(use)
+									local presence = use(model.presence)
+									return if presence == "online"
+										then "success"
+										elseif presence == "away" then "warning"
+										else "error"
+								end,
+								name = function(use)
+									return presenceWords[use(model.presence)]
+								end,
+							},
+							UI.Label "DisplayName" { text = displayName, textRole = "strong" },
+						},
+						UI.Picker "Presence" {
+							selected = model.presence,
+							onChange = function()
+								statusOpen:set(false)
+							end,
+							style = "radioGroup",
+							options = {
+								{ value = "online", label = "Online" },
+								{ value = "away", label = "Away" },
+								{ value = "busy", label = "Busy" },
+							},
+						},
+					}
+				end,
+			},
+			UI.Dialog "AboutDialog" {
 				isPresented = about,
+				onPresentedChange = function(value)
+					about:set(value)
+				end,
 				title = "About Virtual Monitors",
-				message = "Three complete apps, shared between a spatial desktop and a flat screen. Compose owns every scene and lifetime; Facet supplies controls; Roblox supplies layout and rendering.",
-				actions = { { id = "done", label = "Done", role = "cancel" } },
+				content = function()
+					return UI.VStack "AboutCopy" {
+						width = "fill",
+						gap = "s",
+						stage("AboutScene", actions.discoveryContent, { Size = D2.new(1, 0, 0, 150) }),
+						words(
+							"AboutMessage",
+							"Three complete apps, shared between a spatial desktop and a flat screen. Compose owns every scene and lifetime; Facet supplies controls; Roblox supplies layout and rendering."
+						),
+						quiet(
+							"AboutVersion",
+							`Facet {Facet.VERSION} · Compose {string.sub(Facet.COMPOSE_COMMIT, 1, 7)}`,
+							"caption"
+						),
+					}
+				end,
+				actions = {
+					{
+						id = "done",
+						label = "Done",
+						role = "cancel",
+						onActivate = function()
+							about:set(false)
+						end,
+					},
+				},
 			},
 		})
 		root:AddTag("facet-surface")
@@ -368,16 +395,51 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		end)
 		return root
 	end
-	local function saveButton(current, name)
-		return button(name or "Save", function(use)
-			return if use(model.saved)[use(current).id] then "Saved" else "Save"
-		end, function()
-			model.toggleSaved(current:peek().id)
-		end)
+	local function saveAction(current)
+		return {
+			label = function(use)
+				return if use(model.saved)[use(current).id] then "Saved" else "Save"
+			end,
+			icon = function(use)
+				return if use(model.saved)[use(current).id] then "checkmark" else "increment"
+			end,
+			onActivate = function()
+				model.save(current:peek())
+			end,
+		}
+	end
+	local function gameMenu(current)
+		return {
+			items = {
+				{
+					id = "Share",
+					label = "Share",
+					onSelect = function()
+						model.notify("Discover", `Link to {current:peek().title} copied`)
+					end,
+				},
+				{
+					id = "Hide",
+					label = "Not interested",
+					onSelect = function()
+						model.hide(current:peek())
+					end,
+				},
+				{ divider = true },
+				{
+					id = "Report",
+					label = "Report",
+					role = "destructive",
+					onSelect = function()
+						model.notify("Discover", `Thanks. We will review {current:peek().title}.`)
+					end,
+				},
+			},
+		}
 	end
 	local function gameCard(current)
 		local item = current:peek()
-		local card
+		local card, preview
 		local suppressPointerActivation = false
 		local dragOrigin, pointerStateConnection
 		local dragged = false
@@ -394,46 +456,53 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			end
 		end
 		Compose.cleanup(cancelPointer)
-		local footer = column("CardFooter", {
-			text("Title", function(use)
-				return use(current).title
-			end, 18, { TextWrapped = false, TextTruncate = E.TextTruncate.AtEnd, Font = E.Font.BuilderSansBold }),
-			row("Live", {
-				UI.StatusIndicator "LiveDot" {
-					status = "success",
-					name = "Live now",
-				},
-				text(
-					"Facts",
-					function(use)
-						local game = use(current)
-						return game.rating .. "  ·  " .. game.players
-					end,
-					13,
-					{
-						TextWrapped = false,
-						TextTruncate = E.TextTruncate.AtEnd,
-						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-					},
-					"facet-secondary"
-				),
-			}, { Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }),
-		}, {
-			Position = D2.new(0, 12, 1, -8),
-			AnchorPoint = V2.new(0, 1),
-			Size = function(use)
-				return D2.new(1, if #use(current).friends > 0 then -104 else -24, 0, 0)
+		local drag = Host.UIDragDetector "SaveDrag" {
+			ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
+			Enabled = function(use)
+				return not use(touchEnabled)
 			end,
-		})
-		local footerHeight = Compose.cell(42)
-		Compose.cleanup(runtime.host.observation.observeProperty(footer, "AbsoluteSize", function()
-			if footer.AbsoluteSize.Y > 0 then
-				footerHeight:set(footer.AbsoluteSize.Y)
-			end
-		end))
-		card = UI.Button({
-			Name = "Game_" .. item.id,
-			label = "",
+		}
+		card = UI.Card("Game_" .. item.id)({
+			title = function(use)
+				return use(current).title
+			end,
+			caption = function(use)
+				local game = use(current)
+				return game.rating .. "  ·  " .. game.players
+			end,
+			artwork = function()
+				preview = UI.ZStack "Preview" {
+					width = "fill",
+					height = "fill",
+					ClipsDescendants = true,
+					rounded(),
+					stage("Scene", if actions.gameContent then actions.gameContent(current) else nil, {
+						Active = false,
+					}),
+					UI.StatusIndicator "LiveDot" {
+						status = "success",
+						name = "Live now",
+						AnchorPoint = V2.new(0, 0),
+						Position = D2.fromOffset(10, 10),
+					},
+					Compose.show(function(use)
+						return #use(current).friends > 0
+					end, function()
+						return UI.AvatarGroup "Friends" {
+							items = function(use)
+								return use(current).friends
+							end,
+							max = 3,
+							layout = "stacked",
+							diameter = 28,
+							Position = D2.new(1, -10, 1, -10),
+							AnchorPoint = V2.new(1, 1),
+						}
+					end),
+					drag,
+				}
+				return preview
+			end,
 			onActivate = function(input)
 				if
 					suppressPointerActivation
@@ -447,59 +516,9 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				end
 				openCard()
 			end,
-			Size = D2.fromScale(1, 1),
-			AutomaticSize = E.AutomaticSize.None,
-			BorderSizePixel = 0,
-			rounded(),
-			padding(0),
-			stage("Scene", if actions.gameContent then actions.gameContent(current) else nil, {
-				Size = function(use)
-					return D2.new(1, 0, 1, -math.max(58, use(footerHeight) + 16))
-				end,
-				Active = false,
-			}),
-			footer,
-			Compose.show(function(use)
-				return #use(current).friends > 0
-			end, function()
-				return UI.AvatarGroup "Friends" {
-					items = function(use)
-						return use(current).friends
-					end,
-					max = 3,
-					layout = "stacked",
-					diameter = 28,
-					Position = D2.new(1, -12, 1, -12),
-					AnchorPoint = V2.new(1, 1),
-				}
-			end),
-			UI.Button "Save" {
-				name = function(use)
-					return if use(model.saved)[use(current).id] then "Saved" else "Save"
-				end,
-				icon = function(use)
-					return if use(model.saved)[use(current).id] then "checkmark" else "increment"
-				end,
-				shape = "circle",
-				appearance = "soft",
-				controlSize = "compact",
-				onActivate = function()
-					model.toggleSaved(current:peek().id)
-				end,
-				Position = D2.new(1, -10, 0, 10),
-				AnchorPoint = V2.new(1, 0),
-			},
+			primaryAction = saveAction(current),
+			menu = gameMenu(current),
 		})
-		card:AddTag("facet-panel")
-		local drag = Host.UIDragDetector "SaveDrag" {
-			ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
-			Enabled = function(use)
-				return not use(touchEnabled)
-			end,
-		}
-		runtime.mount(function()
-			return drag
-		end, card)
 		local function saveAt(position)
 			if not dropTarget then
 				return
@@ -512,7 +531,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				and position.Y <= at.Y + size.Y
 				and not model.saved:peek()[item.id]
 			then
-				model.toggleSaved(item.id)
+				model.save(current:peek())
 			end
 		end
 		local function moved(position)
@@ -569,7 +588,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			Compose.cleanup(function()
 				finishTouch(false)
 			end)
-			runtime.connect(card, "InputBegan", function(input)
+			runtime.connect(preview, "InputBegan", function(input)
 				if input.UserInputType == E.UserInputType.Touch then
 					cancelPointer()
 					suppressPointerActivation = false
@@ -600,7 +619,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					end)
 				end
 			end)
-			runtime.connect(card, "TouchLongPress", function(positions, state)
+			runtime.connect(preview, "TouchLongPress", function(positions, state)
 				if state ~= E.UserInputState.Begin or contact == nil or held then
 					return
 				end
@@ -631,6 +650,11 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		model.catalog.seen(item.index)
 		return card
 	end
+	local launchSteps = {
+		{ id = "find", label = "Find server" },
+		{ id = "load", label = "Load world" },
+		{ id = "join", label = "Join" },
+	}
 	local function detailContent(current)
 		local selected = current:peek()
 		if not selected then
@@ -658,209 +682,256 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		local tab = function(use)
 			return use(model.detailTab)
 		end
-		local contentFrame = Host.Frame "GameDetails" {
-			Size = D2.new(1, 0, 0, 0),
-			AutomaticSize = E.AutomaticSize.Y,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-		}
-		runtime.mount(function()
-			return column("DetailBody", {
-				stage(
-					"DetailScene",
-					if actions.gameContent then actions.gameContent(current) else nil,
-					{ Size = D2.new(1, 0, 0, 180) }
-				),
-				row("PlayRow", {
-					UI.SplitButton "Play" {
-						label = "Play",
-						menuLabel = "More ways to play",
-						onActivate = function()
-							model.launch:set({ id = selected.id, mode = "Joining a public server" })
-						end,
-						items = {
-							{
-								id = "Friends",
-								label = if #selected.friends > 0
-									then `Join friends ({#selected.friends})`
-									else "Join friends",
-								enabled = #selected.friends > 0,
-								onSelect = function()
-									model.launch:set({ id = selected.id, mode = "Joining your friends" })
-								end,
-							},
-							{
-								id = "Private",
-								label = "Start a private server",
-								onSelect = function()
-									model.launch:set({ id = selected.id, mode = "Starting a private server" })
-								end,
-							},
-						},
-					},
-					text(
-						"LaunchStatus",
-						function(use)
-							local launch = use(model.launch)
-							return if launch and launch.id == selected.id then `{launch.mode}… (simulated)` else ""
-						end,
-						15,
+		local function launching(use)
+			local launch = use(model.launch)
+			return if launch and launch.id == selected.id then launch else nil
+		end
+		local similar = {}
+		for _, candidate in model.catalog.items:peek() do
+			if candidate.genre == selected.genre and candidate.id ~= selected.id then
+				table.insert(similar, candidate)
+			end
+		end
+		local perPage = 6
+		local pageCount = math.max(1, math.ceil(#similar / perPage))
+		return UI.VStack "GameDetails" {
+			width = "fill",
+			gap = "s",
+			stage(
+				"DetailScene",
+				if actions.gameContent then actions.gameContent(current) else nil,
+				{ Size = D2.new(1, 0, 0, 180) }
+			),
+			UI.HStack "PlayRow" {
+				width = "fill",
+				gap = "s",
+				align = "center",
+				UI.SplitButton "Play" {
+					label = "Play",
+					menuLabel = "More ways to play",
+					onActivate = function()
+						model.launchGame(selected.id, "Joining a public server")
+					end,
+					items = {
 						{
-							Size = D2.new(1, -200, 0, 20),
-							AutomaticSize = E.AutomaticSize.None,
-							TextYAlignment = E.TextYAlignment.Center,
+							id = "Friends",
+							label = if #selected.friends > 0
+								then `Join friends ({#selected.friends})`
+								else "Join friends",
+							enabled = #selected.friends > 0,
+							onSelect = function()
+								model.launchGame(selected.id, "Joining your friends")
+							end,
 						},
-						"facet-secondary"
-					),
-				}, { Size = D2.new(1, 0, 0, 44) }),
-				text("Description", selected.description, 18),
-				row("Creator", {
-					UI.AsyncImage "CreatorAvatar" {
-						source = selected.creatorImage,
-						loader = actions.creatorImageLoader,
-						Size = D2.fromOffset(40, 40),
-						placeholder = function()
-							return UI.Skeleton "CreatorShimmer" {
-								form = "circle",
-								Size = D2.fromOffset(40, 40),
-								AutomaticSize = E.AutomaticSize.None,
-							}
-						end,
+						{
+							id = "Private",
+							label = "Start a private server",
+							onSelect = function()
+								model.launchGame(selected.id, "Starting a private server")
+							end,
+						},
 					},
-					text(
-						"CreatorName",
-						selected.creator,
-						15,
-						{ Size = D2.new(1, -52, 0, 38), AutomaticSize = E.AutomaticSize.None }
-					),
-				}, { Size = D2.new(1, 0, 0, 40) }),
-				row("DetailsTabs", {
-					button("AboutTab", "About", function()
-						model.detailTab:set("about")
-					end),
-					button("SimilarTab", "Similar games", function()
-						model.detailTab:set("similar")
-					end),
-					saveButton(current, "SaveDetail"),
-				}),
-				Compose.show(function(use)
-					return tab(use) == "about"
-				end, function()
-					return column("AboutGame", {
-						ratingAnchor,
-						Compose.show(ratingPresented, function()
-							return UI.Callout "RatingPopover" {
-								priority = 10,
-								anchor = ratingAnchor,
-								isPresented = ratingPresented,
-								content = function()
-									return text(
-										"RatingMeaning",
-										"The rating is the share of players who would recommend this game to a friend.",
-										16
-									)
-								end,
-								onRetire = function()
-									ratingPresented:set(false)
-								end,
-							}
-						end),
-						text("TrendHeading", "Players this week", 16),
-						sparkline(),
-						text(
-							"Rating",
-							selected.rating .. " recommend this game · " .. selected.players,
-							15,
-							{},
-							"facet-secondary"
-						),
-						text("YourRating", "Your rating", 17),
-						UI.Rating "Stars" {
-							value = function(use)
-								return use(model.ratings)[selected.id] or selected.stars
-							end,
-							count = 5,
-							allowZero = false,
-							onChange = function(value)
-								model.rate(selected.id, value)
-							end,
-							Size = D2.new(1, 0, 0, 44),
-							AutomaticSize = E.AutomaticSize.None,
-						},
-						text(
-							"RatingExplanation",
-							"The rating is the share of players who would recommend this game to a friend.",
-							14,
-							{},
-							"facet-secondary"
-						),
-					}, { LayoutOrder = 5 })
-				end),
-				Compose.show(function(use)
-					return tab(use) == "similar"
-				end, function()
-					local children = {}
-					for _, candidate in model.catalog.items:peek() do
-						if candidate.genre == selected.genre and candidate.id ~= selected.id and #children < 6 then
-							table.insert(
-								children,
-								UI.RowActions({
-									Name = "SimilarRow_" .. candidate.id,
-									Size = D2.new(1, 0, 0, 42),
-									content = function()
-										return button(
-											"Similar_" .. candidate.id,
-											candidate.title .. "  ·  " .. candidate.rating,
-											function()
-												model.selectGame(candidate)
-											end,
-											{
-												Size = D2.fromScale(1, 1),
-												AutomaticSize = E.AutomaticSize.None,
-											}
-										)
-									end,
-									trailing = {
-										{
-											id = "SaveSimilar",
-											label = "Save",
-											onActivate = function()
-												model.toggleSaved(candidate.id)
-											end,
-										},
-									},
-								})
-							)
+				},
+				quiet("LaunchStatus", function(use)
+					local launch = launching(use)
+					return if launch == nil
+						then ""
+						elseif launch.stage > 3 then "Joined (simulated)"
+						else `{launch.mode}… (simulated)`
+				end, "label", { Size = D2.fromOffset(0, 0), TextWrapped = false, UI.fill() }),
+			},
+			Compose.show(function(use)
+				return launching(use) ~= nil
+			end, function()
+				return UI.StepIndicator "LaunchSteps" {
+					steps = function(use)
+						local stage = launching(use).stage
+						local steps = {}
+						for index, step in launchSteps do
+							table.insert(steps, {
+								id = step.id,
+								label = step.label,
+								state = if index < stage
+									then "complete"
+									elseif index == stage then "current"
+									else "upcoming",
+							})
 						end
-					end
-					return column("SimilarGames", children, { LayoutOrder = 5 })
+						return steps
+					end,
+					current = function(use)
+						local launch = launching(use)
+						return if launch and launch.stage <= 3 then launchSteps[launch.stage].id else nil
+					end,
+					listLabel = "Launch steps",
+				}
+			end),
+			UI.DateTimePicker "Session" {
+				label = "Play session",
+				time = true,
+				minuteStep = 15,
+				clock = clock,
+				min = civil.dateOf(clock()),
+				placeholder = "Not scheduled",
+				value = function(use)
+					return use(model.sessions)[selected.id]
+				end,
+				onChange = function(date)
+					model.schedule(selected.id, date)
+				end,
+				hint = function(use)
+					local session = use(model.sessions)[selected.id]
+					return if session
+						then `Friends see {civil.format(session)} at {civil.formatTime(session, 12)}.`
+						else "Pick a time to play with friends."
+				end,
+			},
+			words("Description", selected.description),
+			UI.HStack "Creator" {
+				width = "fill",
+				gap = "s",
+				align = "center",
+				UI.AsyncImage "CreatorAvatar" {
+					source = selected.creatorImage,
+					loader = actions.creatorImageLoader,
+					Size = D2.fromOffset(40, 40),
+					placeholder = function()
+						return UI.Skeleton "CreatorShimmer" {
+							form = "circle",
+							Size = D2.fromOffset(40, 40),
+							AutomaticSize = E.AutomaticSize.None,
+						}
+					end,
+				},
+				UI.Label "CreatorName" { text = selected.creator, textRole = "label", UI.fill() },
+			},
+			UI.HStack "DetailsTabs" {
+				gap = "s",
+				button("AboutTab", "About", function()
+					model.detailTab:set("about")
 				end),
-			})
-		end, contentFrame)
-		return contentFrame
+				button("SimilarTab", "Similar games", function()
+					model.detailTab:set("similar")
+				end),
+				button("SaveDetail", saveAction(current).label, function()
+					model.save(current:peek())
+				end),
+			},
+			Compose.show(function(use)
+				return tab(use) == "about"
+			end, function()
+				return UI.VStack "AboutGame" {
+					width = "fill",
+					gap = "s",
+					ratingAnchor,
+					Compose.show(ratingPresented, function()
+						return UI.Callout "RatingPopover" {
+							priority = 10,
+							anchor = ratingAnchor,
+							isPresented = ratingPresented,
+							content = function()
+								return words(
+									"RatingMeaning",
+									"The rating is the share of players who would recommend this game to a friend.",
+									"label"
+								)
+							end,
+							onRetire = function()
+								ratingPresented:set(false)
+							end,
+						}
+					end),
+					words("TrendHeading", "Players this week", "label"),
+					sparkline(),
+					quiet("Rating", selected.rating .. " recommend this game · " .. selected.players, "label"),
+					words("YourRating", "Your rating", "label"),
+					UI.Rating "Stars" {
+						value = function(use)
+							return use(model.ratings)[selected.id] or selected.stars
+						end,
+						count = 5,
+						allowZero = false,
+						onChange = function(value)
+							model.rate(selected.id, value)
+						end,
+						Size = D2.new(1, 0, 0, 44),
+						AutomaticSize = E.AutomaticSize.None,
+					},
+					quiet(
+						"RatingExplanation",
+						"The rating is the share of players who would recommend this game to a friend."
+					),
+				}
+			end),
+			Compose.show(function(use)
+				return tab(use) == "similar"
+			end, function()
+				local function similarRow(candidate)
+					return UI.RowActions({
+						Name = "SimilarRow_" .. candidate.id,
+						Size = D2.new(1, 0, 0, 42),
+						content = function()
+							return button(
+								"Similar_" .. candidate.id,
+								candidate.title .. "  ·  " .. candidate.rating,
+								function()
+									model.selectGame(candidate)
+								end,
+								{ Size = D2.fromScale(1, 1), AutomaticSize = E.AutomaticSize.None }
+							)
+						end,
+						trailing = {
+							{
+								id = "SaveSimilar",
+								label = "Save",
+								onActivate = function()
+									model.save(candidate)
+								end,
+							},
+						},
+					})
+				end
+				return UI.VStack "SimilarGames" {
+					width = "fill",
+					gap = "s",
+					Compose.switch(function(use)
+						return math.clamp(use(model.similarPage), 1, pageCount)
+					end, {}, function()
+						local page = math.clamp(model.similarPage:peek(), 1, pageCount)
+						local rows = { Name = "SimilarPage", width = "fill", gap = "s" }
+						for index = (page - 1) * perPage + 1, math.min(#similar, page * perPage) do
+							table.insert(rows, similarRow(similar[index]))
+						end
+						return UI.VStack(rows)
+					end),
+					Compose.show(function()
+						return pageCount > 1
+					end, function()
+						return UI.Pagination "SimilarPages" {
+							page = model.similarPage,
+							pageCount = pageCount,
+							onChange = function(page)
+								model.similarPage:set(page)
+							end,
+						}
+					end),
+				}
+			end),
+		}
 	end
-	local function Discover()
-		local body = Host.Frame "DiscoverBody" { Size = D2.fromScale(1, 1), BackgroundTransparency = 1 }
-		local dimensions = observeSize(body)
+	local function discoverContent()
+		local dimensions = Compose.cell(V2.new(screens.CANVAS.w, screens.CANVAS.h))
 		local function compact(use)
 			return use(dimensions).X < 620
 		end
-		local function heroHeight(use)
-			return if not compact(use) and use(dimensions).Y >= 682 then 292 else 0
-		end
-		local function searchHeight(use)
-			return if compact(use) then 96 else 44
-		end
-		local function headerHeight(use)
-			return searchHeight(use) + 106
-		end
-		local function feedY(use)
-			return headerHeight(use) + heroHeight(use)
+		local function featured(use)
+			return not compact(use) and use(dimensions).Y >= 682 and use(model.shelf) == "browse"
 		end
 		local genreOptions = { { value = "all", label = "All" } }
 		for _, name in require("./catalog").genres do
 			table.insert(genreOptions, { value = name, label = name })
 		end
+		local body
 		local focusSearch = Host.InputAction "FocusSearch" {
 			Type = E.InputActionType.Bool,
 			Enabled = function(use)
@@ -874,364 +945,329 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			end,
 			Host.InputBinding({ KeyCode = E.KeyCode.Slash }),
 		}
-		runtime.mountFragment(function()
-			return {
-				Host.InputContext "DiscoverShortcuts" { focusSearch },
-				Host.Frame "SearchControls" {
-					BackgroundTransparency = 1,
-					Size = function(use)
-						return D2.new(1, 0, 0, searchHeight(use))
+		local chips = { Name = "Genres", axis = "x", gap = "s", Size = D2.new(1, 0, 0, 44), ScrollBarThickness = 2 }
+		for _, option in genreOptions do
+			local value = option.value
+			table.insert(
+				chips,
+				UI.Chip({
+					Name = "Genre_" .. value,
+					label = option.label,
+					selected = function(use)
+						return use(model.genre) == value
 					end,
-					Host.UIListLayout({
-						FillDirection = function(use)
-							return if compact(use) then E.FillDirection.Vertical else E.FillDirection.Horizontal
-						end,
-						SortOrder = E.SortOrder.LayoutOrder,
-						Padding = D.new(0, 8),
-					}),
-					UI.ComboBox "Search" {
-						LayoutOrder = function(use)
-							return if compact(use) then 2 else 1
-						end,
-						value = model.searchSelection,
-						text = model.query,
-						acceptCustom = function()
-							return true
-						end,
-						options = function(use)
-							local query, choices = use(model.query):lower(), {}
-							if query ~= "" then
-								for _, item in use(model.catalog.items) do
-									if item.title:lower():find(query, 1, true) then
-										table.insert(choices, { value = item.id, label = item.title })
-										if #choices == 8 then
-											break
-										end
+					onToggle = function()
+						model.genre:set(value)
+					end,
+				})
+			)
+		end
+		local savedShelf = button("Saved", "Saved", function()
+			model.shelf:set("saved")
+		end)
+		local shelves = UI.HStack "Shelves" {
+			width = "fill",
+			gap = "s",
+			align = "center",
+			button("Browse", "Browse", function()
+				model.shelf:set("browse")
+			end),
+			UI.badged(savedShelf, function(use)
+				return #use(model.savedGames)
+			end),
+			UI.Label "Count" {
+				text = function(use)
+					return `{#use(model.visibleGames)} games`
+				end,
+				textRole = "caption",
+				role = "secondary",
+				TextXAlignment = E.TextXAlignment.Right,
+				UI.fill(),
+			},
+		}
+		dropTarget = shelves
+		Compose.cleanup(function()
+			if dropTarget == shelves then
+				dropTarget = nil
+			end
+		end)
+		local function feedFrame(child)
+			return Host.Frame "Feed" {
+				BackgroundTransparency = 1,
+				Size = D2.fromScale(1, 0),
+				UI.fill(),
+				child,
+			}
+		end
+		body = UI.VStack "DiscoverBody" {
+			width = "fill",
+			height = "fill",
+			gap = "s",
+			Host.InputContext "DiscoverShortcuts" { focusSearch },
+			UI.HStack "SearchControls" {
+				width = "fill",
+				gap = "s",
+				align = "center",
+				wrap = true,
+				UI.ComboBox "Search" {
+					value = model.searchSelection,
+					text = model.query,
+					acceptCustom = function()
+						return true
+					end,
+					options = function(use)
+						local query, choices = use(model.query):lower(), {}
+						if query ~= "" then
+							for _, item in use(model.catalog.items) do
+								if item.title:lower():find(query, 1, true) then
+									table.insert(choices, { value = item.id, label = item.title })
+									if #choices == 8 then
+										break
 									end
 								end
 							end
-							return choices
-						end,
-						onChange = function(id)
-							for _, item in model.catalog.items:peek() do
-								if item.id == id then
-									model.selectGame(item)
-									break
-								end
-							end
-						end,
-						placeholder = "Search games",
-						Size = function(use)
-							return if compact(use) then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
-						end,
-						AutomaticSize = E.AutomaticSize.None,
-						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-					},
-					UI.ShortcutHint "SearchShortcut" {
-						action = focusSearch,
-						LayoutOrder = 2,
-						Visible = function(use)
-							return not compact(use) and not use(touchEnabled)
-						end,
-					},
-					Host.Frame "SortControl" {
-						LayoutOrder = function(use)
-							return if compact(use) then 1 else 3
-						end,
-						BackgroundTransparency = 1,
-						Size = function(use)
-							return if compact(use) then D2.new(1, 0, 0, 44) else D2.fromOffset(180, 44)
-						end,
-						Host.UIListLayout({
-							FillDirection = E.FillDirection.Horizontal,
-							SortOrder = E.SortOrder.LayoutOrder,
-							Padding = D.new(0, 8),
-						}),
-						UI.Picker "Sort" {
-							LayoutOrder = 1,
-							selected = model.sort,
-							onChange = function(value)
-								model.sort:set(value)
-							end,
-							options = {
-								{ value = "recommended", label = "Recommended" },
-								{ value = "rating", label = "Top rated" },
-								{ value = "playing", label = "Most playing" },
-							},
-							style = "menu",
-							Size = D2.fromOffset(0, 44),
-							AutomaticSize = E.AutomaticSize.None,
-							Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-						},
-					},
-				},
-				(function()
-					local chips = {}
-					for index, option in genreOptions do
-						local value = option.value
-						table.insert(
-							chips,
-							UI.Chip({
-								Name = "Genre_" .. value,
-								LayoutOrder = index,
-								label = option.label,
-								selected = function(use)
-									return use(model.genre) == value
-								end,
-								onToggle = function()
-									model.genre:set(value)
-								end,
-							})
-						)
-					end
-					return scrollRow("Genres", chips, {
-						Position = function(use)
-							return D2.fromOffset(0, searchHeight(use) + 8)
-						end,
-						Size = D2.new(1, 0, 0, 44),
-					})
-				end)(),
-				(function()
-					local shelves = row("Shelves", {
-						button("Browse", "Browse", function()
-							model.shelf:set("browse")
-						end),
-						button("Saved", function(use)
-							return `Saved ({#use(model.savedGames)})`
-						end, function()
-							model.shelf:set("saved")
-						end),
-						text(
-							"Count",
-							function(use)
-								return `{#use(model.visibleGames)} games`
-							end,
-							14,
-							{
-								Size = D2.fromOffset(0, 24),
-								Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-								TextXAlignment = E.TextXAlignment.Right,
-								AutomaticSize = E.AutomaticSize.None,
-							},
-							"facet-secondary"
-						),
-					}, {
-						Position = function(use)
-							return D2.fromOffset(0, headerHeight(use) - 46)
-						end,
-					})
-					dropTarget = shelves
-					Compose.cleanup(function()
-						if dropTarget == shelves then
-							dropTarget = nil
 						end
-					end)
-					return shelves
-				end)(),
-				Compose.show(function(use)
-					return heroHeight(use) > 0 and use(model.shelf) == "browse"
-				end, function()
-					local pages = {}
-					for index = 1, 3 do
-						local featured = model.catalog.items:peek()[index]
-						table.insert(pages, {
-							id = featured.id,
-							label = featured.title,
-							content = function()
-								local card
-								card = button("ExploreFeatured_" .. featured.id, "", function()
-									selectedCard:set(card)
-									model.selectGame(featured)
-								end, {
-									Size = D2.fromScale(1, 1),
-									AutomaticSize = E.AutomaticSize.None,
-									stage(
-										"FeaturedScene",
-										if featured.index == 1
-											then actions.discoveryContent
-											elseif actions.gameContent then actions.gameContent(
-												Compose.cell(featured)
-											)
-											else nil,
-										{ Position = D2.fromOffset(12, 12), Size = D2.new(0.42, -18, 1, -24) }
-									),
-									column("FeaturedCopy", {
-										text("FeaturedGenre", featured.genre, 13, {}, "facet-secondary"),
-										text("FeaturedTitle", featured.title, 25),
-										text("FeaturedDescription", featured.description, 18, {}, "facet-secondary"),
-										text(
-											"FeaturedFacts",
-											featured.rating .. " recommend  ·  " .. featured.players,
-											13,
-											{},
-											"facet-secondary"
-										),
-									}, {
-										Position = D2.new(0.42, 8, 0, 18),
-										Size = D2.new(0.58, -28, 0, 0),
-										Host.UISizeConstraint({ MaxSize = V2.new(520, 1000000) }),
-									}),
-									UI.Badge "FeaturedBadge" {
-										label = "Featured",
-										AnchorPoint = V2.new(1, 0),
-										Position = D2.new(1, -12, 0, 8),
-									},
-								})
-								card:AddTag("facet-panel")
-								return card
-							end,
-						})
-					end
-					return UI.PageView "Featured" {
-						pages = pages,
-						selection = model.featuredSelection,
-						summary = false,
-						controls = false,
-						Position = function(use)
-							return D2.fromOffset(0, headerHeight(use))
+						return choices
+					end,
+					onChange = function(id)
+						for _, item in model.catalog.items:peek() do
+							if item.id == id then
+								model.selectGame(item)
+								break
+							end
+						end
+					end,
+					placeholder = "Search games",
+					Size = function(use)
+						return if compact(use) then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
+					end,
+					AutomaticSize = E.AutomaticSize.None,
+					Host.UIFlexItem({
+						FlexMode = function(use)
+							return if compact(use) then E.UIFlexMode.None else E.UIFlexMode.Fill
 						end,
-						Size = D2.new(1, 0, 0, 284),
-					}
-				end),
-				Compose.show(function(use)
-					return use(model.shelf) == "browse"
-				end, function()
-					return Compose.switch(function(use)
-						return use(model.query) .. "\0" .. use(model.genre) .. "\0" .. use(model.sort)
-					end, {}, function()
-						return collection("VirtualGrid", {
-							Name = "Games",
-							from = model.visibleGames,
-							key = function(item)
-								return item.id
-							end,
-							columns = function(use)
-								return math.max(1, math.floor((use(dimensions).X + 12) / 265))
-							end,
-							itemSize = 224,
-							gap = 12,
-							overscan = 1,
-							render = gameCard,
-							Position = function(use)
-								return D2.fromOffset(0, feedY(use))
-							end,
-							Size = function(use)
-								return D2.new(1, 0, 1, -feedY(use))
-							end,
-							BackgroundTransparency = 1,
-							ScrollBarThickness = 5,
-						}, model.discoveryScroll)
-					end)
-				end),
-				Compose.show(function(use)
-					return use(model.shelf) == "saved"
-				end, function()
-					return UI.Table "SavedGames" {
-						from = model.savedGames,
-						key = function(item)
-							return item.id
+					}),
+				},
+				UI.ShortcutHint "SearchShortcut" {
+					action = focusSearch,
+					Visible = function(use)
+						return not compact(use) and not use(touchEnabled)
+					end,
+				},
+				UI.Picker "Sort" {
+					selected = model.sort,
+					onChange = function(value)
+						model.sort:set(value)
+					end,
+					options = {
+						{ value = "recommended", label = "Recommended" },
+						{ value = "rating", label = "Top rated" },
+						{ value = "playing", label = "Most playing" },
+					},
+					style = "menu",
+					Size = function(use)
+						return if compact(use) then D2.new(1, 0, 0, 44) else D2.fromOffset(180, 44)
+					end,
+					AutomaticSize = E.AutomaticSize.None,
+				},
+			},
+			UI.ScrollView(chips),
+			shelves,
+			Compose.show(featured, function()
+				local pages = {}
+				for index = 1, 3 do
+					local item = model.catalog.items:peek()[index]
+					table.insert(pages, {
+						id = item.id,
+						label = item.title,
+						content = function()
+							local card
+							card = button("ExploreFeatured_" .. item.id, "", function()
+								selectedCard:set(card)
+								model.selectGame(item)
+							end, {
+								Size = D2.fromScale(1, 1),
+								AutomaticSize = E.AutomaticSize.None,
+								stage(
+									"FeaturedScene",
+									if item.index == 1
+										then actions.discoveryContent
+										elseif actions.gameContent then actions.gameContent(Compose.cell(item))
+										else nil,
+									{ Position = D2.fromOffset(12, 12), Size = D2.new(0.42, -18, 1, -24) }
+								),
+								UI.VStack "FeaturedCopy" {
+									gap = "xs",
+									Position = D2.new(0.42, 8, 0, 18),
+									Size = D2.new(0.58, -28, 0, 0),
+									AutomaticSize = E.AutomaticSize.Y,
+									Host.UISizeConstraint({ MaxSize = V2.new(520, 1000000) }),
+									quiet("FeaturedGenre", item.genre),
+									words("FeaturedTitle", item.title, "heading"),
+									quiet("FeaturedDescription", item.description, "body"),
+									quiet("FeaturedFacts", item.rating .. " recommend  ·  " .. item.players),
+								},
+								UI.Badge "FeaturedBadge" {
+									label = "Featured",
+									AnchorPoint = V2.new(1, 0),
+									Position = D2.new(1, -12, 0, 8),
+								},
+							})
+							card:AddTag("facet-panel")
+							return card
 						end,
-						selection = model.savedSelection,
-						selectionMode = "single",
-						sort = model.savedSort,
-						widths = model.savedWidths,
-						itemSize = 60,
-						reorderable = true,
-						onReorder = model.reorderSaved,
-						dragLabel = function(item)
-							return item.title
-						end,
-						onActivate = function(item)
-							model.shelf:set("browse")
-							model.selectGame(item)
-						end,
-						Position = function(use)
-							return D2.fromOffset(0, headerHeight(use))
-						end,
-						Size = function(use)
-							return D2.new(1, 0, 1, -headerHeight(use))
-						end,
-						columns = {
-							{
-								id = "title",
-								label = "Game",
-								minWidth = 140,
-								value = function(item)
-									return item.title
-								end,
-							},
-							{
-								id = "genre",
-								label = "Genre",
-								width = 140,
-								value = function(item)
-									return item.genre
-								end,
-							},
-							{
-								id = "rating",
-								label = "Rating",
-								width = 96,
-								value = function(item)
-									return item.rating
-								end,
-							},
-							{
-								id = "note",
-								label = "Note",
-								width = 160,
-								sortable = false,
-								priority = "always",
-								render = function(current)
-									local id = current:peek().id
-									local draft = Compose.cell(model.notes:peek()[id] or "")
-									return UI.TextInput({
-										Name = "Note_" .. id,
-										value = draft,
-										placeholder = "Add a note",
-										Size = D2.new(1, 0, 1, -12),
-										AutomaticSize = E.AutomaticSize.None,
-										onCommit = function(value)
-											model.setNote(id, value)
-										end,
-										onCancel = function()
-											draft:set(model.notes:peek()[id] or "")
-										end,
-									})
-								end,
-							},
-						},
-					}
-				end),
-				Compose.show(function(use)
-					return (use(model.shelf) == "saved" and #use(model.savedGames) == 0)
-						or (use(model.shelf) == "browse" and #use(model.visibleGames) == 0)
-				end, function()
-					return column("Empty", {
-						text("EmptyTitle", function(use)
-							return if use(model.shelf) == "saved" then "Nothing saved yet" else "No games match"
-						end, 20),
-						text("EmptyMessage", function(use)
-							return if use(model.shelf) == "saved"
-								then "Save a game from its page, or drag a card onto Saved."
-								else "Try another genre or a shorter search."
-						end, 16, {}, "facet-secondary"),
-						button("ClearFilters", "Clear filters", function()
-							model.genre:set("all")
-							model.query:set("")
-							model.searchSelection:set("")
-						end, {
-							Visible = function(use)
-								return use(model.shelf) == "browse"
-							end,
-						}),
-					}, {
-						Position = function(use)
-							return D2.fromOffset(16, headerHeight(use) + 12)
-						end,
-						Size = D2.new(1, -32, 0, 0),
 					})
-				end),
+				end
+				return UI.PageView "Featured" {
+					pages = pages,
+					selection = model.featuredSelection,
+					summary = false,
+					controls = false,
+					Size = D2.new(1, 0, 0, 284),
+				}
+			end),
+			Compose.show(function(use)
+				return use(model.shelf) == "browse" and #use(model.visibleGames) == 0
+			end, function()
+				return UI.Notice "NoResults" {
+					title = "No games match",
+					message = "Try another genre or a shorter search.",
+					actions = {
+						{
+							id = "ClearFilters",
+							label = "Clear filters",
+							onActivate = function()
+								model.genre:set("all")
+								model.query:set("")
+								model.searchSelection:set("")
+							end,
+						},
+					},
+				}
+			end),
+			Compose.show(function(use)
+				return use(model.shelf) == "saved" and #use(model.savedGames) == 0
+			end, function()
+				return UI.VStack "Empty" {
+					width = "fill",
+					gap = "xs",
+					padding = "m",
+					words("EmptyTitle", "Nothing saved yet", "heading"),
+					quiet("EmptyMessage", "Save a game from its page, or drag a card onto Saved.", "label"),
+				}
+			end),
+			Compose.show(function(use)
+				return use(model.shelf) == "browse"
+			end, function()
+				return feedFrame(Compose.switch(function(use)
+					return use(model.query) .. "\0" .. use(model.genre) .. "\0" .. use(model.sort)
+				end, {}, function()
+					return collection("VirtualGrid", {
+						Name = "Games",
+						from = model.visibleGames,
+						key = "id",
+						columns = function(use)
+							return math.max(1, math.floor((use(dimensions).X + 16) / 280))
+						end,
+						itemSize = 250,
+						measure = true,
+						gap = 16,
+						overscan = 1,
+						render = gameCard,
+						Size = D2.fromScale(1, 1),
+						BackgroundTransparency = 1,
+						ScrollBarThickness = 5,
+					}, model.discoveryScroll)
+				end))
+			end),
+			Compose.show(function(use)
+				return use(model.shelf) == "saved"
+			end, function()
+				return feedFrame(UI.Table "SavedGames" {
+					from = model.savedGames,
+					key = "id",
+					selection = model.savedSelection,
+					selectionMode = "single",
+					sort = model.savedSort,
+					widths = model.savedWidths,
+					itemSize = 60,
+					reorderable = true,
+					onReorder = model.reorderSaved,
+					dragLabel = function(item)
+						return item.title
+					end,
+					onActivate = function(item)
+						model.shelf:set("browse")
+						model.selectGame(item)
+					end,
+					Size = D2.fromScale(1, 1),
+					columns = {
+						{
+							id = "title",
+							label = "Game",
+							minWidth = 140,
+							value = function(item)
+								return item.title
+							end,
+						},
+						{
+							id = "genre",
+							label = "Genre",
+							width = 120,
+							value = function(item)
+								return item.genre
+							end,
+						},
+						{
+							id = "session",
+							label = "Session",
+							width = 120,
+							value = function(item)
+								local session = model.sessions:peek()[item.id]
+								return if session then civil.format(session) else "—"
+							end,
+						},
+						{
+							id = "rating",
+							label = "Rating",
+							width = 80,
+							value = function(item)
+								return item.rating
+							end,
+						},
+						{
+							id = "note",
+							label = "Note",
+							width = 160,
+							sortable = false,
+							priority = "always",
+							render = function(current)
+								local id = current:peek().id
+								local draft = Compose.cell(model.notes:peek()[id] or "")
+								return UI.TextInput({
+									Name = "Note_" .. id,
+									value = draft,
+									placeholder = "Add a note",
+									Size = D2.new(1, 0, 1, -12),
+									AutomaticSize = E.AutomaticSize.None,
+									onCommit = function(value)
+										model.setNote(id, value)
+									end,
+									onCancel = function()
+										draft:set(model.notes:peek()[id] or "")
+									end,
+								})
+							end,
+						},
+					},
+				})
+			end),
+		}
+		measure(body, dimensions)
+		return body,
+			UI.ZStack "Overlays" {
+				width = "fill",
+				height = "fill",
 				UI.Alert "GameDetail" {
 					surface = "fullScreen",
 					transition = { source = selectedCard, seconds = 0.32, ease = Compose.easing.outCubic },
@@ -1271,9 +1307,8 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					end,
 					actions = { { id = "close", label = "Done", role = "cancel" } },
 				},
+				toastFor("Discover"),
 			}
-		end, body)
-		return shell("Discover", body)
 	end
 	local ctx = {
 		Facet = Facet,
@@ -1289,23 +1324,30 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		C3 = C3,
 		CF = CF,
 		E = E,
-		text = text,
-		row = row,
-		column = column,
-		scrollRow = scrollRow,
+		words = words,
+		quiet = quiet,
 		button = button,
 		stage = stage,
 		observeSize = observeSize,
+		measure = measure,
 		collection = collection,
 		actions = actions,
-		padding = padding,
 		rounded = rounded,
+		panelShadow = panelShadow,
+		toastFor = toastFor,
 	}
+	local function Discover()
+		return shell("Discover", discoverContent)
+	end
 	local function Avatar()
-		return shell("Avatar", require("./avatar")(ctx))
+		return shell("Avatar", function()
+			return require("./avatar")(ctx)
+		end)
 	end
 	local function Chat()
-		return shell("Chat", require("./chat")(ctx))
+		return shell("Chat", function()
+			return require("./chat")(ctx)
+		end)
 	end
 	return { Discover = Discover, Avatar = Avatar, Chat = Chat }
 end

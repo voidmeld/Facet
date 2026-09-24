@@ -92,6 +92,34 @@ local neutral: ThemeTypes.ThemePackage = {
 					scrimOpacity = 0.45,
 				},
 			},
+			{
+				name = "Light",
+				colors = {
+					surface = rgb(242, 244, 248),
+					surfaceStrong = rgb(255, 255, 255),
+					content = rgb(28, 32, 41),
+					contentStrong = rgb(12, 14, 20),
+					accent = rgb(44, 98, 210),
+					onAccent = rgb(255, 255, 255),
+					danger = rgb(185, 28, 28),
+					onDanger = rgb(255, 255, 255),
+					success = rgb(21, 107, 58),
+					onSuccess = rgb(255, 255, 255),
+					warning = rgb(224, 166, 32),
+					onWarning = rgb(28, 22, 6),
+				},
+				extra = {
+					control = rgb(228, 231, 238),
+					controlHover = rgb(219, 223, 233),
+					controlPressed = rgb(206, 211, 224),
+					controlSelected = rgb(205, 219, 245),
+					contentSecondary = rgb(90, 98, 114),
+					hairline = rgb(10, 12, 18),
+					hairlineOpacity = 0.92,
+					disabledContentOpacity = 0.4,
+					scrimOpacity = 0.45,
+				},
+			},
 		},
 	},
 	metrics = {
@@ -110,6 +138,10 @@ local neutral: ThemeTypes.ThemePackage = {
 		controls = {
 			progress = { trackHeight = 6, circularSize = 32, circularThickness = 3, spinnerDotSize = 4 },
 			image = { defaultSize = 48 },
+			alert = { maxWidth = 560 },
+			popup = { panelWidth = 360 },
+			dialog = { wideWidth = 800 },
+			snackbar = { maxWidth = 480 },
 		},
 	},
 	chrome = {},
@@ -209,7 +241,11 @@ function themes.define(definition: ThemeTypes.ThemeDefinition): (ThemeTypes.Them
 	if #errors > 0 then
 		return nil, { ok = false, errors = errors, missing = {}, contrast = {} }
 	end
-	local package = merge(definition.base or neutral, definition)
+	local base = copy(definition.base or neutral)
+	if type(base.style) == "table" and type(base.style.themes) == "table" and #base.style.themes > 1 then
+		base.style.themes = { base.style.themes[1] }
+	end
+	local package = merge(base, definition)
 	if type(package.identity) ~= "table" or type(package.identity.id) ~= "string" then
 		table.insert(errors, { field = "identity.id", message = "A theme package needs an identity" })
 	end
@@ -759,6 +795,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-menu-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
 	rule(".facet-menu-destructive >> .facet-icon", { ImageColor3 = c("danger") })
 	rule(".facet-menu::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
+	rule(".facet-step-circle::UIStroke", { Color = c("contentSecondary"), Thickness = 1 })
 	rule(".facet-invalid::UIStroke", { Color = c("danger"), Thickness = 1 })
 	rule(".facet-date-time-picker", { BackgroundTransparency = 1 })
 	rule(".facet-radio-mark::UIStroke", { Color = c("contentSecondary"), Thickness = 1.5 })
@@ -766,7 +803,6 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-segmented-stroke::UIStroke", { Color = c("hairline"), Thickness = 1 })
 	rule(".facet-segmented-utility", { BackgroundTransparency = 1 })
 	rule(".facet-card-option::UIStroke", { Color = c("hairline"), Thickness = 1 })
-	rule(".facet-step-circle::UIStroke", { Color = c("contentSecondary"), Thickness = 1 })
 	rule(".facet-color-picker", { BackgroundTransparency = 1 })
 	rule(".facet-color-swatch::UIStroke", { Color = c("hairline"), Transparency = 0, Thickness = 1 })
 	for _, member in { ".facet-avatar", ".facet-button" } do
@@ -837,6 +873,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-tab-filled >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-accent >> .facet-text", { TextColor3 = c("onAccent") })
+	rule(".facet-accent >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-calendar-day", { BackgroundTransparency = 1 })
 	rule(".facet-calendar-day:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
 	rule(".facet-calendar-band", { BackgroundColor3 = c("controlSelected"), BackgroundTransparency = 0 })
@@ -848,7 +885,6 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-calendar-dim", { TextColor3 = c("contentSecondary"), FontFace = f({ weight = "Regular" }) })
 	rule(".facet-calendar-chosen", { TextColor3 = c("onAccent") })
 	rule(".facet-calendar-chosen-end", { TextColor3 = c("surface") })
-	rule(".facet-accent >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-skinned", { BackgroundTransparency = 1 })
 	rule(".facet-toggle-checkbox.facet-skinned::UIStroke", { Transparency = 1 })
 	rule(".facet-menu.facet-skinned::UIStroke", { Transparency = 1 })

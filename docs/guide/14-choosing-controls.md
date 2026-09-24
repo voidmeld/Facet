@@ -20,8 +20,13 @@ surface only when the existing surface cannot express the task clearly.
 | Show secondary document content | DisclosureGroup. |
 | Expand a compact preview | CollapsibleView. |
 | Ask for a brief confirmation | Alert. |
+| Ask for a decision that needs a body, a picture or more than two actions | Dialog. |
 | Do a substantial temporary task | Sheet. |
+| Show short content or a small task for one control | Popover. |
 | Teach a contextual action | Callout anchored to the action. |
+| Keep a status in the page until the state changes | Notice. |
+| Confirm what the player just did | Snackbar. |
+| Put Back, a title and tools at the top of a surface | NavBar. |
 | Organize named peer destinations | TabView. |
 | Navigate a hierarchy | NavigationStack. |
 | Step through peer pages | PageView. |

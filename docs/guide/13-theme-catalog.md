@@ -7,13 +7,17 @@ native StyleSheet and StyleLink.
 
 | Theme package family | Purpose |
 |---|---|
-| Facet Neutral | Baseline semantic colors, control sizes and typography. |
+| Facet Neutral | Baseline semantic colors, control sizes and typography. Two palettes: `Dark` (the default) and `Light`. |
 | Classic Desktop / Compact Pointer | Dense presentation for tools. |
 | Glossy Mobile / Glossy Touch | Rounded, prominent touch controls. |
 | Fantasy Parchment / Fantasy Ornate | Paper, framed surfaces and illustrated chrome. |
 | Pixel Quest | Pixel artwork and deliberate resampling. |
 | Sci-fi HUD | High-contrast instrument styling. |
 | Custom-control, layered and ornate-gauge fixtures | Focused extension and skin tests. |
+
+A package derived from Facet Neutral gets only its `Dark` palette. To offer a
+light variant, declare it in the package, as Classic Desktop declares Day and
+Night.
 
 A theme package changes the appearance. It does not select a different
 rendering architecture or device mode. The same controls, native layouts and

@@ -162,8 +162,10 @@ document their own write-then-notify behavior below.
   or a value plays it. See [Haptics](#haptics).
 - `controlSize`: the control-size step (`compact`, `regular` or `large`) for
   theme icons.
-- `onError`: receives a failure from the content of a presented Alert. The
-  alert dismisses.
+- `onError`: receives a failure from the content of a presented Alert or
+  Sheet, which then dismisses, and a failure from a Callout `onShow`. It also
+  receives a failure that an `ErrorBoundary` without its own `onError`
+  contains.
 - `services`, `guiService`, `userInputService` and `types`: native dependencies.
 - `inputParent` and `overlayParent`: placement targets.
 
@@ -177,9 +179,11 @@ cannot be interacted with, and the selection never stays on it.
 |---|---|---|
 | NavigationStack push | The new page slides in from the trailing edge. The old page moves 30 percent to the leading edge and dims. Critically damped spring with a 0.3 second period, visually complete in approximately 0.35 seconds. | Pop is the reverse. |
 | TabView page change | Crossfade, 0.2 seconds, Quad Out. | The same. |
-| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. The scrim fades in. | Slides down, 0.2 seconds. |
+| Sheet | Slides up from the bottom, 0.3 seconds, Cubic Out. A side sheet slides in from its edge. The scrim fades in. | Slides down, or toward its edge, 0.2 seconds. |
 | Alert | Scales from 0.94 to 1 and fades in, 0.2 seconds, Cubic Out. The scrim fades in. | The reverse, 0.15 seconds. |
-| Callout, Button `help`, Menu, Picker menu | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+| Callout, Button `help`, Menu, Picker menu, Popover | Scales from 0.9 to 1 from the edge nearest to the anchor, and fades in, 0.15 seconds, Cubic Out. | The reverse, 0.1 seconds. |
+| Snackbar | Slides up from below the layer, 0.2 seconds. | Slides down, 0.2 seconds. |
+| Dialog, Notice, NavBar | No motion. | No motion. |
 
 - Reduced motion (`reducedMotion` or `GuiService.ReducedMotionEnabled`) removes
   all of this motion. The change is immediate.
@@ -317,6 +321,28 @@ stack. Put the result in the children of the control:
 cross axis, use `align = "stretch"` on the stack or `width = "fill"` on a
 container.
 
+### ErrorBoundary
+
+`UI.ErrorBoundary(spec) -> Frame` contains a failure in the region that it
+builds. `view()` builds the region. `fallback(failure, retry)` builds the
+content that replaces the region after a failure. Both are required.
+
+- A failure in `view` when the boundary mounts, or in a later Compose update
+  inside the region, disposes the region and shows the fallback. Siblings
+  outside the boundary stay. The code that wrote the cell that caused the
+  failure does not see an error.
+- The boundary reports each failure once. `onError(failure)` receives it. If you
+  do not set `onError`, the factory `onError` option receives it. The
+  `FacetError` attribute of the frame holds the failure text.
+- Call `retry()` to build the view again. A successful retry clears
+  `FacetError`.
+- A failure in the fallback is not contained.
+- `width` and `height` take `fill`, `hug` or pixels. The default is `hug` on
+  both axes.
+
+The boundary uses `Compose.boundary`. A failure outside every boundary stays a
+hard error.
+
 ## Actions and input
 
 ### Button
@@ -347,7 +373,14 @@ Presentation options:
 - `help`: one sentence that describes the action. It shows in a small panel
   when a pointer rests on the button for 0.45 seconds, or when a gamepad
   selects the button. It does not show on touch, so do not put information in
-  `help` that is available nowhere else.
+  `help` that is available nowhere else. `help` can also be a table
+  `{ title?, body, shortcut?, edge?, align? }`. `title` shows above the body.
+  `body` can be empty only when `title` has the words. `shortcut` is a list of
+  key chords such as `{ { "Ctrl", "K" }, { "F1" } }`. It is display text only
+  and binds no key. `edge` (`top`, `bottom`, `leading` or `trailing`) and
+  `align` (`start`, `center` or `end`) place the panel against the button. The
+  panel uses the anchored placement of `UI.Popover`. A malformed table stops
+  with an error that names `help`.
 - `compactLabel`: an alternative string or readable. The button uses it when a
   plain text button cannot fit its full label. It does not apply to icon, image
   or subtitle buttons.
@@ -1251,19 +1284,59 @@ presentation.
 
 Sheet requires a writable `isPresented` and a writable `detent`. The default
 detents are `medium` and `large`. A custom entry is `{ id, fraction }` or
-`{ id, height }`, never both.
+`{ id, height }`, never both. The `hug` entry fits the body and the pinned
+regions. It measures again when the content changes, and it stays inside the
+safe room and above a minimum of four target heights.
 
 Supply a `title` and a `content` factory that returns native children. The
-sheet calls the factory without arguments. Its subtree fills the available body
-region. The body uses a native vertical ScrollingFrame. Thus content taller
-than the selected detent stays reachable, and the sheet chrome stays fixed.
+sheet calls the factory without arguments. Its subtree fills the body region.
+The body uses a native vertical ScrollingFrame named `SheetContent`. Thus
+content taller than the selected detent stays reachable, and the sheet chrome
+stays fixed.
 
-Native drag detection resizes the sheet between the declared detents. The
-grabber is also a selectable `Resize` button that moves to the next detent, for
-touch taps, the mouse and the gamepad. The header shows the title and a `Done`
-action named `Close`. `interactiveDismissDisabled` blocks gesture dismissal.
-The Done action stays available. The sheet slides up from the bottom and slides
-down when it closes. See [Motion](#motion).
+Layout options:
+
+- `placement`: `automatic` (the default, the bottom edge), `bottom`, `center`
+  or `side`. A side sheet docks to `edge` (`left` or `right`, default
+  `right`). Its detents stay vertical. It slides in from its edge and leaves
+  toward it. Under reduced motion it arrives and leaves at once.
+- `width`: `automatic`, `narrow` or `wide`. These are the Dialog widths:
+  `controls.alert.maxWidth`, `controls.popup.panelWidth` and
+  `controls.dialog.wideWidth`. The safe room bounds each one.
+- `header`: absent shows `title`. An Instance or a factory replaces the title.
+  `false` removes the title row.
+- `hero`: `{ image | content, aspectRatio | height, scaleMode?, background?,
+  sticky? }`. A sticky hero stays pinned above the body. Otherwise it scrolls
+  with the body. With `header = false`, the close control sits over the hero.
+- `actions`: a list of `{ id, label, role?, enabled?, busy?, onActivate }`.
+  They stay pinned below the body and never close the sheet. `actionLayout`
+  is `automatic`, `row` or `stacked`. Cancel runs an enabled `role = "cancel"`
+  action first.
+- `contentInset`: `standard` (8 pixels) or `none`. It changes only the body
+  padding.
+- `scrollPolicy`: `always` (the default) keeps the body scrolling at every
+  height. `atLargestDetent` stops the body scroll below the tallest detent.
+- `closeButton`: `true` (the default), `false`, or a string or readable label
+  for the close button. The default label is `Done`.
+
+When the pinned regions and a short body do not fit the panel, every region
+moves into one scrolling column named `Room`. Thus each action stays
+reachable. The on-screen keyboard height comes off the room, and the panel
+sits above the keyboard.
+
+Native drag detection resizes the sheet. The grabber detector starts a drag at
+once. A second detector on the panel starts a drag only after 6 pixels, or 14
+pixels on touch. A release goes to the detent nearest to the released height
+plus 0.15 seconds of its velocity. A hold before the release has no velocity.
+A drag below 70 percent of the lowest detent dismisses the sheet. Past the
+limits the drag resists. `interactiveDismissDisabled` holds the sheet near its
+lowest detent and blocks Back and the backdrop. An outside detent change
+during a drag ends the drag. Only one drag runs at a time.
+
+The grabber is also a selectable button that moves to the next detent. Its
+accessible label reads `Size: Medium`, and `Size: Fit` for `hug`. A bottom
+sheet slides up from the bottom and slides down when it closes. See
+[Motion](#motion).
 
 ### DisclosureGroup and CollapsibleView
 
@@ -1274,15 +1347,224 @@ returned roots.
 
 ### Callout
 
-Callout requires a native `anchor` with a separate parent, content and
-`onRetire`. The callout borrows the anchor. When a native ancestor of the anchor
-is hidden, the callout is suspended. `seen`, `sessions`, `afterSessions`,
-`featureUsed` and priority set eligibility and queue order. Retirement is
-delivered once. `edge = "top"` puts the callout above the anchor. If there is
-no room above and there is room below, the callout goes below the anchor. A
-callout is contextual teaching attached to a control. It is not a second
-application presenter. The callout scales and fades from the edge nearest to
-its anchor. See [Motion](#motion).
+Callout requires a native `anchor` with a separate parent and `onRetire`. The
+callout borrows the anchor. When a native ancestor of the anchor is hidden, the
+callout is suspended. `seen`, `sessions`, `afterSessions`, `featureUsed` and
+priority set eligibility and queue order. Each fact can be a value, a readable
+or a function of `use`. Retirement is delivered once. A callout is contextual
+teaching attached to a control. It is not a second application presenter.
+`edge = "top"` puts the callout above the anchor. If there is no room above
+and there is room below, the callout goes below the anchor. The callout
+scales and fades from the edge nearest to its anchor. See [Motion](#motion).
+
+The plate parts are optional, but the plate must show something:
+
+- `content`: an Instance or a factory.
+- `title`: a string or a bound string. It shows as a heading.
+- `media`: `{ image, aspectRatio | height, scaleMode?, background? }`.
+- `steps`: `{ index, count }`. It shows `index of count`.
+- `actions`: one or two `{ id, label, role?, enabled?, busy?, onActivate }`.
+  They replace the bottom `Got it` button. A press retires the plate with the
+  reason `action`, once, also when `onActivate` fails. A disabled or busy
+  action does not run.
+- `closeButton`: `true` adds a close control at the top. It retires the plate
+  with the reason `dismissed`.
+
+A failure in `onShow` does not stop the plate. The failure goes to the
+`onError` factory option, or to a warning.
+
+### Dialog
+
+`UI.Dialog` returns an empty anchor Frame. The panel is a modal surface.
+
+```luau
+local open = Compose.cell(false)
+runtime.mount(function()
+    return Host.ScreenGui {
+        UI.Dialog "Leave" {
+            isPresented = open,
+            onPresentedChange = function(nextValue) open:set(nextValue) end,
+            onDismiss = function(reason) print(reason) end,
+            title = "Leave the race?",
+            content = function() return UI.Label { label = "Your lap will not count." } end,
+            actions = {
+                { id = "Stay", label = "Stay", role = "cancel", onActivate = function() open:set(false) end },
+                { id = "Leave", label = "Leave", role = "destructive", onActivate = function() open:set(false) end },
+            },
+        },
+    }
+end, playerGui)
+```
+
+The caller owns `isPresented`. The dialog reads it and never writes it. The
+close button, Cancel and a tap on the backdrop call `onPresentedChange(false)`.
+The dialog closes only when the fact changes. A refused proposal keeps the same
+panel and selection. Without `onPresentedChange`, set `closeButton = false`.
+Then the backdrop and Cancel do nothing.
+
+Actions never close the dialog. Each action runs its `onActivate`. A false that
+the caller accepts in that callback reports `action`. Cancel runs an enabled
+`role = "cancel"` action first. Otherwise Cancel proposes false. The one
+`role = "default"` action answers Return. A disabled or busy action does not
+run. `onDismiss(reason)` reports each closure once, after its cleanup:
+`close`, `outside`, `cancel` or `action`. The caller's own false and owner
+disposal report `cancel`. A failing callback is raised after the dialog state
+is consistent.
+
+Other options:
+
+- `title`, `actionLabel`: strings or bound strings. An empty bound title hides
+  until it has text.
+- `content`: a factory for the one body. The body scrolls between the pinned
+  header, hero, action label and actions.
+- `hero`: the shared media shape.
+- `actionLayout`: `automatic`, `row` or `stacked`. `automatic` puts two short
+  actions in a row and stacks three or more. A row that cannot show the full
+  labels also stacks.
+- `width`: `automatic`, `narrow` or `wide`.
+- `contentSelectable`: `true` (the default) makes an overflowing body one
+  selectable stop. With the selection on it, Up and Down scroll the body. At
+  each end the selection moves on.
+
+A dialog needs a title, content, a hero, an action label or actions. The
+height is the layer height less the keyboard height and the margins. When the
+pinned regions and a short body do not fit, every region moves into one
+scrolling column named `Room`. The dialog has no enter or exit motion.
+
+### Popover
+
+`UI.Popover` returns its `trigger`, or an empty Frame for a `source` popover.
+
+```luau
+local open = Compose.cell(false)
+runtime.mount(function()
+    return Host.ScreenGui {
+        UI.Popover "About" {
+            isPresented = open,
+            onPresentedChange = function(nextValue) open:set(nextValue) end,
+            trigger = UI.Button { label = "About scoring" },
+            maxWidth = 320,
+            content = function() return UI.Label { label = "Laps score by position." } end,
+        },
+    }
+end, playerGui)
+```
+
+Supply exactly one of `trigger` (a native GuiButton) or `source`. `source` is
+`{ node = GuiObject }` or `{ rect = { x, y, w, h } }`. A trigger press, Cancel
+and a tap outside call `onPresentedChange(next)`. The popover changes only when
+the caller's fact changes. An open popover is modal, so a press on its own
+trigger lands outside it. `onDismiss(reason)` reports each closure once:
+`cancel`, `outside` or `anchorLost`. The trigger proposal uses `trigger`.
+
+When a source node leaves the layer, the popover closes at once, proposes
+false and reports `anchorLost`. It does not open again until the caller's fact
+goes from false to true. A source node that is not mounted yet is not lost.
+The popover waits for it and warns once. A `rect` source never draws a tail.
+
+Placement options: `edge` (`top`, `bottom`, `leading` or `trailing`), `align`
+(`start`, `center` or `end`), `gap` (pixels, default 8) and `crossOffset`
+(pixels along the alignment axis). The placement tries the preferred edge,
+then the opposite edge. When neither side holds the panel, it hangs beside the
+source before any clamp. `maxWidth` and `maxHeight` bound the whole panel,
+chrome included, inside the live safe box. The body scrolls. `tail = false`
+removes the arrow.
+
+`compact` is `sheet` (the default) or `popover`. With `sheet`, a touch player
+on a layer narrower than 600 pixels gets the Sheet route. A live change of
+input or width switches the route without a proposal. Only one content owner
+exists at a time, and the selection returns to the same content node.
+
+The trigger keeps its own `onActivate`. The panel scales and fades from the
+edge nearest to its source. See [Motion](#motion).
+
+### Snackbar
+
+`UI.Snackbar` returns an empty anchor Frame. The row shows at the bottom center
+of the layer.
+
+```luau
+local shown = Compose.cell(true)
+runtime.mount(function()
+    return Host.ScreenGui {
+        UI.Snackbar "Saved" {
+            isPresented = shown,
+            message = "Settings saved",
+            duration = 4,
+            onPresentedChange = function(nextValue) shown:set(nextValue) end,
+            action = { label = "Undo", onActivate = function() print("undo") end },
+        },
+    }
+end, playerGui)
+```
+
+The caller owns `isPresented`. Close, Cancel on a selected row, a timeout and a
+supersession propose false through `onPresentedChange(false)`. The row leaves
+only when the fact is false. A refusal keeps the same row. `onDismiss(reason)`
+reports each retirement once: `action`, `close`, `timeout`, `superseded` or
+`cancel`. The caller's own false and owner teardown report `cancel`.
+
+- `message`: a string or a bound string. It wraps.
+- `icon`: an icon name or an image source.
+- `action`: `{ label, onActivate }`. It runs once and never closes the row by
+  itself.
+- `closeButton`: `true` (the default) or `false`. A close button or a
+  `duration` needs `onPresentedChange`.
+- `duration`: seconds of readable time. `nil` keeps the row until the caller
+  hides it. The timeout asks once, at the larger of `duration` and 2.5
+  seconds. A refusal keeps the row.
+- `priority`: higher rows go first. A strictly higher priority can ask the
+  shown row to leave after 2.5 readable seconds, once for each row.
+
+Readable time pauses while the row is hovered or selected, or while a modal is
+open. Queued time does not count. One row shows and up to eight wait. Nine rows
+can be shown, waiting or leaving. A tenth admission stops with an error. A message-only row hugs its text.
+A row with an action or a close button uses `controls.snackbar.maxWidth`,
+bounded by the layer. The action moves below long text. Arrival never takes the
+selection. Cancel on a selected row returns the selection to the content, also
+when the caller refuses. A visible row sets the `FacetInsetBottom` attribute on
+its layer until it has slid out. The row slides up to enter and down to leave.
+Under reduced motion it arrives and leaves at once.
+
+To show a snackbar from code, mount a `UI.Snackbar` with `runtime.mount`. The
+stop function that the mount returns releases the row and reports `cancel`.
+
+### Notice
+
+`UI.Notice` returns the notice Frame. It keeps a status in the page until the
+state changes. It is never modal.
+
+- `message`: required, a string or a bound string. `title` is optional.
+- `severity`: `info` (the default), `success`, `warning` or `error`.
+- `appearance`: `standard` or `emphasis`. `emphasis` fills the plate with the
+  severity color.
+- `icon`: `true` (the severity icon), `false`, or an icon name or source.
+- `link`: `{ label, onActivate }`. It uses the link appearance on a standard
+  plate.
+- `actions`: up to two actions. Roles only paint. There is no default or
+  cancel key.
+- `onDismiss`: shows a close button and reports the press. Remove the notice
+  yourself.
+- `placement`: `inline` (the default) or `affixed`.
+
+The link and actions sit beside the copy when the measured width holds them.
+Otherwise they move below it. The notice does not take the selection. An
+affixed notice fills the width and sets the `FacetInsetTop` attribute on its
+layer to its bottom edge. Several affixed notices keep the deepest edge.
+Content that must avoid the notice reads the attribute and pads by it.
+
+### NavBar
+
+`UI.NavBar` returns the bar Frame: `{ onBack?, backLabel?, title?, titleSize?,
+leading?, center?, trailing?, gap?, padding? }`.
+
+The first row holds Back, `leading` and a `center` that fills the remaining
+width. Without `center`, the title shows on one line and truncates. `trailing`
+is one GuiObject. Put a cluster in a Frame. When the center would fall under
+`controls.popup.panelWidth`, the trailing node moves to a second row. The
+center is not rebuilt, so a search field keeps its text. Back shows the
+`chevron.leading` icon. `gap` and `padding` are pixels or `space` metric
+names.
 
 ## Collections
 
@@ -1366,8 +1648,9 @@ local list = UI.VirtualList {
 
 Card shows one item of a browsable collection: artwork, a title and an
 optional caption, with a primary action and a More menu that show on
-engagement. It requires `image` and `title` (nonempty strings or readables).
-The other options are `caption`, `imageAspectRatio` (default `16/9`),
+engagement. It requires `title` and `image` (nonempty strings or readables).
+`artwork` can replace `image`. The other options are `caption`,
+`imageAspectRatio` (default `16/9`),
 `imageFraming` (`fit` or `crop`), `onActivate`, `primaryAction = { label,
 icon?, onActivate, enabled?, busy? }`, `menu = { items, label? }`, `reveal`
 (`automatic` or `always`), `browseTarget`, `enabled` and `controls`.
@@ -1375,7 +1658,13 @@ icon?, onActivate, enabled?, busy? }`, `menu = { items, label? }`, `reveal`
 Use a Card for a game, a track or a kart, where the picture helps the player
 choose. For rows of text, use VirtualList or Table.
 
-- With `onActivate`, the body is a Button. Without it, the body is plain
+- The artwork frame is as wide as the card. Its height is the measured card
+  width divided by `imageAspectRatio`.
+- `artwork` is a factory that returns a GuiObject, such as a `Stage` preview.
+  The card mounts it once in the artwork frame and sizes it to fill the frame. With `image`, the image shows under the
+  artwork. The card owns the artwork and releases it with the card.
+- With `onActivate`, the body is a Button. `onActivate(input)` receives the
+  native input of the activation, or `nil`. Without it, the body is plain
   artwork and text. The primary action is a Button. `menu` is a Menu behind a
   More trigger (`menu.label`, default "More"). The body, the primary action
   and More are sibling targets under a root that is not a Button. Thus a press
@@ -1471,6 +1760,26 @@ The cell state stays retained.
 `onSortChange`, `onWidthsChange` or `onSelectionChange`, it is a controlled
 request. Otherwise the control updates the writable cells.
 
+In `multi` mode, the selection keys are the same in Table, VirtualList and
+VirtualGrid:
+
+- A plain mouse click selects only that row.
+- Ctrl-click or Cmd-click adds the row to the selection or removes it.
+- Shift-click selects the rows from the anchor to the clicked row. The anchor
+  is the last row that a click without Shift selected. A second Shift-click
+  makes the range again from the same anchor. Rows that you added with
+  Ctrl-click before the anchor stay selected.
+- A touch tap, a gamepad press and a plain Return add the row or remove it.
+  Return with Ctrl, Cmd or Shift follows the click rules.
+- Shift with an arrow key, Home or End moves the focus and selects the range
+  from the anchor to the focused row. Without an anchor, the focused row
+  becomes the anchor.
+- An arrow key without Shift moves the focus and does not change the
+  selection.
+
+In `single` mode, each activation selects only that row, and the modifiers
+have no effect. Rows that `selectable` or `disabled` refuse are never selected.
+
 `selectable(item)`, `disabled(item)`, `onActivate(item, key, input, clickCount)`
 and `rowActions(current, key)` specialize rows. `onActivate` receives the same
 native activation facts as in VirtualList. `reorderable`, `movable(item)` and
@@ -1512,11 +1821,20 @@ can run again. A full swipe commits or opens a tray only after the row has a
 measured width.
 `reducedMotion`, `enabled` and `editing` stay explicit control options.
 
+A mouse click or a touch outside an open row closes its tray. The row observes
+`UserInputService.InputBegan` only while its tray is open, and it does not
+consume the input. Thus the control under the pointer also receives the press.
+A press inside the row, which includes its tray, does not close the tray. A
+press during a destructive commit does not stop the commit. The check uses the
+row bounds on a ScreenGui, with the top bar inset when the ScreenGui ignores
+it. A row on a SurfaceGui or a BillboardGui does not close from an outside
+press.
+
 ## Media and status
 
 | Control | Main contract |
 |---|---|
-| `Label` | `text` or `label`, icon and iconPosition, textRole and role, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Without an icon, it returns a TextLabel. With an icon, it returns a Frame row that holds the icon and a TextLabel. Native properties then apply to that Frame, so give it Frame properties only. |
+| `Label` | `text` or `label`, icon and iconPosition, textRole and role, `truncate`, `textSize`, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Without an icon, it returns a TextLabel. With an icon, it returns a Frame row that holds the icon and a TextLabel. Native properties then apply to that Frame, so give it Frame properties only. See [Label text fit](#label-text-fit). |
 | `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
 | `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max`, `diameter` and `name`. The `name` sets the accessible label. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
 | `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. The endLabel shows after the value. With a label, a bar shows the value and the endLabel on the label row. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
@@ -1525,6 +1843,32 @@ measured width.
 | `Avatar` | `name`; image, userId or resource; loader and onStatus; presence online, away, busy or offline; presence label and mark; diameter or controlSize; standard or icon form; optional activation. |
 | `AvatarGroup` | `items` with id, name, image, userId and presence, and an optional `resource` shared-resource acquire function. max (4); stacked or spread layout; count or ellipsis overflow; onOverflow; diameter or controlSize. A stacked group has the `facet-avatar-stack` tag, and the theme draws a surface ring around each face. |
 | `Stage` | A native ViewportFrame. A `camera` CFrame or a borrowed Camera, `fieldOfView`, and `content(runtime, world)` for 3D content that Compose owns. |
+
+### Label text fit
+
+`truncate = "end"` sets the native `TextTruncate.AtEnd`. `truncate = "middle"`
+keeps the start and the end of the value and puts an ellipsis between them,
+for example `Coastal circui…lap 14`. Use it when the end identifies the value,
+such as a file name, a path or an id.
+
+- The label is one line. It fills the width and hugs the height by default.
+  `TextWrapped = true` or `RichText = true` with `truncate = "middle"` causes
+  an error.
+- The label measures each candidate with the engine `TextBounds` of the label
+  itself, so the measurement uses the painted face and size. A cut never
+  divides a UTF-8 character. When the value fits, the label shows all of it.
+  When no character fits, it shows only the ellipsis.
+- The label cuts the value again when the value, the width, `TextSize` or
+  `FontFace` changes. It does not measure on other changes. Before the label
+  has a width, it shows all of the value.
+
+`textSize = "fit"` sets `TextScaled` and adds a `UITextSizeConstraint`. The
+engine then paints the largest size that fits the box of the label. The
+default box fills its parent. `textSize = { fit = { cap = size, floor = size } }`
+sets the band. A size is a pixel number or a type role name. The default `cap`
+is the `textRole` of the label, or `body`. The default `floor` is `caption`.
+Role sizes come from the theme package and follow a theme change. Another
+`textSize` value, or another key in `fit`, causes an error.
 
 The AsyncImage loader receives `(source, resolve, reject)`. It can return a
 cancellation. A superseded result cannot replace the current image. Loading and
@@ -1560,7 +1904,9 @@ from `body` with the `SemiBold` weight. If a definition sets `control` and does
 not set `numeral`, `define` makes `numeral` from `control` with the `Bold`
 weight. The derived role keeps the family, style, size and line height.
 
-- `neutralPackage()` returns a mutable copy of the neutral theme package.
+- `neutralPackage()` returns a mutable copy of the neutral theme package. It
+  declares two palettes, `Dark` (the default) and `Light`. Both palettes pass
+  the contrast gate of `define`.
 - `define(definition)` derives from `base` (neutral by default) and returns
   `package?, report`. Check `report.ok` before use. An accepted theme package is
   recursively frozen. Callbacks, cycles and malformed definitions are rejected.
@@ -1569,7 +1915,9 @@ weight. The derived role keeps the family, style, size and line height.
   package shadow or a preset (`raised` or `overlay`). Each palette pair needs a
   contrast of at least 4.5:1, which includes `onSelected` (or `content`) on
   `controlSelected`.
-  Color channels and semantic contrast pairs are validated.
+  Color channels and semantic contrast pairs are validated. A package that
+  does not declare `style.themes` gets only the first palette of its base. Thus
+  a package derived from Neutral has one palette unless it declares more.
 - `checkCoverage(package, needs)` returns `{ ok, covered, missing }`.
 - `resolveIcon(package, name, state?)` resolves real image content.
 - `createStyleSheet(runtime, packageOrReadable?, options?)` returns a native

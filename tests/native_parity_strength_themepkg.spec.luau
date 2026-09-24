@@ -225,7 +225,7 @@ t.describe("shipped theme contrast", function()
 				checked += 1
 			end
 		end
-		t.expect(checked).toBe(13)
+		t.expect(checked).toBe(14)
 		runtime:dispose()
 	end)
 
@@ -361,16 +361,24 @@ t.describe("theme contrast gate", function()
 		t.expect(package ~= nil).toBe(true)
 		t.expect(report.ok).toBe(true)
 		t.expect(#report.errors).toBe(0)
-		local colors, extra = definition.style.themes[1].colors :: any, definition.style.themes[1].extra :: any
-		local expected = {
-			{ "content/surface", colors.content, colors.surface },
-			{ "contentStrong/surfaceStrong", colors.contentStrong, colors.surfaceStrong },
-			{ "onAccent/accent", colors.onAccent, colors.accent },
-			{ "onDanger/danger", colors.onDanger, colors.danger },
-			{ "onSuccess/success", colors.onSuccess, colors.success },
-			{ "onWarning/warning", colors.onWarning, colors.warning },
-			{ "onSelected/controlSelected", colors.content, extra.controlSelected },
-		}
+		local expected = {}
+		for _, palette in definition.style.themes do
+			local colors, extra = palette.colors :: any, palette.extra :: any
+			for _, want in
+				{
+					{ "content/surface", colors.content, colors.surface },
+					{ "contentStrong/surfaceStrong", colors.contentStrong, colors.surfaceStrong },
+					{ "onAccent/accent", colors.onAccent, colors.accent },
+					{ "onDanger/danger", colors.onDanger, colors.danger },
+					{ "onSuccess/success", colors.onSuccess, colors.success },
+					{ "onWarning/warning", colors.onWarning, colors.warning },
+					{ "onSelected/controlSelected", colors.content, extra.controlSelected },
+				}
+			do
+				table.insert(expected, want)
+			end
+		end
+		t.expect(#definition.style.themes).toBe(2)
 		t.expect(#report.contrast).toBe(#expected)
 		for index, want in expected do
 			local entry = report.contrast[index]
@@ -392,23 +400,27 @@ t.describe("theme contrast gate", function()
 				{ "onWarning", "warning" },
 			}
 		do
-			local definition = themes.neutralPackage()
-			local colors = definition.style.themes[1].colors :: any
-			colors[pair[1]] = table.clone(colors[pair[2]])
-			local package, report = themes.define(definition)
-			t.expect(package).toBe(nil)
-			t.expect(report.ok).toBe(false)
-			t.expect(#report.errors).toBe(if pair[1] == "content" then 2 else 1)
-			t.expect(hasError(report, "style.Dark", pair[1] .. " contrast is below 4.5:1")).toBe(true)
-			for _, entry in report.contrast do
-				if entry.pair == pair[1] .. "/" .. pair[2] then
-					t.expect(entry.ok).toBe(false)
-					t.expect(math.abs(entry.ratio - 1) < 1e-9).toBe(true)
-				elseif pair[1] == "content" and entry.pair == "onSelected/controlSelected" then
-					t.expect(entry.ok).toBe(false)
-					t.expect(hasError(report, "style.Dark", "onSelected contrast is below 4.5:1")).toBe(true)
-				else
-					t.expect(entry.ok).toBe(true)
+			for paletteIndex, name in { "Dark", "Light" } do
+				local definition = themes.neutralPackage()
+				local colors = definition.style.themes[paletteIndex].colors :: any
+				colors[pair[1]] = table.clone(colors[pair[2]])
+				local package, report = themes.define(definition)
+				t.expect(package).toBe(nil)
+				t.expect(report.ok).toBe(false)
+				t.expect(#report.errors).toBe(if pair[1] == "content" then 2 else 1)
+				t.expect(hasError(report, "style." .. name, pair[1] .. " contrast is below 4.5:1")).toBe(true)
+				t.expect(#report.contrast).toBe(14)
+				for index, entry in report.contrast do
+					local own = math.floor((index - 1) / 7) + 1 == paletteIndex
+					if own and entry.pair == pair[1] .. "/" .. pair[2] then
+						t.expect(entry.ok).toBe(false)
+						t.expect(math.abs(entry.ratio - 1) < 1e-9).toBe(true)
+					elseif own and pair[1] == "content" and entry.pair == "onSelected/controlSelected" then
+						t.expect(entry.ok).toBe(false)
+						t.expect(hasError(report, "style." .. name, "onSelected contrast is below 4.5:1")).toBe(true)
+					else
+						t.expect(entry.ok).toBe(true)
+					end
 				end
 			end
 		end
@@ -428,9 +440,10 @@ t.describe("theme contrast gate", function()
 		t.expect(secondReport.ok).toBe(false)
 		t.expect(#secondReport.errors).toBe(1)
 		t.expect(hasError(secondReport, "style.Night", "onWarning contrast is below 4.5:1")).toBe(true)
-		t.expect(#contrastEntries(secondReport, "onWarning/warning")).toBe(2)
+		t.expect(#contrastEntries(secondReport, "onWarning/warning")).toBe(3)
 		t.expect(contrastEntries(secondReport, "onWarning/warning")[1].ok).toBe(true)
-		t.expect(contrastEntries(secondReport, "onWarning/warning")[2].ok).toBe(false)
+		t.expect(contrastEntries(secondReport, "onWarning/warning")[2].ok).toBe(true)
+		t.expect(contrastEntries(secondReport, "onWarning/warning")[3].ok).toBe(false)
 	end)
 
 	t.it("refuses a definition with no identity or no palette and names the field", function()
@@ -490,7 +503,9 @@ t.describe("theme coverage", function()
 		local covering = themes.neutralPackage();
 		(covering.metrics.radii :: any)["custom:knob"] = 6
 		(covering.metrics.controlSizes :: any)["custom:row"] = { height = 30, paddingX = 4 }
-		(covering.style.themes[1].extra :: any)["custom:tint"] = { r = 1, g = 0, b = 0 }
+		for _, palette in covering.style.themes do
+			(palette.extra :: any)["custom:tint"] = { r = 1, g = 0, b = 0 }
+		end
 		local coveringReport = themes.checkCoverage(covering, needs)
 		t.expect(coveringReport.ok).toBe(true)
 		t.expect(#coveringReport.missing).toBe(0)

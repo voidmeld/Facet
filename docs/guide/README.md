@@ -22,7 +22,7 @@ to select a control. Then read the exact contract of that control in the
 | Domain authority and requests | [Client and server](06-client-server.md) |
 | Input, focus and cancellation | [Input](07-input.md) |
 | Installation without a source sync | [Without Rojo](08-without-rojo.md) |
-| What has been exercised, and what has not | [Device verification](11-device-verification.md), [Performance lab](12-performance-lab.md), [Paired performance](19-paired-performance.md), [Verification scope](18-verification-scope.md), [Verification parity](20-verification-parity.md) |
+| What has been exercised, and what has not | [Device verification](11-device-verification.md), [Performance lab](12-performance-lab.md), [Paired performance](19-paired-performance.md), [Verification scope](18-verification-scope.md), [Verification parity](20-verification-parity.md), [Retired promises](21-retirements.md) |
 | Layout and control decisions | [Choosing controls](14-choosing-controls.md), [Adaptive recipes](15-adaptive-recipes.md), [Control families](16-controls.md), [Recipes](17-recipes.md) |
 | Contribution boundaries | [Maintainers](../MAINTAINERS.md), [Constitution](../reference/constitution.md) |
 | Extension playbooks | [Adding a control](../extending/new-control.md), [Adding artwork to a control](../extending/skinned-control.md), [Native primitives](../extending/new-primitive.md), [Adding a theme package](../extending/new-theme.md), [Mounting into native targets](../extending/new-render-target.md), [Adapting to another platform context](../extending/new-platform-mode.md), [Adopting an engine feature](../extending/new-engine-feature.md) |
@@ -38,6 +38,7 @@ to select a control. Then read the exact contract of that control in the
 | Screen roots, stacks and layers | `UI.Screen`, `UI.VStack`, `UI.HStack`, `UI.ZStack` |
 | Scrolling content and grids | `UI.ScrollView`, `UI.Grid` |
 | Main-axis fill | `UI.fill` |
+| Failure containment with fallback content | `UI.ErrorBoundary` |
 | One reactive graph with the game's own Compose | `Facet.bind(Compose, Roblox)`; `Facet.COMPOSE_COMMIT` |
 | Semantic native styling and art | `Facet.themes` |
 | Civil dates, and an arithmetic parser for number fields | `Facet.civilDate`, `Facet.recipes` |
@@ -56,9 +57,13 @@ to select a control. Then read the exact contract of that control in the
 | Named destinations, drill-down and sequential pages | `UI.TabView`, `UI.NavigationStack`, `UI.PageView` |
 | Numbered result pages and workflow steps | `UI.Pagination`, `UI.StepIndicator` |
 | Contextual radial actions | `UI.RadialMenu` |
-| Brief decisions and substantial presented content | `UI.Alert`, `UI.Sheet` |
+| Brief decisions and substantial presented content | `UI.Alert`, `UI.Dialog`, `UI.Sheet` |
 | Inline disclosure and larger content presentation | `UI.DisclosureGroup`, `UI.CollapsibleView` |
 | Contextual teaching | `UI.Callout` |
+| Page status that stays in view | `UI.Notice` |
+| A short confirmation at the bottom of the screen | `UI.Snackbar` |
+| A surface top bar with Back, a title and tools | `UI.NavBar` |
+| Anchored content for one control | `UI.Popover` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
 | Browsable items with artwork and revealed actions | `UI.Card` |
 | A count or dot seal on a host's corner | `UI.badged` |

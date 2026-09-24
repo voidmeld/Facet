@@ -598,9 +598,9 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 			local kind = use(preferred)
 			return kind == nil or kind == E.PreferredInput.KeyboardAndMouse
 		end)
-		local selected: Readable<unknown> = if gui and gui.GetPropertyChangedSignal
-			then (ctx.observe(gui, "SelectedObject") :: unknown) :: Readable<unknown>
-			else (Compose.cell(nil :: unknown) :: unknown) :: Readable<unknown>
+		local selected: Readable<GuiObject?> = if gui and gui.GetPropertyChangedSignal
+			then ctx.observe(gui, "SelectedObject")
+			else Compose.cell(nil :: GuiObject?)
 
 		local function parseOne(s: string): (CivilDate?, string?)
 			local d, why = civil.parse(s, locale, withTime)

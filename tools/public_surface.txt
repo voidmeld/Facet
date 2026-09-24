@@ -117,17 +117,22 @@ controls(runtime).CollapsibleView : function
 controls(runtime).ColorPicker : function
 controls(runtime).ComboBox : function
 controls(runtime).DateTimePicker : function
+controls(runtime).Dialog : function
 controls(runtime).DisclosureGroup : function
+controls(runtime).ErrorBoundary : function
 controls(runtime).Grid : function
 controls(runtime).HStack : function
 controls(runtime).Label : function
 controls(runtime).LevelPicker : function
 controls(runtime).Menu : function
+controls(runtime).NavBar : function
 controls(runtime).NavigationStack : function
+controls(runtime).Notice : function
 controls(runtime).NumberInput : function
 controls(runtime).PageView : function
 controls(runtime).Pagination : function
 controls(runtime).Picker : function
+controls(runtime).Popover : function
 controls(runtime).ProgressView : function
 controls(runtime).RadialMenu : function
 controls(runtime).Rating : function
@@ -138,6 +143,7 @@ controls(runtime).Sheet : function
 controls(runtime).ShortcutHint : function
 controls(runtime).Skeleton : function
 controls(runtime).Slider : function
+controls(runtime).Snackbar : function
 controls(runtime).SplitButton : function
 controls(runtime).Stage : function
 controls(runtime).StatusIndicator : function
@@ -181,7 +187,9 @@ type ComposeRobloxModule
 type ControlOptions
 type Controls
 type DateTimePickerProps
+type DialogSpec
 type DisclosureGroupSpec
+type ErrorBoundaryProps
 type Extent
 type Facet
 type GridProps
@@ -194,16 +202,22 @@ type LabelProps
 type LevelPickerProps
 type MenuItem
 type MenuSpec
+type NavBarSpec
 type NavigationDestination
 type NavigationEntry
 type NavigationStackSpec
+type NoticeSpec
 type NumberInputProps
+type OverlayAction
+type OverlayHero
+type OverlayMedia
 type Owner
 type Padding
 type PageViewSpec
 type PaginationSpec
 type PickerOption
 type PickerSpec
+type PopoverSpec
 type ProgressViewProps
 type RadialItem
 type RadialMenuSpec
@@ -218,6 +232,7 @@ type SheetSpec
 type ShortcutHintProps
 type SkeletonProps
 type SliderProps
+type SnackbarSpec
 type Space
 type SplitButtonSpec
 type StackProps

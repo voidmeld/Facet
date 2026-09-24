@@ -37,8 +37,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 		local trailing: Types.Value<{ RowAction }> = spec.trailing or {}
 		local content = if type(spec.content) == "function" then spec.content() else spec.content
 		assert(typeof(content) == "Instance" or type(content) == "table", "Facet.RowActions requires content")
-		local open: ComposeTypes.Cell<RowEdge?> = spec.open
-			or Compose.cell(nil :: RowEdge?) :: ComposeTypes.Cell<RowEdge?>
+		local open: ComposeTypes.Cell<RowEdge?> = spec.open or Compose.cell(nil :: RowEdge?)
 		local menuOpen = Compose.cell(false)
 		local drag: ComposeTypes.Cell<number?> = Compose.cell(nil :: number?)
 		local dimensions = Compose.cell(V2.zero)
@@ -433,6 +432,47 @@ return function(ctx: Types.Context, UI: Controls): ()
 			runtime.connect(inputService, "InputChanged", cancelInput)
 			runtime.connect(inputService, "InputEnded", cancelInput)
 			runtime.connect(inputService, "WindowFocusReleased", cancelDrag)
+		end
+		if inputService then
+			local service = inputService
+			local function outside(input: InputObject): boolean
+				local layer = root:FindFirstAncestorWhichIsA("LayerCollector")
+				if layer == nil or not layer:IsA("ScreenGui") then
+					return false
+				end
+				local point = V2.new(input.Position.X, input.Position.Y)
+				local guiService = ctx.config.guiService
+				if (layer :: ScreenGui).IgnoreGuiInset and guiService then
+					point += guiService:GetGuiInset()
+				end
+				local at, size = root.AbsolutePosition, root.AbsoluteSize
+				return point.X < at.X or point.Y < at.Y or point.X > at.X + size.X or point.Y > at.Y + size.Y
+			end
+			local listening: RBXScriptConnection? = nil
+			local function release(): ()
+				if listening then
+					listening:Disconnect()
+					listening = nil
+				end
+			end
+			Compose.watch(function(use: ComposeTypes.Use)
+				if read(open, use) == nil then
+					release()
+				elseif listening == nil then
+					listening = service.InputBegan:Connect(function(input: InputObject)
+						local kind = input.UserInputType
+						if
+							(kind == E.UserInputType.MouseButton1 or kind == E.UserInputType.Touch)
+							and committing:peek() == nil
+							and read(open) ~= nil
+							and outside(input)
+						then
+							setOpen(nil)
+						end
+					end)
+				end
+			end)
+			Compose.cleanup(release)
 		end
 		runtime.connect(root, "TouchLongPress", function(_: { Vector2 }, state: Enum.UserInputState)
 			if state == E.UserInputState.Begin then

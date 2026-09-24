@@ -83,6 +83,7 @@ local function new(options: any?)
 			AbsoluteContentSize = Roblox.Vector2.zero,
 			AbsolutePosition = Roblox.Vector2.zero,
 			AbsoluteWindowSize = Roblox.Vector2.zero,
+			AbsoluteCanvasSize = Roblox.Vector2.zero,
 			CanvasPosition = Roblox.Vector2.zero,
 		}
 		if className == "UIShadow" then
@@ -286,7 +287,15 @@ local function new(options: any?)
 				return changed[key]
 			end,
 			SetAttribute = function(_, key, value)
+				local previous = properties["@" .. key]
 				properties["@" .. key] = value
+				if previous ~= value and changed["@" .. key] then
+					changed["@" .. key].fire()
+				end
+			end,
+			GetAttributeChangedSignal = function(_, key)
+				changed["@" .. key] = changed["@" .. key] or signal()
+				return changed["@" .. key]
 			end,
 			GetAttribute = function(_, key)
 				return properties["@" .. key]
@@ -344,6 +353,9 @@ local function new(options: any?)
 				if events[key] then
 					signals[key] = signals[key] or signal()
 					return signals[key]
+				end
+				if key == "TextBounds" and options and options.measureText then
+					return options.measureText(node)
 				end
 				if properties[key] ~= nil then
 					return properties[key]

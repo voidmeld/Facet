@@ -30,16 +30,17 @@
     },
     "error-handling": {
       "mainCases": 220,
-      "a": 72,
-      "aWeaker": 0,
+      "a": 80,
+      "aWeaker": 8,
       "b": 2,
-      "c": 146,
+      "c": 138,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 7,
         "native_parity_navigation": 6,
         "native_parity_gaps": 5,
-        "native_themes_media": 4
+        "native_themes_media": 4,
+        "native_parity_restore": 8
       }
     },
     "controls-actions": {
@@ -255,16 +256,17 @@
     },
     "focus-selection": {
       "mainCases": 532,
-      "a": 103,
-      "aWeaker": 3,
+      "a": 109,
+      "aWeaker": 7,
       "b": 257,
-      "c": 172,
+      "c": 166,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 21,
         "native_collections": 18,
         "native_parity_apps": 10,
-        "native_inputs": 5
+        "native_inputs": 5,
+        "native_parity_restore": 7
       }
     },
     "docs-examples-tooling": {
@@ -383,30 +385,32 @@
     },
     "row-actions": {
       "mainCases": 264,
-      "a": 149,
-      "aWeaker": 13,
+      "a": 162,
+      "aWeaker": 25,
       "b": 0,
-      "c": 112,
+      "c": 99,
       "d": 3,
       "candidateSpecs": {
         "native_collections": 52,
         "native_parity_controls": 11,
         "native_gallery_workflows": 4,
-        "native_gallery_collections": 3
+        "native_gallery_collections": 3,
+        "native_parity_restore": 6
       }
     },
     "text-measure-fit": {
       "mainCases": 497,
-      "a": 63,
-      "aWeaker": 18,
+      "a": 95,
+      "aWeaker": 50,
       "b": 232,
-      "c": 202,
+      "c": 170,
       "d": 0,
       "candidateSpecs": {
         "native_inputs": 7,
         "native_collections": 5,
         "native_parity_navigation": 3,
-        "native_text_preference": 2
+        "native_text_preference": 2,
+        "native_parity_restore": 9
       }
     },
     "input-actions": {
@@ -457,9 +461,9 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3367,
-      "c": 6032,
-      "b": 1440,
+      "a": 3710,
+      "c": 6016,
+      "b": 1447,
       "d": 9
     },
     "auditByClass": {
@@ -469,9 +473,9 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1166,
-      "c": 819,
-      "b": 302,
+      "a": 1443,
+      "c": 833,
+      "b": 308,
       "d": 3
     },
     "mainCases": 10848,
@@ -488,9 +492,9 @@
       "tools/check_types.py with tests/types/*_witness.luau (not a lune case)",
       "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)"
     ],
-    "contracts": 2290,
+    "contracts": 2587,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 426
+    "coveredButWeaker": 579
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -597,7 +601,7 @@
     "review_cards: ledger calls it an obsolete scanner, but the card-shelf task is covered by native_gallery_collections racing shelves (G11)",
     "adaptive_presentation: the ledger says 'Image Button behavior is separately covered by native_inputs', but native_inputs has only the vertical-layout card case. The main focus lift/hover/handler-census behavior is deleted, not covered, and the caption checks lost the theme/viewport sweep.",
     "adaptive_presentation: the ledger claims 'retained page owners survive' placement changes, but no cited case counts page builds or checks Tabs/page identity across sidebar<->topBar<->bottomBar. The Gamepad->topBar rule that replaces ten-foot is untested.",
-    "adaptive_presentation: the cited cases 'keeps split primary activation\u2026' and 'adapts automatic pickers\u2026' are not TabView/adaptive-presentation contracts of this spec.",
+    "adaptive_presentation: the cited cases 'keeps split primary activation…' and 'adapts automatic pickers…' are not TabView/adaptive-presentation contracts of this spec.",
     "alert: the ledger claims validation-free coverage is complete ('remaining: []'), but unknown-key refusal, duplicate action ids, two cancel roles, the default OK action, transition key validation, the no-scroll-when-room case and the measured label-width stacking rung have no candidate test.",
     "anchored_surface: the ledger says Callout/Menu cover anchored placement, but Callout align leading/trailing, the automatic below->above flip and tail=false are untested. The cited menu cases do not assert placement.",
     "callout: the ledger lists 'eligibility' as covered, but sessions/afterSessions and a callout built with seen=true or featureUsed=true are never exercised. onRetire/closed-spec refusals and the dispose-frees-queue-slot rule are untested. The main 'use tips sparingly' doc warning was dropped without a note.",
@@ -2209,11 +2213,11 @@
       "mainCases": 44,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/06 crossword \u2014 the rules are pure::the bag is the 98-tile familiar multiset, with no blanks",
-        "native_games::examples/06 crossword \u2014 axis, run and connection::connection is ORTHOGONAL: touching diagonally is not touching",
-        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::6 \u2014 a crossing word is unknown, and the sentence names it AND its direction",
-        "native_games::examples/06 crossword \u2014 commit, refill, undo, budget::A REFUSED SUBMIT CHANGES NOTHING \u2014 every tile stays where the player put it",
-        "native_games::examples/06 crossword \u2014 determinism::a fixed script on a fixed seed lands on the same board, score and dump",
+        "native_games::examples/06 crossword — the rules are pure::the bag is the 98-tile familiar multiset, with no blanks",
+        "native_games::examples/06 crossword — axis, run and connection::connection is ORTHOGONAL: touching diagonally is not touching",
+        "native_games::examples/06 crossword — nine refusals, nine sentences, on screen::6 — a crossing word is unknown, and the sentence names it AND its direction",
+        "native_games::examples/06 crossword — commit, refill, undo, budget::A REFUSED SUBMIT CHANGES NOTHING — every tile stays where the player put it",
+        "native_games::examples/06 crossword — determinism::a fixed script on a fixed seed lands on the same board, score and dump",
         "(44 identically named cases in native_games)",
         "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-17 crossword play then dispose returns instances, connections and reactive roots to baseline"
@@ -2268,7 +2272,7 @@
       "gap": {
         "description": "The enabled formula exists but no candidate test places a tile and checks the spent slot is non-interactable.",
         "headlessTestable": true,
-        "proposedTest": "Mount 06_tile_game; activate rt1 then cell4_4/tap; expect(find(node,'rt1').Interactable).toBe(false) and its Text to be '\u00b7'; undo and expect Interactable true."
+        "proposedTest": "Mount 06_tile_game; activate rt1 then cell4_4/tap; expect(find(node,'rt1').Interactable).toBe(false) and its Text to be '·'; undo and expect Interactable true."
       },
       "closedBy": "native_parity_apps::Gallery examples::disables a spent rack slot instead of leaving a live blank button"
     },
@@ -2282,10 +2286,10 @@
       "mainCases": 22,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the pure scoring rules::scores a plain guess with no repeated letters",
-        "native_games::examples/05 word game \u2014 validation and the two generated sets::refuses a five-letter non-word",
-        "native_games::examples/05 word game \u2014 the key ladder is monotonic::never downgrades on later, weaker evidence",
-        "native_games::examples/05 word game \u2014 the deterministic seed::the same seed always yields the same word",
+        "native_games::examples/05 word game — the pure scoring rules::scores a plain guess with no repeated letters",
+        "native_games::examples/05 word game — validation and the two generated sets::refuses a five-letter non-word",
+        "native_games::examples/05 word game — the key ladder is monotonic::never downgrades on later, weaker evidence",
+        "native_games::examples/05 word game — the deterministic seed::the same seed always yields the same word",
         "(all 22 identically named cases in native_games)"
       ]
     },
@@ -2299,11 +2303,11 @@
       "mainCases": 19,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the state machine::starts on a visible six-by-five board with a caret in the first cell",
-        "native_games::examples/05 word game \u2014 the state machine::wins when the solution is submitted, and opens the results card",
-        "native_games::examples/05 word game \u2014 the state machine::loses after SIX accepted wrong guesses and reveals the word",
-        "native_games::examples/05 word game \u2014 the state machine::input is dead after the game ends, except restart",
-        "native_games::examples/05 word game \u2014 the state machine::every tile paints a REAL tint \u2014 the plate is never invisible",
+        "native_games::examples/05 word game — the state machine::starts on a visible six-by-five board with a caret in the first cell",
+        "native_games::examples/05 word game — the state machine::wins when the solution is submitted, and opens the results card",
+        "native_games::examples/05 word game — the state machine::loses after SIX accepted wrong guesses and reveals the word",
+        "native_games::examples/05 word game — the state machine::input is dead after the game ends, except restart",
+        "native_games::examples/05 word game — the state machine::every tile paints a REAL tint — the plate is never invisible",
         "(19 identically named state-machine cases in native_games)",
         "native_gallery::native gallery::types, submits and restarts the retained word game through native input"
       ]
@@ -2318,7 +2322,7 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the state machine::tears down to a registry baseline after dispose",
+        "native_games::examples/05 word game — the state machine::tears down to a registry baseline after dispose",
         "native_parity_strength_lifetime::lifetime parity strength::returns every game to its instance connection and owner baseline after play"
       ]
     },
@@ -2423,7 +2427,7 @@
       "gap": {
         "description": "Control-level TextInput commit/validation is tested in native_inputs, but no test drives the tutorial: typing updates Preview without Result, Enter/FocusLost commits Result, a letter is rejected.",
         "headlessTestable": true,
-        "proposedTest": "mountExample('01_temperature_converter'); editor=find TextBox; CaptureFocus; Text='212': expect Preview text contains '100' and Result 'Result: \u2014'; FocusLost.fire(true): expect Result 'Result: 100 \u00b0C'; Text='21a': expect Text reverted and Preview unchanged; FocusLost(false) commits; Clear resets all three; assert no Stepper/Convert button exists."
+        "proposedTest": "mountExample('01_temperature_converter'); editor=find TextBox; CaptureFocus; Text='212': expect Preview text contains '100' and Result 'Result: —'; FocusLost.fire(true): expect Result 'Result: 100 °C'; Text='21a': expect Text reverted and Preview unchanged; FocusLost(false) commits; Clear resets all three; assert no Stepper/Convert button exists."
       },
       "closedBy": "native_parity_apps::Gallery examples::converts only numeric Fahrenheit, previews live and commits on Enter or focus loss"
     },
@@ -2459,7 +2463,7 @@
     {
       "id": "apps2-32",
       "group": "focus-selection",
-      "title": "Playlist gamepad/keyboard routes: activate filter field, selection follows focus, d-pad past rating into tray, Left selects edit \u2296",
+      "title": "Playlist gamepad/keyboard routes: activate filter field, selection follows focus, d-pad past rating into tray, Left selects edit ⊖",
       "mainSpecs": [
         "examples_gallery"
       ],
@@ -2552,14 +2556,14 @@
       "gap": {
         "description": "The Table has no double-click distinction: collection_table.luau:465 calls selectRow and onActivate on every activation, so a single click both selects and plays, contradicting the example's hint. Nothing tests activa...",
         "headlessTestable": true,
-        "proposedTest": "Mount the playlist; fire one RowHit.Activated with a MouseButton1 input: expect selection set and nowPlaying nil; fire two within the double-click window: expect NowPlaying text 'Now playing \u2014 <track>'; built.restore(): expect 'Nothing playing'."
+        "proposedTest": "Mount the playlist; fire one RowHit.Activated with a MouseButton1 input: expect selection set and nowPlaying nil; fire two within the double-click window: expect NowPlaying text 'Now playing — <track>'; built.restore(): expect 'Nothing playing'."
       },
       "closedBy": "native_parity_apps::Playlist example::plays on a double click Return or touch tap while a single or slow click only selects"
     },
     {
       "id": "apps2-38",
       "group": "row-actions",
-      "title": "Edit mode on touch/phone: Edit toggle, \u2261 gutter handle reorder, \u2296 removes, additive multi-select",
+      "title": "Edit mode on touch/phone: Edit toggle, ≡ gutter handle reorder, ⊖ removes, additive multi-select",
       "mainSpecs": [
         "examples_gallery"
       ],
@@ -2979,8 +2983,8 @@
         "native_gallery::native gallery::types, submits and restarts the retained word game through native input",
         "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
         "native_gallery_workflows::native gallery workflows::fits every word keyboard key and crossword rack slot in a narrow row",
-        "native_games::examples/05 word game \u2014 the state machine::wins when the solution is submitted, and opens the results card",
-        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too",
+        "native_games::examples/05 word game — the state machine::wins when the solution is submitted, and opens the results card",
+        "native_games::examples/06 crossword — nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 word game types, deletes and wins through pointer and touch key activations",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 crossword selects then places, undoes and explains an empty submit through touch",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 match-3 touch taps on two adjacent tiles land on the same board as the swap API"
@@ -2996,8 +3000,8 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the state machine::tears down to a registry baseline after dispose",
-        "native_games::examples/06 crossword \u2014 robustness::tears down to a registry baseline after dispose",
+        "native_games::examples/05 word game — the state machine::tears down to a registry baseline after dispose",
+        "native_games::examples/06 crossword — robustness::tears down to a registry baseline after dispose",
         "native_games::examples/07 native Match3 parity::keeps tile identity while a valid swap travels between endpoints",
         "native_parity_strength_lifetime::lifetime parity strength::returns every game to its instance connection and owner baseline after play",
         "native_parity_strength_lifetime::lifetime parity strength::resets the match-three machine mid-cascade without a retiring tile or frame hook"
@@ -4353,11 +4357,11 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_perf_runner::perf runner \u2014 record schema (\u00a714.3)::produces a schema-complete record for a tiny scene",
-        "native_perf_runner::perf runner \u2014 budget enforcement (\u00a716.1)::flags an over-budget reference-device scene",
-        "native_perf_runner::perf runner \u2014 budget enforcement (\u00a716.1)::passes an in-budget scene (and ignores non-reference devices)",
-        "native_perf_runner::perf runner \u2014 shape determinism (\u00a715.2)::records the same field set and phase set across two runs",
-        "native_perf_runner::perf runner \u2014 shape determinism (\u00a715.2)::run() covers the full scene\u00d7profile matrix with a stable key set",
+        "native_perf_runner::perf runner — record schema (§14.3)::produces a schema-complete record for a tiny scene",
+        "native_perf_runner::perf runner — budget enforcement (§16.1)::flags an over-budget reference-device scene",
+        "native_perf_runner::perf runner — budget enforcement (§16.1)::passes an in-budget scene (and ignores non-reference devices)",
+        "native_perf_runner::perf runner — shape determinism (§15.2)::records the same field set and phase set across two runs",
+        "native_perf_runner::perf runner — shape determinism (§15.2)::run() covers the full scene×profile matrix with a stable key set",
         "native_perf_runner::perf runner settle boundary::settles after each warmup and sample before the next event",
         "native_parity_strength_textperf::performance lab evidence::the perf runner counts live native connections for an engine scene"
       ],
@@ -4850,7 +4854,7 @@
       "gap": {
         "description": "radial_geometry only checks corner arc angles; no mounted test places a corner preset in a short viewport and checks button bounds, >=44 size, non-overlap, or activation.",
         "headlessTestable": true,
-        "proposedTest": "For each corner preset and Modal.AbsoluteSize 469x209 and 800x650, appearance=\"buttons\", 3 items: expect Presentation==\"radial\"; for each item button expect Size.X.Offset>=44 and Position\u00b1Size/2 within Modal.AbsoluteSize, no pair overlapping; Activated on first fires onSelect once."
+        "proposedTest": "For each corner preset and Modal.AbsoluteSize 469x209 and 800x650, appearance=\"buttons\", 3 items: expect Presentation==\"radial\"; for each item button expect Size.X.Offset>=44 and Position±Size/2 within Modal.AbsoluteSize, no pair overlapping; Activated on first fires onSelect once."
       },
       "closedBy": "native_parity_apps::RadialMenu::keeps corner rings of round buttons inside short and tall surfaces"
     },
@@ -6291,7 +6295,7 @@
     {
       "id": "apps-07",
       "group": "reference-apps",
-      "title": "Provision purchase command phases (pending 'Confirming\u2026', confirm counts up, scripted declined, price string from service)",
+      "title": "Provision purchase command phases (pending 'Confirming…', confirm counts up, scripted declined, price string from service)",
       "mainSpecs": [
         "reference/glade_spec"
       ],
@@ -6305,7 +6309,7 @@
       "gap": {
         "description": "commerce.buyPack pending/confirmed/declined phases and satchel increment are never exercised by a candidate case.",
         "headlessTestable": true,
-        "proposedTest": "world(glade); steps.buy(packId); assert commerce.status(packId)=='pending' and Buy button label 'Confirming\u2026' and disabled; advance(COMMAND_SECONDS) -> 'confirmed', satchelOf(nectar) += quantity; second buy -> 'rejected' with reason 'declined'; Buy label equals commerce.priceOf(packId)."
+        "proposedTest": "world(glade); steps.buy(packId); assert commerce.status(packId)=='pending' and Buy button label 'Confirming…' and disabled; advance(COMMAND_SECONDS) -> 'confirmed', satchelOf(nectar) += quantity; second buy -> 'rejected' with reason 'declined'; Buy label equals commerce.priceOf(packId)."
       },
       "closedBy": "native_parity_apps::Glade::runs a provision purchase through pending, confirmed and the scripted decline on its Buy button"
     },
@@ -6473,7 +6477,7 @@
       ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'care for a glade ... watch the supply'",
       "gap": {
-        "description": "Overview keyed list, 'Dew x \u00b7 Nectar y' text and case-insensitive search formula are untested (the 'nothing matches' message was deleted).",
+        "description": "Overview keyed list, 'Dew x · Nectar y' text and case-insensitive search formula are untested (the 'nothing matches' message was deleted).",
         "headlessTestable": true,
         "proposedTest": "world(glade); assert Glades column children order == seed.GLADES ids; states text shows full/low/empty seeds; model search 'MOSS' -> only mossholm entry remains; 'zzz' -> zero entries."
       },
@@ -6899,7 +6903,7 @@
       ],
       "mainCases": 1,
       "class": "c",
-      "removal": "CAND BrewDetail shows ' \u00b7 N s'; M:SS formatter view deleted."
+      "removal": "CAND BrewDetail shows ' · N s'; M:SS formatter view deleted."
     },
     {
       "id": "apps-46",
@@ -7440,7 +7444,7 @@
       ],
       "mainCases": 2,
       "class": "c",
-      "removal": "Rewards view deleted; CAND caption is a fixed English 'N stamps \u00b7 ...'."
+      "removal": "Rewards view deleted; CAND caption is a fixed English 'N stamps · ...'."
     },
     {
       "id": "apps-81",
@@ -11069,8 +11073,12 @@
         "row_actions_input"
       ],
       "mainCases": 1,
-      "class": "c",
-      "removal": "There is no outside-tap dismissal for the tray in CAND RowActions."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap",
+        "native_parity_restore::native parity restore: RowActions outside tap::ignores a press while no tray is open, a keyboard press and a secondary button"
+      ],
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-79",
@@ -11256,8 +11264,13 @@
         "row_actions_input"
       ],
       "mainCases": 2,
-      "class": "c",
-      "removal": "There is no outside catcher in CAND."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: RowActions outside tap::lets a commit in flight finish once when an outside tap arrives",
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap"
+      ],
+      "weaker": "There is no passive HUD catcher. The row observes UserInputService.InputBegan, which cannot consume the press.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-91",
@@ -12172,8 +12185,12 @@
         "table"
       ],
       "mainCases": 2,
-      "class": "c",
-      "removal": "Behavior changed. In multi mode every plain activation toggles (collection_selection.luau). There is no Ctrl distinction."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Table multi-select keys::replaces a multi selection on a plain mouse click",
+        "native_parity_restore::native parity restore: Table multi-select keys::toggles rows in and out of a multi selection on a Ctrl-click and a Cmd-click"
+      ],
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-151",
@@ -12808,8 +12825,16 @@
         "table_input"
       ],
       "mainCases": 4,
-      "class": "c",
-      "removal": "Arrows do not select."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Table multi-select keys::extends the selection from the anchor with Shift and an arrow, and moves focus with it",
+        "native_parity_restore::native parity restore: Table multi-select keys::extends to the first and the last row with Shift and Home or End",
+        "native_parity_restore::native parity restore: Table multi-select keys::starts a keyboard range at the focused row when nothing anchors it",
+        "native_parity_restore::native parity restore: Table multi-select keys::moves focus with Ctrl and an arrow and with a plain arrow without changing the selection",
+        "native_parity_restore::native parity restore: Table multi-select keys::honors held modifiers on a keyboard Return"
+      ],
+      "weaker": "A plain arrow moves the focus and does not replace the selection, because focus does not select in the native model. Main replaced the selection on a plain arrow.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-199",
@@ -14102,8 +14127,15 @@
         "virtual_list_row_actions"
       ],
       "mainCases": 10,
-      "class": "c",
-      "removal": "The overlay and outside-tap machinery are gone."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap",
+        "native_parity_restore::native parity restore: RowActions outside tap::closes the open row when another row is pressed and keeps it open for a press inside it",
+        "native_parity_restore::native parity restore: RowActions outside tap::adds the top bar inset when the screen ignores it",
+        "native_parity_restore::native parity restore: RowActions outside tap::releases its input listener with the row"
+      ],
+      "weaker": "There is no shared list overlay. A press on the content of the open row keeps its tray open; main closed it. The headless engine does not hit-test, so the no-swallow rule is shown by the absence of a catcher and by the tapped control still activating.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "collections-286",
@@ -16496,7 +16528,7 @@
       "gap": {
         "description": "No test reads Rating glyph text.",
         "headlessTestable": true,
-        "proposedTest": "v=Compose.cell(2); world(UI.Rating{value=v}); expect Level2.Text '\u2605' and Level3.Text '\u2606'; v:set(4) -> Level3 '\u2605' same instance."
+        "proposedTest": "v=Compose.cell(2); world(UI.Rating{value=v}); expect Level2.Text '★' and Level3.Text '☆'; v:set(4) -> Level3 '★' same instance."
       },
       "closedBy": "native_parity_controls::native parity controls::publishes level values inside the declared run and paints glyphs in place"
     },
@@ -17179,7 +17211,7 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::commits and formats finite numeric input without committing out-of-range input"
+        "native_inputs::native input controls::commits and formats finite numeric input, clamps out-of-range input and refuses a non-number"
       ]
     },
     {
@@ -18604,7 +18636,7 @@
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle requests controlled and clears a writable mixed state",
         "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation",
-        "native_inputs::native input controls::commits and formats finite numeric input without committing out-of-range input",
+        "native_inputs::native input controls::commits and formats finite numeric input, clamps out-of-range input and refuses a non-number",
         "native_inputs::native input controls::does not mutate writable controlled models before callbacks accept requests"
       ]
     },
@@ -19071,8 +19103,19 @@
         "error_boundary"
       ],
       "mainCases": 8,
-      "class": "c",
-      "removal": "UI.ErrorBoundary, critical screens and ForEach row retry deleted; api.md promises containment only for Alert content (above) and NavigationStack destinations."
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: ErrorBoundary::renders its view when healthy and does not mount the fallback",
+        "native_parity_restore::native parity restore: ErrorBoundary::swaps a view that throws at mount to its fallback, reports once and keeps siblings",
+        "native_parity_restore::native parity restore: ErrorBoundary::trips at runtime when a structural rebuild inside it throws, and the writer survives",
+        "native_parity_restore::native parity restore: ErrorBoundary::retries the view from the fallback and clears the reported error",
+        "native_parity_restore::native parity restore: ErrorBoundary::sends a failure to the factory onError when the boundary has no onError",
+        "native_parity_restore::native parity restore: ErrorBoundary::contains a throwing keyed row factory and releases every owner on disposal",
+        "native_parity_restore::native parity restore: ErrorBoundary::leaves a failure outside any boundary a hard mount error",
+        "native_parity_restore::native parity restore: ErrorBoundary::accepts both construction forms and refuses a boundary without a view or a fallback"
+      ],
+      "weaker": "The presenter critical fallback screen is not restored; a screen puts an ErrorBoundary at its root instead. The four ForEach cases that retry a throwing row outside any boundary are Compose keyed behavior; the candidate tests only that such a failure stays a hard mount error.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "mech1-116",
@@ -19984,8 +20027,17 @@
         "leaf_capabilities"
       ],
       "mainCases": 14,
-      "class": "c",
-      "removal": "middle truncation deleted (no \"middle\" in src/ui text code); api.md Table only promises \"natively truncated values\""
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::keeps the head and the tail and fits the width at three widths",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::paints the whole value when it fits and the bare mark when nothing fits",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::never cuts inside a multi-byte character",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::recomputes on a width or text change and on nothing else, and restores the whole value",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::re-derives the cut when the painted size changes and cuts an icon label beside its icon",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::stays on one line and refuses rich text, wrapping and an unknown truncation"
+      ],
+      "weaker": "The headless engine measures with a fixed glyph width. There is no disclosure plate for the full value.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "mech2-47",
@@ -21864,8 +21916,14 @@
         "text_size_fit"
       ],
       "mainCases": 18,
-      "class": "c",
-      "removal": "textSize='fit' deleted (Picker textSize is a plain size option); no fit grammar in api.md"
+      "class": "a",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::fits the text to its box between the role size and the caption floor",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::honors an explicit cap and floor by role or pixels and follows the theme",
+        "native_parity_restore::native parity restore: Label text fit and middle truncation::refuses a misspelled fit option, a cap that is not a size and a plain size"
+      ],
+      "weaker": "The engine chooses the size through TextScaled and UITextSizeConstraint. The headless engine does not scale text, so the candidate checks the native configuration, not a painted size. There is no ten-foot type ladder and no preferred-text offset term; the engine applies the player preference.",
+      "restoredBy": "parity/restore"
     },
     {
       "id": "mech3-84",
@@ -22372,7 +22430,7 @@
       ],
       "mainCases": 1,
       "class": "c",
-      "removal": "env viewingDistance and alert.resolveStacked(\u2026, 'ten-foot', \u2026) are deleted. The CAND stacked rule is #actions>2, offer<480 or measured label width (nav_surfaces.luau). No ten-foot promise in api.md."
+      "removal": "env viewingDistance and alert.resolveStacked(…, 'ten-foot', …) are deleted. The CAND stacked rule is #actions>2, offer<480 or measured label width (nav_surfaces.luau). No ten-foot promise in api.md."
     },
     {
       "id": "navigation-1-16",
@@ -22387,7 +22445,7 @@
       "candidateCases": [
         "native_parity_navigation::native parity navigation::lays out alert actions in a row with the cancel action first and stacks them for long labels"
       ],
-      "apiPromise": "nav_surfaces.luau binds FillDirection/Size/LayoutOrder to the 'stacked' formula, so actions persist. api.md Alert: 'The control owns the initial selection\u2026'.",
+      "apiPromise": "nav_surfaces.luau binds FillDirection/Size/LayoutOrder to the 'stacked' formula, so actions persist. api.md Alert: 'The control owns the initial selection…'.",
       "gap": {
         "description": "No test changes the AlertModal size while the alert is open and asserts the same action instances and selection survive the row<->stack flip.",
         "headlessTestable": true,
@@ -23136,7 +23194,7 @@
         "native_parity_navigation::native parity navigation::keeps device names out of the control sources",
         "native_parity_weaker_pointer::adaptive environment strength::keeps device names and platform branches out of the framework and example sources"
       ],
-      "apiPromise": "AGENTS.md \u00a76 forbids branching on a device name; CAND nav_surfaces.luau Callout.",
+      "apiPromise": "AGENTS.md §6 forbids branching on a device name; CAND nav_surfaces.luau Callout.",
       "gap": {
         "description": "No candidate test scans src/ui for platform names.",
         "headlessTestable": true,
@@ -23192,7 +23250,7 @@
       "candidateCases": [
         "native_parity_navigation::native parity navigation::keeps the callout scenario reset chip on screen at the 44 pixel floor and resets the session"
       ],
-      "apiPromise": "examples/gallery/scenarios/callout.luau pick('Reset', \u2026) chip.",
+      "apiPromise": "examples/gallery/scenarios/callout.luau pick('Reset', …) chip.",
       "gap": {
         "description": "Not asserted by candidate.",
         "headlessTestable": true,
@@ -29442,7 +29500,7 @@
       ],
       "mainCases": 1,
       "class": "c",
-      "removal": "guide 10: 'A valid recipe with unavailable art still fails visually' \u2014 no fallback promised."
+      "removal": "guide 10: 'A valid recipe with unavailable art still fails visually' — no fallback promised."
     },
     {
       "id": "paint-134",
@@ -29689,7 +29747,7 @@
       ],
       "mainCases": 3,
       "class": "c",
-      "removal": "Runtime refusal retired; media_types TextRole is a typed singleton union checked by tools/check_types.py. (Runtime accepts 'bolder' \u2013 see gap above.)"
+      "removal": "Runtime refusal retired; media_types TextRole is a typed singleton union checked by tools/check_types.py. (Runtime accepts 'bolder' – see gap above.)"
     },
     {
       "id": "paint-152",
@@ -32514,7 +32572,7 @@
       ],
       "apiPromise": "src/ui/icons.luau ART declares increment and decrement. Shipped pixel_quest and fantasy_ornate declare icons.increment and icons.decrement art. Guide 09: 'Supply real image or vector image assets. Do not use arbitrary...",
       "gap": {
-        "description": "CAND Stepper (inputs.luau:1473/1487) renders TextButtons with '\u2212' (U+2212) and '+'. A probe confirmed 'Decrease \u2212' and 'Increase +' with no ImageLabel. The package increment and decrement art is dead. The stepperPlate...",
+        "description": "CAND Stepper (inputs.luau:1473/1487) renders TextButtons with '−' (U+2212) and '+'. A probe confirmed 'Decrease −' and 'Increase +' with no ImageLabel. The package increment and decrement art is dead. The stepperPlate...",
         "headlessTestable": true,
         "proposedTest": "Mount UI.Stepper under pixel_quest. Expect the Increase and Decrease buttons to each contain an ImageLabel whose Image is resolveIcon(pkg,'increment') or resolveIcon(pkg,'decrement'), and the button Text to be empty or hidden. Under neutral, expect the ART increment and decrement ids."
       },
@@ -32529,7 +32587,7 @@
       ],
       "mainCases": 2,
       "class": "c",
-      "removal": "The glyph floor (iconGlyph, ICON_FALLBACK_GLYPHS) is removed. Note: CAND controls again render non-ASCII text (Stepper '\u2212', Rating '\u2605\u2606', table sort '\u2193\u2191')."
+      "removal": "The glyph floor (iconGlyph, ICON_FALLBACK_GLYPHS) is removed. Note: CAND controls again render non-ASCII text (Stepper '−', Rating '★☆', table sort '↓↑')."
     },
     {
       "id": "themes-P2-56",
@@ -34815,7 +34873,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::shows the seven-slot pattern near each edge and in the middle, and a gap of one shows the page"
       ],
@@ -34830,7 +34888,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::mounts the window, marks the current page and proposes without writing"
       ],
@@ -34845,7 +34903,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::keeps the overlapping page nodes when the window moves"
       ],
@@ -34860,7 +34918,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::shows zero pages as inert context and one page with no enabled navigation"
       ],
@@ -34875,7 +34933,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::follows the flags of an unknown count, shows the page label and never a last page"
       ],
@@ -34890,7 +34948,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::shows an outside page clamped with a diagnostic and never writes it back"
       ],
@@ -34905,7 +34963,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::refuses malformed construction and keeps the last legal value for a late one"
       ],
@@ -34921,7 +34979,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::drops the farthest boundary page, then the farthest neighbour, then shows the label as room narrows"
       ],
@@ -34938,7 +34996,7 @@
       ],
       "mainCases": 1,
       "class": "b",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "needsLive": "pagination-hug",
       "nativeMechanism": "Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize.",
       "family": "content-navigation"
@@ -34952,7 +35010,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::reverses the row once in rtl and keeps the meaning of previous and next"
       ],
@@ -34967,7 +35025,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::hands the selection of a page that leaves the window to the current page"
       ],
@@ -34984,7 +35042,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::hands the selection of an arrow that disables at an edge to the current page"
       ],
@@ -34999,7 +35057,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::gives every page and arrow a slot at the target floor and a compact plate centred in it"
       ],
@@ -35016,7 +35074,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::gives every page and arrow a slot at the target floor and a compact plate centred in it"
       ],
@@ -35033,7 +35091,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::keeps the label reservation while the label gains a digit, ltr and rtl, known and unknown"
       ],
@@ -35050,7 +35108,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::leaves no stop inside the row when the count drops to zero"
       ],
@@ -35067,7 +35125,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::stays safe when a callback changes the count and removes the control"
       ],
@@ -35082,7 +35140,7 @@
       ],
       "mainCases": 1,
       "class": "a",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "candidateCases": [
         "native_pagination::native Pagination::follows an accepted page in the Paging scenario context and changes nothing on a refusal"
       ],
@@ -35100,7 +35158,7 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::makes only navigable, enabled steps with onSelect into Buttons and the rest into content"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35117,7 +35175,7 @@
       ],
       "weaker": "The cell rectangles are injected AbsolutePosition and AbsoluteSize values.",
       "needsLive": "steps-underline",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35134,7 +35192,7 @@
       ],
       "weaker": "The native ItemLineAlignment, VerticalAlignment and underline anchor are asserted; the solved heights need Studio.",
       "needsLive": "steps-underline",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35149,7 +35207,7 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::keeps the own cue and state word of an errored or completed current step"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35166,7 +35224,7 @@
       ],
       "weaker": "The number TextBounds are injected; the largest player text size needs Studio.",
       "needsLive": "steps-circle",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35181,7 +35239,7 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::never guesses a missing current and rebuilds empty and repopulated lists"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35198,7 +35256,7 @@
       ],
       "weaker": "The underline follow is asserted in the current-step case from injected rectangles.",
       "needsLive": "steps-underline",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35213,7 +35271,7 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::refuses conflicts at construction and keeps the last legal snapshot later"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35229,7 +35287,7 @@
         "native_step_indicator::native StepIndicator::shows Step n of m and a list that selects through the same path when the width is narrow"
       ],
       "weaker": "The list is a UI.Menu anchored to the Steps trigger, not a UI.Popover; Popover is not a control of this family.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35246,7 +35304,7 @@
       ],
       "weaker": "Label widths are injected TextBounds on the measure labels.",
       "needsLive": "steps-fit",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35260,7 +35318,7 @@
       "class": "b",
       "needsLive": "steps-fit",
       "nativeMechanism": "Roblox AutomaticSize resolves the parent; the control reads its own AbsoluteSize.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35275,7 +35333,7 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::leaves nothing open when a callback removes the control"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35290,7 +35348,7 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::moves the narrow summary with a row selection in the Steps scenario and refuses both"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35305,7 +35363,7 @@
       "candidateCases": [
         "native_vote::native Vote::accepts, swaps in one change, and proposes none when the chosen side is pressed again"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35320,7 +35378,7 @@
       "candidateCases": [
         "native_vote::native Vote::never paints a refused proposal and never touches the caller's cell"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35337,7 +35395,7 @@
       ],
       "weaker": "The keyboard Activate action is fired; native gamepad selection and ButtonA are engine paths.",
       "needsLive": "vote-pad",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35352,7 +35410,7 @@
       "candidateCases": [
         "native_vote::native Vote::reads a function value and keeps the last legal paint for an invalid late value"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35367,7 +35425,7 @@
       "candidateCases": [
         "native_vote::native Vote::leaves no stale state when a callback removes the vote"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35382,7 +35440,7 @@
       "candidateCases": [
         "native_vote::native Vote::shows a read-only choice with nothing to press or select and uses ordinary disabled paint"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35398,7 +35456,7 @@
         "native_vote::native Vote::refuses to become interactive without onChange"
       ],
       "weaker": "The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35415,7 +35473,7 @@
       ],
       "weaker": "Minimum target constraints and separate nodes are asserted; overlap of hit rectangles needs the native layout.",
       "needsLive": "vote-targets",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35430,7 +35488,7 @@
       "candidateCases": [
         "native_vote::native Vote::repaints the Choices vote only from its caller's value and follows the summary"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35445,7 +35503,7 @@
       "candidateCases": [
         "native_card::native Card::refuses malformed specs before building anything"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35460,7 +35518,7 @@
       "candidateCases": [
         "native_card::native Card::keeps body, primary and More as sibling targets so one press runs one intent"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35475,7 +35533,7 @@
       "candidateCases": [
         "native_card::native Card::gives an informational body no activation target and keeps its actions at rest"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35490,7 +35548,7 @@
       "candidateCases": [
         "native_card::native Card::keeps the semantics of disabled cards and busy actions"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35505,7 +35563,7 @@
       "candidateCases": [
         "native_card::native Card::keeps the last legal paint for an invalid late title or image and recovers"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35521,7 +35579,7 @@
         "native_card::native Card::leaves nothing behind when a callback removes its own card"
       ],
       "weaker": "Main checked the presenter focus scope name; the native case checks that the card and its Cancel context are gone.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35538,7 +35596,7 @@
       ],
       "weaker": "The plate stays visible, laid out and ordered after the body, and the root Size never changes; the solved rectangles need Studio.",
       "needsLive": "card-envelope",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35555,7 +35613,7 @@
       ],
       "weaker": "The root AbsoluteSize is injected.",
       "needsLive": "card-envelope",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35570,7 +35628,7 @@
       "candidateCases": [
         "native_card::native Card::keeps hidden actions out of reach at rest and lets a selected body reveal them"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35586,7 +35644,7 @@
         "native_card::native Card::reveals on focus within, keeps it when the pointer leaves and ends it when focus leaves"
       ],
       "weaker": "The Tab walk is native selection; the case moves GuiService.SelectedObject.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35603,7 +35661,7 @@
       ],
       "weaker": "The pad route (ButtonY opens the menu from a selected More and B returns selection to it) is the Menu control route and is not repeated here.",
       "needsLive": "card-pad",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35619,7 +35677,7 @@
         "native_card::native Card::keeps the reveal while a press is held on an action after the pointer leaves"
       ],
       "weaker": "The press is the native GuiState of the action Button, set directly.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35634,7 +35692,7 @@
       "candidateCases": [
         "native_card::native Card::keeps the actions at rest while touch is present and runs the body on the first tap"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35649,7 +35707,7 @@
       "candidateCases": [
         "native_card::native Card::takes no tap on hidden actions and never fires a press cut off by disabling"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35664,7 +35722,7 @@
       "candidateCases": [
         "native_card::native Card::retargets the fade from where it is on a rapid reversal"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35679,7 +35737,7 @@
       "candidateCases": [
         "native_card::native Card::reveals the action row at rest with reveal always"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35696,7 +35754,7 @@
       ],
       "weaker": "The measured root height is injected; a real theme and text change needs Studio.",
       "needsLive": "card-envelope",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35711,7 +35769,7 @@
       "candidateCases": [
         "native_card::native Card::lifts the card with a raised shadow for hover, selection and a held press and lands it after"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35726,7 +35784,7 @@
       "candidateCases": [
         "native_card::native Card::lifts a card with no body action without a shadow"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35741,7 +35799,7 @@
       "candidateCases": [
         "native_card::native Card::puts the card lift on its grid browse stop so the selection ring marks the lifted card"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35757,7 +35815,7 @@
         "native_card::native Card::keeps only the raised shadow under reduced motion"
       ],
       "weaker": "The ten-foot half is retired: the native architecture deleted the viewing-distance profile and its tenFootFocusScale, so no focus lift competes with the card scale.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35773,7 +35831,7 @@
         "native_card::native Card::reveals only the card whose grid browse stop is selected and moves with the selection"
       ],
       "weaker": "A parked focus without a painted ring does not exist natively: a pointer session has no GuiService.SelectedObject.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35790,7 +35848,7 @@
       ],
       "weaker": "The trap is the native SelectionGroup with Stop behavior on all four sides; the engine moves the selection, so arrow presses are a live check.",
       "needsLive": "card-pad",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35805,7 +35863,7 @@
       "candidateCases": [
         "native_card::native Card::leaves no trap, menu or controls behind when an entered card is removed or replaced"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35820,7 +35878,7 @@
       "candidateCases": [
         "native_card::native Card::recycles an entered card scrolled out of the window without stranding its trap"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35835,7 +35893,7 @@
       "candidateCases": [
         "native_card::native Card::keeps separate cards and entries in two grids with identical keys"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35852,7 +35910,7 @@
       ],
       "weaker": "The scenario step enters and Play runs; that each line holds its card and plate needs the native layout.",
       "needsLive": "card-grid",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35869,7 +35927,7 @@
       ],
       "weaker": "The half-gutter padding, lane width, canvas extent and both scroll ends are asserted; the lifted footprint against the clip is a live check.",
       "needsLive": "card-grid",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35884,7 +35942,7 @@
       "candidateCases": [
         "native_card::native Card::keeps the mounted cards and their controls bounded across a thousand items"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35899,7 +35957,7 @@
       "candidateCases": [
         "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35914,7 +35972,7 @@
       "candidateCases": [
         "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35929,7 +35987,7 @@
       "candidateCases": [
         "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35944,7 +36002,7 @@
       "candidateCases": [
         "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35959,7 +36017,7 @@
       "candidateCases": [
         "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35974,7 +36032,7 @@
       "candidateCases": [
         "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -35989,7 +36047,7 @@
       "candidateCases": [
         "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36005,7 +36063,7 @@
         "native_content_navigation::native content navigation deltas::opens on ButtonA, closes on ButtonB with the selection back on the trigger, and opens again"
       ],
       "weaker": "ButtonA is the native Activated event of the trigger; ButtonB is the ModalBack action.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36022,7 +36080,7 @@
       ],
       "weaker": "The trigger and panel rectangles are injected; the native popover draws the panel.",
       "needsLive": "menu-placement",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36037,7 +36095,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::sets the floating panel width from width"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36052,7 +36110,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::keeps the panel width for rows with a badge, a shortcut label or a section heading"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36069,7 +36127,7 @@
       ],
       "weaker": "Row heights and the left content alignment are asserted; label x positions and hit rectangles need Studio.",
       "needsLive": "menu-rows",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36084,7 +36142,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::bounds a floating panel by the screen so a long list scrolls"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36101,7 +36159,7 @@
       ],
       "weaker": "The row and list rectangles are injected; the centring is computed from them.",
       "needsLive": "menu-landing",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36118,7 +36176,7 @@
       ],
       "weaker": "The keyboard walk to the last row and its scroll into view are native ScrollingFrame selection behavior.",
       "needsLive": "menu-landing",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36133,7 +36191,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::keeps submenus anchored to their parent level in a bounded list"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36148,7 +36206,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::shares one row recipe for badge, avatar, sectionTitle and a display-only shortcutLabel"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36164,7 +36222,7 @@
         "native_content_navigation::native content navigation deltas::refuses malformed placement and bounds by name"
       ],
       "weaker": "width is a number of pixels natively; main refused a bare number because it took a dimension table. The native control refuses 0 and a string.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36177,7 +36235,7 @@
       "mainCases": 4,
       "class": "c",
       "removal": "The solver path shape and its hairline card geometry are not native. Native rows are TextButtons named by id under MenuRows in a ScrollingFrame; the row fill is the native button background.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36190,7 +36248,7 @@
       "mainCases": 1,
       "class": "c",
       "removal": "A path rename of the solver tree only; the native scenario rows are found by id.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36203,7 +36261,7 @@
       "mainCases": 1,
       "class": "c",
       "removal": "A path rename of the solver tree only; native_parity_navigation toggles checked and selected rows by id.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36219,7 +36277,7 @@
         "native_content_navigation::native content navigation deltas::carries a Picker option badge into its menu row as the count seal"
       ],
       "weaker": "The badge reaches the menu row; a Picker option sectionTitle belongs to the Picker option type of the pickers family.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36234,7 +36292,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::nests a TabView that a page builds later inside one of its branches"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36249,7 +36307,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::paints a tab indicator as a StatusIndicator in its own tab and keeps it through every switch"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36264,7 +36322,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::refuses a tab indicator that is not a StatusIndicator spec by name"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36279,7 +36337,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::keeps a disabled tab in the strip and refuses its selection on every route"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36292,7 +36350,7 @@
       "mainCases": 4,
       "class": "c",
       "removal": "A path shape of the solver tree only; native tab rows are named TabRow-<id> when sections exist.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36309,7 +36367,7 @@
       ],
       "weaker": "The measured word width and the tab width are injected; the real glyph widths at 320 and 389 px need Studio.",
       "needsLive": "tab-fit",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36325,7 +36383,7 @@
         "native_content_navigation::native content navigation deltas::names the Status and Menus groups and the Paging and Steps tabs in All controls"
       ],
       "weaker": "native_gallery mounts every all_controls tab; the category bar walk is the native TabView.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36339,7 +36397,7 @@
       "class": "b",
       "needsLive": "showcase-room",
       "nativeMechanism": "Native TabView content frame and ScrollingFrame canvas.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36353,7 +36411,7 @@
       "class": "b",
       "needsLive": "tab-fit",
       "nativeMechanism": "Native AutomaticSize X on each tab button follows the engine text bounds.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36366,7 +36424,7 @@
       "mainCases": 1,
       "class": "c",
       "removal": "UI.ViewThatFits and the candidate solver were deleted (contracts mech1-04, mech1-126). A screen chooses a form with Compose.show on observed native bounds.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36379,7 +36437,7 @@
       "mainCases": 1,
       "class": "c",
       "removal": "UI.ViewThatFits was deleted with the solver (mech1-04, mech1-126); there is no candidate rule to verify.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36392,7 +36450,7 @@
       "mainCases": 1,
       "class": "c",
       "removal": "UI.ErrorBoundary and the text primitive were deleted (mech1-115). Containment stays for presented Alert content and NavigationStack destinations; constructors take the native Name or the constructor name form.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36403,15 +36461,18 @@
         "theme_package"
       ],
       "mainCases": 3,
-      "class": "d",
+      "class": "a",
       "apiPromise": "main api.md: neutralPackage() is the compiled package behind it (themes Dark and Light); a derived package inherits only its first theme.",
-      "gap": {
-        "description": "Facet Neutral still declares one palette. The theme strength specs count its palettes and pairs, so the Light palette needs those cases re-based in the same change.",
-        "headlessTestable": true,
-        "proposedTest": "Assert themes.neutralPackage().style.themes names Dark,Light; themes.define({ base = neutral }) keeps one palette; re-base native_parity_strength_themepkg and native_parity_strength_paint to count per palette."
-      },
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
-      "family": "content-navigation"
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "family": "content-navigation",
+      "candidateCases": [
+        "native_parity_restore::native parity restore: Facet Neutral Light::declares Dark then Light and both palettes pass the contrast gate",
+        "native_parity_restore::native parity restore: Facet Neutral Light::keeps a derived package to its own palettes and inherits only the first",
+        "native_parity_restore::native parity restore: Facet Neutral Light::paints each Neutral palette through the native sheet and follows a palette change",
+        "native_parity_strength_themepkg::theme contrast gate::reports every semantic pair of an accepted package with its measured ratio",
+        "native_parity_strength_themepkg::theme contrast gate::refuses each unreadable pair at define time and names the pair, palette and ratio"
+      ],
+      "restoredBy": "parity/restore"
     },
     {
       "id": "post-lab-03",
@@ -36425,7 +36486,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::nests a TabView that a page builds later inside one of its branches"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36438,7 +36499,7 @@
       "mainCases": 1,
       "class": "c",
       "removal": "The environment and its preview were deleted with the application shell. The engine owns the preferred text size and transparency; Studio emulates them. The gallery previews only viewing distance.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36451,7 +36512,7 @@
       "mainCases": 1,
       "class": "c",
       "removal": "The showcase settings have no device, orientation or input preview; the native gallery keeps only the viewing-distance preview.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36468,7 +36529,7 @@
       ],
       "weaker": "The content leaves and returns and the canvas is native AutomaticCanvasSize; the canvas height needs Studio.",
       "needsLive": "outline-closeup",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36484,7 +36545,7 @@
         "native_content_navigation::native content navigation deltas::fades a subtree as one group and keeps a transparent group laid out while removal closes up"
       ],
       "weaker": "The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false; Compose.show removes the node. Guide 17 documents both.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36500,7 +36561,7 @@
         "native_inputs::native input controls::yields native directional navigation at value bounds and rearms on focus return"
       ],
       "nativeMechanism": "Native gamepad and arrow selection owns horizontal movement; a selected Slider or Stepper binds Left and Right only while it is selected and yields them at its bounds. No focus chrome host exists.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36517,7 +36578,7 @@
       ],
       "weaker": "The disabled group is native Interactable on the ancestor.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36534,7 +36595,7 @@
       ],
       "weaker": "Native Size and UIFlexItem are asserted; hug, minimum and the overflow rectangle need Studio.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36551,7 +36612,7 @@
       ],
       "weaker": "The subject sizes and centred anchors are asserted; solved rectangles need Studio.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36568,7 +36629,7 @@
       ],
       "weaker": "The UIScale and the unchanged box are asserted; the painted footprint needs Studio.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36585,7 +36646,7 @@
       ],
       "weaker": "Zero-transparency focus is native CanvasGroup behavior; selection of a faded button needs Studio.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36602,7 +36663,7 @@
       ],
       "weaker": "Anchor and scale position are asserted; the hugging parent case needs Studio.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36619,7 +36680,7 @@
       ],
       "weaker": "Padding values are asserted; sibling rectangles need Studio.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36636,7 +36697,7 @@
       ],
       "weaker": "Wraps and the X scroller are asserted; the overrun and clip rectangles need Studio.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36653,7 +36714,7 @@
       ],
       "weaker": "A UICorner rounds every corner with one radius natively; main painted per-corner radii.",
       "needsLive": "containers-rects",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36669,7 +36730,7 @@
         "native_parity_paint::native parity paint::insets and paints the recipe dividers from the installed theme"
       ],
       "weaker": "The heavy line is three hairlines. The leading inset stays the theme space m; the icon-row inset and the 360 px card of main are not ported.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36686,7 +36747,7 @@
       ],
       "weaker": "The zero-size Corner frame, the centred anchor, 99+ and no selection stop are asserted; the painted centre needs Studio.",
       "needsLive": "badge-corner",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36701,7 +36762,7 @@
       "candidateCases": [
         "native_card::native Card::mirrors the seal to the top-left in rtl and shows true as a dot"
       ],
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
     },
     {
@@ -36717,8 +36778,2669 @@
         "native_card::native Card::puts an icon tab count on the icon corner and keeps a text tab count in its words"
       ],
       "weaker": "TabView icon tabs are covered; the segmented Picker icon option corner belongs to the pickers family. A text tab keeps the count in its words, not a separate pill.",
-      "mainBaseline": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"
+    },
+    {
+      "id": "post-overlays-001",
+      "group": "presented-surfaces",
+      "title": "Dialog presents the accepted fact with pinned title, body and actions",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::an accepted fact presents the panel with pinned title, body and actions"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-002",
+      "group": "presented-surfaces",
+      "title": "Dialog close proposes: refused keeps surface and focus, accepted reports close",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::the close button proposes: refused keeps the same surface and focus, accepted reports close"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-003",
+      "group": "input-actions",
+      "title": "Dialog Cancel runs an eligible cancel action first, otherwise proposes cancel",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::Cancel runs an eligible cancel action first; without one it proposes cancel"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-004",
+      "group": "presented-surfaces",
+      "title": "Dialog action that accepts false in its callback closes with reason action",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::an action that accepts false during its callback closes with reason action"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-005",
+      "group": "error-handling",
+      "title": "Dialog action never closes by itself; a throwing action keeps the bookkeeping sound",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::an action never closes by itself, and a throwing one leaves the bookkeeping sound"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-006",
+      "group": "error-handling",
+      "title": "Dialog throwing proposal is raised and changes nothing",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::a throwing proposal is raised and changes nothing"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-007",
+      "group": "presented-surfaces",
+      "title": "Dialog backdrop proposes outside; with no callback and no close it swallows",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::the backdrop proposes outside; with no callback and no close it only swallows"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-008",
+      "group": "input-actions",
+      "title": "Dialog Return fires the default action; disabled or busy actions cannot fire",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: the caller's fact decides::Return fires the default action; a disabled or busy one cannot fire by any route"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-009",
+      "group": "presented-surfaces",
+      "title": "Dialog single-part compositions all present",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::title-only, body-only, hero-only, action-label-only and actions-only all present"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-010",
+      "group": "error-handling",
+      "title": "Dialog spec is closed and malformed compositions are refused by name",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::the spec is closed and malformed compositions are refused by name"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-011",
+      "group": "layout-geometry",
+      "title": "Dialog long body scrolls between pinned header, label and actions",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::a long body fits the room: pinned header, label and actions stay on screen while it scrolls"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-dialog-room",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-012",
+      "group": "layout-geometry",
+      "title": "Dialog tiny room unpins every region into one scroller",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::a tiny room unpins every region into one scroller: the last action is reachable"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-dialog-room",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-013",
+      "group": "layout-geometry",
+      "title": "Dialog on a phone hugs its content and rows two actions that fit",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::a phone dialog hugs its content and rows two actions that fit"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-dialog-room",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-014",
+      "group": "layout-geometry",
+      "title": "Dialog keyboard occlusion takes its room from the budget",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::the keyboard's occlusion takes its room from the budget"
+      ],
+      "weaker": "The on-screen keyboard is modelled by UserInputService.OnScreenKeyboardVisible and OnScreenKeyboardSize; a live device check confirms the occlusion.",
+      "needsLive": "overlays-dialog-keyboard",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-015",
+      "group": "layout-geometry",
+      "title": "Dialog automatic actions stack for three; an explicit row that cannot fit stacks",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::automatic actions stack for three; an explicit row that cannot fit falls to the safe stack"
+      ],
+      "weaker": "Label widths come from TextBounds set by the test, not from measured text.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-016",
+      "group": "layout-geometry",
+      "title": "Dialog width presets resolve to theme ceilings inside the safe room",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::the width presets resolve to theme ceilings inside the safe room"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-017",
+      "group": "presented-surfaces",
+      "title": "Dialog bound title may start empty and fill later in the same presentation",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: composition, layout and the height budget::a bound title may start empty and fill in later, in the same presentation"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-018",
+      "group": "focus-selection",
+      "title": "Dialog overflowing body is one selection stop; Down scrolls it, then moves on",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: a plain overflowing body is one pad stop that scrolls::the ring reaches the body, Down scrolls it to the end, and then moves on to the actions"
+      ],
+      "weaker": "The scroll actions are Facet InputActions enabled while the body is selected. The hand-off of the selection at the end is native gamepad navigation and needs a live check.",
+      "needsLive": "overlays-dialog-body-pad",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-019",
+      "group": "focus-selection",
+      "title": "Dialog body that fits offers no stop; contentSelectable false never does",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: a plain overflowing body is one pad stop that scrolls::a body that fits offers no stop, and contentSelectable = false never does"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-020",
+      "group": "focus-selection",
+      "title": "Dialog interactive content keeps its own stops",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: a plain overflowing body is one pad stop that scrolls::interactive content keeps its own stops inside the body"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-021",
+      "group": "lifetime-ownership",
+      "title": "Dialog owner disposal reports cancel once; reopen cycles return to baseline",
+      "mainSpecs": [
+        "dialog"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_dialog::native Dialog: lifetime::owner disposal releases physically and reports cancel once; reopen cycles return to baseline"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-022",
+      "group": "presented-surfaces",
+      "title": "Popover trigger press proposes; an accepted fact presents an anchored panel",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the caller's fact decides, proposals ask::a trigger press proposes, and an accepted fact presents an anchored panel"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-023",
+      "group": "presented-surfaces",
+      "title": "Popover refused proposal presents nothing; refused close keeps surface and focus",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the caller's fact decides, proposals ask::a refused proposal presents nothing, and a refused close keeps the same surface and focus"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-024",
+      "group": "presented-surfaces",
+      "title": "Popover Cancel, outside and trigger press close with their reasons, once",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the caller's fact decides, proposals ask::Cancel, an outside tap and a press on the trigger each close with their own reason, once"
+      ],
+      "weaker": "A press on the trigger of an open popover lands on the modal catcher; the test fires the catcher over the trigger.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-025",
+      "group": "presented-surfaces",
+      "title": "Popover without onPresentedChange only the fact opens or closes it",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the caller's fact decides, proposals ask::without onPresentedChange nothing interactive opens or closes it; the fact still does"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-026",
+      "group": "pointer-touch-drag",
+      "title": "Popover pointer click opens and outside click closes",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: every input class opens and closes it through a real route::pointer: a click on the trigger opens it and a click outside closes it"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-027",
+      "group": "focus-selection",
+      "title": "Popover keyboard Return on the trigger opens into the content; closing returns focus",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: every input class opens and closes it through a real route::keyboard: Return on the focused trigger opens it into the content, and closing returns focus"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-028",
+      "group": "input-actions",
+      "title": "Popover gamepad ButtonA opens and ButtonB proposes the close",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: every input class opens and closes it through a real route::gamepad: ButtonA on the focused trigger opens it, and ButtonB proposes the close"
+      ],
+      "weaker": "Gamepad ButtonA activation of a selected button is native; the test fires Activated.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-029",
+      "group": "presented-surfaces",
+      "title": "Popover source follows its node; removal releases and reports anchorLost once",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: sources, anchor loss and bounds::a node source follows its node; removing it releases at once and reports anchorLost once"
+      ],
+      "weaker": "The source is a native node instead of a path. Main followed a path through node replacement; the native form follows one Instance.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-030",
+      "group": "presented-surfaces",
+      "title": "Popover refused anchorLost keeps the fact and nothing reopens",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: sources, anchor loss and bounds::a caller who refuses the anchorLost proposal keeps its fact, and nothing reopens"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-031",
+      "group": "presented-surfaces",
+      "title": "Popover source that has not mounted yet waits",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: sources, anchor loss and bounds::a source that has not mounted yet waits instead of being lost"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-032",
+      "group": "layout-geometry",
+      "title": "Popover rect source has no tail; crossOffset and edge reach the placement",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: sources, anchor loss and bounds::a rect source never draws a tail; crossOffset and edge reach the placement"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-033",
+      "group": "layout-geometry",
+      "title": "Popover maxWidth and maxHeight bound the panel inside the live safe box; the body scrolls",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: sources, anchor loss and bounds::maxWidth and maxHeight bound the whole panel inside the live safe box, and the body scrolls"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-popover-bounds",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-034",
+      "group": "presented-surfaces",
+      "title": "Popover path source in an embedded screen resolves from its root; a never-mounted path warns once",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: sources, anchor loss and bounds::a source that never mounts waits without an error"
+      ],
+      "weaker": "Path addressing is retired: the source is a native node. The test shows a never-mounted node waits without an error; it does not capture the warning.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-035",
+      "group": "adaptive-environment",
+      "title": "Popover compact touch screen presents a sheet; compact popover suppresses it",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the compact sheet and the live route switch::a compact touch screen presents it as a sheet; compact = popover suppresses that"
+      ],
+      "weaker": "Compact is PreferredInput Touch on a layer narrower than 600 pixels.",
+      "needsLive": "overlays-popover-compact",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-036",
+      "group": "presented-surfaces",
+      "title": "Popover sheet dismissed by something else still proposes and reports",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the compact sheet and the live route switch::a sheet dismissed by something the popover did not drive still proposes and reports"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-037",
+      "group": "presented-surfaces",
+      "title": "Popover sheet Close asks first: refused keeps it, accepted reports cancel",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the compact sheet and the live route switch::the sheet's Close asks first: refused keeps it, accepted closes with cancel"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-038",
+      "group": "adaptive-environment",
+      "title": "Popover live class change switches the route silently with one content owner",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the compact sheet and the live route switch::a live class change switches the route silently, with one content owner"
+      ],
+      "needsLive": "overlays-popover-compact",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-039",
+      "group": "pointer-touch-drag",
+      "title": "Popover refused drag on the compact sheet returns to the accepted detent",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: the compact sheet and the live route switch::a refused drag on the compact sheet goes back to the accepted detent"
+      ],
+      "needsLive": "overlays-popover-compact",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-040",
+      "group": "error-handling",
+      "title": "Popover throwing onPresentedChange changes nothing; throwing onDismiss closes once",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: callbacks that throw or re-enter, and branch cycles::a throwing onPresentedChange changes nothing, and a throwing onDismiss still closes once"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-041",
+      "group": "presented-surfaces",
+      "title": "Popover caller that reopens inside its close callback keeps one surface",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: callbacks that throw or re-enter, and branch cycles::a caller that re-opens inside its own close callback keeps one live surface"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-042",
+      "group": "lifetime-ownership",
+      "title": "Popover open, close and branch cycles return to baseline",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: callbacks that throw or re-enter, and branch cycles::open/close/branch cycles return the native tree to its baseline"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-043",
+      "group": "gallery-examples",
+      "title": "Popover showcase steps open the about and source popovers, show the tour and reset",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_overlays_gallery::native gallery: the Overlays tab::opens the about and source popovers from its steps, shows the rich tour, and resets",
+        "native_overlays_gallery::native gallery: the Overlays tab::the locked popover and the terms dialog refuse their close until the screen allows it"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-044",
+      "group": "lifetime-ownership",
+      "title": "Popover owner disposal reports cancel once; two apps stay apart",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: lifetime and contract::owner disposal releases physically and reports cancel once; two worlds stay apart"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-045",
+      "group": "error-handling",
+      "title": "Popover spec is closed and the contract is refused by name",
+      "mainSpecs": [
+        "popover"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: lifetime and contract::the spec is closed and the contract is refused by name"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-046",
+      "group": "presented-surfaces",
+      "title": "Snackbar host is persistent, empty and reserves nothing",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: presentation::a registration presents nothing and reserves nothing while its fact is false"
+      ],
+      "weaker": "There is no separate host strip: each Snackbar presents its own row. The test shows an unpresented registration shows nothing and reserves nothing.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-047",
+      "group": "presented-surfaces",
+      "title": "Snackbar shows when the fact turns true; close proposes",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: presentation::shows a message when the caller's fact turns true, and close proposes"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-048",
+      "group": "layout-geometry",
+      "title": "Snackbar six compositions and their widths",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 6,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: presentation::the six compositions pick their parts and widths"
+      ],
+      "weaker": "One case walks the six compositions. Text widths come from TextBounds set by the test.",
+      "needsLive": "overlays-snackbar-widths",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-049",
+      "group": "layout-geometry",
+      "title": "Snackbar plain row hugs a longer message up to the strip width",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: presentation::a plain row hugs a longer message up to the strip's width"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-snackbar-widths",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-050",
+      "group": "layout-geometry",
+      "title": "Snackbar long copy wraps and the action moves below it",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: presentation::long copy wraps and the action moves below it"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-snackbar-widths",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-051",
+      "group": "presented-surfaces",
+      "title": "Snackbar action runs once and leaves the row; closing inside it reports action",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::an action runs once and leaves the row mounted; closing inside it reports action"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-052",
+      "group": "presented-surfaces",
+      "title": "Snackbar refused close keeps the row and reports nothing",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::a refused close keeps the same row and reports nothing"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-053",
+      "group": "motion",
+      "title": "Snackbar timeout asks once at the readable floor; a refusal makes it persistent",
+      "mainSpecs": [
+        "snackbar",
+        "toast_schedule"
+      ],
+      "mainCases": 2,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::a timeout asks once at max(duration, 2.5 s) of readable time; a refusal makes it persistent"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-054",
+      "group": "motion",
+      "title": "Snackbar accepted timeout reports timeout; nil duration never expires",
+      "mainSpecs": [
+        "snackbar",
+        "toast_schedule"
+      ],
+      "mainCases": 2,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::an accepted timeout retires with reason timeout; nil duration never expires"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-055",
+      "group": "motion",
+      "title": "Snackbar hover, focus and queued time do not count toward the dwell",
+      "mainSpecs": [
+        "snackbar",
+        "toast_schedule"
+      ],
+      "mainCases": 2,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::hover and focus pause the dwell; queued time never counts"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-056",
+      "group": "presented-surfaces",
+      "title": "Snackbar equal priority waits; higher priority supersedes after the floor, once",
+      "mainSpecs": [
+        "snackbar",
+        "toast_schedule"
+      ],
+      "mainCases": 2,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::equal priority waits in order; a higher one supersedes after the floor, once",
+        "native_snackbar::native Snackbar: the schedule under re-entrant callbacks::a refused supersession keeps the contender queued and asks only once"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-057",
+      "group": "presented-surfaces",
+      "title": "Snackbar accepted supersession reports superseded",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::an accepted supersession reports superseded"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-058",
+      "group": "presented-surfaces",
+      "title": "Snackbar caller false while queued removes it and reports cancel once",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: proposals and reasons::the caller's false while queued removes it and reports cancel once"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-059",
+      "group": "error-handling",
+      "title": "Snackbar tenth admission is refused and capacity recovers",
+      "mainSpecs": [
+        "snackbar",
+        "toast_schedule"
+      ],
+      "mainCases": 2,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::the tenth admission is refused at construction, and capacity recovers"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-060",
+      "group": "lifetime-ownership",
+      "title": "Snackbar owner teardown never asks and reports cancel once",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::owner teardown never asks and reports cancel once, like Dialog and Popover"
+      ],
+      "weaker": "Application disposal and owner disposal both report cancel in the native form; there is no separate application.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-061",
+      "group": "lifetime-ownership",
+      "title": "Snackbar two applications are independent",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::two worlds are independent"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-062",
+      "group": "hud-world",
+      "title": "Snackbar visible row reserves its bottom rectangle until it has slid out",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::a visible row reserves its bottom rectangle, and releases it after it has slid out"
+      ],
+      "weaker": "The reservation is the FacetInsetBottom attribute on the layer, not presenter.reserveHud.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-063",
+      "group": "motion",
+      "title": "Snackbar modal blocks the dwell until it closes",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::a modal blocks the dwell until it closes"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-064",
+      "group": "error-handling",
+      "title": "Snackbar refuses a malformed spec before registering",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::refuses a malformed spec before registering"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-065",
+      "group": "focus-selection",
+      "title": "Snackbar arrival never steals focus; Cancel on the row returns focus even when refused",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: focus and input::arrival never steals focus; Cancel on a focused row returns focus to the content even when refused"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-066",
+      "group": "focus-selection",
+      "title": "Snackbar accepted removal of the focused row returns focus to the content",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: focus and input::accepted removal of the focused row puts focus back on the content"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-067",
+      "group": "focus-selection",
+      "title": "Snackbar empty host binds no horizontal arrows",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "There is no host strip or focus graph scope. Native selection moves between rows and content.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-068",
+      "group": "input-actions",
+      "title": "Snackbar pointer press on the action does not leave the passive host engaged",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "The presenter responder model is retired. A row has no modal catcher; the close case shows no catcher remains.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-069",
+      "group": "layout-geometry",
+      "title": "Snackbar strip docks bottom-centre",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: presentation::the strip docks bottom-centre above base screens, and modals and callouts paint above it"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-070",
+      "group": "paint-theming",
+      "title": "Snackbar art theme carve holds the icon, copy and action inside the plate",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: an art theme's panel carve::an art theme's frame carve holds the icon, copy and action inside the plate"
+      ],
+      "weaker": "The padding follows the panel chrome contentInsets; a live check confirms the art frame.",
+      "needsLive": "overlays-snackbar-carve",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-071",
+      "group": "paint-theming",
+      "title": "Snackbar callouts and help paint above the strip, and modals above all",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: presentation::the strip docks bottom-centre above base screens, and modals and callouts paint above it"
+      ],
+      "weaker": "The test checks ZIndex order. A live check confirms the painted order.",
+      "needsLive": "overlays-snackbar-paint-order",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-072",
+      "group": "input-actions",
+      "title": "Snackbar pointer press on Close leaves no engaged host and no catcher",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: focus and input::a pointer press on Close leaves no click-eating catcher behind"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-073",
+      "group": "motion",
+      "title": "Snackbar reservation keeps an exiting row until it has slid out",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::a visible row reserves its bottom rectangle, and releases it after it has slid out"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-074",
+      "group": "error-handling",
+      "title": "Snackbar throwing caller callback is raised and the row stays consistent",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::a throwing caller callback is raised, and the row stays consistent"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-075",
+      "group": "error-handling",
+      "title": "Snackbar construction that raises leaves nothing admitted",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: admission and lifetime::a construction that raises leaves nothing admitted behind it"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-076",
+      "group": "gallery-examples",
+      "title": "Snackbar showcase buttons present through the same service; a burst is capped",
+      "mainSpecs": [
+        "snackbar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_overlays_gallery::native gallery: the Status tab notices and snackbars::the showcase buttons present through the same service; a burst is capped, never dropped silently"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-077",
+      "group": "presented-surfaces",
+      "title": "Toast schedule callbacks may push, dismiss or throw without a stale index",
+      "mainSpecs": [
+        "toast_schedule"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_snackbar::native Snackbar: the schedule under re-entrant callbacks::callbacks may show and hide other rows during a retirement without a stale entry"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-078",
+      "group": "reactive-core",
+      "title": "Toast schedule publishes the caller identity before any callback",
+      "mainSpecs": [
+        "toast_schedule"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "The toast scheduler is example-owned. The snackbar keeps its records inside the control; there is no published identity.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-079",
+      "group": "presented-surfaces",
+      "title": "Toast schedule default uncontrolled paths are unchanged",
+      "mainSpecs": [
+        "toast_schedule"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "The uncontrolled toast scheduler is retired from the library and lives in the sponsor_toast example.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-080",
+      "group": "presented-surfaces",
+      "title": "Notice paints the severity icon, title and message; close reports only",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: inline copy, accessories and close::paints the severity icon, title and message, and the close reports the press only"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-081",
+      "group": "icons-media",
+      "title": "Notice icon false hides only the artwork; an explicit source paints that source",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: inline copy, accessories and close::icon = false hides only the artwork, and an explicit source paints that source"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-082",
+      "group": "layout-geometry",
+      "title": "Notice link and actions sit beside the copy or move below it",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: inline copy, accessories and close::the link and actions sit beside the copy when there is room and move below it when there is not"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-notice-layout",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-083",
+      "group": "paint-theming",
+      "title": "Notice link has no plate; on emphasis the link and default action are plain controls",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: inline copy, accessories and close::a link wears no plate, and on an emphasis fill the link and default action are ordinary controls"
+      ],
+      "weaker": "The test checks tags; a live check confirms the paint.",
+      "needsLive": "overlays-notice-layout",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-084",
+      "group": "focus-selection",
+      "title": "Notice arrival never moves focus; every control is a stop in page order",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: inline copy, accessories and close::arrival never moves focus, and every control is a pad stop in the page's own order"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-085",
+      "group": "input-actions",
+      "title": "Notice keyboard and gamepad reach and press the action; pointer and touch tap it",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: inline copy, accessories and close::keyboard and gamepad reach the action and press it; a pointer or finger taps it"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-086",
+      "group": "error-handling",
+      "title": "Notice malformed specs are refused by name",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: inline copy, accessories and close::malformed specs are refused by name"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-087",
+      "group": "hud-world",
+      "title": "Notice affixed content moves down by the notice height and returns",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: affixed placement reserves space a real consumer avoids::content moves down by the notice's real height and returns when it goes"
+      ],
+      "weaker": "The reservation is the FacetInsetTop attribute on the layer. Content reads it; there is no presenter reservation list.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-088",
+      "group": "hud-world",
+      "title": "Notice two stacked notices reserve the deepest edge; two apps never collide",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: affixed placement reserves space a real consumer avoids::two stacked notices reserve the deepest edge, and two worlds never collide"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-089",
+      "group": "hud-world",
+      "title": "Notice taller message grows the reservation live",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native Notice: affixed placement reserves space a real consumer avoids::a taller message grows the reservation live"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-090",
+      "group": "gallery-examples",
+      "title": "Notice Status tab banner pins to the top and the content moves out of the way",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_overlays_gallery::native gallery: the Status tab notices and snackbars::the banner pins to the tab's top and its content moves out of the way, then back"
+      ],
+      "needsLive": "overlays-notice-affixed",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-091",
+      "group": "input-actions",
+      "title": "NavBar Back fires by pointer, touch, keyboard and gamepad",
+      "mainSpecs": [
+        "nav_bar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native NavBar: the slot form::Back fires by pointer, touch, keyboard and gamepad"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-092",
+      "group": "layout-geometry",
+      "title": "NavBar Back, leading, filling center and trailing share one row",
+      "mainSpecs": [
+        "nav_bar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native NavBar: the slot form::Back, leading, a filling center and trailing share one row when there is room"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-093",
+      "group": "layout-geometry",
+      "title": "NavBar narrow bar moves trailing to a second row without rebuilding the center",
+      "mainSpecs": [
+        "nav_bar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native NavBar: the slot form::a narrow bar moves the trailing content to a second row, without rebuilding the center"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-navbar-wrap",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-094",
+      "group": "text-measure-fit",
+      "title": "NavBar default center is the one-line title; every slot subset mounts",
+      "mainSpecs": [
+        "nav_bar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native NavBar: the slot form::the default center is the one-line title, and every slot subset mounts"
+      ],
+      "weaker": "Main disclosed the truncated title; the native title truncates with TextTruncate.AtEnd.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-095",
+      "group": "public-surface-api",
+      "title": "NavBar lowercase form keeps its legacy shape",
+      "mainSpecs": [
+        "nav_bar"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "The lowercase navBar builder is retired with the blueprint layer. UI.NavBar is the only form.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-096",
+      "group": "error-handling",
+      "title": "NavBar refuses a trailing array and a non-node slot",
+      "mainSpecs": [
+        "nav_bar"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_notice_navbar::native NavBar: the slot form::UI.NavBar refuses a trailing array and a non-GuiObject slot"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-097",
+      "group": "presented-surfaces",
+      "title": "Callout function isPresented is followed",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: bound facts are read as tracked values::a function isPresented is evaluated and followed, not treated as a request"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-098",
+      "group": "presented-surfaces",
+      "title": "Callout function seen and featureUsed rule it out and retire once",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: bound facts are read as tracked values::a function seen or featureUsed rules the callout out, and a later true retires it once"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-099",
+      "group": "presented-surfaces",
+      "title": "Callout dismiss inside onShow retires once and removes the plate",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: callbacks during a show never strand or double-close a plate::a retirement inside onShow retires once and takes the plate down"
+      ],
+      "weaker": "The native callout has no dismiss API; the test retires it through featureUsed inside onShow.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-100",
+      "group": "lifetime-ownership",
+      "title": "Callout dispose inside onShow releases the queue slot",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: callbacks during a show never strand or double-close a plate::disposal inside onShow releases the queue slot"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-101",
+      "group": "error-handling",
+      "title": "Callout throw in onShow still shows the plate and keeps the slot accounting",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: callbacks during a show never strand or double-close a plate::an ordinary throw in onShow still shows the plate and keeps the slot accounting"
+      ],
+      "weaker": "The failure goes to the onError factory option instead of being raised.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-102",
+      "group": "lifetime-ownership",
+      "title": "Callout disposing one app's callout never touches another",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: two worlds and a recycled source keep their own resources::disposing one world's callout never touches another world's"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-103",
+      "group": "lifetime-ownership",
+      "title": "Callout rebuilt by a branch cycle is a new control with one plate",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: two worlds and a recycled source keep their own resources::a callout rebuilt by a branch cycle is a new control with one plate"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-104",
+      "group": "presented-surfaces",
+      "title": "Callout full composition paints every part; actions replace the dismiss",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::the full composition paints every part, and one or two actions replace the bottom dismiss"
+      ],
+      "needsLive": "overlays-callout-rich",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-105",
+      "group": "presented-surfaces",
+      "title": "Callout action retires its own generation once, never a newer one",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::an action retires its own generation once, and never a newer one it presented"
+      ],
+      "weaker": "There is no rearm API; a new generation is a new control, as in the showcase tour.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-106",
+      "group": "error-handling",
+      "title": "Callout throwing action retires its presentation exactly once",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::a throwing action still retires the presentation it belonged to, exactly once"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-107",
+      "group": "input-actions",
+      "title": "Callout disabled action cannot fire",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::a disabled action cannot fire"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-108",
+      "group": "presented-surfaces",
+      "title": "Callout closeButton adds a top close and keeps the dismiss",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::closeButton adds a top close and keeps the legacy bottom dismiss when there are no actions"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-109",
+      "group": "presented-surfaces",
+      "title": "Callout legacy content-only plate is unchanged",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::the legacy content-only plate is unchanged: content then the dismiss button, nothing else"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-110",
+      "group": "presented-surfaces",
+      "title": "Callout single-part compositions need no content",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::title-only, media-only, steps-only and actions-only compositions need no content"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-111",
+      "group": "error-handling",
+      "title": "Callout empty and malformed compositions are refused by name",
+      "mainSpecs": [
+        "callout"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native Callout: rich parts::an empty composition and malformed parts are refused by name"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-112",
+      "group": "presented-surfaces",
+      "title": "Help structured title, body and display-only shortcut paint in one plate",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native help: the structured form and the live plate::a title, a body and a display-only shortcut paint in one plate"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-113",
+      "group": "layout-geometry",
+      "title": "Help edge and align place the plate",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native help: the structured form and the live plate::edge and align place the plate"
+      ],
+      "needsLive": "overlays-help-placement",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-114",
+      "group": "presented-surfaces",
+      "title": "Help string form paints as before with no title",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native help: the structured form and the live plate::the string form paints exactly as before: no title node"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-115",
+      "group": "error-handling",
+      "title": "Help malformed tables are refused by name",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native help: the structured form and the live plate::malformed tables are refused by name at construction"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-116",
+      "group": "docs-examples-tooling",
+      "title": "Help text audit reads title and body separately",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "The text_audit help routes are retired with the presenter declarations.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-117",
+      "group": "public-surface-api",
+      "title": "Help live declarations carry the title beside the body",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "presenter.helpDeclarations is retired with the presenter.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-118",
+      "group": "presented-surfaces",
+      "title": "Help rebuilt branch with new help repaints the live plate",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native help: the structured form and the live plate::a bound help value repaints the live plate in place"
+      ],
+      "weaker": "A bound help value repaints in place; the native form has no path identity.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-119",
+      "group": "layout-geometry",
+      "title": "Help growing safe insets keep a live plate inside the safe box",
+      "mainSpecs": [
+        "help"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_callout_help::native help: the structured form and the live plate::safe insets that grow under a live plate keep it inside the new safe box"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-help-placement",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-120",
+      "group": "presented-surfaces",
+      "title": "Sheet function-bound title renders",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::a function-bound title renders as its type promises"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-121",
+      "group": "presented-surfaces",
+      "title": "Sheet closeButton false removes Close; Size and dismissal remain",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::closeButton=false removes Close; Size and interactive dismissal remain"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-122",
+      "group": "adaptive-environment",
+      "title": "Sheet explicit placements override the distance default",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::explicit placements pin the panel to the bottom or the center"
+      ],
+      "weaker": "There is no viewing-distance fact; automatic is the bottom edge.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-123",
+      "group": "error-handling",
+      "title": "Sheet refuses malformed placement, edge, width and closeButton",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::refuses malformed placement, edge, width and closeButton"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-124",
+      "group": "layout-geometry",
+      "title": "Sheet side placement docks to its edge and detents stay vertical",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::side placement docks to its physical edge, detents stay vertical"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-125",
+      "group": "motion",
+      "title": "Sheet side sheets enter and leave toward their edge",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::side sheets enter and leave toward their own edge"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-126",
+      "group": "presented-surfaces",
+      "title": "Sheet Size control reads player words",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::the Size control reads player words, never a detent id"
+      ],
+      "weaker": "The Size words are the grabber's AccessibleLabel.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-127",
+      "group": "layout-geometry",
+      "title": "Sheet width presets reuse the dialog widths within the safe room",
+      "mainSpecs": [
+        "sheet"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: placement, width, title and close::width presets reuse the dialog widths, bounded by safe room"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-128",
+      "group": "pointer-touch-drag",
+      "title": "Sheet flick projects past the nearest detent; a slow drag does not",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::a fast flick projects past the nearest detent; a slow drag does not"
+      ],
+      "needsLive": "overlays-sheet-gestures",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-129",
+      "group": "motion",
+      "title": "Sheet flick hands its speed to the settle spring; reduced motion snaps",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::a flick settles through motion; reduced motion snaps"
+      ],
+      "weaker": "The settle uses a tween; the release velocity chooses the detent but does not seed the motion.",
+      "needsLive": "overlays-sheet-gestures",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-130",
+      "group": "pointer-touch-drag",
+      "title": "Sheet hold after motion does not fling",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::a hold after motion does not fling"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-131",
+      "group": "pointer-touch-drag",
+      "title": "Sheet losing the active input class cancels the drag",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "b",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "nativeMechanism": "The engine UIDragDetector ends a drag when its input goes away; the sheet then releases the session through DragEnd.",
+      "nativeEvidence": "No headless case: the fake engine has no input class loss. The live check covers it.",
+      "needsLive": "overlays-sheet-gestures",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-132",
+      "group": "pointer-touch-drag",
+      "title": "Sheet unrelated class change carries the drag",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::an unrelated input change carries the drag"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-133",
+      "group": "pointer-touch-drag",
+      "title": "Sheet external detent change during a drag wins",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::an external detent change during a drag wins and drops the stale session"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-134",
+      "group": "pointer-touch-drag",
+      "title": "Sheet panel detector acquires only past the slop",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::the panel's native detector acquires only past the pointer slop"
+      ],
+      "needsLive": "overlays-sheet-gestures",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-135",
+      "group": "pointer-touch-drag",
+      "title": "Sheet touch pan on the panel drives it; a second stream cannot take over",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::a drag on the panel drives the sheet; a second stream cannot take it over"
+      ],
+      "weaker": "The panel stream is a native UIDragDetector, not the TouchPan gesture.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-136",
+      "group": "scrolling",
+      "title": "Sheet default scrollPolicy never hands a body pan to the sheet",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::default scrollPolicy never hands a body pan to the sheet; atLargestDetent yields below the tallest"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-137",
+      "group": "scrolling",
+      "title": "Sheet atLargestDetent body pan yields below the tallest; top downward pan at the tallest",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::default scrollPolicy never hands a body pan to the sheet; atLargestDetent yields below the tallest"
+      ],
+      "weaker": "Below the tallest detent the body stops scrolling. The downward pan from the top at the tallest detent is not handed to the sheet natively; it needs a live check.",
+      "needsLive": "overlays-sheet-gestures",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-138",
+      "group": "pointer-touch-drag",
+      "title": "Sheet resistance holds a dismissal-disabled sheet near its lowest detent",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::resistance holds a dismissal-disabled sheet near its lowest detent"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-139",
+      "group": "lifetime-ownership",
+      "title": "Sheet disposal mid-drag releases the session",
+      "mainSpecs": [
+        "sheet_gesture"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: gestures::disposal mid-drag releases the session and returns to baseline"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-140",
+      "group": "layout-geometry",
+      "title": "Sheet default parts: pinned title and utilities, one body scroller",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::default parts: pinned title and utilities, one body scroller (the panel no longer scrolls)"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-141",
+      "group": "layout-geometry",
+      "title": "Sheet contentInset none drops only the body padding",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::contentInset none drops only the body padding"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-142",
+      "group": "presented-surfaces",
+      "title": "Sheet header replaces the title; false removes it; utilities stay",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::a header replaces the title; header=false removes it; utilities stay"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-143",
+      "group": "presented-surfaces",
+      "title": "Sheet pinned actions stay reachable; Cancel runs the cancel action",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::pinned actions stay reachable over a long body; Cancel runs the cancel action"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-144",
+      "group": "layout-geometry",
+      "title": "Sheet small room unpins the regions into one scroller",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::a room too small for the pinned regions unpins them into one scroller"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-sheet-room",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-145",
+      "group": "layout-geometry",
+      "title": "Sheet sticky image hero stays pinned; header false puts Close over it",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::a sticky image hero stays pinned; header=false puts Close over it"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-146",
+      "group": "layout-geometry",
+      "title": "Sheet scrolling content hero reserves the utility strip",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::a scrolling content hero reserves the utility strip; utilities stay pinned"
+      ],
+      "needsLive": "overlays-sheet-room",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-147",
+      "group": "layout-geometry",
+      "title": "Sheet non-sticky hero spans the panel without the body inset",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::a non-sticky hero spans the panel width without the body inset"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-148",
+      "group": "layout-geometry",
+      "title": "Sheet keyboard takes its room from the safe rectangle",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::the keyboard takes its room from the one safe rectangle"
+      ],
+      "needsLive": "overlays-sheet-room",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-149",
+      "group": "error-handling",
+      "title": "Sheet refuses malformed header, hero, actions and inset",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::refuses malformed header, hero, actions and inset before mounting"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-150",
+      "group": "layout-geometry",
+      "title": "Sheet hug fits the body and pinned regions and follows live copy",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::hug fits the whole body plus the pinned regions, and follows live copy both ways"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-sheet-room",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-151",
+      "group": "layout-geometry",
+      "title": "Sheet hug clamps to the safe room and keeps the minimum floor",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::hug clamps to the safe room and keeps the minimum floor"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-152",
+      "group": "presented-surfaces",
+      "title": "Sheet coinciding heights keep the declared id; Size cycles; ties keep current",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::coinciding heights keep the declared id; Size cycles distinct ids; ties keep the current"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-153",
+      "group": "error-handling",
+      "title": "Sheet invalid late detent keeps the last geometry",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::an invalid late detent keeps the last geometry and a valid one recovers"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-154",
+      "group": "error-handling",
+      "title": "Sheet refuses a malformed hug entry",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::refuses a malformed hug entry"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-155",
+      "group": "lifetime-ownership",
+      "title": "Sheet action callbacks that throw, close or dispose leave no stale surface",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::action callbacks that throw, close or dispose leave no stale surface"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-156",
+      "group": "error-handling",
+      "title": "Sheet failing content build leaves no surface",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_sheet_parts::native Sheet: parts::a failing content build does not leave a surface behind"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-157",
+      "group": "pointer-touch-drag",
+      "title": "Sheet release projects by the height velocity",
+      "mainSpecs": [
+        "sheet_release"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "sheet_release::Sheet release policy::projects the release by the height velocity"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-158",
+      "group": "pointer-touch-drag",
+      "title": "Sheet release dismisses only where the sheet is",
+      "mainSpecs": [
+        "sheet_release"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "sheet_release::Sheet release policy::dismisses only where the sheet actually is"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-159",
+      "group": "pointer-touch-drag",
+      "title": "Sheet release tie keeps the current id then authored order",
+      "mainSpecs": [
+        "sheet_release"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "sheet_release::Sheet release policy::a tie keeps the current id, then the authored order"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-160",
+      "group": "pointer-touch-drag",
+      "title": "Sheet resistance is 1:1 inside and bounded outside",
+      "mainSpecs": [
+        "sheet_release"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "sheet_release::Sheet release policy::resistance is 1:1 inside, bounded outside, with no jump at the edge"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-161",
+      "group": "layout-geometry",
+      "title": "Anchored placement: every edge and align moves by the signed offset",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "overlay_placement::anchored placement::every edge and align pair moves by exactly the signed offset, and absent equals 0"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-162",
+      "group": "layout-geometry",
+      "title": "Anchored placement: a flip changes the edge only",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "overlay_placement::anchored placement::a flip changes the edge only: the alignment and the offset do not flip"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-163",
+      "group": "error-handling",
+      "title": "Anchored placement: a non-finite offset is refused by name",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "overlay_placement::anchored placement::a non-finite or non-number offset is refused by name",
+        "native_popover::native Popover: lifetime and contract::the spec is closed and the contract is refused by name"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-164",
+      "group": "error-handling",
+      "title": "Anchored placement: a non-positive or non-finite cap is refused by name",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: lifetime and contract::the spec is closed and the contract is refused by name"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-165",
+      "group": "layout-geometry",
+      "title": "Anchored placement: a surface that fits neither side hangs beside its source",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "overlay_placement::anchored placement::a surface that fits neither above nor below hangs beside its source, never over it"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-166",
+      "group": "layout-geometry",
+      "title": "Anchored placement: caps include the chrome; absent keeps the plain hug",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "native_popover::native Popover: sources, anchor loss and bounds::maxWidth and maxHeight bound the whole panel inside the live safe box, and the body scrolls"
+      ],
+      "weaker": "The fake engine computes no layout. The test sets AbsoluteSize on the regions and checks the arithmetic; a live Studio check confirms the real layout.",
+      "needsLive": "overlays-popover-bounds",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-167",
+      "group": "layout-geometry",
+      "title": "Anchored placement: growing safe insets pull a capped surface inside",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "overlay_placement::anchored placement::growing safe insets pull a surface inside the new box",
+        "native_popover::native Popover: sources, anchor loss and bounds::maxWidth and maxHeight bound the whole panel inside the live safe box, and the body scrolls"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-168",
+      "group": "public-surface-api",
+      "title": "Anchored placement: presentAnchored carries it to the mounted surface",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "presentAnchored is retired with the presenter. UI.Popover uses the placement directly.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-169",
+      "group": "layout-geometry",
+      "title": "Anchored placement: the safe clamp wins over the offset and reports the shift",
+      "mainSpecs": [
+        "anchored_surface"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "candidateCases": [
+        "overlay_placement::anchored placement::the safe clamp still wins over the offset, and reports the shift it took"
+      ],
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-170",
+      "group": "text-measure-fit",
+      "title": "Text disclosure live plate repaints bound plain and rich values",
+      "mainSpecs": [
+        "text_disclosure"
+      ],
+      "mainCases": 2,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "UI.Text disclose plates are retired (see mech3-71).",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-171",
+      "group": "text-measure-fit",
+      "title": "Text disclosure plate retires when its source becomes a hidden candidate",
+      "mainSpecs": [
+        "text_disclosure"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "UI.Text disclose plates and ViewThatFits are retired.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-172",
+      "group": "text-measure-fit",
+      "title": "Text disclosure unchanged values never remount; insets narrow the plate",
+      "mainSpecs": [
+        "text_disclosure"
+      ],
+      "mainCases": 2,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "UI.Text disclose plates are retired.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-173",
+      "group": "lifetime-ownership",
+      "title": "Text disclosure two presenters hold independent plates",
+      "mainSpecs": [
+        "text_disclosure"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "The presenter is retired.",
+      "family": "overlays"
+    },
+    {
+      "id": "post-overlays-174",
+      "group": "docs-examples-tooling",
+      "title": "Text disclosure seam: module structure of the presenter disclosure delegate",
+      "mainSpecs": [
+        "text_disclosure_seam"
+      ],
+      "mainCases": 14,
+      "class": "c",
+      "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "removal": "The presenter module and its disclosure seam are retired.",
+      "family": "overlays"
     },
     {
       "id": "post-pickers-001",
@@ -40108,7 +42830,7 @@
   ],
   "postBaseline": {
     "content-navigation": {
-      "mainCommit": "bc9a56a62c3ab9f5b4fa6bb5da4a6a01fc5ee9d4",
+      "mainCommit": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
       "contracts": 123,
       "mainCases": 135,
@@ -40140,6 +42862,34 @@
         "tab-fit",
         "vote-pad",
         "vote-targets"
+      ]
+    },
+    "overlays": {
+      "mainCommit": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "since": "a8c8895673c0745506908b66dc89f8cead6b66f3",
+      "contracts": 174,
+      "mainCases": 199,
+      "mainCasesByClass": {
+        "a": 170,
+        "b": 1,
+        "c": 28
+      },
+      "needsLive": [
+        "overlays-callout-rich",
+        "overlays-dialog-body-pad",
+        "overlays-dialog-keyboard",
+        "overlays-dialog-room",
+        "overlays-help-placement",
+        "overlays-navbar-wrap",
+        "overlays-notice-affixed",
+        "overlays-notice-layout",
+        "overlays-popover-bounds",
+        "overlays-popover-compact",
+        "overlays-sheet-gestures",
+        "overlays-sheet-room",
+        "overlays-snackbar-carve",
+        "overlays-snackbar-paint-order",
+        "overlays-snackbar-widths"
       ]
     },
     "pickers": {

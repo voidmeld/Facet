@@ -7,6 +7,8 @@ export type ControlSize = "compact" | "regular" | "large"
 export type Status = "neutral" | "info" | "success" | "warning" | "error" | "accent"
 export type TextRole = "caption" | "label" | "body" | "heading" | "title" | "control" | "strong" | "numeral"
 export type Corners = number | "pill" | "square" | "rounded"
+export type TextFitBound = number | TextRole
+export type TextFit = "fit" | { fit: { cap: TextFitBound?, floor: TextFitBound? } }
 export type LabelProps = Engine.TextLabelNativeProps & {
 	ref: ((GuiObject) -> ())?,
 	text: Types.Value<string>?,
@@ -16,6 +18,8 @@ export type LabelProps = Engine.TextLabelNativeProps & {
 	icon: Types.Value<string>?,
 	iconPosition: "leading" | "trailing"?,
 	gap: Types.Value<number>?,
+	truncate: ("end" | "middle")?,
+	textSize: TextFit?,
 }
 export type BadgeProps = Types.TextLabelProps & {
 	label: Types.Value<string>?,

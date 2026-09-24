@@ -14,6 +14,7 @@ local Reactor = require "./reactive/reactor"
 local Props = require "@self/props"
 local Root = require "./ownership/root"
 local Types = require "./reactive/types"
+local Weak = require "./weak"
 
 export type Node = Host.Node
 type Dispose = Types.Dispose
@@ -32,7 +33,7 @@ export type Component = () -> Node
 
 export type Fragment = () -> { Child }
 
-export type Constructor = ((label: string) -> (props: Props.Props) -> Node) & ((props: Props.Props) -> Node)
+export type Constructor = ((label: string) -> (props: Props.Props) -> Node) & ((props: {}) -> Node)
 
 export type Runtime = {
 	host: Host.Host,
@@ -82,7 +83,7 @@ local function createRuntime(host: Host.Host): Runtime
 	end
 
 	local function destroyOwnedNode(node: Node)
-		local ok, err: any = pcall(Nodes.releaseDependents, node)
+		local ok, err: unknown = pcall(Nodes.releaseDependents, node)
 		render.destroyNode(node)
 		Nodes.forget(node)
 		if not ok then
@@ -90,7 +91,7 @@ local function createRuntime(host: Host.Host): Runtime
 		end
 	end
 
-	local pendingLabel: { [any]: string } = setmetatable({}, { __mode = "k" }) :: any
+	local pendingLabel = Weak.keys() :: { [unknown]: string }
 
 	local function create(kind: string): Constructor
 		if type(kind) ~= "string" then
@@ -130,7 +131,7 @@ local function createRuntime(host: Host.Host): Runtime
 				local child = props[index]
 				local slot = Children.addSlot(list)
 				if type(child) == "function" and pendingLabel[child] == nil then
-					child(Children.mountPointFor(list, slot))
+					(child :: Children.Directive)(Children.mountPointFor(list, slot))
 				elseif type(child) == "table" or type(child) == "userdata" then
 					Children.insertStatic(list, slot, child)
 				elseif pendingLabel[child] ~= nil then
@@ -184,7 +185,7 @@ local function createRuntime(host: Host.Host): Runtime
 
 			local savedInFlight = inFlight
 			inFlight = nil
-			local ok, err: any = pcall(Active.runWith, owner, applyBuild, label, props, node, owner)
+			local ok, err: unknown = pcall(Active.runWith, owner, applyBuild, label, props, node, owner)
 			if not ok then
 				owner.rollbackTo(mark)
 				local key = inFlight
@@ -200,7 +201,7 @@ local function createRuntime(host: Host.Host): Runtime
 		end
 
 		return (
-			function(first: any): any
+			function(first: string | Props.Props): Node | (props: Props.Props) -> Node
 				if type(first) == "string" then
 					local labelled = function(props: Props.Props): Node
 						return build(first, props)
@@ -224,8 +225,8 @@ local function createRuntime(host: Host.Host): Runtime
 	end
 
 	local function releaseInOrder(first: Dispose, second: Dispose)
-		local firstOk, firstErr: any = pcall(first)
-		local secondOk, secondErr: any = pcall(second)
+		local firstOk, firstErr: unknown = pcall(first)
+		local secondOk, secondErr: unknown = pcall(second)
 		if not firstOk then
 			error(firstErr, 0)
 		end
@@ -272,15 +273,14 @@ local function createRuntime(host: Host.Host): Runtime
 		end
 
 		local mountPoint = Children.wholeOf(host, target)
-		local ok, blockOrError: any = pcall(Block.mountBlock, mountPoint, owner, produce, label, nil)
+		local ok, block = pcall(Block.mountBlock, mountPoint, owner, produce, label, nil)
 		if not ok then
 			if isTopLevel then
 				owner.dispose()
 			end
-			error(blockOrError, 0)
+			error(block, 0)
 		end
 
-		local block = blockOrError :: Block.Block
 		if not isTopLevel then
 			return block.dispose, block.nodes
 		end
@@ -328,7 +328,7 @@ local function createRuntime(host: Host.Host): Runtime
 			end
 		end)
 
-		local ok, err: any = pcall(function()
+		local ok, err: unknown = pcall(function()
 			local children = Active.withOwner(blockOwner, fragment)
 			if type(children) ~= "table" then
 				Diagnostics.raise(
@@ -406,7 +406,7 @@ local function createRuntime(host: Host.Host): Runtime
 		local owner = parentOwner.createChild()
 
 		local inFlight: string? = nil
-		local ok, err: any = pcall(function()
+		local ok, err: unknown = pcall(function()
 			Active.withOwner(owner, function()
 				Props.apply(host, node, props, owner, function(key: string)
 					inFlight = key
@@ -499,14 +499,14 @@ local function createRuntime(host: Host.Host): Runtime
 	local motion = Animation.createMotion(host, requireOwner, reactor)
 	local timelines = TimelineModule.createTimelines(host, requireOwner)
 
-	local function watch(_self: any, body: (use: Types.Use) -> (), label: string?): Types.Dispose
+	local function watch(_self: Runtime, body: (use: Types.Use) -> (), label: string?): Types.Dispose
 		local active = Active.current()
 		local owner = if active ~= nil then active else rootOwner
 		return owner.watch(body, label)
 	end
 
 	local constructors: { [string]: Constructor } = {}
-	setmetatable(constructors, {
+	setmetatable(constructors :: { [string]: Constructor }, {
 		__index = function(self: { [string]: Constructor }, kind: string): Constructor
 			local constructor = create(kind)
 			rawset(self, kind, constructor)
@@ -518,22 +518,22 @@ local function createRuntime(host: Host.Host): Runtime
 		host = host,
 		reactor = reactor,
 		watch = watch,
-		batch = (function(_self: any, body: any): any
+		batch = function<T...>(_self: Runtime, body: () -> T...): T...
 			return reactor:batch(body)
-		end :: any) :: <T...>(self: any, body: () -> T...) -> T...,
-		settle = function(_self: any)
+		end,
+		settle = function(_self: Runtime)
 			reactor:settle()
 		end,
-		pending = function(_self: any): number
+		pending = function(_self: Runtime): number
 			return reactor:pending()
 		end,
-		dispose = function(_self: any)
+		dispose = function(_self: Runtime)
 			runtimeDisposed = true
 			rootOwner.dispose()
 		end,
 		connect = connect,
 		create = create,
-		constructors = constructors :: any,
+		constructors = constructors,
 		decorate = decorate,
 		mount = mount,
 		mountFragment = mountFragment,
