@@ -194,8 +194,6 @@
   ],
   "audit": "artifacts/compose-simplification/gallery-parity-audit.md",
   "pendingLiveRisks": [
-    "Collection toolbar under phone/largest-text and compact landscape",
-    "Shell measured reservation and Settings reachability under themes/largest text",
     "Haptic motor output on a physical gamepad and phone for Button, selection and custom pulses (Studio only records requests)"
   ],
   "resolvedLiveRisks": [
@@ -233,6 +231,64 @@
           "native_navigation::native navigation controls::hands selection to the shown tab panel and restores it on return",
           "native_navigation::native navigation controls::hides a callout while its retained tab is away and shows it again on return",
           "native_navigation::native navigation controls::pauses repeating progress motion while its retained tab is hidden"
+        ]
+      }
+    },
+    {
+      "risk": "Collection toolbar under phone/largest-text and compact landscape",
+      "resolvedBy": [
+        "7e89af75 Add a live Studio assertion harness and fix geometry found by it"
+      ],
+      "evidence": {
+        "date": "2026-09-24",
+        "hosts": [
+          "Roblox Studio playtest, device emulator 844x369 landscape with touch, preferred text size Medium and Largest",
+          "Roblox Studio playtest, device emulator 388x824 portrait with touch, preferred text size Medium and Largest"
+        ],
+        "steps": "Ran the live harness gallery suite (tools/studio/live/suites/gallery.luau): the gallery Collections page, then each collection_demo variant (Mail list and table, Measured and Declared heights, Grid, Sideways grid, Large table) mounted at the page size that the gallery gives it. Results: artifacts/studio-live/gallery-landscape-844x369-largest.json, artifacts/studio-live/gallery-landscape-844x369-default.json, artifacts/studio-live/gallery-portrait-largest.json and artifacts/studio-live/gallery-portrait-default.json.",
+        "before": "At 844x369 with Largest text, Collections > Rows > Swipe actions > List had a 644x155 page. The toolbar took 164 px, so the Mail list ScrollingFrame was 0 px high and no row showed.",
+        "after": "On a page shorter than 360 px and at least 480 px wide, the toolbar is a scrolling column of 40% width beside the rows. At 844x369 Largest the Mail list is 378x155 beside a 258x155 toolbar (artifacts/studio-live/captures/collections-landscape-largest.png). In all four runs and all eight surfaces, each toolbar button is inside the toolbar width, reachable in its canvas, at least 44 px high and its label fits; the collection keeps at least min(120, half the page) px and scrolls.",
+        "headless": [
+          "native_gallery_collections::native gallery collections::moves the collection toolbar beside the rows when the page is short and wide"
+        ]
+      }
+    },
+    {
+      "risk": "Shell measured reservation and Settings reachability under themes/largest text",
+      "resolvedBy": [
+        "47cf9657 Measure the gallery shell toolbar and align table headers with the edit gutter"
+      ],
+      "evidence": {
+        "date": "2026-09-24",
+        "hosts": [
+          "Roblox Studio playtest, device emulator 844x369 landscape with touch, preferred text size Medium and Largest",
+          "Roblox Studio playtest, device emulator 388x824 portrait with touch, preferred text size Medium and Largest"
+        ],
+        "steps": "Ran the shell-reservation-and-settings case of the live gallery suite, which switches all ten theme packages through the gallery API. Clicked CompactSettings at 844x369 Largest.",
+        "before": "At 388x824 Medium, the glossy_mobile Settings button was 52 px high. The shell reserved a fixed 56 px with an 8 px top inset, so the button ended at 58 px, over the demo tabs.",
+        "after": "The shell toolbar measures its content, with a 56 px minimum, and the demos start at the measured height. At 388x824, Medium and Largest, for all ten packages: Settings and the title are inside the reserved toolbar and the screen, Settings is selectable and active, its label fits, and the content starts below the toolbar (artifacts/studio-live/gallery-portrait-largest.json). At 844x369 the shell is compact: CompactSettings is inside the screen, selectable, fits its label and does not cover the demo list for all ten packages (artifacts/studio-live/gallery-landscape-844x369-largest.json). A click opened the Gallery settings sheet (artifacts/studio-live/captures/settings-sheet-landscape-largest.png).",
+        "densityNote": "The pointer-density packages keep their own control height on the touch emulation: classic_desktop 27 px, compact_pointer 31 px and scifi_hud 40 px. The run records these heights and does not apply the 44 px touch floor to them.",
+        "headless": [
+          "native_gallery::native gallery::reserves the measured shell toolbar height above the demos"
+        ]
+      }
+    },
+    {
+      "risk": "Haptic effect requests for Button press, completed click, selection and custom pulses",
+      "resolvedBy": [
+        "47cf9657 Measure the gallery shell toolbar and align table headers with the edit gutter"
+      ],
+      "evidence": {
+        "date": "2026-09-24",
+        "hosts": [
+          "Roblox Studio playtest, device emulator 844x369 landscape with touch, preferred text size Medium and Largest",
+          "Roblox Studio playtest, device emulator 388x824 portrait with touch, preferred text size Medium and Largest"
+        ],
+        "steps": "Mounted the Sensory feedback scenario with the haptics_setup suite, clicked Press and hold, Complete a click, Selected and Play double pulse with Studio mouse input, then ran haptics_verify (artifacts/studio-live/haptics_verify-portrait-largest.json and artifacts/studio-live/haptics_verify-landscape-844x369-largest.json).",
+        "observed": "The Press button carries the native PressHapticEffect. The four effects are native HapticEffect instances (UIClick, UIClick, UIHover, Custom). Each real input recorded its request: press, release, selection and custom. Studio plays no motor, so motor output is not claimed and stays pending on a physical phone and gamepad.",
+        "headless": [
+          "native_gallery::native gallery::requests native haptics and releases effects when the screen closes",
+          "native_inputs::native input controls::uses the application press haptic unless a button names its own"
         ]
       }
     }

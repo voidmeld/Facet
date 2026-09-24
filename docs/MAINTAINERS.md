@@ -35,11 +35,13 @@ modules. A directory with a trailing slash owns each module in it.
 | **library root** | `src/init.luau`, `src/ui/init.luau` | Exports the public table and the public types. Assembles the control families into one frozen controls table for each runtime. | `Facet.VERSION`, `Facet.controls`, `Facet.bind` |
 | **Compose snapshot** | `src/vendor/compose/` | The pinned Compose reactive runtime and its Roblox host. Generated. Do not edit it. | `Facet.Compose`, `Facet.Roblox` |
 | **control context** | `src/ui/context.luau`, `src/ui/types.luau`, `src/ui/engine_types.luau`, `src/ui/control_types.luau`, `src/ui/help.luau`, `src/ui/native_decoration.luau` | The shared context for each runtime and the shared types. It also holds the help text and native decoration helpers. | None. The families receive it from the library root. |
+| **layout** | `src/ui/layout.luau`, `src/ui/layout_kit.luau`, `src/ui/layout_types.luau` | Screens, stacks, layers, scroll views, grids, the fill flex item and theme spacing. The control families build their stacks with the same code. | None. Reach it through `Facet.controls`. |
 | **inputs** | `src/ui/inputs.luau`, `src/ui/input_value.luau`, `src/ui/input_types.luau` | Buttons, toggles, text input, steppers, sliders, ratings, level pickers, chips and shortcut hints. | None. Reach it through `Facet.controls`. |
 | **navigation** | `src/ui/nav_modal.luau`, `src/ui/nav_menu.luau`, `src/ui/nav_surfaces.luau`, `src/ui/nav_pages.luau`, `src/ui/nav_path_shapes.luau`, `src/ui/navigation_types.luau` | Menus, pickers, presented surfaces, tab views, navigation stacks and page views. | None. Reach it through `Facet.controls`. |
 | **radial** | `src/ui/nav_radial.luau`, `src/ui/nav_radial_geometry.luau`, `src/ui/radial_types.luau` | The radial menu and its geometry. | None. Reach it through `Facet.controls`. |
 | **collections** | `src/ui/collections.luau`, `src/ui/collection_policy.luau`, `src/ui/collection_selection.luau`, `src/ui/collection_reorder.luau`, `src/ui/collection_snap.luau`, `src/ui/collection_row_actions.luau`, `src/ui/collection_table.luau`, `src/ui/collection_types.luau` | Keyed and virtual collections, selection, reorder, snap, row actions and tables. | None. Reach it through `Facet.controls`. |
 | **media** | `src/ui/media.luau`, `src/ui/media_types.luau` | Labels, badges, status, progress, skeletons, images, avatars and stages. | None. Reach it through `Facet.controls`. |
+| **content** | `src/ui/pagination.luau`, `src/ui/pagination_window.luau`, `src/ui/step_indicator.luau`, `src/ui/vote.luau`, `src/ui/card.luau`, `src/ui/badge_seal.luau`, `src/ui/content_values.luau`, `src/ui/content_types.luau` | Pagination, step indicators, votes, cards, and the checks that keep the last legal value. | None. Reach it through `Facet.controls`. |
 | **themes** | `src/ui/themes.luau`, `src/ui/theme_types.luau`, `src/ui/icons.luau` | Theme packages, their compilation to native StyleSheets, chrome skins and the standard icons. | `Facet.themes` |
 
 ## Proof
@@ -62,6 +64,7 @@ covers the library root. To see the number of specs for each area, run
 | **radial** | `tests/radial_geometry.spec.luau`, `tests/native_collections.spec.luau` | `radial_menu` | [Adding a control](extending/new-control.md) |
 | **collections** | `tests/native_collections.spec.luau` | `collections`, `table_virtualized`, `row_actions` | [Adding a control](extending/new-control.md) |
 | **media** | `tests/native_themes_media.spec.luau` | `async_images`, `avatar`, `badge` | [Mounting into native targets](extending/new-render-target.md) |
+| **content** | `tests/native_pagination.spec.luau` | `paging`, `steps` | [Adding a control](extending/new-control.md) |
 | **themes** | `tests/native_themes_media.spec.luau`, `tests/native_inputs.spec.luau` | `all_controls` | [Adding a theme package](extending/new-theme.md) and [Adding artwork to a control](extending/skinned-control.md) |
 
 ## Repository

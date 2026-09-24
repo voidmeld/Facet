@@ -557,7 +557,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local clear = if mode ~= "never"
 			then UI.Button "Clear" {
 				label = "Clear",
-				Size = D2.fromOffset(44, 32),
+				Size = D2.fromOffset(44, 44),
 				AutomaticSize = E.AutomaticSize.None,
 				AnchorPoint = if framed then nil else V2.new(1, 0.5),
 				Position = if framed then nil else D2.fromScale(1, 0.5),
@@ -778,26 +778,28 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		end)
 		attributes(
 			node,
-			{
-				AccessibleLabel = if spec.label ~= nil
-					then function(use: ComposeTypes.Use): string
-						return chrome.labelText(spec, use)
-					end
-					else nil,
-				invalid = function(use: ComposeTypes.Use)
-					return use(invalid) or read(spec.invalid, use) == true
-				end,
-				validationMessage = validationMessage,
-				readOnly = function(use: ComposeTypes.Use)
-					return readOnly(use)
-				end,
-				selectOnFocus = if spec.selectOnFocus ~= nil
-					then function(use: ComposeTypes.Use): string
-						local ok, policy = pcall(policyOf, read(spec.selectOnFocus, use))
-						return if ok then policy :: string else lastPolicy
-					end
-					else nil,
-			} :: Shared.Attributes
+			(
+					{
+						AccessibleLabel = if spec.label ~= nil
+							then function(use: ComposeTypes.Use): string
+								return chrome.labelText(spec, use)
+							end
+							else nil,
+						invalid = function(use: ComposeTypes.Use)
+							return use(invalid) or read(spec.invalid, use) == true
+						end,
+						validationMessage = validationMessage,
+						readOnly = function(use: ComposeTypes.Use)
+							return readOnly(use)
+						end,
+						selectOnFocus = if spec.selectOnFocus ~= nil
+							then function(use: ComposeTypes.Use): string
+								local ok, policy = pcall(policyOf, read(spec.selectOnFocus, use))
+								return if ok then policy :: string else lastPolicy
+							end
+							else nil,
+					} :: unknown
+				) :: Shared.Attributes
 		)
 		if spec.selectOnFocus ~= nil and dynamic(spec.selectOnFocus) then
 			Compose.watch(function(use: ComposeTypes.Use)

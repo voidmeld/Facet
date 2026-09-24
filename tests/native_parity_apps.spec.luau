@@ -1296,7 +1296,10 @@ t.describe("native parity reference applications", function()
 			t.expect(label(assam)).toBe("Assam · 6 tsp")
 			t.expect(label(find(recipe, "cinnamon"))).toBe("Cinnamon · 1.5 tsp")
 			model.i18n.setLocale("xa")
-			t.expect(label(find(recipe, "cinnamon"))).toBe("Cinnamon · " .. model.i18n.measureAt("xa", 1.5, "tsp"))
+			t.expect(label(find(recipe, "cinnamon"))).toBe(model.i18n.at("xa", "recipe.line", {
+				name = model.i18n.nameAt("xa", "botanical", "cinnamon", "Cinnamon"),
+				measure = model.i18n.measureAt("xa", 1.5, "tsp"),
+			}))
 			t.expect(string.find(label(find(recipe, "cinnamon")), "1,5", 1, true) ~= nil).toBe(true)
 			w.stop()
 		end)
@@ -1481,6 +1484,124 @@ t.describe("native parity reference applications", function()
 			t.expect(table.concat(offenders, "; ")).toBe("")
 			w.stop()
 		end)
+		t.it(
+			"draws every player-facing string from the locale table and relabels all of them on a locale switch",
+			function()
+				local w = world(sipworks)
+				local model, steps = w.built.model, w.built.steps
+				local marks: { [string]: boolean } = {}
+				for _, blend in model.catalog.blends do
+					marks[sipArt.of("blend", blend.id).mark] = true
+				end
+				for _, item in model.catalog.botanicals do
+					marks[sipArt.of("botanical", item.id).mark] = true
+				end
+				local function player(value: string): boolean
+					return value ~= "" and not marks[value] and string.match(value, "^[%d%s%p]*$") == nil
+				end
+				local function chrome(node: any): boolean
+					local at = node
+					while at ~= nil do
+						if at.Name == "Close" and at.Parent ~= nil and at.Parent.Name == "Header" then
+							return true
+						end
+						at = at.Parent
+					end
+					return false
+				end
+				local function shown(): { [any]: { [string]: string } }
+					local out: { [any]: { [string]: string } } = {}
+					for _, node in w.screen:GetDescendants() do
+						local class = node.ClassName
+						if
+							(class == "TextLabel" or class == "TextButton" or class == "TextBox") and not chrome(node)
+						then
+							local entry: { [string]: string } = {}
+							if player(node.Text) and class ~= "TextBox" then
+								entry.Text = node.Text
+							end
+							if class == "TextBox" and player(node.PlaceholderText) then
+								entry.PlaceholderText = node.PlaceholderText
+							end
+							if next(entry) ~= nil then
+								out[node] = entry
+							end
+						end
+					end
+					return out
+				end
+				local visited = 0
+				local function check(state: string)
+					local english = shown()
+					local count = 0
+					for node, entry in english do
+						for property, value in entry do
+							count += 1
+							t.expect(`{state} {node.Name}.{property}: {string.find(value, "[", 1, true) == nil}`)
+								.toBe(`{state} {node.Name}.{property}: true`)
+						end
+					end
+					t.expect(count > 0).toBe(true)
+					visited += count
+					t.expect(steps.locale("xa")).toBe(true)
+					local expanded = shown()
+					for node, entry in english do
+						for property, value in entry do
+							local now = node[property]
+							local wrapped = string.sub(now, 1, 1) == "[" and string.sub(now, -1) == "]"
+							t.expect(`{state} {value} -> {wrapped and now ~= value}`).toBe(`{state} {value} -> true`)
+						end
+					end
+					for node, entry in expanded do
+						for property in entry do
+							t.expect(`{state} {node.Name}.{property}: {english[node] ~= nil}`)
+								.toBe(`{state} {node.Name}.{property}: true`)
+						end
+					end
+					t.expect(steps.locale("en")).toBe(true)
+					for node, entry in english do
+						for property, value in entry do
+							t.expect(node[property]).toBe(value)
+						end
+					end
+				end
+				for _, id in { "menu", "favorites", "rewards", "book" } do
+					steps.section(id)
+					check(id)
+				end
+				steps.section("menu")
+				steps.open("lantern-oolong")
+				press(assert(modal(w.screen)), "BlendDetail", "Recipe")
+				t.expect(within(assert(modal(w.screen)), "Unlock", "Buy") ~= nil).toBe(true)
+				check("locked recipe")
+				press(assert(modal(w.screen)), "BlendDetail", "jasmine")
+				local card = assert(find(w.screen, "BotanicalCard"))
+				check("botanical card")
+				press(card, "Flip")
+				t.expect(find(card, "MeasuredFacts") ~= nil).toBe(true)
+				check("brew facts")
+				local panel = card
+				while panel.Name ~= "SheetPanel" do
+					panel = panel.Parent
+				end
+				press(panel, "Header", "Close")
+				t.expect(find(w.screen, "BotanicalCard")).toBeNil()
+				press(assert(modal(w.screen)), "Header", "Close")
+				t.expect(modal(w.screen)).toBeNil()
+				steps.open("amber-harvest")
+				press(assert(modal(w.screen)), "BlendDetail", "Recipe")
+				t.expect(find(assert(modal(w.screen)), "assam") ~= nil).toBe(true)
+				check("recipe")
+				steps.order("amber-harvest", "paid")
+				steps.advance(0.7)
+				t.expect(hasText(w.root, sipStrings.byLocale.en["notice.rejected"])).toBe(true)
+				check("rejected notice")
+				steps.order("amber-harvest", "paid")
+				check("confirming")
+				t.expect(visited > 60).toBe(true)
+				w.stop()
+			end
+		)
 	end)
 
 	t.describe("Foyer", function()
@@ -3821,7 +3942,9 @@ t.describe("native parity reference applications", function()
 			local runtime = Facet.Roblox.createRuntime(engine)
 			local names = {}
 			for name in Facet.controls(runtime, { types = engine.types } :: any) do
-				table.insert(names, name :: string)
+				if name ~= "fill" and name ~= "badged" then
+					table.insert(names, name :: string)
+				end
 			end
 			table.sort(names)
 			runtime:dispose()
@@ -3834,11 +3957,16 @@ t.describe("native parity reference applications", function()
 			for name in string.gmatch(source, "export type ([%a_][%w_]*)") do
 				exported[name] = true
 			end
-			local shared = { VirtualList = "CollectionSpec", VirtualGrid = "CollectionSpec" }
+			local shared = {
+				VirtualList = "CollectionSpec",
+				VirtualGrid = "CollectionSpec",
+				VStack = "StackProps",
+				HStack = "StackProps",
+			}
 			local names = controlNames()
 			local published: { string } = {}
 			for name in
-				string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function")
+				string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.(%u[%w_]*) : function")
 			do
 				table.insert(published, name)
 			end

@@ -2,7 +2,10 @@
 local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
+local Media = require("./media_types")
+local Content = require("./content_types")
 local ComposeTypes = require("../vendor/compose/core")
+local reducedMotion = require("./motion")
 
 type Controls = {
 	TabView: Types.Constructor<Nav.TabViewSpec, Frame>,
@@ -11,6 +14,8 @@ type Controls = {
 	Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
 	Menu: Nav.MenuConstructor,
 	Picker: Nav.PickerConstructor,
+	StatusIndicator: Types.Constructor<Media.StatusIndicatorProps, TextLabel>,
+	badged: Content.Badged,
 }
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
@@ -18,6 +23,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local E, D2, V2, D = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2, ctx.types.UDim
 	local tabDepth = 0
 	local navigationDepth = 0
+	local TAB_FADE: Nav.Transition = { seconds = 0.2, ease = Compose.easing.outQuad }
+	local PUSH_SPRING = { period = 0.3, damping = 1, tolerance = 1e-3 }
+	local PARALLAX = 0.3
+	local DIM = 0.1
 	local function content<P>(
 		builder: Instance | ((Nav.NavigationEntry<P>?) -> Instance),
 		entry: Nav.NavigationEntry<P>?
@@ -37,7 +46,8 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		properties: Types.CanvasGroupNativeProps & Types.FrameNativeProps,
 		state: ComposeTypes.Readable<ComposeTypes.LayerStackState>,
 		transition: Nav.Transition | false?,
-		hidden: (() -> ())?
+		hidden: (() -> ())?,
+		immediate: boolean?
 	): GuiObject
 		if transition == nil or transition == false then
 			local node = Host.Frame(properties)
@@ -55,13 +65,16 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local gui = surfaces.service("GuiService")
 		local reduced = if gui then ctx.observe(gui, "ReducedMotionEnabled") else Compose.cell(false)
 		local opacity = runtime.tween(function(use: ComposeTypes.Use)
-			return if use(mounted) and use(state).top then 1 else 0
+			return if (immediate or use(mounted)) and use(state).top then 1 else 0
 		end, transition)
+		local function still(use: ComposeTypes.Use): boolean
+			return use(reduced) or read(ctx.config.reducedMotion, use) == true
+		end
 		properties.GroupTransparency = function(use: ComposeTypes.Use)
-			return if use(reduced) or read(ctx.config.reducedMotion, use) then 0 else 1 - use(opacity)
+			return if still(use) then 0 else 1 - use(opacity)
 		end
 		properties.Visible = function(use: ComposeTypes.Use)
-			return use(state).top or not use(reduced) and use(opacity) > 0
+			return use(state).top or not still(use) and use(opacity) > 0
 		end
 		properties.Interactable = function(use: ComposeTypes.Use)
 			return use(state).top
@@ -103,7 +116,28 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"TabView.retention uses Compose all or top"
 		)
 		local depth = tabDepth
-		local nested = depth > 0
+		local nested = Compose.cell(depth > 0)
+		local statuses: { [string]: boolean } =
+			{ neutral = true, info = true, success = true, warning = true, error = true, accent = true }
+		local forms: { [string]: boolean } = { dot = true, ring = true, square = true, dash = true }
+		for _, tab in read(spec.tabs) do
+			local indicator = tab.indicator
+			if indicator ~= nil then
+				assert(
+					type(indicator) == "table",
+					"Facet UI.TabView: tab.indicator must be a StatusIndicator spec table { form?, status?, count?, max? }"
+				)
+				assert(
+					indicator.status == nil or statuses[indicator.status],
+					"Facet UI.TabView: tab.indicator.status must be neutral, info, success, warning, error or accent"
+				)
+				assert(
+					indicator.form == nil or forms[indicator.form],
+					"Facet UI.TabView: tab.indicator.form must be dot, ring, square or dash"
+				)
+			end
+		end
+		local fit = spec.textSize == nil or spec.textSize == "fit"
 		assert(
 			spec.style == nil or table.find({ "automatic", "sidebarAdaptable", "collapsible" }, spec.style),
 			"Invalid TabView.style"
@@ -151,6 +185,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"onChange",
 		}, { Name = "TabView", BackgroundTransparency = 1, Size = D2.fromScale(1, 1) }))
 		local dimensions = ctx.observe(root, "AbsoluteSize")
+		local function locate()
+			local at: Instance? = root.Parent
+			local inside = depth > 0
+			while at and not inside do
+				inside = at:GetAttribute("FacetTabPage") == true
+				at = at.Parent
+			end
+			if nested:peek() ~= inside then
+				nested:set(inside)
+			end
+		end
+		runtime.connect(root, "AncestryChanged", locate)
+		locate()
 		local input = surfaces.service("UserInputService")
 		local primaryInput = if input then ctx.observe(input, "PreferredInput") else Compose.cell(nil)
 		local function resolvePlacement(use: ComposeTypes.Use): Nav.Placement
@@ -161,7 +208,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if explicit and explicit ~= "automatic" then
 				return explicit
 			end
-			if nested then
+			if use(nested) then
 				return "topBar"
 			end
 			local size = use(dimensions)
@@ -184,7 +231,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			if spec.style == "collapsible" then
 				return true
 			end
-			if not nested or (spec.style ~= nil and spec.style ~= "automatic") then
+			if not use(nested) or (spec.style ~= nil and spec.style ~= "automatic") then
 				return false
 			end
 			local explicit = read(spec.placement, use)
@@ -224,8 +271,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			return ordered
 		end)
 		local visited = Compose.cell({} :: { string })
+		local tabsReady = false
 		local panels: { [string]: GuiObject } = {}
 		local bookmarks: { [string]: GuiObject? } = {}
+		local bookmarkPaths: { [string]: { string } } = {}
 		local tabButtons: { [string]: TextButton } = {}
 		local tabMeasures: { [string]: { position: ComposeTypes.Readable<Vector2>, size: ComposeTypes.Readable<Vector2> } } =
 			{}
@@ -291,8 +340,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			previous = id
 		end)
+		local function tabEnabled(id: string, use: ComposeTypes.Use?): boolean
+			local tab = read(tabMap, use)[id]
+			return tab ~= nil and read(tab.enabled, use) ~= false
+		end
 		local function select(id: string): ()
-			if read(spec.enabled) == false or id == spec.selection:peek() then
+			if read(spec.enabled) == false or id == spec.selection:peek() or not tabEnabled(id) then
 				return
 			end
 			spec.selection:set(id)
@@ -314,12 +367,12 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end,
 			Size = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar"
-					then D2.new(0, railWidth(use), 1, -use(headHeight) - use(footHeight))
+					then D2.new(0, railWidth(use) - 16, 1, -use(headHeight) - use(footHeight))
 					else D2.new(1, -use(trailingWidth), 0, 44)
 			end,
 			Position = function(use: ComposeTypes.Use)
 				return if use(placement) == "sidebar"
-					then D2.fromOffset(0, use(headHeight))
+					then D2.fromOffset(8, use(headHeight))
 					elseif string.find(use(placement), "bottom") then D2.new(0, 0, 1, -44)
 					else D2.fromOffset(0, 0)
 			end,
@@ -347,18 +400,25 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							if read(spec.iconOnly, use) then
 								return ""
 							end
-							local badge = read(tab.badge, use)
+							local badge = if tab.icon then nil else read(tab.badge, use)
 							return tostring(read(tab.label, use) or tab.id)
 								.. (if badge ~= nil and badge ~= "" then " (" .. tostring(badge) .. ")" else "")
 						end,
 						icon = tab.icon,
-						TextSize = spec.textSize,
+						TextSize = if fit then nil else (spec.textSize :: unknown) :: Types.Value<number>,
 						LayoutOrder = index,
 						Size = function(use: ComposeTypes.Use)
-							return if use(placement) == "sidebar" then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
+							local place = use(placement)
+							if fit and string.find(place, "bottom") ~= nil then
+								return D2.new(1 / math.max(1, #use(visibleTabs)), -4, 0, 44)
+							end
+							return if place == "sidebar" then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
 						end,
 						AutomaticSize = function(use: ComposeTypes.Use)
-							return if use(placement) == "sidebar" then E.AutomaticSize.None else E.AutomaticSize.X
+							local place = use(placement)
+							return if place == "sidebar" or (fit and string.find(place, "bottom") ~= nil)
+								then E.AutomaticSize.None
+								else E.AutomaticSize.X
 						end,
 						TextXAlignment = function(use: ComposeTypes.Use)
 							return if use(placement) == "sidebar"
@@ -366,7 +426,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								else E.TextXAlignment.Center
 						end,
 						TextTruncate = E.TextTruncate.AtEnd,
-						enabled = spec.enabled,
+						enabled = function(use: ComposeTypes.Use): boolean
+							return read(spec.enabled, use) ~= false and read(use(current).enabled, use) ~= false
+						end,
 						selected = function(use: ComposeTypes.Use)
 							return use(spec.selection) == tab.id and read(spec.indicator, use) == "pill"
 						end,
@@ -375,6 +437,63 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end,
 					})
 					button:AddTag("facet-tab-item")
+					if fit then
+						local measure = ctx.text({
+							Name = "LabelMeasure",
+							Visible = false,
+							TextWrapped = false,
+							Text = function(use: ComposeTypes.Use): string
+								return tostring(read(use(current).label, use) or tab.id)
+							end,
+							TextSize = function(use: ComposeTypes.Use): number
+								return (ctx.metric("typography.control.size", use))
+							end,
+						})
+						surfaces.attach(button, { measure :: Types.Child })
+						local natural = ctx.observe(measure, "TextBounds")
+						local room = ctx.observe(button, "AbsoluteSize")
+						Compose.watch(function(use: ComposeTypes.Use)
+							local width = use(natural).X
+							local available = use(room).X - 2 * ctx.controlSize(nil, "paddingX", use)
+							if string.find(use(placement), "bottom") == nil or width <= 0 or available <= 0 then
+								button:ResetPropertyToDefault("TextSize")
+								return
+							end
+							local largest = ctx.metric("typography.control.size", use)
+							local smallest = ctx.metric("typography.caption.size", use)
+							button.TextSize = math.clamp(math.floor(largest * available / width), smallest, largest)
+						end)
+						button:SetAttribute("FacetTextFit", true)
+					end
+					local glyph = button:FindFirstChild("LeadingIcon", true)
+					if tab.icon and tab.badge ~= nil and glyph then
+						local corner = UI.badged(
+							Host.Frame({ Name = "Anchor", BackgroundTransparency = 1, Size = D2.fromScale(1, 1) }),
+							function(use: ComposeTypes.Use): string?
+								local badge = read(use(current).badge, use)
+								return if badge == nil then nil else tostring(badge)
+							end
+						)
+						runtime.decorate(corner, { Size = D2.fromScale(1, 1), AutomaticSize = E.AutomaticSize.None })
+						runtime.mount(function()
+							return corner
+						end, glyph)
+					end
+					local indicator = tab.indicator
+					if indicator then
+						surfaces.attach(button, {
+							UI.StatusIndicator({
+								Name = "Status",
+								status = indicator.status,
+								form = indicator.form,
+								count = indicator.count,
+								max = indicator.max,
+								AnchorPoint = V2.new(1, 0),
+								Position = D2.new(1, -4, 0, 4),
+								ZIndex = 3,
+							}) :: Types.Child,
+						})
+					end
 					Compose.watch(function(use: ComposeTypes.Use)
 						local current = use(spec.selection) == tab.id
 						local place = use(placement)
@@ -517,10 +636,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								return use(state).top
 							end,
 							SelectionGroup = true,
+							Attributes = { FacetTabPage = true } :: Types.Attributes,
 							built,
 						},
 						state,
-						spec.transition,
+						if spec.transition == nil then TAB_FADE else spec.transition,
 						if spec.retention == "top"
 							then function()
 								if spec.selection:peek() == id then
@@ -534,16 +654,25 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								end
 								visited:set(retained)
 							end
-							else nil
+							else nil,
+						not tabsReady
 					)
 					panels[id] = panel
 					local shown = ctx.observe(panel, "Visible")
 					Compose.watch(function(use: ComposeTypes.Use)
-						if not use(shown) or handoff ~= id or not gui then
+						if not use(shown) or not use(state).top or handoff ~= id or not gui then
 							return
 						end
 						handoff = nil
 						local bookmark = bookmarks[id]
+						if not bookmark and bookmarkPaths[id] then
+							local node: Instance? = panel
+							for _, name in bookmarkPaths[id] do
+								node = if node then node:FindFirstChild(name) else nil
+							end
+							bookmark = if node and node:IsA("GuiObject") then node else nil
+						end
+						bookmarkPaths[id] = nil
 						local button = tabButtons[id]
 						gui.SelectedObject = if bookmark
 								and surfaces.within(bookmark, panel)
@@ -557,12 +686,23 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								else nil)
 					end)
 					Compose.cleanup(function()
+						local bookmark = bookmarks[id]
+						if bookmark and surfaces.within(bookmark, panel) then
+							local names: { string } = {}
+							local node: Instance? = bookmark
+							while node and node ~= panel do
+								table.insert(names, 1, node.Name)
+								node = node.Parent
+							end
+							bookmarkPaths[id] = names
+						end
 						panels[id], bookmarks[id] = nil, nil
 					end)
 					return panel
 				end,
 			}),
 		}
+		tabsReady = true
 		surfaces.attach(root, { bar, layers })
 		runtime.decorate(bar, {
 			Visible = function(use: ComposeTypes.Use)
@@ -586,6 +726,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								id = tab.id,
 								label = tab.label or tab.id,
 								icon = tab.icon,
+								enabled = tab.enabled,
 								marked = function(use: ComposeTypes.Use)
 									return use(spec.selection) == tab.id
 								end,
@@ -691,9 +832,19 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					break
 				end
 			end
-			local nextIndex = if spec.shoulderNavigation == "content"
-				then math.clamp(at + direction, 1, #list)
-				else (at - 1 + direction) % #list + 1
+			local nextIndex = at
+			for _ = 1, #list do
+				local candidate = if spec.shoulderNavigation == "content"
+					then math.clamp(nextIndex + direction, 1, #list)
+					else (nextIndex - 1 + direction) % #list + 1
+				if candidate == nextIndex then
+					break
+				end
+				nextIndex = candidate
+				if tabEnabled(list[nextIndex].id) then
+					break
+				end
+			end
 			select(list[nextIndex].id)
 		end
 		if ctx.action then
@@ -714,7 +865,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 
 	local function navigationStack<P>(spec: Nav.NavigationStackSpec<P>): Frame
 		assert(
-			spec.path and spec.path.set and spec.root and spec.destinations,
+			type(spec.path) == "table" and spec.path.set and spec.root and spec.destinations,
 			"NavigationStack requires path, root and destinations"
 		)
 		checkTransition(spec.transition)
@@ -724,6 +875,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local rootEntry: Nav.NavigationEntry<P> = { id = "@root" }
 		local errorText: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
 		local accepted = { rootEntry }
+		local reduce = reducedMotion(ctx)
+		local timing: Nav.Transition? = if type(spec.transition) == "table" then spec.transition else nil
+		local animated = spec.transition == nil
 		local function validate(path: { Nav.NavigationEntry<P> }): { Nav.NavigationEntry<P> }
 			assert(type(path) == "table", "NavigationStack.path must contain an array")
 			local list = { rootEntry }
@@ -747,6 +901,33 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 			return accepted
 		end)
+		local leaving: ComposeTypes.Cell<Nav.NavigationEntry<P>?> = Compose.cell(nil :: Nav.NavigationEntry<P>?)
+		local shownList = entries:peek()
+		Compose.watch(function(use: ComposeTypes.Use)
+			local list = use(entries)
+			local former = shownList
+			shownList = list
+			local top = former[#former]
+			local departing = leaving:peek()
+			if table.find(list, top) == nil and animated and not reduce() then
+				leaving:set(top)
+			elseif departing and table.find(list, departing) then
+				leaving:set(nil)
+			end
+		end)
+		local displayed = Compose.formula(function(use: ComposeTypes.Use)
+			local list = use(entries)
+			local departing = use(leaving)
+			if departing == nil or table.find(list, departing) then
+				return list
+			end
+			local result = table.clone(list)
+			table.insert(result, departing)
+			return result
+		end)
+		local offsets: ComposeTypes.Cell<{ [Nav.NavigationEntry<P>]: (ComposeTypes.Use?) -> number }> = Compose.cell({})
+		local stackReady = false
+		local handoff = false
 		local function pop()
 			local path = table.clone(spec.path:peek())
 			if #path > 0 then
@@ -754,12 +935,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				spec.path:set(path)
 			end
 		end
+		local function frontOffset(use: ComposeTypes.Use): number
+			local list = use(displayed)
+			local measure = use(offsets)[list[#list]]
+			return if measure then measure(use) else 0
+		end
 		local root = Host.Frame(ctx.props(spec, { "path", "root", "destinations", "backLabel", "transition" }, {
 			Name = "NavigationStack",
 			BackgroundTransparency = 1,
 			Size = D2.fromScale(1, 1),
+			ClipsDescendants = function(use: ComposeTypes.Use)
+				return frontOffset(use) > 0
+			end,
 			Compose.LayerStack({
-				from = entries,
+				from = displayed,
 				retention = "all",
 				render = function(
 					current: ComposeTypes.Readable<Nav.NavigationEntry<P>>,
@@ -768,67 +957,183 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local entry = current:peek()
 					local destination = if entry == rootEntry then spec.root else spec.destinations[entry.id]
 					local chrome = if entry ~= rootEntry or destination.title and destination.title ~= "" then 44 else 0
-					local panel = layer({
-						Name = entry.id,
+					local role = Compose.formula(function(use: ComposeTypes.Use): string
+						local list = use(entries)
+						local at = table.find(list, entry)
+						return if at == nil then "exiting" elseif at == #list then "top" else "covered"
+					end)
+					local entering = Compose.cell(stackReady and animated and not reduce())
+					local function target(use: ComposeTypes.Use): number
+						return if use(role) == "exiting" or use(entering) and not reduce(use) then 1 else 0
+					end
+					local travel: ComposeTypes.Readable<number> = if animated
+						then runtime.spring(target, {
+							period = PUSH_SPRING.period,
+							damping = PUSH_SPRING.damping,
+							tolerance = PUSH_SPRING.tolerance,
+							reducedMotion = function(use: ComposeTypes.Use): boolean
+								return reduce(use)
+							end,
+						})
+						else Compose.cell(0)
+					entering:set(false)
+					local function offset(use: ComposeTypes.Use?): number
+						if not animated or reduce(use) then
+							return if read(role, use) == "exiting" then 1 else 0
+						end
+						return read(travel, use)
+					end
+					local registered = table.clone(offsets:peek())
+					registered[entry] = offset
+					offsets:set(registered)
+					Compose.cleanup(function()
+						local remaining = table.clone(offsets:peek())
+						remaining[entry] = nil
+						offsets:set(remaining)
+					end)
+					local function placement(use: ComposeTypes.Use): (string, number)
+						local list = use(displayed)
+						local at = table.find(list, entry)
+						if at == #list then
+							return "front", offset(use)
+						end
+						if at == #list - 1 then
+							local above = use(offsets)[list[#list]]
+							local moved = if above then above(use) else 0
+							if moved > 0 or use(role) == "top" then
+								return "beneath", moved
+							end
+						end
+						return "rest", 0
+					end
+					local function reveal(use: ComposeTypes.Use): number
+						local place, moved = placement(use)
+						return if place == "beneath" then moved + PARALLAX * (1 - moved) else 1
+					end
+					local navigationBar = Host.Frame "NavigationBar" {
 						BackgroundTransparency = 1,
-						Size = D2.fromScale(1, 1),
-						Visible = function(use: ComposeTypes.Use)
-							return use(state).top
-						end,
-						Host.Frame "NavigationBar" {
+						Size = D2.new(1, 0, 0, chrome),
+						Visible = chrome > 0,
+						ctx.styled(
+							ctx.text({
+								Name = "Title",
+								Text = destination.title or "",
+								Size = D2.fromScale(1, 1),
+								TextTruncate = E.TextTruncate.AtEnd,
+								TextXAlignment = function(use: ComposeTypes.Use)
+									return if use(state).index > 1
+										then E.TextXAlignment.Center
+										else E.TextXAlignment.Left
+								end,
+							}),
+							if entry == rootEntry then "type-title" else "type-heading"
+						) :: Types.Child,
+						Compose.show(function(use: ComposeTypes.Use)
+							return use(state).index > 1
+						end, function()
+							return UI.Button "Back" {
+								label = spec.backLabel or "Back",
+								icon = "chevron.leading",
+								appearance = "link",
+								AnchorPoint = V2.new(0, 0.5),
+								Position = D2.fromScale(0, 0.5),
+								onActivate = pop,
+							}
+						end),
+					}
+					local destinationFrame = Host.Frame "Destination" {
+						BackgroundTransparency = 1,
+						Position = D2.fromOffset(0, chrome),
+						Size = D2.new(1, 0, 1, -chrome),
+						Compose.boundary(function()
+							navigationDepth += 1
+							local ok, built =
+								pcall(content, destination.content, if entry == rootEntry then nil else entry)
+							navigationDepth -= 1
+							if not ok then
+								error(built, 0)
+							end
+							return built
+						end, function(failure)
+							errorText:set(tostring(failure))
+							return ctx.text({
+								Name = "DestinationError",
+								Text = "This page could not be displayed.",
+								TextWrapped = true,
+							})
+						end),
+					}
+					local panel: GuiObject
+					if timing then
+						panel = layer({
+							Name = entry.id,
 							BackgroundTransparency = 1,
-							Size = D2.new(1, 0, 0, chrome),
-							Visible = chrome > 0,
-							ctx.styled(
-								ctx.text({
-									Name = "Title",
-									Text = destination.title or "",
-									Size = D2.fromScale(1, 1),
-									TextTruncate = E.TextTruncate.AtEnd,
-									TextXAlignment = function(use: ComposeTypes.Use)
-										return if use(state).index > 1
-											then E.TextXAlignment.Center
-											else E.TextXAlignment.Left
-									end,
-								}),
-								if entry == rootEntry then "type-title" else "type-heading"
-							) :: Types.Child,
+							Size = D2.fromScale(1, 1),
+							Visible = function(use: ComposeTypes.Use)
+								return use(state).top
+							end,
+							navigationBar,
+							destinationFrame,
+						}, state, timing)
+					else
+						panel = Host.Frame({
+							Name = entry.id,
+							BackgroundTransparency = 1,
+							Size = D2.fromScale(1, 1),
+							Position = function(use: ComposeTypes.Use)
+								local place, moved = placement(use)
+								return if place == "front"
+									then D2.fromScale(moved, 0)
+									elseif place == "beneath" then D2.fromScale(-PARALLAX * (1 - moved), 0)
+									else D2.fromScale(0, 0)
+							end,
+							ClipsDescendants = function(use: ComposeTypes.Use)
+								return reveal(use) < 1
+							end,
+							Visible = function(use: ComposeTypes.Use)
+								local place = placement(use)
+								return place == "beneath" or place == "front" and use(role) ~= "covered"
+							end,
+							Interactable = function(use: ComposeTypes.Use)
+								return use(role) == "top"
+							end,
+							Host.Frame "Page" {
+								BackgroundTransparency = 1,
+								Size = function(use: ComposeTypes.Use)
+									return D2.fromScale(1 / reveal(use), 1)
+								end,
+								navigationBar,
+								destinationFrame,
+							} :: Types.Child,
 							Compose.show(function(use: ComposeTypes.Use)
-								return use(state).index > 1
+								return placement(use) == "beneath"
 							end, function()
-								return UI.Button "Back" {
-									label = spec.backLabel or "Back",
-									icon = "chevron.leading",
-									appearance = "link",
-									AnchorPoint = V2.new(0, 0.5),
-									Position = D2.fromScale(0, 0.5),
-									onActivate = pop,
+								return Host.Frame "Dim" {
+									BackgroundColor3 = ctx.types.Color3.new(0, 0, 0),
+									BorderSizePixel = 0,
+									Size = D2.fromScale(1, 1),
+									ZIndex = 10,
+									Interactable = false,
+									BackgroundTransparency = function(use: ComposeTypes.Use)
+										local _, moved = placement(use)
+										return 1 - DIM * (1 - moved)
+									end,
 								}
-							end),
-						},
-						Host.Frame "Destination" {
-							BackgroundTransparency = 1,
-							Position = D2.fromOffset(0, chrome),
-							Size = D2.new(1, 0, 1, -chrome),
-							Compose.boundary(function()
-								navigationDepth += 1
-								local ok, built =
-									pcall(content, destination.content, if entry == rootEntry then nil else entry)
-								navigationDepth -= 1
-								if not ok then
-									error(built, 0)
-								end
-								return built
-							end, function(failure)
-								errorText:set(tostring(failure))
-								return ctx.text({
-									Name = "DestinationError",
-									Text = "This page could not be displayed.",
-									TextWrapped = true,
-								})
-							end),
-						},
-					}, state, spec.transition)
+							end) :: Types.Child,
+						})
+					end
+					Compose.watch(function(use: ComposeTypes.Use)
+						if use(role) ~= "exiting" then
+							return
+						end
+						if gui and surfaces.within(gui.SelectedObject, panel) then
+							handoff = true
+							gui.SelectedObject = nil
+						end
+						if offset(use) >= 1 and leaving:peek() == entry then
+							leaving:set(nil)
+						end
+					end)
 					local visible, parent = ctx.observe(panel, "Visible"), ctx.observe(panel, "Parent")
 					local remembered: GuiObject?
 					local previousTop: boolean?
@@ -840,7 +1145,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 					end)
 					Compose.watch(function(use: ComposeTypes.Use)
-						local top = use(state).top
+						local top = use(role) == "top"
 						if not use(parent) then
 							return
 						end
@@ -851,8 +1156,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							and use(parent)
 							and previousTop ~= true
 							and (previousTop == false or use(state).index > 1)
-							and (gui.SelectedObject ~= nil or focusing(use))
+							and (gui.SelectedObject ~= nil or handoff or focusing(use))
 						then
+							handoff = false
 							gui.SelectedObject = if remembered
 									and remembered.Parent
 									and remembered.Visible
@@ -866,6 +1172,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end,
 			}),
 		}))
+		stackReady = true
 		if ctx.action then
 			ctx.action(root, "NavigationBack", { "Escape", "ButtonB" }, function(use: ComposeTypes.Use)
 				return #use(spec.path) > 0 and (depth == 0 or surfaces.within(use(selectedObject), root))

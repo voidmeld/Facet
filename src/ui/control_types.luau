@@ -5,8 +5,17 @@ local Navigation = require("./navigation_types")
 local Collections = require("./collection_types")
 local Media = require("./media_types")
 local Dates = require("./date_time_picker_types")
+local Content = require("./content_types")
+local Layout = require("./layout_types")
 
 export type Controls = {
+	Screen: typeof(((nil :: unknown) :: Layout.LayoutControls).Screen),
+	VStack: typeof(((nil :: unknown) :: Layout.LayoutControls).VStack),
+	HStack: typeof(((nil :: unknown) :: Layout.LayoutControls).HStack),
+	ZStack: typeof(((nil :: unknown) :: Layout.LayoutControls).ZStack),
+	ScrollView: typeof(((nil :: unknown) :: Layout.LayoutControls).ScrollView),
+	Grid: typeof(((nil :: unknown) :: Layout.LayoutControls).Grid),
+	fill: typeof(((nil :: unknown) :: Layout.LayoutControls).fill),
 	Button: typeof(((nil :: unknown) :: Inputs.InputControls).Button),
 	Toggle: typeof(((nil :: unknown) :: Inputs.InputControls).Toggle),
 	TextInput: typeof(((nil :: unknown) :: Inputs.InputControls).TextInput),
@@ -44,6 +53,11 @@ export type Controls = {
 	AvatarGroup: typeof(((nil :: unknown) :: Media.MediaControls).AvatarGroup),
 	Stage: typeof(((nil :: unknown) :: Media.MediaControls).Stage),
 	DateTimePicker: typeof(((nil :: unknown) :: Dates.DateTimePickerControls).DateTimePicker),
+	Pagination: typeof(((nil :: unknown) :: Content.ContentControls).Pagination),
+	StepIndicator: typeof(((nil :: unknown) :: Content.ContentControls).StepIndicator),
+	Vote: typeof(((nil :: unknown) :: Content.ContentControls).Vote),
+	Card: typeof(((nil :: unknown) :: Content.ContentControls).Card),
+	badged: typeof(((nil :: unknown) :: Content.ContentControls).badged),
 }
 export type ComposeModule = Shared.ComposeModule
 export type Runtime = Shared.Runtime

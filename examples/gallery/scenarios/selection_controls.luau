@@ -151,7 +151,34 @@ return {
 				end,
 			}
 		end
+		local vote = signal("none")
+		local function votes()
+			return Host.Frame "Votes" {
+				BackgroundTransparency = 1,
+				Size = UDim2.new(1, 0, 0, 0),
+				AutomaticSize = Enum.AutomaticSize.Y,
+				Host.UIListLayout({
+					FillDirection = Enum.FillDirection.Horizontal,
+					SortOrder = Enum.SortOrder.LayoutOrder,
+					VerticalAlignment = Enum.VerticalAlignment.Center,
+					Padding = UDim.new(0, 16),
+				}),
+				UI.Vote "TrackVote" {
+					LayoutOrder = 1,
+					value = vote,
+					summary = function(use)
+						return if use(vote) == "up" then "You and 98% liked this" else "98% liked this"
+					end,
+					onChange = function(nextValue)
+						vote:set(nextValue)
+					end,
+				},
+				UI.Vote "PastVote" { LayoutOrder = 2, value = "down", readOnly = true, controlSize = "compact" },
+				UI.Chip "VoteTag" { LayoutOrder = 3, label = "Rally", selected = signal(false) },
+			}
+		end
 		local function reset()
+			vote:set("none")
 			enabled:set(true)
 			checked:set(false)
 			mixed:set(true)
@@ -303,6 +330,9 @@ return {
 				heading("Choose or name a vehicle class"),
 				caption("CapCombo", "ComboBox · suggestions with custom text"),
 				combo(),
+				heading("Vote on a track"),
+				caption("CapVote", "Vote · up, down or none (press again to clear), and a read-only one"),
+				votes(),
 			}
 		end
 		local function screen()
@@ -360,6 +390,7 @@ return {
 					driverError = driverError:peek(),
 					mode = mode:peek(),
 					laps = laps:peek(),
+					vote = vote:peek(),
 				}
 			end,
 

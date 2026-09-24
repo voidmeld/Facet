@@ -72,7 +72,7 @@ def is_owned(path):
 
 def negative_probes():
     names = sorted(set(re.findall(r"\bUI\.(\w+)\s*=", "\n".join(path.read_text() for path in (ROOT / "src/ui").glob("*.luau")))))
-    probes = [(f"{name}: table required", f"UI.{name}(42)") for name in names]
+    probes = [(f"{name}: table required", f"UI.{name}(42)") for name in names if name[0].isupper()]
     probes.extend([
         ("Button label", 'UI.Button({ label = 42 })'),
         ("Button native size", 'UI.Button({ label = "Save", Size = "large" })'),
@@ -110,6 +110,23 @@ def negative_probes():
         ("Image loader source", 'UI.AsyncImage({loader=function(source:number) end})'),
         ("Stage world model", 'UI.Stage({content=function(runtime:Facet.Runtime, world:Frame) end})'),
         ("Theme numeric metric", 'Facet.themes.define({metrics={controlSizes={regular={height="tall"}}}})'),
+        ("VStack spacing type", 'UI.VStack({ gap = true })'),
+        ("HStack padding side", 'UI.HStack({ padding = { left = true } })'),
+        ("VStack padding side name", 'UI.VStack({ padding = { start = 4 } })'),
+        ("HStack align", 'UI.HStack({ align = "middle" })'),
+        ("VStack distribute", 'UI.VStack({ distribute = "around" })'),
+        ("VStack width", 'UI.VStack({ width = "stretch" })'),
+        ("VStack native size", 'UI.VStack({ Size = 42 })'),
+        ("Screen gap", 'UI.Screen({ gap = false })'),
+        ("ZStack alignment", 'UI.ZStack({ alignH = "stretch" })'),
+        ("ScrollView axis", 'UI.ScrollView({ axis = "z" })'),
+        ("ScrollView native canvas", 'UI.ScrollView({ CanvasSize = 3 })'),
+        ("ScrollView native return", 'local wrong: Frame = UI.ScrollView({})'),
+        ("Grid columns required", 'UI.Grid({ gap = "s" })'),
+        ("Grid columns type", 'UI.Grid({ columns = "two" })'),
+        ("Grid alignment", 'UI.Grid({ columns = 2, align = "stretch" })'),
+        ("Fill weight", 'UI.fill("wide")'),
+        ("Fill return", 'local wrong: Frame = UI.fill()'),
         ("Unknown control", 'UI.ThisControlDoesNotExist({})'),
     ])
     named = []

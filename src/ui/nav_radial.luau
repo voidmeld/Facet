@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reducedMotion = require("./motion")
 local geometry = require("./nav_radial_geometry")
 local Types = require("./types")
@@ -15,6 +16,7 @@ return function(
 	surfaces: Navigation.Surfaces
 )
 	local Host, Compose, runtime, read = ctx.Host, ctx.Compose, ctx.runtime, ctx.read
+	local lists = layoutKit.of(ctx)
 	local E, D2, V2 = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2
 	local build: Radial.RadialMenuBuilder = function<V>(spec: Radial.RadialMenuSpec<V>): Frame
 		assert(spec.items, "RadialMenu requires items")
@@ -80,6 +82,7 @@ return function(
 		local aimAnalog: ((Vector2) -> ())?
 		local candidateSector: (() -> Radial.Sector<V>?)?
 		local freezeCenter: (() -> ())?
+		local returnSelection: ((() -> (), string) -> ())?
 		local function cancel()
 			capture, analog = nil, false
 			interacting:set(false)
@@ -115,9 +118,16 @@ return function(
 			if #entries == 0 then
 				close()
 			else
-				table.remove(entries)
-				path:set(entries)
-				candidate:set(nil)
+				local popped = table.remove(entries)
+				local function change()
+					path:set(entries)
+					candidate:set(nil)
+				end
+				if returnSelection then
+					returnSelection(change, table.concat(entries, "/") .. "/" .. tostring(popped))
+				else
+					change()
+				end
 			end
 		end
 		local function activate(sector: Radial.Sector<V>?)
@@ -275,9 +285,10 @@ return function(
 							beginPointer(input)
 						end
 					end,
-					onActivate = function()
-						if openedByLauncher then
-							openedByLauncher = false
+					onActivate = function(input: InputObject?)
+						local echo = openedByLauncher and input ~= nil and isPointer(input)
+						openedByLauncher = false
+						if echo then
 							return
 						end
 						if opened:peek() then
@@ -553,10 +564,7 @@ return function(
 					end,
 					Attributes = attributes,
 					Compose.show(fallback, function()
-						return Host.UIListLayout({
-							SortOrder = E.SortOrder.LayoutOrder,
-							Padding = ctx.types.UDim.new(0, 4),
-						})
+						return lists.list({ gap = 4 }, true)
 					end),
 					Compose.keyed({
 						from = function(use: ComposeTypes.Use)
@@ -1001,9 +1009,17 @@ return function(
 						end
 					end
 				end)
+				returnSelection = function(change: () -> (), key: string)
+					local held = gui ~= nil and surfaces.within(gui.SelectedObject, panel)
+					change()
+					local button = buttons[key]
+					if held and gui and button and button.Parent then
+						gui.SelectedObject = button
+					end
+				end
 				Compose.cleanup(function()
 					cancel()
-					aimPointer, aimAnalog, candidateSector, freezeCenter = nil, nil, nil, nil
+					aimPointer, aimAnalog, candidateSector, freezeCenter, returnSelection = nil, nil, nil, nil, nil
 				end)
 				Compose.watch(function(use: ComposeTypes.Use)
 					local entries = use(sectors)

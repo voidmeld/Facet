@@ -111,22 +111,28 @@ controls(runtime).AvatarGroup : function
 controls(runtime).Badge : function
 controls(runtime).Button : function
 controls(runtime).Callout : function
+controls(runtime).Card : function
 controls(runtime).Chip : function
 controls(runtime).CollapsibleView : function
 controls(runtime).ComboBox : function
 controls(runtime).DateTimePicker : function
 controls(runtime).DisclosureGroup : function
+controls(runtime).Grid : function
+controls(runtime).HStack : function
 controls(runtime).Label : function
 controls(runtime).LevelPicker : function
 controls(runtime).Menu : function
 controls(runtime).NavigationStack : function
 controls(runtime).NumberInput : function
 controls(runtime).PageView : function
+controls(runtime).Pagination : function
 controls(runtime).Picker : function
 controls(runtime).ProgressView : function
 controls(runtime).RadialMenu : function
 controls(runtime).Rating : function
 controls(runtime).RowActions : function
+controls(runtime).Screen : function
+controls(runtime).ScrollView : function
 controls(runtime).Sheet : function
 controls(runtime).ShortcutHint : function
 controls(runtime).Skeleton : function
@@ -134,13 +140,19 @@ controls(runtime).Slider : function
 controls(runtime).SplitButton : function
 controls(runtime).Stage : function
 controls(runtime).StatusIndicator : function
+controls(runtime).StepIndicator : function
 controls(runtime).Stepper : function
 controls(runtime).TabView : function
 controls(runtime).Table : function
 controls(runtime).TextInput : function
 controls(runtime).Toggle : function
+controls(runtime).VStack : function
 controls(runtime).VirtualGrid : function
 controls(runtime).VirtualList : function
+controls(runtime).Vote : function
+controls(runtime).ZStack : function
+controls(runtime).badged : function
+controls(runtime).fill : function
 type AlertAction
 type AlertSpec
 type AsyncImageProps
@@ -148,8 +160,11 @@ type AvatarGroupProps
 type AvatarMember
 type AvatarProps
 type BadgeProps
+type BadgeValue
 type ButtonProps
 type CalloutSpec
+type CardControls
+type CardSpec
 type Cell
 type ChipProps
 type CivilDate
@@ -165,7 +180,9 @@ type ControlOptions
 type Controls
 type DateTimePickerProps
 type DisclosureGroupSpec
+type Extent
 type Facet
+type GridProps
 type IdentityCollectionSpec
 type IdentityTableSpec
 type ImageResource
@@ -180,7 +197,9 @@ type NavigationEntry
 type NavigationStackSpec
 type NumberInputProps
 type Owner
+type Padding
 type PageViewSpec
+type PaginationSpec
 type PickerOption
 type PickerSpec
 type ProgressViewProps
@@ -191,13 +210,19 @@ type Readable
 type RowAction
 type RowActionsSpec
 type Runtime
+type ScreenProps
+type ScrollViewProps
 type SheetSpec
 type ShortcutHintProps
 type SkeletonProps
 type SliderProps
+type Space
 type SplitButtonSpec
+type StackProps
 type StageProps
 type StatusIndicatorProps
+type Step
+type StepIndicatorSpec
 type StepperProps
 type Tab
 type TabViewSpec
@@ -207,3 +232,5 @@ type TextInputProps
 type ThemePackage
 type ToggleProps
 type Use
+type VoteSpec
+type ZStackProps

@@ -292,8 +292,12 @@ function workloads.create(ctx, name, dataset)
 		elseif kind == "radial" then
 			return UI.RadialMenu({ items = options, isPresented = state.presented, preset = "compass" })
 		end
+		local choices = {}
+		for index, option in options do
+			choices[index] = { id = option.id, value = option.value, label = option.label }
+		end
 		return UI.Picker({
-			options = options,
+			options = choices,
 			selected = state.selected,
 			isPresented = state.presented,
 			onChange = function(value)

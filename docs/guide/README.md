@@ -35,6 +35,9 @@ to select a control. Then read the exact contract of that control in the
 | Reactive graph, owners, keyed and presented composition | `Facet.Compose` |
 | Native host, runtime and target construction | `Facet.Roblox`; `runtime.constructors` as `Host` |
 | Control constructors | `Facet.controls(runtime, options?)` |
+| Screen roots, stacks and layers | `UI.Screen`, `UI.VStack`, `UI.HStack`, `UI.ZStack` |
+| Scrolling content and grids | `UI.ScrollView`, `UI.Grid` |
+| Main-axis fill | `UI.fill` |
 | One reactive graph with the game's own Compose | `Facet.bind(Compose, Roblox)`; `Facet.COMPOSE_COMMIT` |
 | Semantic native styling and art | `Facet.themes` |
 | Civil dates, and an arithmetic parser for number fields | `Facet.civilDate`, `Facet.recipes` |
@@ -44,16 +47,20 @@ to select a control. Then read the exact contract of that control in the
 | Civil date and date range fields with a calendar | `UI.DateTimePicker` |
 | Numeric adjustment | `UI.Stepper`, `UI.Slider` |
 | Rating and discrete levels | `UI.Rating`, `UI.LevelPicker` |
+| Up and down votes | `UI.Vote` |
 | Selected and removable chips | `UI.Chip` |
 | Shortcut display | `UI.ShortcutHint` |
 | Action menus, and primary and secondary actions | `UI.Menu`, `UI.SplitButton` |
 | Choice and accepted custom text | `UI.Picker`, `UI.ComboBox` |
 | Named destinations, drill-down and sequential pages | `UI.TabView`, `UI.NavigationStack`, `UI.PageView` |
+| Numbered result pages and workflow steps | `UI.Pagination`, `UI.StepIndicator` |
 | Contextual radial actions | `UI.RadialMenu` |
 | Brief decisions and substantial presented content | `UI.Alert`, `UI.Sheet` |
 | Inline disclosure and larger content presentation | `UI.DisclosureGroup`, `UI.CollapsibleView` |
 | Contextual teaching | `UI.Callout` |
 | Windowed lists and grids | `UI.VirtualList`, `UI.VirtualGrid` |
+| Browsable items with artwork and revealed actions | `UI.Card` |
+| A count or dot seal on a host's corner | `UI.badged` |
 | Sorting, selection, resizing and row reorder | `UI.Table` |
 | Row swipe and context actions | `UI.RowActions` |
 | Text and compact status | `UI.Label`, `UI.Badge`, `UI.StatusIndicator` |
@@ -62,9 +69,10 @@ to select a control. Then read the exact contract of that control in the
 | Identity groups | `UI.Avatar`, `UI.AvatarGroup` |
 | Embedded 3D content | `UI.Stage` |
 
-Every control root is a native Instance. Use Host constructors and native
-properties for layout. Use the Compose structural operations directly. Do not
-add Facet aliases for them.
+Every control root is a native Instance. The layout constructors make native
+frames and layout objects with theme spacing. Use Host constructors and native
+properties for layout that they do not cover. Use the Compose structural
+operations directly. Do not add Facet aliases for them.
 
 The design records in `docs/plans` and `docs/superpowers` are historical. They
 can describe removed APIs. This guide and the API reference describe the

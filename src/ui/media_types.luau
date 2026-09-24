@@ -35,6 +35,7 @@ export type StatusIndicatorProps = Types.TextLabelProps & {
 	diameter: Types.Value<number>?,
 	controlSize: Types.Value<ControlSize>?,
 	cutout: boolean?,
+	name: string?,
 }
 export type Trail = { delay: number?, duration: number? }
 export type ProgressViewProps = Engine.FrameProps & {

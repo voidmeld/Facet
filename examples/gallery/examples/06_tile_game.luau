@@ -517,6 +517,18 @@ function example.build(ctx: any)
 	local UI, Compose, Host = ctx.UI, ctx.Compose, ctx.Host
 	local UDim, UDim2, Vector2, Color3, Enum =
 		ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
+	local function paletteColor(use: any, role: string): Color3
+		local package = if ctx.theme then use(ctx.theme) else ctx.Facet.themes.neutralPackage()
+		local mode = if ctx.themeMode then use(ctx.themeMode) else package.style.defaultTheme
+		local chosen = package.style.themes[1]
+		for _, candidate in package.style.themes do
+			if candidate.name == mode then
+				chosen = candidate
+			end
+		end
+		local rgb = chosen.colors[role] or (chosen.extra or {})[role] or chosen.colors.content
+		return Color3.new(rgb.r, rgb.g, rgb.b)
+	end
 
 	local seedSig = Compose.cell(DEFAULT_SEED)
 	local boardSig = Compose.cell({} :: { [string]: string })
@@ -820,23 +832,24 @@ function example.build(ctx: any)
 									else base
 							end,
 							BackgroundColor3 = function(use)
-								local palette = {
-									idle = Color3.fromRGB(62, 70, 82),
-									legal = Color3.fromRGB(65, 100, 120),
-									centre = Color3.fromRGB(85, 115, 150),
-									pending = Color3.fromRGB(40, 130, 95),
-									committed = Color3.fromRGB(120, 95, 55),
-								}
-								return palette[use(state)]
+								local cellTint = use(tint)
+								return paletteColor(use, "surface"):Lerp(
+									paletteColor(use, cellTint.role),
+									cellTint.blend
+								)
 							end,
-							TextColor3 = Color3.new(1, 1, 1),
+							TextColor3 = function(use)
+								return paletteColor(use, "contentStrong")
+							end,
 							TextSize = 16,
 							onActivate = function()
 								activateCell(rr, cc)
 							end,
 							Host.UIStroke "Outline" {
 								ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-								Color = Color3.fromRGB(236, 239, 245),
+								Color = function(use)
+									return paletteColor(use, "contentStrong")
+								end,
 								Thickness = 2,
 								Enabled = function(use)
 									return use(surface) == CELL_SURFACE.pending

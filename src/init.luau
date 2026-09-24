@@ -9,11 +9,13 @@ local NavigationTypes = require("@self/ui/navigation_types")
 local RadialTypes = require("@self/ui/radial_types")
 local CollectionTypes = require("@self/ui/collection_types")
 local MediaTypes = require("@self/ui/media_types")
+local ContentTypes = require("@self/ui/content_types")
 local ThemeTypes = require("@self/ui/theme_types")
 local civilDate = require("@self/ui/civil_date")
 local CivilTypes = require("@self/ui/civil_date_types")
 local DateTimePickerTypes = require("@self/ui/date_time_picker_types")
 local arithmetic = require("@self/ui/arithmetic")
+local LayoutTypes = require("@self/ui/layout_types")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
@@ -65,6 +67,21 @@ export type AvatarMember = MediaTypes.AvatarMember
 export type AvatarGroupProps = MediaTypes.AvatarGroupProps
 export type StageProps = MediaTypes.StageProps
 export type DateTimePickerProps = DateTimePickerTypes.DateTimePickerProps
+export type PaginationSpec = ContentTypes.PaginationSpec
+export type StepIndicatorSpec = ContentTypes.StepIndicatorSpec
+export type Step = ContentTypes.Step
+export type VoteSpec = ContentTypes.VoteSpec
+export type CardSpec = ContentTypes.CardSpec
+export type CardControls = ContentTypes.CardControls
+export type BadgeValue = ContentTypes.BadgeValue
+export type Space = LayoutTypes.Space
+export type Padding = LayoutTypes.Padding
+export type Extent = LayoutTypes.Extent
+export type StackProps = LayoutTypes.StackProps
+export type ScreenProps = LayoutTypes.ScreenProps
+export type ZStackProps = LayoutTypes.ZStackProps
+export type ScrollViewProps = LayoutTypes.ScrollViewProps
+export type GridProps = LayoutTypes.GridProps
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
@@ -92,7 +109,7 @@ export type Facet = {
 }
 
 local VERSION = "0.12.0"
-local COMPOSE_COMMIT = "974b7527709a4db61024cc8994cdce30adc49790"
+local COMPOSE_COMMIT = "cbab6e0f828b68faaf676ee718cb0036c20ed935"
 local USED = {
 	"boundary",
 	"cell",

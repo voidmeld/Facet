@@ -4,6 +4,24 @@ local Facet = require("../src")
 local engineLib = require("./lib/native_engine")
 local Compose = Facet.Compose
 local fixtures = {
+	Screen = function()
+		return {}
+	end,
+	VStack = function()
+		return { gap = "s" }
+	end,
+	HStack = function()
+		return { gap = "s" }
+	end,
+	ZStack = function()
+		return {}
+	end,
+	ScrollView = function()
+		return { gap = "s" }
+	end,
+	Grid = function()
+		return { columns = 2 }
+	end,
 	Button = function()
 		return { label = "Press" }
 	end,
@@ -68,6 +86,27 @@ local fixtures = {
 	end,
 	Stage = function()
 		return {}
+	end,
+	Pagination = function()
+		return { page = Compose.cell(3), pageCount = 10, onChange = function() end }
+	end,
+	Card = function()
+		return {
+			image = "rbxassetid://1",
+			title = "Card",
+			onActivate = function() end,
+			primaryAction = { label = "Play", onActivate = function() end },
+		}
+	end,
+	Vote = function()
+		return { value = Compose.cell("none"), onChange = function() end }
+	end,
+	StepIndicator = function()
+		return {
+			steps = { { id = "a", label = "A", navigable = true }, { id = "b", label = "B" } },
+			current = "a",
+			onSelect = function() end,
+		}
 	end,
 	Menu = function()
 		return { items = { { id = "a", label = "A", onSelect = function() end } } }
@@ -209,7 +248,7 @@ t.describe("native constructor conformance", function()
 		local runtime = Facet.Roblox.createRuntime(engine)
 		local UI = Facet.controls(runtime, { types = engine.types })
 		for name in UI do
-			assert(fixtures[name], `Missing conformance fixture: {name}`)
+			assert(fixtures[name] or name == "fill" or name == "badged", `Missing conformance fixture: {name}`)
 		end
 		for name in fixtures do
 			assert(UI[name], `Stale conformance fixture: {name}`)
@@ -229,13 +268,14 @@ t.describe("native constructor conformance", function()
 				local UI = Facet.controls(runtime, { types = engine.types, reducedMotion = true })
 				local root = engine.new("ScreenGui")
 				local baseline = engine.census()
-				local zIndex, calls, reference = Compose.cell(7), 0, nil
+				local zIndex, calls, reference, refCalls = Compose.cell(7), 0, nil, 0
 				local stop, node = runtime.mount(function()
 					local props = fixtures[name](runtime.constructors)
 					props.ZIndex = zIndex
 					props.Attributes = { Conformance = name }
 					props.ref = function(value)
 						reference = value
+						refCalls += 1
 					end
 					props[Compose.event("MouseEnter")] = function()
 						calls += 1
@@ -246,11 +286,13 @@ t.describe("native constructor conformance", function()
 					return if named then UI[name]("Caller")(props) else UI[name](props)
 				end, root)
 				assert(reference == node, "ref must identify returned root")
+				assert(refCalls == 1, `ref ran {refCalls} times for one build`)
 				assert(node.Name == "Caller", "caller Name was lost")
 				assert(node:GetAttribute("Conformance") == name, "caller attributes were lost")
 				assert(node.ZIndex == 7, "native property was lost")
 				zIndex:set(9)
 				assert(node.ZIndex == 9, "native property stopped subscribing")
+				assert(refCalls == 1, "a property update ran ref again")
 				node.MouseEnter.fire()
 				assert(calls == 1, "native event was not forwarded")
 				stop()

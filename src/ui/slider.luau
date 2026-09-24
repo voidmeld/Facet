@@ -311,7 +311,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 			else
 				(spec.value :: ComposeTypes.Cell<number>):set(nextValue)
 			end
-			return single() == nextValue
+			local moved = single() == nextValue
+			local detent = ctx.config.pressHaptic
+			if moved and detent and spec.step ~= nil then
+				detent:Play()
+			end
+			return moved
 		end
 		local function proposePair(nextPair: Range, thumb: Thumb): boolean
 			if not h.enabled(spec) then
@@ -664,7 +669,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 						local side = if thumb == "lower" then "lower" else "upper"
 						return if named and named ~= "" then `{named} {side}` else `Range {side}`
 					end,
-					value = proxy.value :: Shared.Value<Shared.AttributeValue?>,
+					value = (proxy.value :: unknown) :: Shared.Value<Shared.AttributeValue?>,
 					minimum = model.min,
 					maximum = model.max,
 				})

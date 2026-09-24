@@ -178,9 +178,55 @@ function screen.build(ctx: any)
 		local viewport = ctx.viewport and use(ctx.viewport)
 		return viewport ~= nil and viewport.height > 0 and viewport.height < 480
 	end)
+	local measuredToolbar = Compose.cell(56)
 	local toolbarHeight = function(use)
-		return if use(compact) then 0 else 56
+		return if use(compact) then 0 else use(measuredToolbar)
 	end
+	local toolbar = Host.Frame "Toolbar" {
+		Visible = function(use)
+			return not use(compact)
+		end,
+		Size = function(use)
+			return UDim2.new(1, 0, 0, if use(compact) then 0 else 56)
+		end,
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		Host.UIPadding({
+			PaddingLeft = UDim.new(0, 16),
+			PaddingRight = UDim.new(0, 12),
+			PaddingTop = UDim.new(0, 8),
+			PaddingBottom = UDim.new(0, 4),
+		}),
+		Host.UIListLayout({
+			FillDirection = Enum.FillDirection.Horizontal,
+			Padding = UDim.new(0, 8),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+		}),
+		UI.Label "Title" {
+			LayoutOrder = 1,
+			label = "Facet gallery",
+			textRole = "title",
+			Size = UDim2.fromScale(0, 0),
+			AutomaticSize = Enum.AutomaticSize.XY,
+			Host.UIFlexItem({ FlexMode = Enum.UIFlexMode.Fill }),
+		},
+		UI.Button "Settings" {
+			LayoutOrder = 2,
+			label = "Settings",
+			icon = "settings",
+			appearance = "utility",
+			onActivate = function()
+				settingsOpen:set(not settingsOpen:peek())
+			end,
+		},
+	}
+	local toolbarSize = toolbar:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		measuredToolbar:set(math.max(56, math.ceil(toolbar.AbsoluteSize.Y)))
+	end)
+	Compose.cleanup(function()
+		toolbarSize:Disconnect()
+	end)
 	local root = Host.Frame "Gallery" {
 		Size = function(use)
 			local inverse = 1 / use(ctx.previewScale)
@@ -191,43 +237,7 @@ function screen.build(ctx: any)
 			return if use(ctx.sceneVisible) then 1 else 0
 		end,
 
-		Host.Frame "Toolbar" {
-			Visible = function(use)
-				return not use(compact)
-			end,
-			Size = function(use)
-				return UDim2.new(1, 0, 0, toolbarHeight(use))
-			end,
-			BackgroundTransparency = 1,
-			Host.UIPadding({
-				PaddingLeft = UDim.new(0, 16),
-				PaddingRight = UDim.new(0, 12),
-				PaddingTop = UDim.new(0, 8),
-			}),
-			Host.UIListLayout({
-				FillDirection = Enum.FillDirection.Horizontal,
-				Padding = UDim.new(0, 8),
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				VerticalAlignment = Enum.VerticalAlignment.Center,
-			}),
-			UI.Label "Title" {
-				LayoutOrder = 1,
-				label = "Facet gallery",
-				textRole = "title",
-				Size = UDim2.fromScale(0, 0),
-				AutomaticSize = Enum.AutomaticSize.XY,
-				Host.UIFlexItem({ FlexMode = Enum.UIFlexMode.Fill }),
-			},
-			UI.Button "Settings" {
-				LayoutOrder = 2,
-				label = "Settings",
-				icon = "settings",
-				appearance = "utility",
-				onActivate = function()
-					settingsOpen:set(not settingsOpen:peek())
-				end,
-			},
-		},
+		toolbar,
 		UI.TabView "Demos" {
 			selection = selected,
 			tabs = tabs,

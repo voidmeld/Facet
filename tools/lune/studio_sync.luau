@@ -64,6 +64,7 @@ net.serve(PORT, function(request)
 		local DIRS: { [string]: string } = {
 			matrix = "artifacts/cross-platform-proof/rows/matrix",
 			perf = "artifacts/performance-stress-places/studio",
+			live = "artifacts/studio-live",
 		}
 		local dir = DIRS[request.query.dir or "matrix"]
 		if dir == nil then

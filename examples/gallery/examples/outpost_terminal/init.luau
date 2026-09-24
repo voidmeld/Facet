@@ -131,7 +131,10 @@ function terminal.build(ctx, options)
 			return { sent = false, reason = valid.code }
 		end
 		if not o.send then
-			outcome:set({ ok = false, code = "session", message = rules.refusal("session") })
+			ctx.runtime:batch(function()
+				status:set("rejected")
+				outcome:set({ ok = false, code = "session", message = rules.refusal("session") })
+			end)
 			publish()
 			return { sent = false, reason = "no-transport" }
 		end

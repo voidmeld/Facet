@@ -40,6 +40,7 @@ return function(ctx: any, id: string, groups: { any })
 			tabs = tabs,
 			style = if outer then "sidebarAdaptable" else "automatic",
 			sidebarPreference = if outer then preference else nil,
+			shoulderNavigation = if outer then nil else "content",
 			accessories = if outer
 				then {
 					head = function()

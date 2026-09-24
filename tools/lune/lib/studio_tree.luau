@@ -52,12 +52,8 @@ function studio_tree.entries(mode: string?): { FileEntry }
 	addTree(entries, "examples/themes", "ReplicatedStorage.FacetThemes", "Folder")
 	if mode == "perf" then
 		addTree(entries, "examples/performance/lab", "ReplicatedStorage.FacetScenarios", "ModuleScript")
-		table.insert(entries, {
-			path = "ReplicatedStorage.FacetScenarios.runner",
-			className = "ModuleScript",
-			file = "examples/gallery/scenarios/runner.luau",
-		})
-		addTree(entries, "examples/performance/client", "StarterPlayer.StarterPlayerScripts.PerfLab", "ModuleScript")
+		addTree(entries, "examples/performance/client", "ReplicatedStorage.PerfLab", "ModuleScript")
+		addTree(entries, "tools/studio/live", "ReplicatedStorage.FacetLive", "ModuleScript")
 	else
 		addTree(entries, "examples/gallery/examples", "ReplicatedStorage.FacetExamples", "Folder")
 		addTree(entries, "examples/gallery/scenarios", "ReplicatedStorage.FacetScenarios", "ModuleScript")
@@ -66,6 +62,7 @@ function studio_tree.entries(mode: string?): { FileEntry }
 		addTree(entries, "examples/gallery/server", "ServerScriptService.Outpost", "Script")
 
 		addTree(entries, "examples/reference", "ReplicatedStorage.FacetReference", "Folder")
+		addTree(entries, "tools/studio/live", "ReplicatedStorage.FacetLive", "ModuleScript")
 	end
 	return entries
 end

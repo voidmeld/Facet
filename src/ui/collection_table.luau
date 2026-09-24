@@ -1,4 +1,5 @@
 --!strict
+local layoutKit = require("./layout_kit")
 local reorder = require("./collection_reorder")
 local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
@@ -14,6 +15,7 @@ type Controls = {
 	Button: Types.Constructor<InputTypes.ButtonProps, TextButton>,
 }
 return function(ctx: Types.Context, UI: Controls): ()
+	local lists = layoutKit.of(ctx)
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
 	local read = ctx.read
 	local D2, V2, E = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
@@ -93,14 +95,14 @@ return function(ctx: Types.Context, UI: Controls): ()
 			return widest
 		end)
 		local input = ctx.config.userInputService
-		local preferredInput: ComposeTypes.Readable<Enum.PreferredInput?> = if input
+		local preferredInput: ComposeTypes.Readable<Enum.PreferredInput>? = if input
 			then ctx.observe(input, "PreferredInput")
-			else Compose.cell(nil :: Enum.PreferredInput?)
+			else nil
 		local minimumRow = Compose.formula(function(use: ComposeTypes.Use)
 			if spec.itemSize ~= nil then
 				return read(spec.itemSize, use)
 			end
-			local kind = use(preferredInput)
+			local kind = if preferredInput then use(preferredInput) else nil
 			return math.max(
 				40,
 				ctx.controlSize(nil, "height", use),
@@ -356,7 +358,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 						AnchorPoint = V2.new(1, 0),
 						Position = D2.fromScale(1, 0),
 						Size = function(use: ComposeTypes.Use)
-							return D2.new(0, if use(preferredInput) == E.PreferredInput.Touch then 44 else 12, 1, 0)
+							return D2.new(
+								0,
+								if preferredInput and use(preferredInput) == E.PreferredInput.Touch then 44 else 12,
+								1,
+								0
+							)
 						end,
 						BackgroundTransparency = 1,
 						ZIndex = 3,
@@ -411,11 +418,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 				return frame
 			end,
 		})
-		local headerLayoutProps: Types.UIListLayoutProps = {
-			FillDirection = E.FillDirection.Horizontal,
-			SortOrder = E.SortOrder.LayoutOrder,
-		}
-		local headerLayout = Host.UIListLayout(headerLayoutProps)
+		local headerLayout = lists.list({}, false)
 		local headerProps: Types.FrameProps = {
 			Name = "Header",
 			Visible = spec.header ~= false,
@@ -520,10 +523,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 							return read(selection, use)[key] == true
 						end,
 					} :: EngineTypes.Attributes,
-					Host.UIListLayout({
-						FillDirection = E.FillDirection.Horizontal,
-						SortOrder = E.SortOrder.LayoutOrder,
-					}) :: ComposeTypes.Child,
+					lists.list({}, false) :: ComposeTypes.Child,
 					Compose.keyed({
 						from = function(use: ComposeTypes.Use)
 							return read(spec.columns, use)
@@ -743,5 +743,6 @@ return function(ctx: Types.Context, UI: Controls): ()
 		assert(type(key) == "function", "Facet UI.Table: key must be a function or a field name")
 		return create((spec :: unknown) :: CollectionTypes.KeyedTableSpec<V, K>, (key :: unknown) :: (V, number) -> K)
 	end
-	UI.Table = ctx.construct("Table", constructor) :: CollectionTypes.TableConstructor
+	local tableConstructor: CollectionTypes.TableConstructor = ctx.construct("Table", constructor)
+	UI.Table = tableConstructor
 end

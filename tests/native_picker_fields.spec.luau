@@ -248,7 +248,7 @@ t.describe("native Picker menu rows", function()
 		expect(avatar.LayoutOrder < find(row, "Content"):FindFirstChildWhichIsA("TextLabel", true).LayoutOrder + 100).toBe(
 			true
 		)
-		expect(find(find(row, "Badge"), "Count").Text).toBe("2")
+		expect(find(find(row, "Accessories"), "Count").Text).toBe("2")
 		local disabled = find(w.screen, "c")
 		expect(disabled.Interactable).toBe(false)
 		disabled.Activated.fire()
@@ -268,7 +268,7 @@ t.describe("native Picker menu rows", function()
 		})
 		find(w.screen, "P").AbsoluteSize = w.engine.types.Vector2.new(200, 44)
 		open(w)
-		expect(find(find(find(w.screen, "normal"), "Badge"), "Count").Text).toBe("3")
+		expect(find(find(find(w.screen, "normal"), "Accessories"), "Count").Text).toBe("3")
 		expect(find(find(w.screen, "normal"), "Meta").Text).toBe("Crew")
 		local headings = {}
 		for _, node in all(w.screen, "SectionTitle") do

@@ -12,7 +12,7 @@ t.describe("native public surface", function()
 		local Host = runtime.constructors
 		local UI = Facet.controls(runtime, { types = engine.types })
 		t.expect(Facet.new).toBeNil()
-		t.expect(UI.Screen).toBeNil()
+		t.expect(type(UI.Screen)).toBe("function")
 		t.expect(UI.ForEach).toBeNil()
 		t.expect(UI.When).toBeNil()
 		local shown, label = Compose.cell(true), Compose.cell("Before")

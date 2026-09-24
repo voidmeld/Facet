@@ -11,7 +11,7 @@ export type Placement = "automatic" | "topBar" | "sidebar" | "bottomBar" | "bott
 export type Transition = ComposeTypes.TweenOptions
 export type SourceTransition = { seconds: Value<number>?, ease: ComposeTypes.Easing?, source: Value<GuiObject?>? }
 export type MenuTrigger = "activate" | "secondary" | "longPress" | "keyboard" | "gamepad"
-export type OptionAvatar = { name: string, image: string?, userId: number? }
+export type OptionAvatar = MenuAvatar
 export type OptionIndicator = {
 	status: Value<"neutral" | "info" | "success" | "warning" | "error" | "accent">?,
 	form: ("dot" | "ring" | "square" | "dash")?,
@@ -23,15 +23,19 @@ export type MenuItemBase = {
 	label: Value<string>,
 	description: Value<string>?,
 	icon: Value<string>?,
-	badge: Value<string | number>?,
 	meta: Value<string>?,
-	avatar: OptionAvatar?,
-	sectionTitle: Value<string>?,
 	enabled: Value<boolean>?,
 	marked: Value<boolean>?,
 	dismiss: boolean?,
 	divider: false?,
+	badge: Value<string | number>?,
+	avatar: MenuAvatar?,
+	sectionTitle: Value<string>?,
+	shortcutLabel: Value<string>?,
 }
+export type MenuAvatar = { name: string, image: string?, userId: number? }
+export type MenuEdge = "top" | "bottom" | "leading" | "trailing"
+export type MenuAlign = "start" | "center" | "end"
 export type MenuAction<V = string> =
 	(MenuItemBase & {
 		children: Value<{ MenuItem<V> }>,
@@ -55,7 +59,7 @@ export type MenuAction<V = string> =
 		onChange: ((V) -> ())?,
 		onSelect: (() -> ())?,
 	})
-export type MenuItem<V = string> = { id: string?, divider: true, title: Value<string>? } | MenuAction<V>
+export type MenuItem<V = string> = { id: string?, divider: true } | MenuAction<V>
 export type MenuSpec<V = string> = Types.FrameProps & {
 	items: Value<{ MenuItem<V> }>,
 	query: ComposeTypes.Cell<string>?,
@@ -70,6 +74,9 @@ export type MenuSpec<V = string> = Types.FrameProps & {
 	onClose: (() -> ())?,
 	enabled: Value<boolean>?,
 	isPresented: ComposeTypes.Cell<boolean>?,
+	edge: MenuEdge?,
+	align: MenuAlign?,
+	width: Value<number>?,
 	maxHeight: number?,
 }
 export type PickerOption<V = string> = {
@@ -227,6 +234,14 @@ export type Tab = {
 	content: Content,
 	section: string?,
 	required: boolean?,
+	indicator: TabIndicator?,
+	enabled: Value<boolean>?,
+}
+export type TabIndicator = {
+	form: ("dot" | "ring" | "square" | "dash")?,
+	status: ("neutral" | "info" | "success" | "warning" | "error" | "accent")?,
+	count: Value<number?>?,
+	max: number?,
 }
 export type TabViewSpec = Types.FrameProps & {
 	selection: ComposeTypes.Cell<string>,
@@ -250,7 +265,7 @@ export type TabViewSpec = Types.FrameProps & {
 	shoulderNavigation: "strip" | "content"?,
 	indicator: Value<Indicator>?,
 	iconOnly: Value<boolean>?,
-	textSize: Value<number>?,
+	textSize: Value<number | "fit">?,
 	enabled: Value<boolean>?,
 	onChange: ((string) -> ())?,
 }
@@ -274,7 +289,11 @@ export type PageViewSpec = Types.FrameProps & {
 	controls: boolean?,
 }
 export type PresencePhase = { exiting: ComposeTypes.Readable<boolean> }
+export type MotionTiming = { enter: number, exit: number }
+export type Appearance = (ComposeTypes.Use?) -> number
 export type ModalOptions = {
+	exiting: ComposeTypes.Readable<boolean>?,
+	appearance: Appearance?,
 	Name: string?,
 	ZIndex: number?,
 	priority: number?,
@@ -286,6 +305,8 @@ export type ModalOptions = {
 }
 export type OverlayOptions = {
 	presence: ComposeTypes.PresenceOptions?,
+	motion: MotionTiming?,
+	identity: ((ComposeTypes.Use) -> number)?,
 	failure: ((unknown) -> Instance)?,
 }
 export type Surfaces = {
@@ -300,6 +321,8 @@ export type Surfaces = {
 	skin: (GuiObject, string?) -> GuiObject,
 	modal: (() -> GuiObject, (string?) -> (), ModalOptions?) -> Frame,
 	overlay: (GuiObject, Value<boolean>, (PresencePhase?) -> Instance, OverlayOptions?) -> Types.Child,
+	appearance: (PresencePhase?, MotionTiming) -> Appearance,
+	popover: (GuiObject, Appearance, (ComposeTypes.Use) -> (Vector2, Vector2)) -> (),
 }
 export type PickerConstructor = (<V>(PickerSpec<V>) -> GuiObject) & ((string) -> <V>(PickerSpec<V>) -> GuiObject)
 export type MenuConstructor = (<V>(MenuSpec<V>) -> Frame) & ((string) -> <V>(MenuSpec<V>) -> Frame)
