@@ -365,6 +365,18 @@ local function new(options: any?)
 					end)
 					assert(valid, `{key} is not a valid member of Path2D "{properties.Name}"`)
 				end
+				if value ~= nil and type(key) == "string" then
+					local ok, default = pcall(function()
+						return defaults[key]
+					end)
+					local kind = if ok then typeof(default) else nil
+					if kind == "Color3" or kind == "UDim2" or kind == "UDim" or kind == "Vector2" then
+						assert(
+							typeof(value) == kind,
+							`Unable to assign property {key}. {kind} expected, got {typeof(value)}`
+						)
+					end
+				end
 				local previous = node[key]
 				if previous == value then
 					return

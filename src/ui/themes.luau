@@ -527,6 +527,8 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-disabled", { TextTransparency = extra.disabledContentOpacity })
 	rule(".facet-accent", { BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") })
 	rule(".facet-fill", { BackgroundColor3 = c("accent"), BackgroundTransparency = 0, BorderSizePixel = 0 })
+	rule(".facet-level-segment", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
+	rule(".facet-level-on", { BackgroundColor3 = c("accent") })
 	rule(".facet-progress-ring-track", { Color3 = c("control") })
 	rule(".facet-progress-ring-fill", { Color3 = c("accent") })
 	rule(".facet-icon", { ImageColor3 = c("content"), BackgroundTransparency = 1 })

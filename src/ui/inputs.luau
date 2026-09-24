@@ -1802,12 +1802,18 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				end
 				mark, paint = Host.ImageLabel(native), "ImageColor3"
 			else
-				native.BackgroundTransparency = function(use: ComposeTypes.Use)
-					return if filled(use) then 0 else 0.65
-				end
-				native.Size = D2.fromOffset(markSize, markSize * index / count)
+				native.BackgroundTransparency = nil
+				native.Size = D2.fromOffset(markSize, math.round(markSize * (0.3 + 0.7 * index / count)))
 				table.insert(native, ctx.corner(2))
-				mark, paint = ctx.styled(Host.Frame(native), "fill"), "BackgroundColor3"
+				mark, paint = ctx.styled(Host.Frame(native), "level-segment"), "BackgroundColor3"
+				local bar = mark
+				Compose.watch(function(use: ComposeTypes.Use)
+					if filled(use) then
+						bar:AddTag("facet-level-on")
+					elseif bar:HasTag("facet-level-on") then
+						bar:RemoveTag("facet-level-on")
+					end
+				end)
 			end
 			if spec.tint then
 				Compose.watch(function(use: ComposeTypes.Use)

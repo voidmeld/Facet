@@ -200,7 +200,8 @@ Both take a numeric `value`, a positive integer `count` (default `5`),
 
 - Rating supports `glyphs = { filled, empty }` and `starSize`.
 - LevelPicker supports `segment` (`bar`, `glyph` or `image`), `segmentSize`,
-  `glyphs`, `images` and `tint` filled and empty pairs.
+  `glyphs`, `images` and `tint` filled and empty Color3 pairs. A bar segment has
+  the `facet-level-segment` tag, and a filled bar also has `facet-level-on`.
 
 The named sizes are `small` (20), `medium` (28) and `large` (36).
 

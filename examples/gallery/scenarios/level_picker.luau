@@ -129,7 +129,7 @@ return {
 				row("Tinted", COPY.tinted, COPY.tintedHint, tinted, "TintedBars", {
 					count = 10,
 					segment = "bar",
-					tint = { filled = { direct = "#7ad4a0" }, empty = { direct = "#2a3340" } },
+					tint = { filled = Color3.fromHex("#7ad4a0"), empty = Color3.fromHex("#2a3340") },
 				}),
 			}
 		end
@@ -149,7 +149,7 @@ return {
 					Size = UDim2.new(1, 0, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					Text = COPY.title,
-					textRole = "body",
+					textRole = "heading",
 					TextWrapped = true,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextXAlignment = Enum.TextXAlignment.Left,
@@ -239,7 +239,7 @@ return {
 					PaddingRight = UDim.new(0, 12),
 				}),
 				Host.ScrollingFrame "Page" {
-					Size = UDim2.new(1, 0, 0, 0),
+					Size = UDim2.new(1, 0, 1, 0),
 					BackgroundTransparency = 1,
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 					CanvasSize = UDim2.new(),
