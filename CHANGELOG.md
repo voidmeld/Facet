@@ -12,6 +12,8 @@
 - A `RadialMenu` with `follow = "fixed"` keeps its ring and its center hole until it opens again. The list presentation shows one navigation control: `close` and `back` at the root read "Close", and `back` in a submenu reads "Back".
 - Button refuses an `imageFraming` other than `fit` or `crop`. ComboBox refuses a value that is not a string and missing `options`.
 - `Facet` exports the `RadialItem` and `RadialMenuSpec` types.
+- `wrapFocus` wraps arrow and D-pad focus at both ends of a collection. A collection refuses a `follow` other than the static `none` or `end`.
+- Button pop, busy dots and the TextInput validation pulse follow `GuiService.ReducedMotionEnabled` without the `reducedMotion` option. A Button with only `onPointerCancel` receives the cancel. A TextInput does not commit after its `parse`, `format` or `validate` callback disables or removes it.
 
 ## Pre-0.12.0 development history
 
