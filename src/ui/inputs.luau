@@ -489,6 +489,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					AutomaticSize = E.AutomaticSize.None,
 					ClipsDescendants = true,
 				})
+				elseif description then ctx.row(content, { Name = "Content", ZIndex = 1 })
 				else ctx.row(
 					content,
 					{ Name = "Content", ZIndex = 1, AnchorPoint = V2.new(0, 0.5), Position = D2.fromScale(0, 0.5) }
@@ -515,6 +516,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end)
 		)
 		node = ctx.styled(Host.TextButton(p), "button")
+		if rich and (spec.subtitle ~= nil or spec.hint ~= nil or (spec.row ~= nil and spec.row.description ~= nil)) then
+			node:AddTag("facet-button-described")
+		end
 		if spec.help ~= nil then
 			help.attach(ctx, node, spec.help)
 		end

@@ -697,9 +697,16 @@ return function(
 				if spec.query then
 					return "navigationLink"
 				end
-				local count = #read(spec.options, use)
+				local list: { Nav.PickerOption<V> } = read(spec.options, use)
+				local count = #list
 				local available = use(width)
-				if count <= 4 and (available == 0 or available >= 360) then
+				local described = false
+				for _, option in list do
+					if option.description ~= nil then
+						described = true
+					end
+				end
+				if count <= 4 and not described and (available == 0 or available >= 360) then
 					return "segmented"
 				end
 				local kind = use(preferred)
@@ -838,6 +845,7 @@ return function(
 
 			menuSpec.Name = "Value"
 			menuSpec.Size = nil
+			menuSpec.AutomaticSize = E.AutomaticSize.XY
 			menuSpec.AnchorPoint = V2.new(1, 0.5)
 			menuSpec.Position = D2.fromScale(1, 0.5)
 			local row = ctx.props(spec, pickerKeys, {
@@ -973,6 +981,7 @@ return function(
 								then D2.new(1, 0, 0, 44)
 								else D2.fromOffset(0, 44)
 						end,
+						AutomaticSize = if style ~= "segmented" then E.AutomaticSize.Y else nil,
 						label = function(use: Core.Use)
 							if read(spec.iconOnly, use) then
 								return ""
@@ -1022,17 +1031,16 @@ return function(
 					Compose.watch(function(use: Core.Use)
 						button:SetAttribute("FacetLabel", read(use(source).label, use))
 					end)
-					if style == "segmented" then
-						button:AddTag("facet-segment")
-						Compose.watch(function(use: Core.Use)
-							local current = selected(use) and read(spec.indicator, use) ~= "none"
-							if current then
-								button:AddTag("facet-segment-current")
-							elseif button:HasTag("facet-segment-current") then
-								button:RemoveTag("facet-segment-current")
-							end
-						end)
-					end
+					local family = if style == "segmented" then "facet-segment" else "facet-choice"
+					button:AddTag(family)
+					Compose.watch(function(use: Core.Use)
+						local current = selected(use) and read(spec.indicator, use) ~= "none"
+						if current then
+							button:AddTag(family .. "-current")
+						elseif button:HasTag(family .. "-current") then
+							button:RemoveTag(family .. "-current")
+						end
+					end)
 					return button
 				end,
 			})

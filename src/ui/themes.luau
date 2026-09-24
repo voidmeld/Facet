@@ -484,6 +484,10 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		".facet-disclosure::UIPadding",
 		{ PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0) + 20) }
 	)
+	rule(".facet-button-described::UIPadding", {
+		PaddingTop = types.UDim.new(0, math.max(10, buttonInsets.top or 0)),
+		PaddingBottom = types.UDim.new(0, math.max(10, buttonInsets.bottom or 0)),
+	})
 	rule(".facet-busy::UIPadding", { PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0) + 20) })
 	rule(".facet-shape-circle::UIPadding", {
 		PaddingLeft = types.UDim.new(0, 0),
@@ -619,6 +623,15 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-stepper-button", { BackgroundTransparency = 1 })
 	rule(".facet-stepper-button:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
 	rule(".facet-stepper-button:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
+	rule(".facet-choice", { BackgroundTransparency = 1, TextXAlignment = types.Enum.TextXAlignment.Left })
+	rule(".facet-choice:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(
+		".facet-choice-current",
+		{ BackgroundTransparency = 0.82, BackgroundColor3 = c("accent"), TextColor3 = c("accent") }
+	)
+	rule(".facet-choice-current:Hover", { BackgroundTransparency = 0.72, BackgroundColor3 = c("accent") })
+	rule(".facet-choice-current >> .facet-button-caption", { TextColor3 = c("accent") })
+	rule(".facet-choice-current >> .facet-icon", { ImageColor3 = c("accent") })
 	rule(".facet-segmented", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	rule(".facet-segmented::UICorner", { CornerRadius = types.UDim.new(0, package.metrics.radii.control + 2) })
 	rule(".facet-segmented::UIPadding", {
