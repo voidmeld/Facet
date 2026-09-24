@@ -44,6 +44,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local state = spec :: InputTypes.EnabledOptions
 		return read(state.enabled, use) ~= false and read(state.disabled, use) ~= true and read(state.busy, use) ~= true
 	end
+	local function nativeReducedMotion(): ComposeTypes.Cell<boolean>?
+		local gui = ctx.config.services.GuiService
+		return if gui then ctx.observe(gui, "ReducedMotionEnabled") else nil
+	end
+	local function motionReduced(native: ComposeTypes.Cell<boolean>?, use: ComposeTypes.Use?): boolean
+		return read(ctx.config.reducedMotion, use) == true or (native ~= nil and read(native, use) == true)
+	end
 	local function writable(source: unknown): boolean
 		return type(source) == "table"
 			and Compose.isReadable(source)
@@ -274,10 +281,11 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local popTimeline = if spec.pop then runtime.timeline({ duration = 0.45, autoplay = false }) else nil
 		local popStart = Compose.cell(1)
 		local popScale
+		local nativeReduced = if popTimeline or spec.busy ~= nil then nativeReducedMotion() else nil
 		if popTimeline then
 			popTimeline:seek(0.45)
 			popScale = Compose.formula(function(use: ComposeTypes.Use)
-				if read(ctx.config.reducedMotion, use) then
+				if motionReduced(nativeReduced, use) then
 					return 1
 				end
 				local phase = use(popTimeline.progress)
@@ -286,7 +294,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					+ 0.25 * math.sin(math.pi * phase) * math.exp(-3 * phase)
 			end)
 			Compose.watch(function(use: ComposeTypes.Use)
-				if read(ctx.config.reducedMotion, use) then
+				if motionReduced(nativeReduced, use) then
 					popTimeline:pause()
 					popTimeline:seek(0.45)
 				end
@@ -307,7 +315,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		)
 		local function activate(...)
 			if enabled(spec) and node and ctx.available(node) and spec.onActivate then
-				if popTimeline and not held and not read(ctx.config.reducedMotion) then
+				if popTimeline and not held and not motionReduced(nativeReduced) then
 					popStart:set(popScale:peek())
 					popTimeline:restart()
 				end
@@ -414,7 +422,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 									Position = D2.fromOffset((index - 1) * 6, 7),
 									BorderSizePixel = 0,
 									BackgroundTransparency = function(use: ComposeTypes.Use)
-										return if read(ctx.config.reducedMotion, use)
+										return if motionReduced(nativeReduced, use)
 											then 0
 											else 0.2 + 0.6 * ((use(phase.progress) + index / 3) % 1)
 									end,
@@ -734,7 +742,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		else
 			updateState()
 		end
-		if spec.repeatDelay or spec.repeatInterval or spec.onPointerDown or spec.onPointerUp then
+		if
+			spec.repeatDelay
+			or spec.repeatInterval
+			or spec.onPointerDown
+			or spec.onPointerUp
+			or spec.onPointerCancel
+		then
 			runtime.connect(node, "InputBegan", function(input)
 				local kind = input.UserInputType.Name
 				if
@@ -1063,6 +1077,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local validationMessage = Compose.cell("")
 		local mayReject = numeric or spec.invalid ~= nil
 		local errorTimeline = if mayReject then runtime.timeline({ duration = 0.24, autoplay = false }) else nil
+		local nativeReduced = if mayReject then nativeReducedMotion() else nil
 		if errorTimeline then
 			assert(errorTimeline):seek(0.24)
 		end
@@ -1093,7 +1108,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			if writable(spec.invalid) then
 				(spec.invalid :: ComposeTypes.Cell<boolean>):set(value)
 			end
-			if value and errorTimeline and not read(ctx.config.reducedMotion) then
+			if value and errorTimeline and not motionReduced(nativeReduced) then
 				errorTimeline:restart()
 			end
 		end
@@ -1151,6 +1166,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local ok, number = pcall(function(text: string): number?
 					return if spec.parse then spec.parse(text) else tonumber(text)
 				end, value)
+				if disposed or not enabled(spec) then
+					return
+				end
 				if
 					not ok
 					or type(number) ~= "number"
@@ -1174,12 +1192,18 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local formattedOk, formatted = pcall(function(value: number): string
 					return if spec.format then spec.format(value) else tostring(value)
 				end, number)
+				if disposed or not enabled(spec) then
+					return
+				end
 				if not formattedOk or type(formatted) ~= "string" or utf8.len(formatted) == nil then
 					markInvalid(true)
 					return
 				end
 				if spec.validate then
 					local valid, normalized = pcall(spec.validate, formatted)
+					if disposed or not enabled(spec) then
+						return
+					end
 					if not valid or type(normalized) ~= "string" or utf8.len(normalized) == nil then
 						markInvalid(true)
 						return
@@ -1208,6 +1232,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				markInvalid(false)
 			else
 				local normalized = normalize(value)
+				if disposed or not enabled(spec) then
+					return
+				end
 				if normalized == nil then
 					markInvalid(true)
 					return
@@ -1291,7 +1318,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				p,
 				Host.UIScale "ValidationPulse" {
 					Scale = function(use: ComposeTypes.Use)
-						if read(ctx.config.reducedMotion, use) then
+						if motionReduced(nativeReduced, use) then
 							return 1
 						end
 						local phase = use(assert(errorTimeline).progress)
@@ -1354,7 +1381,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					markInvalid(false)
 				end
 				wasInvalid = sourceInvalid
-				if read(ctx.config.reducedMotion, use) then
+				if motionReduced(nativeReduced, use) then
 					assert(errorTimeline):pause()
 					assert(errorTimeline):seek(0.24)
 				end

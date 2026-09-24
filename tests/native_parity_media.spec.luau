@@ -761,7 +761,7 @@ t.describe("native parity media", function()
 			runtime:dispose()
 			for _, framing in { "stretch", { width = 256, height = 256 } } do
 				local refused = refusal(function(UI)
-					return UI.Button({ label = "x", image = "rbxassetid://1", imageFraming = framing })
+					return UI.Button({ label = "x", image = "rbxassetid://1", imageFraming = framing :: any })
 				end)
 				t.expect(refusedWith(refused, "imageFraming must be fit or crop")).toBe(true)
 				t.expect(refused.live).toBe(0)
@@ -1493,6 +1493,658 @@ t.describe("native parity media", function()
 			end
 			t.expect(table.concat(failures, "\n")).toBe("")
 			t.expect(#cases).toBe(52)
+		end)
+	end)
+
+	t.describe("controls", function()
+		local function session(build: (any, any) -> any, prepare: ((any, any) -> ())?): { [string]: any }
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local gui = engine.new("GuiService")
+			local input = engine.new("UserInputService")
+			input.GetFocusedTextBox = function()
+				return nil
+			end
+			input.IsKeyDown = function()
+				return false
+			end
+			if prepare then
+				prepare(gui, input)
+			end
+			local UI = Facet.controls(
+				runtime,
+				{
+					types = engine.types,
+					guiService = gui,
+					services = { GuiService = gui, UserInputService = input },
+				} :: any
+			)
+			local Host = runtime.constructors
+			local stop, screen: any = runtime.mount(function()
+				return Host.ScreenGui({ build(UI, Host) })
+			end, engine.new("Folder"))
+			return {
+				engine = engine,
+				runtime = runtime,
+				gui = gui,
+				input = input,
+				screen = screen,
+				find = function(name: string): any
+					return screen:FindFirstChild(name, true)
+				end,
+				stop = function()
+					stop()
+					runtime:dispose()
+				end,
+			}
+		end
+
+		local function press(engine: any, node: any)
+			local Enum = engine.types.Enum
+			node.InputBegan.fire({ UserInputType = Enum.UserInputType.MouseButton1, KeyCode = Enum.KeyCode.Unknown })
+		end
+
+		local function release(engine: any, node: any)
+			local Enum = engine.types.Enum
+			node.InputEnded.fire({ UserInputType = Enum.UserInputType.MouseButton1, KeyCode = Enum.KeyCode.Unknown })
+		end
+
+		t.it("adds no pop scale without pop and does not re-kick pop on held repeats", function()
+			local activations = 0
+			local w = session(function(UI, Host)
+				return Host.Frame({
+					UI.Button "Plain" { label = "x", onActivate = function() end },
+					UI.Button "Held" {
+						label = "x",
+						pop = true,
+						repeatInterval = 0.1,
+						onActivate = function()
+							activations += 1
+						end,
+					},
+				})
+			end)
+			t.expect(w.find("Plain"):FindFirstChild("Pop")).toBeNil()
+			t.expect(w.find("Plain"):FindFirstChildWhichIsA("UIScale")).toBeNil()
+			local held = w.find("Held")
+			local pop = held:FindFirstChild("Pop")
+			t.expect(pop.ClassName).toBe("UIScale")
+			t.expect(pop.Scale).toBe(1)
+			press(w.engine, held)
+			w.engine.heartbeat.fire(0.4)
+			t.expect(activations).toBe(1)
+			t.expect(pop.Scale).toBe(1)
+			w.engine.heartbeat.fire(0.1)
+			t.expect(activations).toBe(2)
+			t.expect(pop.Scale).toBe(1)
+			w.engine.heartbeat.fire(0.1)
+			t.expect(activations).toBe(3)
+			t.expect(pop.Scale).toBe(1)
+			release(w.engine, held)
+			held.Activated.fire()
+			t.expect(activations).toBe(3)
+			held.Activated.fire()
+			t.expect(activations).toBe(4)
+			w.engine.heartbeat.fire(0.1)
+			t.expect(pop.Scale).toBeGreaterThan(1)
+			w.stop()
+		end)
+
+		t.it("follows GuiService reduced motion for button pop, validation pulse and busy dots", function()
+			local function run(reduced: boolean): { [string]: any }
+				local value, number = Compose.cell("2"), Compose.cell(2)
+				local w = session(function(UI, Host)
+					return Host.Frame({
+						UI.Button "Pop" { label = "Pop", pop = true, onActivate = function() end },
+						UI.Button "Busy" { label = "Save", busy = true },
+						UI.TextInput "Field" {
+							value = value,
+							numericValue = number,
+							presentation = "number",
+							min = 1,
+							max = 10,
+						},
+					})
+				end, function(gui)
+					gui.ReducedMotionEnabled = reduced
+				end)
+				local button = w.find("Pop")
+				button.Activated.fire()
+				local field = w.find("Field")
+				field:CaptureFocus()
+				field.Text = "11"
+				field:ReleaseFocus(true)
+				local dot = w.find("Busy"):FindFirstChild("Dot1", true)
+				local before = dot.BackgroundTransparency
+				w.engine.heartbeat.fire(0.1)
+				return {
+					pop = button:FindFirstChild("Pop").Scale,
+					pulse = field:FindFirstChild("ValidationPulse").Scale,
+					dotBefore = before,
+					dotAfter = dot.BackgroundTransparency,
+					invalid = field:GetAttribute("invalid"),
+					w = w,
+				}
+			end
+			local full = run(false)
+			t.expect(full.invalid).toBe(true)
+			t.expect(full.pop).toBeGreaterThan(1)
+			t.expect(full.pulse).toBeLessThan(1)
+			t.expect(full.dotBefore > 0).toBe(true)
+			t.expect(full.dotAfter ~= full.dotBefore).toBe(true)
+			full.w.gui.ReducedMotionEnabled = true
+			t.expect(full.w.find("Pop"):FindFirstChild("Pop").Scale).toBe(1)
+			t.expect(full.w.find("Field"):FindFirstChild("ValidationPulse").Scale).toBe(1)
+			t.expect(full.w.find("Busy"):FindFirstChild("Dot1", true).BackgroundTransparency).toBe(0)
+			full.w.stop()
+			local reduced = run(true)
+			t.expect(reduced.invalid).toBe(true)
+			t.expect(reduced.pop).toBe(1)
+			t.expect(reduced.pulse).toBe(1)
+			t.expect(reduced.dotBefore).toBe(0)
+			t.expect(reduced.dotAfter).toBe(0)
+			reduced.w.gui.ReducedMotionEnabled = false
+			reduced.w.find("Pop").Activated.fire()
+			reduced.w.engine.heartbeat.fire(0.1)
+			t.expect(reduced.w.find("Pop"):FindFirstChild("Pop").Scale).toBeGreaterThan(1)
+			reduced.w.stop()
+		end)
+
+		t.it("keeps the busy dots inside the button plate in every shipped package", function()
+			local packages = { themes.neutralPackage() }
+			for _, module in SHIPPED do
+				local package, report = module.build(themes)
+				t.expect(report.ok).toBe(true)
+				table.insert(packages, package)
+			end
+			t.expect(#packages).toBe(9)
+			for _, package in packages do
+				local engine, runtime = make()
+				local busy = Compose.cell(true)
+				local themed: any = Facet.controls(runtime, { types = engine.types, theme = package } :: any)
+				local sheet, button
+				local stop = mount(engine, runtime, function()
+					sheet = themes.createStyleSheet(runtime, package, { types = engine.types })
+					button = themed.Button({ label = "Save", busy = busy })
+					return runtime.constructors.Frame({ sheet, button })
+				end)
+				local busyRule, plainRule =
+					style(sheet, ".facet-busy::UIPadding"), style(sheet, ".facet-button::UIPadding")
+				local reserved = busyRule:GetProperties().PaddingRight.Offset
+				local plain = plainRule:GetProperties().PaddingRight.Offset
+				t.expect(busyRule.Priority).toBeGreaterThan(plainRule.Priority)
+				t.expect(reserved).toBeGreaterThan(plain)
+				t.expect(button:HasTag("facet-busy")).toBe(true)
+				t.expect(button.Text).toBe("Save")
+				local frame = button:FindFirstChild("Busy")
+				t.expect(frame.AnchorPoint.X).toBe(0)
+				t.expect(frame.Position.X.Scale).toBe(1)
+				local left = frame.Position.X.Offset
+				local right = left + frame.Size.X.Offset
+				for index = 1, 3 do
+					local dot = frame:FindFirstChild("Dot" .. index)
+					t.expect(dot.Position.X.Offset).toBeGreaterThanOrEqual(0)
+					t.expect(dot.Position.X.Offset + dot.Size.X.Offset).toBeLessThanOrEqual(frame.Size.X.Offset)
+				end
+				t.expect(left).toBeGreaterThanOrEqual(0)
+				t.expect(right).toBeLessThanOrEqual(reserved)
+				busy:set(false)
+				t.expect(button:FindFirstChild("Busy")).toBeNil()
+				t.expect(button:HasTag("facet-busy")).toBe(false)
+				t.expect(frame.isDestroyed()).toBe(true)
+				stop()
+				runtime:dispose()
+			end
+		end)
+
+		t.it("renders caller numeric children inside the button beside its label", function()
+			local activations = 0
+			local art, badge
+			local w = session(function(UI, Host)
+				art = Host.ImageLabel "Art" { Image = "rbxassetid://7" }
+				badge = Host.TextLabel "Count" { Text = "3" }
+				return UI.Button "Buy" {
+					label = "Buy",
+					onActivate = function()
+						activations += 1
+					end,
+					art,
+					badge,
+				}
+			end)
+			local button = w.find("Buy")
+			t.expect(button.ClassName).toBe("TextButton")
+			t.expect(button.Text).toBe("Buy")
+			t.expect(art.Parent).toBe(button)
+			t.expect(badge.Parent).toBe(button)
+			t.expect(art.Image).toBe("rbxassetid://7")
+			t.expect(badge.Text).toBe("3")
+			button.Activated.fire()
+			t.expect(activations).toBe(1)
+			w.stop()
+			t.expect(art.isDestroyed()).toBe(true)
+			t.expect(badge.isDestroyed()).toBe(true)
+		end)
+
+		t.it("gives a chip the rect button shape by default and orders its leading and trailing children", function()
+			local package = themes.neutralPackage()
+			local selected, rain, toggles = Compose.cell(false), Compose.cell(false), 0
+			local lead, count, sheet
+			local engine, runtime = make()
+			local themed: any = Facet.controls(runtime, { types = engine.types, theme = package } :: any)
+			local stop, root = mount(engine, runtime, function()
+				local Host = runtime.constructors
+				sheet = themes.createStyleSheet(runtime, package, { types = engine.types })
+				lead = Host.ImageLabel "Lead" { Image = "rbxassetid://9" }
+				count = Host.TextLabel "Count" { Text = "3" }
+				return Host.Frame({
+					sheet,
+					themed.Chip "Plain" { label = "Dry", selected = selected },
+					themed.Chip "Rain" {
+						label = "Rain",
+						selected = rain,
+						leading = lead,
+						trailing = count,
+						onToggle = function(value)
+							toggles += 1
+							rain:set(value)
+						end,
+					},
+				})
+			end)
+			local plain, chip = root:FindFirstChild("Plain", true), root:FindFirstChild("Rain", true)
+			for _, node in { plain, chip } do
+				t.expect(node.ClassName).toBe("TextButton")
+				t.expect(node:HasTag("facet-chip")).toBe(true)
+				t.expect(node:HasTag("facet-button")).toBe(true)
+				t.expect(node:HasTag("facet-shape-circle")).toBe(false)
+				t.expect(node:FindFirstChildWhichIsA("UICorner")).toBeNil()
+				t.expect(node:FindFirstChildWhichIsA("UIAspectRatioConstraint")).toBeNil()
+			end
+			t.expect(style(sheet, ".facet-button::UICorner"):GetProperties().CornerRadius)
+				.toBe(engine.types.UDim.new(0, package.metrics.radii.control))
+			t.expect(plain.Text).toBe("Dry")
+			t.expect(chip.Text).toBe("")
+			local row = lead.Parent
+			t.expect(row.Parent).toBe(chip)
+			t.expect(count.Parent).toBe(row)
+			local label
+			for _, child in row:GetChildren() do
+				if child:IsA("TextLabel") and child ~= count then
+					label = child
+				end
+			end
+			t.expect(label.Text).toBe("Rain")
+			t.expect(lead.LayoutOrder).toBeLessThan(label.LayoutOrder)
+			t.expect(label.LayoutOrder).toBeLessThan(count.LayoutOrder)
+			t.expect(row:FindFirstChildWhichIsA("UIListLayout").FillDirection)
+				.toBe(engine.types.Enum.FillDirection.Horizontal)
+			chip.Activated.fire()
+			t.expect(toggles).toBe(1)
+			t.expect(rain:peek()).toBe(true)
+			t.expect(selected:peek()).toBe(false)
+			plain.Activated.fire()
+			t.expect(selected:peek()).toBe(true)
+			t.expect(toggles).toBe(1)
+			stop()
+			t.expect(lead.isDestroyed()).toBe(true)
+			t.expect(count.isDestroyed()).toBe(true)
+			runtime:dispose()
+		end)
+
+		t.it("fires button pointer down, up and cancel once each and none while disabled", function()
+			local calls = { down = 0, up = 0, cancel = 0, lone = 0, blocked = 0 }
+			local w = session(function(UI, Host)
+				return Host.Frame({
+					UI.Button "Tracked" {
+						label = "x",
+						onPointerDown = function()
+							calls.down += 1
+						end,
+						onPointerUp = function()
+							calls.up += 1
+						end,
+						onPointerCancel = function()
+							calls.cancel += 1
+						end,
+					},
+					UI.Button "Lone" {
+						label = "x",
+						onPointerCancel = function()
+							calls.lone += 1
+						end,
+					},
+					UI.Button "Blocked" {
+						label = "x",
+						enabled = false,
+						onPointerDown = function()
+							calls.blocked += 1
+						end,
+						onPointerUp = function()
+							calls.blocked += 1
+						end,
+						onPointerCancel = function()
+							calls.blocked += 1
+						end,
+					},
+				})
+			end)
+			local tracked, lone, blocked = w.find("Tracked"), w.find("Lone"), w.find("Blocked")
+			tracked.MouseLeave.fire()
+			t.expect(calls.cancel).toBe(0)
+			press(w.engine, tracked)
+			t.expect(calls.down).toBe(1)
+			t.expect(calls.up).toBe(0)
+			release(w.engine, tracked)
+			t.expect(calls.up).toBe(1)
+			t.expect(calls.cancel).toBe(0)
+			press(w.engine, tracked)
+			tracked.MouseLeave.fire()
+			t.expect(calls.down).toBe(2)
+			t.expect(calls.cancel).toBe(1)
+			release(w.engine, tracked)
+			t.expect(calls.up).toBe(1)
+			tracked.MouseLeave.fire()
+			t.expect(calls.cancel).toBe(1)
+			lone.MouseLeave.fire()
+			t.expect(calls.lone).toBe(0)
+			press(w.engine, lone)
+			lone.MouseLeave.fire()
+			t.expect(calls.lone).toBe(1)
+			lone.MouseLeave.fire()
+			t.expect(calls.lone).toBe(1)
+			press(w.engine, blocked)
+			release(w.engine, blocked)
+			press(w.engine, blocked)
+			blocked.MouseLeave.fire()
+			t.expect(calls.blocked).toBe(0)
+			w.stop()
+		end)
+
+		t.it("shows button help in an unselectable panel that wraps long text at 264 pixels", function()
+			local long = string.rep("Posts this avatar to the shared gallery. ", 8)
+			t.expect(#long).toBeGreaterThan(300)
+			local w = session(function(UI, Host)
+				return Host.Frame "Screen" {
+					UI.Button "Plus" { label = "+", help = long },
+				}
+			end)
+			local Enum = w.engine.types.Enum
+			local plus = w.find("Plus")
+			w.input.PreferredInput = Enum.PreferredInput.Gamepad
+			w.gui.SelectedObject = plus
+			w.engine.heartbeat.fire(0.5)
+			local helpText = w.find("HelpText")
+			t.expect(helpText.Text).toBe(long)
+			t.expect(helpText.TextWrapped).toBe(true)
+			t.expect(helpText.AutomaticSize).toBe(Enum.AutomaticSize.Y)
+			local measure = w.find("HelpMeasure")
+			t.expect(measure.TextWrapped).toBe(false)
+			measure.TextBounds = w.engine.types.Vector2.new(1800, 14)
+			t.expect(helpText.Size.X.Offset).toBe(264)
+			measure.TextBounds = w.engine.types.Vector2.new(99.5, 14)
+			t.expect(helpText.Size.X.Offset).toBe(101)
+			local panel = w.find("Help")
+			t.expect(panel.Selectable).toBe(false)
+			for _, node in panel:GetDescendants() do
+				if node:IsA("GuiObject") then
+					t.expect(node.Selectable).toBe(false)
+				end
+			end
+			t.expect(panel:IsDescendantOf(plus)).toBe(false)
+			t.expect(w.gui.SelectedObject).toBe(plus)
+			w.gui.SelectedObject = panel
+			t.expect(w.gui.SelectedObject).toBe(plus)
+			w.gui.SelectedObject = nil
+			t.expect(w.find("HelpText")).toBeNil()
+			w.stop()
+		end)
+
+		t.it("rejects an invalid UTF-8 edit and keeps the model, the text and onChange untouched", function()
+			local value, bounded, requests = Compose.cell("ab"), Compose.cell("ab"), {}
+			local w = session(function(UI, Host)
+				return Host.Frame({
+					UI.TextInput "Free" { value = value },
+					UI.TextInput "Bounded" {
+						value = bounded,
+						maxLength = 5,
+						onChange = function(text)
+							table.insert(requests, text)
+							bounded:set(text)
+						end,
+					},
+				})
+			end)
+			local free, limited = w.find("Free"), w.find("Bounded")
+			free:CaptureFocus()
+			free.Text = "ab\xff"
+			t.expect(value:peek()).toBe("ab")
+			t.expect(free.Text).toBe("ab")
+			free.Text = "abc"
+			t.expect(value:peek()).toBe("abc")
+			t.expect(free.Text).toBe("abc")
+			free.Text = "\xc3abc"
+			t.expect(value:peek()).toBe("abc")
+			t.expect(free.Text).toBe("abc")
+			free:ReleaseFocus(true)
+			t.expect(value:peek()).toBe("abc")
+			limited:CaptureFocus()
+			limited.Text = "abc\xff"
+			t.expect(#requests).toBe(0)
+			t.expect(bounded:peek()).toBe("ab")
+			t.expect(limited.Text).toBe("ab")
+			limited.Text = "abcdefg"
+			t.expect(requests).toEqual({ "abcde" })
+			t.expect(bounded:peek()).toBe("abcde")
+			t.expect(limited.Text).toBe("abcde")
+			limited.Text = "abcd\xff"
+			t.expect(requests).toEqual({ "abcde" })
+			t.expect(limited.Text).toBe("abcde")
+			limited:ReleaseFocus(true)
+			w.stop()
+		end)
+
+		t.it("shows the clear button at all times when clearButton is true and clears the value", function()
+			local value, plain = Compose.cell("a"), Compose.cell("a")
+			local w = session(function(UI, Host)
+				return Host.Frame({
+					UI.TextInput "Clearable" { value = value, clearButton = true },
+					UI.TextInput "Plain" { value = plain },
+					UI.TextInput "Off" { value = plain, clearButton = false },
+				})
+			end)
+			local field = w.find("Clearable")
+			local clear = field:FindFirstChild("Clear")
+			t.expect(clear.Visible).toBe(true)
+			field:CaptureFocus()
+			t.expect(clear.Visible).toBe(true)
+			field:ReleaseFocus(false)
+			t.expect(clear.Visible).toBe(true)
+			clear.Activated.fire()
+			t.expect(value:peek()).toBe("")
+			t.expect(field.Text).toBe("")
+			t.expect(clear.Visible).toBe(false)
+			value:set("b")
+			t.expect(clear.Visible).toBe(true)
+			t.expect(w.find("Plain"):FindFirstChild("Clear")).toBeNil()
+			t.expect(w.find("Off"):FindFirstChild("Clear")).toBeNil()
+			w.stop()
+		end)
+
+		t.it("does not commit after parse, format or validate disables or unmounts the field", function()
+			local function attempt(stage: string, disable: boolean): { [string]: any }
+				local value, number = Compose.cell("2"), Compose.cell(2)
+				local enabled, shown = Compose.cell(true), Compose.cell(true)
+				local commits, armed = 0, false
+				local function trip()
+					if armed and disable then
+						if stage == "unmount" then
+							shown:set(false)
+						else
+							enabled:set(false)
+						end
+					end
+				end
+				local w = session(function(UI, Host)
+					return Host.Frame({
+						Compose.show(shown, function()
+							return UI.TextInput "Amount" {
+								value = value,
+								numericValue = number,
+								presentation = "number",
+								enabled = enabled,
+								parse = function(text)
+									if stage == "parse" or stage == "unmount" then
+										trip()
+									end
+									return tonumber(text)
+								end,
+								format = function(amount)
+									if stage == "format" then
+										trip()
+									end
+									return string.format("%.2f", amount)
+								end,
+								validate = function(text)
+									if stage == "validate" then
+										trip()
+									end
+									return text
+								end,
+								onCommit = function()
+									commits += 1
+								end,
+							}
+						end),
+					})
+				end)
+				local field = w.find("Amount")
+				field:CaptureFocus()
+				field.Text = "5"
+				armed = true
+				field:ReleaseFocus(true)
+				local result = {
+					commits = commits,
+					number = number:peek(),
+					value = value:peek(),
+					removed = field.isDestroyed(),
+				}
+				w.stop()
+				return result
+			end
+			for _, stage in { "parse", "format", "validate", "unmount" } do
+				local kept = attempt(stage, false)
+				t.expect(kept.commits).toBe(1)
+				t.expect(kept.number).toBe(5)
+				t.expect(kept.value).toBe("5.00")
+				t.expect(kept.removed).toBe(false)
+				local stopped = attempt(stage, true)
+				t.expect(stopped.commits).toBe(0)
+				t.expect(stopped.number).toBe(2)
+				t.expect(stopped.value).toBe("5")
+				t.expect(stopped.removed).toBe(stage == "unmount")
+			end
+			for _, disable in { false, true } do
+				local text, enabled, commits, armed = Compose.cell("a"), Compose.cell(true), 0, false
+				local w = session(function(UI)
+					return UI.TextInput "Plain" {
+						value = text,
+						enabled = enabled,
+						validate = function(proposed)
+							if armed and disable then
+								enabled:set(false)
+							end
+							return string.upper(proposed)
+						end,
+						onCommit = function()
+							commits += 1
+						end,
+					}
+				end)
+				local field = w.find("Plain")
+				field:CaptureFocus()
+				field.Text = "b"
+				t.expect(text:peek()).toBe("B")
+				armed = true
+				field:ReleaseFocus(true)
+				t.expect(commits).toBe(if disable then 0 else 1)
+				w.stop()
+			end
+		end)
+
+		t.it("takes a disabled or busy button out of native selection and restores it", function()
+			local enabled, busy = Compose.cell(false), Compose.cell(false)
+			local w = session(function(UI, Host)
+				return Host.Frame({
+					UI.Button "Gated" { label = "Go", enabled = enabled },
+					UI.Button "Working" { label = "Save", busy = busy },
+				})
+			end)
+			local gated, working = w.find("Gated"), w.find("Working")
+			t.expect(gated.Selectable).toBe(false)
+			t.expect(gated.Interactable).toBe(false)
+			w.gui.SelectedObject = gated
+			t.expect(w.gui.SelectedObject).toBeNil()
+			enabled:set(true)
+			t.expect(gated.Selectable).toBe(true)
+			t.expect(gated.Interactable).toBe(true)
+			w.gui.SelectedObject = gated
+			t.expect(w.gui.SelectedObject).toBe(gated)
+			t.expect(working.Selectable).toBe(true)
+			t.expect(working.Interactable).toBe(true)
+			busy:set(true)
+			t.expect(working.Selectable).toBe(false)
+			t.expect(working.Interactable).toBe(false)
+			w.gui.SelectedObject = working
+			t.expect(w.gui.SelectedObject).toBe(gated)
+			busy:set(false)
+			t.expect(working.Selectable).toBe(true)
+			t.expect(working.Interactable).toBe(true)
+			enabled:set(false)
+			t.expect(gated.Selectable).toBe(false)
+			t.expect(gated.Interactable).toBe(false)
+			w.stop()
+		end)
+
+		t.it("restores focus through nested sheet and alert presentations in last-in first-out order", function()
+			local sheet, alert = Compose.cell(false), Compose.cell(false)
+			local w = session(function(UI, Host)
+				return Host.Frame({
+					UI.Button "Base" { label = "Base" },
+					UI.Sheet({
+						isPresented = sheet,
+						detent = Compose.cell("medium"),
+						title = "Outer",
+						content = function()
+							return UI.Button "Inner" { label = "Inner" }
+						end,
+					}),
+					UI.Alert({
+						isPresented = alert,
+						title = "Confirm",
+						actions = { { id = "Accept", label = "Accept" } },
+					}),
+				})
+			end)
+			local base = w.find("Base")
+			w.gui.SelectedObject = base
+			sheet:set(true)
+			local panel = w.find("SheetPanel")
+			local inner = w.find("Inner")
+			t.expect(w.gui.SelectedObject ~= base).toBe(true)
+			t.expect(w.gui.SelectedObject:IsDescendantOf(panel)).toBe(true)
+			w.gui.SelectedObject = inner
+			t.expect(w.gui.SelectedObject).toBe(inner)
+			alert:set(true)
+			local alertPanel = w.find("AlertPanel")
+			t.expect(w.gui.SelectedObject:IsDescendantOf(alertPanel)).toBe(true)
+			alert:set(false)
+			t.expect(w.find("AlertPanel")).toBeNil()
+			t.expect(w.gui.SelectedObject).toBe(inner)
+			sheet:set(false)
+			t.expect(w.find("SheetPanel")).toBeNil()
+			t.expect(w.gui.SelectedObject).toBe(base)
+			w.stop()
 		end)
 	end)
 end)
