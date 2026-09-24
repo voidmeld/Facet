@@ -1188,7 +1188,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					return visible
 				end,
 				key = function(item: Media.AvatarMember)
-					return item.id
+					return if item.resource then item.id .. "\0" .. tostring(item.resource) else item.id
 				end,
 				render = function(current: Compose.Readable<Media.AvatarMember>, index: Compose.Readable<number>)
 					return UI.Avatar({

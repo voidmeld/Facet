@@ -71,6 +71,12 @@ return function(ctx: Types.Context, UI: Controls): ()
 				open:set(edge)
 			end
 		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			local edge = read(open, use) :: RowEdge?
+			if edge ~= nil and #actions(edge, use) == 0 then
+				setOpen(nil)
+			end
+		end)
 		if spec.coordinator then
 			Compose.watch(function(use: ComposeTypes.Use)
 				if read(open, use) ~= nil and spec.coordinator:peek() ~= rowToken then

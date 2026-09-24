@@ -183,6 +183,7 @@ function example.build(ctx: any)
 					id = "rating",
 					label = "Rating",
 					width = 144,
+					resizable = false,
 					sortable = true,
 					value = function(item)
 						return ratings[plain(item).id]:peek()

@@ -59,7 +59,7 @@
     "collections-virtual": {
       "mainCases": 214,
       "a": 156,
-      "aWeaker": 127,
+      "aWeaker": 6,
       "b": 3,
       "c": 52,
       "d": 3,
@@ -115,7 +115,7 @@
     "reference-apps": {
       "mainCases": 327,
       "a": 151,
-      "aWeaker": 45,
+      "aWeaker": 2,
       "b": 22,
       "c": 153,
       "d": 1,
@@ -171,7 +171,7 @@
     "replication-server": {
       "mainCases": 55,
       "a": 31,
-      "aWeaker": 14,
+      "aWeaker": 0,
       "b": 0,
       "c": 24,
       "d": 0,
@@ -270,7 +270,7 @@
     "docs-examples-tooling": {
       "mainCases": 498,
       "a": 51,
-      "aWeaker": 11,
+      "aWeaker": 0,
       "b": 0,
       "c": 447,
       "d": 0,
@@ -285,7 +285,7 @@
     "scrolling": {
       "mainCases": 330,
       "a": 93,
-      "aWeaker": 60,
+      "aWeaker": 9,
       "b": 100,
       "c": 137,
       "d": 0,
@@ -313,7 +313,7 @@
     "gallery-examples": {
       "mainCases": 425,
       "a": 237,
-      "aWeaker": 133,
+      "aWeaker": 58,
       "b": 113,
       "c": 66,
       "d": 9,
@@ -327,7 +327,7 @@
     "hud-world": {
       "mainCases": 166,
       "a": 46,
-      "aWeaker": 34,
+      "aWeaker": 30,
       "b": 50,
       "c": 70,
       "d": 0,
@@ -341,7 +341,7 @@
     "tables-rows": {
       "mainCases": 156,
       "a": 97,
-      "aWeaker": 43,
+      "aWeaker": 9,
       "b": 1,
       "c": 58,
       "d": 0,
@@ -384,7 +384,7 @@
     "row-actions": {
       "mainCases": 264,
       "a": 149,
-      "aWeaker": 101,
+      "aWeaker": 19,
       "b": 0,
       "c": 112,
       "d": 3,
@@ -490,7 +490,7 @@
     ],
     "contracts": 2290,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 1725
+    "coveredButWeaker": 1290
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -1964,9 +1964,10 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::updates and removes the standalone consumer through its controls"
+        "native_gallery::native gallery::updates and removes the standalone consumer through its controls",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-01 consumer mounts every part, repaints its count from the cell and tears down to baseline"
       ],
-      "weaker": "Main asserted every part has a non-empty rect, no core error, and a direct signal write repaints the label; candidate checks Bump->'1 tap' and Close removes Panel."
+      "weaker": "The fake engine does not compute layout. No test shows that each consumer part has a non-empty on-screen rectangle."
     },
     {
       "id": "apps2-02",
@@ -2190,9 +2191,9 @@
         "native_games::examples/06 crossword \u2014 commit, refill, undo, budget::A REFUSED SUBMIT CHANGES NOTHING \u2014 every tile stays where the player put it",
         "native_games::examples/06 crossword \u2014 determinism::a fixed script on a fixed seed lands on the same board, score and dump",
         "(44 identically named cases in native_games)",
-        "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack"
-      ],
-      "weaker": "'tears down to a registry baseline' now compares Instance count under the target, not reactive owner size."
+        "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-17 crossword play then dispose returns instances, connections and reactive roots to baseline"
+      ]
     },
     {
       "id": "apps2-18",
@@ -2530,9 +2531,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
-        "native_gallery_collections::native gallery collections::uses mail table activation editing and native row reorder with independent state"
-      ],
-      "weaker": "Covered on generic tables and the mail scenario, not the playlist; the automatic Edit toggle on touch is not asserted."
+        "native_gallery_collections::native gallery collections::uses mail table activation editing and native row reorder with independent state",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-38 selects playlist rows additively by touch and reorders by a touch handle drag"
+      ]
     },
     {
       "id": "apps2-39",
@@ -2545,9 +2546,10 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
-        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input"
+        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-39 grabs, steps and drops a playlist row by gamepad and reaches a swiped tray's Remove"
       ],
-      "weaker": "Not on the playlist; the tray-reachability by Tab is asserted only as focused destructive input."
+      "weaker": "The pad walk from the rating strip into a revealed tray and Tab order use native GuiService geometric navigation. The headless engine cannot solve that walk."
     },
     {
       "id": "apps2-40",
@@ -2561,9 +2563,9 @@
       "candidateCases": [
         "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows",
         "native_gallery_workflows::native gallery workflows::swipes the native mail list and deletes exactly the chosen message",
-        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination"
-      ],
-      "weaker": "Playlist reorder/remove/restore are driven through built.reorder/removeTrack/restore functions rather than gestures; swipe actions are verified on the mail scenario."
+        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-40 reorders, swipes Top and Remove, plays on a plain tap and restores the playlist"
+      ]
     },
     {
       "id": "apps2-41",
@@ -2575,9 +2577,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::retains optimistic settings and rolls back rejected server data"
-      ],
-      "weaker": "Touch is the same Activated path; 'whole accept round trip by touch alone' is driven through Music+Deliver only."
+        "native_gallery::native gallery::retains optimistic settings and rolls back rejected server data",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-41 settings sync applies optimistically, confirms, and rolls back a rejection by touch alone"
+      ]
     },
     {
       "id": "apps2-42",
@@ -2806,9 +2808,10 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets"
+        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-57 variable posts differ in height, never overlap, grow at each text offset and keep the scrolled post"
       ],
-      "weaker": "The 'solver says one declared height is a lie' half is gone; the toggle is checked via extents['1']==84."
+      "weaker": "The uniform 84 px toggle is checked only as slot geometry. No headless test can show that the real text content of a post is taller than its 84 px slot, because that needs engine TextBounds and AutomaticSize."
     },
     {
       "id": "apps2-58",
@@ -2938,9 +2941,11 @@
         "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
         "native_gallery_workflows::native gallery workflows::fits every word keyboard key and crossword rack slot in a narrow row",
         "native_games::examples/05 word game \u2014 the state machine::wins when the solution is submitted, and opens the results card",
-        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too"
-      ],
-      "weaker": "Touch is the same GuiButton.Activated path as pointer in the fake engine; no touch-specific input object is used for the word/tile games."
+        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 word game types, deletes and wins through pointer and touch key activations",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 crossword selects then places, undoes and explains an empty submit through touch",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 match-3 touch taps on two adjacent tiles land on the same board as the swap API"
+      ]
     },
     {
       "id": "apps2-67",
@@ -3113,9 +3118,9 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_registration::native registration and package contract::scaffolds a typed native control with idempotent runtime and public type registration"
-      ],
-      "weaker": "The plan now stamps one source file and three edits; there is no spec or docs stub, and unsafe names (the lower_snake_case assert in tools/lune/scaffold.luau:7) are never exercised."
+        "native_registration::native registration and package contract::scaffolds a typed native control with idempotent runtime and public type registration",
+        "native_parity_weaker_apps::Documentation and tooling::apps2-78 rejects unsafe names and unknown kinds and stamps formatter-clean code for a long name"
+      ]
     },
     {
       "id": "apps2-79",
@@ -3236,9 +3241,10 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::switches the entire gallery catalogue through one native root"
+        "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-86 first paint selects the first demo under Facet Neutral and the sweep reaches every demo"
       ],
-      "weaker": "First paint is asserted only as the initial selection cell; no first-frame theme check."
+      "weaker": "The fake engine does not paint StyleRules. No test shows that the selected pill has a non-empty rectangle and a visible fill on the first frame."
     },
     {
       "id": "apps2-87",
@@ -3452,9 +3458,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
-        "(native_gallery 'mounts <demo.id> with the native runtime' for every catalogue entry)"
-      ],
-      "weaker": "No case asserts the count of ten or id uniqueness explicitly; find(bar, demo.id) would pass with duplicate ids."
+        "(native_gallery 'mounts <demo.id> with the native runtime' for every catalogue entry)",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-102 catalogue offers ten unique demos with real registered modules and one tab each"
+      ]
     },
     {
       "id": "apps2-103",
@@ -3609,9 +3615,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::switches the entire gallery catalogue through one native root"
-      ],
-      "weaker": "Asserts ctx.active per selection, not that exactly one demo screen remains in the tree (retention='top')."
+        "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-114 advancing the picker leaves exactly the named demo mounted and reports failed builds"
+      ]
     },
     {
       "id": "apps2-115",
@@ -3804,9 +3810,15 @@
         "native_outpost_terminal::native outpost terminal::refuses over-budget drafts locally and preserves authority guards",
         "native_outpost_terminal::native outpost terminal::recovers rejected or failed sends and cancels an unanswered request before reengagement",
         "native_outpost_terminal::native outpost terminal::converges full snapshots across skipped revisions without losing independent drafts",
-        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears"
-      ],
-      "weaker": "Main asserted the on-screen outcome sentence says what changed, that every one of the server refusal codes reaches the screen as its own sentence (candidate: 'rate' only), that the draft survives a refusal, and that E..."
+        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 an illegal draft is refused on the terminal and never reaches the wire",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 apply sends one intent with the draft, pending is not success and a second apply is refused",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 a confirmed verdict moves the outpost and the screen says what changed",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 a refusal is shown and the draft survives it",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 every server refusal reaches the screen as its own sentence",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 reset is a server intent and the verdict moves the outpost back",
+        "native_parity_weaker_hud::native parity weaker replication-server::apps2-127 an allocation another player applied lands without touching this draft"
+      ]
     },
     {
       "id": "apps2-128",
@@ -3857,9 +3869,9 @@
       "class": "a",
       "candidateCases": [
         "native_outpost_terminal::native outpost terminal::mounts a real SurfaceGui on the caller runtime and owns cleanup",
-        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears"
-      ],
-      "weaker": "Candidate asserts SurfaceGui Face, CanvasSize.X=640, Active and Adornee; not the Y extent/aspect."
+        "native_outpost_terminal::native outpost terminal::carries native remote verdicts and retires the surface when the console disappears",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps2-130 the terminal surface declares its walk-up contract and a 4:3 console canvas"
+      ]
     },
     {
       "id": "apps2-131",
@@ -4022,9 +4034,9 @@
       "candidateCases": [
         "native_perf_lab::native performance lab::runs bounded row windows and releases the previous workload on selection",
         "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
-        "native_perf::native benchmark workload contract::runs and tears down controlled workload lab-collection-churn"
-      ],
-      "weaker": "No negative control (a declared window fault must fail the mount), no insert/remove/reorder window bound, and no check that scrolling does not grow the reactive owner graph."
+        "native_perf::native benchmark workload contract::runs and tears down controlled workload lab-collection-churn",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-141 windows stay bounded at every size, through sweeps and churn, and scrolling adds no owners"
+      ]
     },
     {
       "id": "apps2-142",
@@ -4387,9 +4399,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings"
-      ],
-      "weaker": "Keyboard route is covered (SelectionGained + NarrowColumn -> 152); the gamepad route relies on the same action's DPad bindings and is never pressed; the playlist hint line and a pointer drag in the playlist itself are..."
+        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-168 pointer keyboard and gamepad resize the same playlist column and the readout follows"
+      ]
     },
     {
       "id": "apps2-169",
@@ -4428,9 +4440,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings"
-      ],
-      "weaker": "'no sort returns the source array untouched' is not asserted."
+        "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-171 the playlist ships unsorted and the Name heading cycles a sort the filter composes with"
+      ]
     },
     {
       "id": "apps2-172",
@@ -4464,9 +4476,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_workflows::native gallery workflows::sorts filters reorders and restores playlist model and width bindings",
-        "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows"
-      ],
-      "weaker": "Restore is asserted to restore a rating, not to set sort back to nil."
+        "native_gallery::native gallery::keeps playlist ratings when filtering and reordering domain rows",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-173 a manual reorder bakes the sort, a refused or empty reorder keeps it, and Restore clears it"
+      ]
     },
     {
       "id": "apps2-174",
@@ -4499,9 +4511,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_tables::native parity weaker tables::apps2-175 the resize grip keeps one trailing edge and sizes its target per input paradigm"
       ],
-      "weaker": "Main pinned the visible grip to the theme's small spacing in every paradigm with a separate 44x44 hit floor; candidate asserts 12px (pointer) and 44px (touch) grip widths."
+      "weaker": "On touch, the grip is 44 px wide but only as tall as the header band, which is 40 px by default. Main required a 44 x 44 hit area. api.md does not promise a 44 px header on touch, and an existing test (native_collections, adapts table row and header height) pins the touch header at 40 px, so the test does not assert a 44 px height. The visible grip at the theme small spacing step is deleted design: the grip is transparent."
     },
     {
       "id": "apps2-176",
@@ -4797,7 +4810,7 @@
       "candidateCases": [
         "native_parity_apps::Quick actions example::opens the quick actions at phone viewports with large text and keeps a wandering ring round"
       ],
-      "weaker": "The fake engine does no layout or text measurement. The test places the explorer and imitates large text through TextBounds; real sizes need Studio.",
+      "weaker": "The fake engine does no layout or text measurement. The existing case places the explorer and imitates large text through TextBounds. Real fitting at phone viewports and large text needs Studio.",
       "apiPromise": "examples/gallery/scenarios/radial_menu.luau steps open/character/move (examples are part of the API).",
       "gap": {
         "description": "Candidate mounts the scenario only at 1280x720; no case opens it at 359x718, 844x390, 320x568, 600x320, with +14 text, or checks the ring does not oscillate into a list while the anchor moves.",
@@ -4816,9 +4829,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_radial_controls::native radial interaction policies::NRAD-13 gallery nearby item uses native owned scene and real actions"
-      ],
-      "weaker": "NRAD-13 asserts the ViewportFrame stage is destroyed on stop, not that setOpen is not called after world dispose when switching to the corner step."
+        "native_radial_controls::native radial interaction policies::NRAD-13 gallery nearby item uses native owned scene and real actions",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-195 leaving the world item disposes its scene at once and leaves no frame work behind"
+      ]
     },
     {
       "id": "apps2-196",
@@ -5267,7 +5280,7 @@
       "candidateCases": [
         "native_parity_apps::Quick actions example::picks the character command ring or list from the viewport height"
       ],
-      "weaker": "The fake engine does no layout. The test sets the viewport sizes that decide ring or list.",
+      "weaker": "The fake engine does no layout. The existing case sets the viewport sizes that decide ring or list; the ring or list fit on the real screen needs Studio.",
       "apiPromise": "examples/gallery/scenarios/radial_menu.luau (examples are part of the API, AGENTS.md); nav_radial layout falls back to list when room < inner+band or a sector < 44px.",
       "gap": {
         "description": "NRAD-13 mounts the gallery radial scenario only at 1280x720 and drives the world step; no candidate case opens the character commands at 960x540/800x600/677x338 or asserts radial at >=540 height and list below.",
@@ -5375,9 +5388,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows"
+        "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-231 a virtual grid inside the collections showcase tabs windows on its pane and scrolls"
       ],
-      "weaker": "Run on the collection scenario directly, not inside the showcase TabView."
+      "weaker": "The test sets the grid AbsoluteWindowSize directly. No headless test can show that the engine gives the grid a window equal to the measured Grid tab pane height inside the nested TabView."
     },
     {
       "id": "apps2-232",
@@ -5533,9 +5547,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "Tested on generic VirtualList/Table fixtures, not a single-selection list re-sorted live."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps2-243 a single-selection list keeps its selection and never re-renders a mounted row through a live re-sort"
+      ]
     },
     {
       "id": "apps2-244",
@@ -5771,9 +5785,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional"
-      ],
-      "weaker": "Hide-on-Saved-shelf and reappearance are not asserted; only short-viewport hide."
+        "native_virtual_monitors::native virtual monitors::NVM-3 adapts chrome and featured content while keeping menu actions functional",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-261 featured carousel opens a game and hides on the Saved shelf and a short viewport"
+      ]
     },
     {
       "id": "apps2-262",
@@ -5830,9 +5844,9 @@
       "class": "a",
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::NVM-8 conversation menus stream progress and expose destructive touch actions",
-        "native_virtual_monitors::native virtual monitors::restores editable streaming drafts and fresh sends with persistent responsive chat prompts"
-      ],
-      "weaker": "Main asserted the progress fill width grows as the reply streams and that Clear is offered from Send's split menu; candidate asserts ReplyProgress exists and Clear from the Conversation menu (Send's menu offers Fresh)."
+        "native_virtual_monitors::native virtual monitors::restores editable streaming drafts and fresh sends with persistent responsive chat prompts",
+        "native_parity_weaker_rows::native parity weaker rows::apps2-265 grows the reply progress, swipes a message away and clears from Send's split menu"
+      ]
     },
     {
       "id": "apps2-266",
@@ -5858,9 +5872,9 @@
       "class": "a",
       "candidateCases": [
         "native_virtual_monitors::native virtual monitors::NVM-11 restores screen scroll from the shared model after presentation remount",
-        "native_virtual_monitors::native virtual monitors::NVM-16 permits only the active presentation to publish native scrolling"
-      ],
-      "weaker": "Main ran each app at three widths; candidate checks one window size per app."
+        "native_virtual_monitors::native virtual monitors::NVM-16 permits only the active presentation to publish native scrolling",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::apps2-267 Discover and Chat scroll positions survive presentation switches at 640/1280/1920"
+      ]
     },
     {
       "id": "apps2-268",
@@ -6090,9 +6104,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_parity::restored native gallery parity::clamps the objective separates crowded markers respects the HUD band and only occludes supplies",
-        "native_gallery_workflows::native gallery workflows::moves and hides native map markers without remounting their controls"
-      ],
-      "weaker": "Candidate fires Move.Activated only (native Activated covers all classes); no initial selection on Move for gamepad/keyboard, no resize to 844x390 followed by a second Move that un-edges the marker."
+        "native_gallery_workflows::native gallery workflows::moves and hides native map markers without remounting their controls",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps2-285 every input class moves the objective marker, including after a resize"
+      ]
     },
     {
       "id": "apps-01",
@@ -6104,9 +6118,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion"
-      ],
-      "weaker": "Only one build is mounted and destroyed; main compared two fresh builds for identical dumps and checked registry-neutral disposal."
+        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion",
+        "native_parity_weaker_apps::Glade::apps-01 builds and mounts without an error, reports identically for two builds and releases everything"
+      ]
     },
     {
       "id": "apps-02",
@@ -6129,9 +6143,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion"
-      ],
-      "weaker": "One order only (refill then bramble); no refill level/state assertion, no per-row ticks, destinations are switched by writing model.section, not through the TabView."
+        "native_reference_apps::native reference applications::keeps Glade care, inventory consumption and task completion",
+        "native_parity_weaker_apps::Glade::apps-03 assigns and refills nectar, consumes a premium satchel, finishes the task in either order and keeps every destination"
+      ]
     },
     {
       "id": "apps-04",
@@ -6625,9 +6639,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean"
-      ],
-      "weaker": "Only checks requires resolve; no check that ref_glade forks nothing, that places map the same folders, or that ref_glade mounts (native_gallery does not mount ref_* scenarios)."
+        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean",
+        "native_parity_weaker_apps::Glade::apps-34 boots the showcase scenario from the one reference module and maps the same folders"
+      ]
     },
     {
       "id": "apps-35",
@@ -6639,9 +6653,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation"
-      ],
-      "weaker": "No assertion of root class or destruction after stop(); main also asserted no core error."
+        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation",
+        "native_parity_weaker_apps::Cartwheel::apps-35 builds and mounts without an error, opens on the dashboard and releases everything on stop"
+      ]
     },
     {
       "id": "apps-36",
@@ -6717,9 +6731,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation"
-      ],
-      "weaker": "Five sections via model.section writes, English only; main visited nine sections in both locales and checked core errors."
+        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation",
+        "native_parity_weaker_apps::Cartwheel::apps-40 mounts every section through its tab button with its own content"
+      ]
     },
     {
       "id": "apps-41",
@@ -6763,9 +6777,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation"
-      ],
-      "weaker": "Asserts status 'done' and collectedBottles()>0 only; main followed bottles into Top Five and the Ledger views."
+        "native_reference_apps::native reference applications::keeps Cartwheel brew commands, rejected purchase retry and guild validation",
+        "native_parity_weaker_apps::Cartwheel::apps-43 collects a seeded Ready brew to Done and carries its bottles into Top Five"
+      ]
     },
     {
       "id": "apps-44",
@@ -6884,9 +6898,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options"
-      ],
-      "weaker": "Generic picker test (touch->Trigger menu, gamepad->segments), not on the Cartwheel screen; desktop pointer/TV cases not separately asserted."
+        "native_navigation::native navigation controls::adapts automatic pickers and updates native segment axis and badges without replacing options",
+        "native_parity_weaker_apps::Cartwheel::apps-51 resolves the unwired timeframe picker as a menu on touch and pointer and a strip on gamepad"
+      ]
     },
     {
       "id": "apps-52",
@@ -7158,9 +7172,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "No core-error or destruction assertion."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-69 builds and mounts without an error with the whole menu visible and releases everything"
+      ]
     },
     {
       "id": "apps-70",
@@ -7284,9 +7298,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Asserts task phase only; no pending label, toast, or 'Order-Placed' presentation / disc flip at t+4s."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-77 shows the pending label, refuses a second press, explains the rejection and reports the pour ready"
+      ]
     },
     {
       "id": "apps-78",
@@ -7319,9 +7333,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Checks unspent 9 after rejection and 0 after redeem; does not assert accrual per confirmed order independently or the redeem verb label."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-79 earns one stamp per confirmed order and redeems a flat ten with the redeem verb"
+      ]
     },
     {
       "id": "apps-80",
@@ -7344,9 +7358,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Asserts unlock flag, not that locked rows enter the list."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-81 keeps locked recipes behind the Blend Book until the second purchase confirms"
+      ]
     },
     {
       "id": "apps-82",
@@ -7359,9 +7373,10 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch"
+        "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch",
+        "native_parity_weaker_apps::Sipworks::apps-82 refuses the Blend Book page purchase while the price loads"
       ],
-      "weaker": "The candidate Blend Book keeps a disabled Buy button while the price loads. Main showed no Buy button.",
+      "weaker": "The Blend Book still mounts a disabled Buy button while the price loads. The main test required no Buy button. The new test shows that the button refuses the purchase and starts no attempt until the price is available. The session-local recipe checks are deleted from the app.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'examine measured recipes and unlock the Blend Book'",
       "gap": {
         "description": "Untested.",
@@ -7413,9 +7428,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Sipworks::reports identically for identical worlds and seeds favorites deterministically"
+        "native_parity_apps::Sipworks::reports identically for identical worlds and seeds favorites deterministically",
+        "native_parity_weaker_apps::Sipworks::apps-85 returns every service to its seeded report on reset and replays the loop identically"
       ],
-      "weaker": "The candidate Sipworks has no reset step. Determinism and seeded favorites are tested; the reset is not.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'deterministic domain services'",
       "gap": {
         "description": "Untested.",
@@ -7523,9 +7538,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock"
-      ],
-      "weaker": "Model phases only; no opening-screen copy or completion UI asserted."
+        "native_reference_apps::native reference applications::keeps Sipworks rejection, stamp earning, free pour and Blend Book unlock",
+        "native_parity_weaker_apps::Sipworks::apps-93 opens one stamp short, explains a refusal, earns the free pour, completes it and keeps every destination"
+      ]
     },
     {
       "id": "apps-94",
@@ -7538,9 +7553,9 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Sipworks::names the task blend on its action, orders that blend and ends the task after the free pour"
+        "native_parity_apps::Sipworks::names the task blend on its action, orders that blend and ends the task after the free pour",
+        "native_parity_weaker_apps::Sipworks::apps-94 opens the named task blend through its own row and resets every observable after the free pour"
       ],
-      "weaker": "The candidate task action orders its named blend directly and the app has no Serve another customer reset. The row-open path and the reset are not tested.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section",
       "gap": {
         "description": "Untested.",
@@ -7591,9 +7606,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean"
-      ],
-      "weaker": "Require resolution only; ref_sipworks is not mounted by any candidate case."
+        "scenario_require_paths::scenario_require_paths: every gallery/scenario/reference require resolves live::the shipped tree is clean",
+        "native_parity_weaker_apps::Sipworks::apps-97 boots the showcase scenario from the one reference module and maps the same folders"
+      ]
     },
     {
       "id": "apps-98",
@@ -7616,9 +7631,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Mount only; four sections not asserted."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-99 mounts the home body with all four sections and their tiles without an error"
+      ]
     },
     {
       "id": "apps-100",
@@ -7674,9 +7689,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Only asserts a 'SearchResults' node exists; no filter correctness (title/creator) or clear restoration."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-103 filters by title and creator, says when nothing matches and restores the feed on clear"
+      ]
     },
     {
       "id": "apps-104",
@@ -7720,9 +7735,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Status pending/rejected asserted; button disabled state and unchanged feed contents not asserted."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-106 disables Refresh while pending, reseeds on confirm and keeps the feed on a rejection"
+      ]
     },
     {
       "id": "apps-107",
@@ -7734,9 +7749,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation"
-      ],
-      "weaker": "Asserts continued[...] only; detail modal presentation/dismissal not asserted."
+        "native_reference_apps::native reference applications::keeps Foyer search, pending/rejected refresh, visit history and navigation",
+        "native_parity_weaker_apps::Foyer::apps-107 presents the tile detail, visits into Keep playing and dismisses the detail"
+      ]
     },
     {
       "id": "apps-108",
@@ -7955,9 +7970,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "Asserted through VirtualList, not Compose.keyed directly; handler reading latest item not asserted."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_virtual::native parity weaker virtual::apps-122 Compose.keyed rows keep their identity and hand handlers the latest item"
+      ]
     },
     {
       "id": "apps-123",
@@ -8881,9 +8896,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::switches the entire gallery catalogue through one native root"
+        "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
+        "native_parity_weaker_gallery::native parity weaker gallery::apps-193 collections is the next peer tab after all controls in the one demo list"
       ],
-      "weaker": "Catalogue switched programmatically, not reached by navigation."
+      "weaker": "The fake engine does not run gamepad navigation. No test shows that one D-pad down press from the All controls tab selects the Collections tab."
     },
     {
       "id": "apps-194",
@@ -9058,9 +9074,12 @@
       "class": "a",
       "candidateCases": [
         "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
-        "native_hud::native HUD::uses native body bounds after chrome layout and disconnects on disposal"
+        "native_hud::native HUD::uses native body bounds after chrome layout and disconnects on disposal",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 unbatched viewport and native body facts settle where a single change lands",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 the URL bar takes exactly its drawn height and only the tail of the ladder leaves"
       ],
-      "weaker": "Compares per-zone form names (report().forms), not solved zone rectangles; rank order of what leaves is not asserted."
+      "weaker": "The test compares every written property of the whole painted tree, not only form names. It does not compare solved zone rectangles, because the engine computes them from UIGridLayout, UIFlexItem and AutomaticSize. In the engine, the body also loses the list padding (8 px) with the 64 px bar, and only the engine can show that."
     },
     {
       "id": "apps-207",
@@ -9107,9 +9126,10 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes"
+        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-210 URL bar and rotation sequences and four cycles land on the fresh landscape tree"
       ],
-      "weaker": "Forms only, not geometry."
+      "weaker": "Every URL-bar position and four rotation cycles are compared by the whole painted tree against the fresh landscape mount. Engine rectangles are not compared."
     },
     {
       "id": "apps-211",
@@ -9160,9 +9180,10 @@
       "class": "a",
       "candidateCases": [
         "native_hud::native HUD::uses native body bounds after chrome layout and disconnects on disposal",
-        "native_hud::native HUD::recovers whole simplified zones in overflow and shares their live model"
+        "native_hud::native HUD::recovers whole simplified zones in overflow and shares their live model",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-214 a height shrink degrades zones in ladder order and re-solves in place"
       ],
-      "weaker": "Forms change with AbsoluteSize; strict rank ordering, column containment and no-overlap are not asserted."
+      "weaker": "Monotone degradation, the exact ladder order, lane containment and in-place re-solve (same lane, region and ClockFull instances) are asserted, and the grid declaration tiles the width exactly. Absolute no-overlap between zone rectangles needs engine layout."
     },
     {
       "id": "apps-215",
@@ -9174,9 +9195,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::updates segmented health and full, compact and tiny numeric timer formats"
-      ],
-      "weaker": "Timer text/health segments asserted; icon disc buttons not."
+        "native_hud::native HUD::updates segmented health and full, compact and tiny numeric timer formats",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-215 the timer is a live ring, the health bar is bound and the round buttons are icon discs"
+      ]
     },
     {
       "id": "apps-216",
@@ -9211,9 +9232,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes"
+        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree"
       ],
-      "weaker": "Form comparison only; no painted-tree comparison."
+      "weaker": "The painted tree (every written property, tags and style properties) is compared with a fresh mount, and the round strip is present, visible and opens the sink at the end. Engine rectangles are not compared."
     },
     {
       "id": "apps-219",
@@ -9248,9 +9270,13 @@
       "class": "a",
       "candidateCases": [
         "native_hud::native HUD::keeps native notification text valid while hidden shown and dismissed",
-        "native_hud::native HUD::keeps complete task rewards, weapon ammunition, scores and telemetry"
+        "native_hud::native HUD::keeps complete task rewards, weapon ammunition, scores and telemetry",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Gamepad uses the HUD actions and recovers focus after a notification",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 KeyboardAndMouse uses the HUD actions and recovers focus after a notification",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Touch uses the HUD actions and recovers focus after a notification",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-221 Mouse uses the HUD actions and recovers focus after a notification"
       ],
-      "weaker": "Actions fired via Activated only; per-input-class focus recovery after the notice is not asserted."
+      "weaker": "All four input classes open the HUD actions menu, apply damage, heal and notice, and gamepad/keyboard selection returns to the trigger after each item and after ButtonB/Escape cancel; touch and mouse leave no selection. The test does not prove that the notice rectangle does not overlap a zone, because that needs engine layout."
     },
     {
       "id": "apps-222",
@@ -9297,9 +9323,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "VirtualList window reacts to CanvasPosition; not a general ScrollingFrame observer."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::apps-225 engine scrolling reaches the collection observer until teardown"
+      ]
     },
     {
       "id": "apps-226",
@@ -9369,9 +9395,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "Snap animation, not named-destination travel."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::apps-231 snap travel yields to native scrolling and never resumes toward its old target"
+      ]
     },
     {
       "id": "apps-232",
@@ -9405,9 +9431,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes"
+        "native_hud::native HUD::restores every resolution after repeated rotations and URL bar episodes",
+        "native_parity_weaker_hud::native parity weaker hud-world::apps-206 apps-234 apps-218 every A to B to A path with a URL bar episode and the sink paints the fresh tree"
       ],
-      "weaker": "Compares zone form names, not geometry."
+      "weaker": "All twelve A->B->A paths with a URL bar episode compare the whole painted tree and prove the sink stays reachable. Engine rectangles are not compared."
     },
     {
       "id": "apps-235",
@@ -9503,9 +9530,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input"
-      ],
-      "weaker": "Authored env override is gone; pinned height precedence not asserted."
+        "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input",
+        "native_parity_weaker_tables::native parity weaker tables::apps-242 touch and gamepad table rows clear the 44 floor with no wiring and a pinned height wins"
+      ]
     },
     {
       "id": "apps-243",
@@ -9828,9 +9855,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "NC21 asserts only that the canvas moves more than 200 px during a captured pointer drag and that the commit reaches an offscreen slot. No test asserts the clamp at the canvas end or at zero, that short content stays s..."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-03 autoscroll clamps at both canvas ends, stays armed and stops with the drag"
+      ]
     },
     {
       "id": "collections-04",
@@ -9875,9 +9902,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions"
-      ],
-      "weaker": "The candidate uses a Compose cell, not a theme metric."
+        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-07 a gap bound to a theme package metric moves placements on a theme swap without a rebuild"
+      ]
     },
     {
       "id": "collections-08",
@@ -9902,9 +9929,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "Pruning, the FacetSelected attribute and single/multi selection are asserted. No test asserts the default 'none' when the list has no selection options (no RowHit), that selection survives a re-sort, or that a list wi..."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-09 a list without selection options declares no row hit and single selection survives a re-sort"
+      ]
     },
     {
       "id": "collections-10",
@@ -9929,9 +9956,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
         "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_rows::native parity weaker rows::collections-11 reorders list rows by pointer both ways and leaves plain rows to native panning"
       ],
-      "weaker": "The candidate reorders only through the Move handle's UIDragDetector. No test asserts that a plain non-reorderable list has no handle, or that touch on the row body pans natively."
+      "weaker": "A touch on the row body must pan the native ScrollingFrame. The headless test proves only that no UIDragDetector exists outside the Move handle; the engine owns the pan."
     },
     {
       "id": "collections-12",
@@ -9979,9 +10007,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "Only the captured pointer path is asserted. These are not asserted: short content never arms, a keyboard (armed) session never autoscrolls (the src needs move.pointer), and a plain list has no autoscroll."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-15 edge autoscroll arms only for a captured pointer drag with room to scroll"
+      ]
     },
     {
       "id": "collections-16",
@@ -10031,9 +10059,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "The per-row extent comes from the `measured` map (NC3), and the viewport from native AbsoluteWindowSize (NC1). No test changes a Readable itemSize, and no test resizes the viewport after the first geometry."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-19 a readable itemSize and a resized viewport re-window in place"
+      ]
     },
     {
       "id": "collections-20",
@@ -10045,9 +10073,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::follows appended rows only while native viewport stays at the end"
-      ],
-      "weaker": "The tail pin and staying put after scrolling away are asserted. No test asserts that a non-following list does not move when rows are appended."
+        "native_collections::Compose native collections::follows appended rows only while native viewport stays at the end",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-20 a list that does not follow never moves on growth and a follower rejoins inside its threshold"
+      ]
     },
     {
       "id": "collections-21",
@@ -10207,9 +10235,9 @@
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
         "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows",
-        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions"
-      ],
-      "weaker": "The vertical list and Table window slides are asserted. For the sideways VirtualGrid, only CanvasPosition.X > 0 is asserted (GC4), not the window change."
+        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-32 list, both grid axes and table slide their windows from engine scrolling alone"
+      ]
     },
     {
       "id": "collections-33",
@@ -10257,9 +10285,9 @@
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
         "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
-        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms"
-      ],
-      "weaker": "NC7 and NC15 assert cell retention across sort, resize and collapse. For 'releases action rows', only the Table census through conformance (no rowActions) is checked."
+        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_weaker_tables::native parity weaker tables::collections-36 Table keeps cell state, windows large data, prunes selection and releases action rows"
+      ]
     },
     {
       "id": "collections-37",
@@ -10271,9 +10299,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "One NarrowColumn press is asserted (160 to 152). No test asserts WidenColumn, that SelectionLost releases the grip, the minWidth clamp from keys, or that no key is bound while focus is off a resizable column."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_tables::native parity weaker tables::collections-37 a focused grip widens narrows clamps and releases its keys"
+      ]
     },
     {
       "id": "collections-38",
@@ -10491,9 +10519,11 @@
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
-        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal"
+        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
+        "native_parity_weaker_rows::native parity weaker rows::collections-53 passes through without actions, reveals only filled edges and tracks the tray",
+        "native_parity_weaker_rows::native parity weaker rows::collections-53 animates a reveal over frames, snaps under reduced motion and leaks nothing"
       ],
-      "weaker": "NC18 asserts the tray width tracking a 12 px drag and an icon image. NC20 asserts TextBounds enlarging and shrinking the tray. No test asserts no-action passthrough, a label-only action, _open on an empty edge, or fra..."
+      "weaker": "Tray button width re-derivation after a preferred text size change needs the engine to recompute TextBounds. TextBounds-driven tray growth is asserted in native_collections."
     },
     {
       "id": "collections-54",
@@ -10543,9 +10573,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
-        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination"
-      ],
-      "weaker": "Pointer activation of a tray button is asserted (NC17). Touch is the same GuiButton.Activated path, and no touch-specific test exists."
+        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
+        "native_parity_weaker_rows::native parity weaker rows::collections-57 runs a tray action once from touch, keyboard and gamepad and closes the tray"
+      ]
     },
     {
       "id": "collections-58",
@@ -10597,9 +10627,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
-        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route"
-      ],
-      "weaker": "No test asserts that the minus is absent when editing is never wired, or that the minus label mirrors the destructive action's label."
+        "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
+        "native_parity_weaker_rows::native parity weaker rows::collections-61 shows the minus only while editing a destructive row and deletes once from it"
+      ]
     },
     {
       "id": "collections-62",
@@ -10647,9 +10677,9 @@
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
-        "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys"
-      ],
-      "weaker": "The hosted engine is gone. The same RowActions control composes into rows (NC17), but the gesture tests run on a standalone RowActions."
+        "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
+        "native_parity_weaker_rows::native parity weaker rows::collections-65 slides, opens, commits, closes and coordinates swipes on real table rows"
+      ]
     },
     {
       "id": "collections-66",
@@ -10672,9 +10702,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input"
-      ],
-      "weaker": "Asserted on a standalone RowActions only. There is no test for Table editing forwarded into row actions."
+        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
+        "native_parity_weaker_rows::native parity weaker rows::collections-67 forwards table editing into hosted rows and deletes the row its minus belongs to"
+      ]
     },
     {
       "id": "collections-68",
@@ -10798,9 +10828,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination"
-      ],
-      "weaker": "Asserted with a manual coordinator:set, not with two real rows."
+        "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
+        "native_parity_weaker_rows::native parity weaker rows::collections-76 lets one of two real list rows stay open and releases the claim on removal"
+      ]
     },
     {
       "id": "collections-77",
@@ -10984,9 +11014,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal"
-      ],
-      "weaker": "Only a second activation during a pending departure is asserted, not close() during the commit."
+        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
+        "native_parity_weaker_rows::native parity weaker rows::collections-88 keeps an irrevocable commit running through close attempts and new gestures"
+      ]
     },
     {
       "id": "collections-89",
@@ -11162,9 +11192,10 @@
       "candidateCases": [
         "native_gallery_collections::native gallery collections::shows seeded mail state and applies idempotent read visible flag and chosen deletion",
         "native_gallery_workflows::native gallery workflows::swipes the native mail list and deletes exactly the chosen message",
-        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input"
+        "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
+        "native_parity_weaker_gallery::native parity weaker gallery::collections-101 gallery mail rows open one at a time, close explicitly and delete from the keyboard"
       ],
-      "weaker": "The scenario tests do not assert explicit close, one-open across rows, or keyboard Delete in the gallery. Those are asserted only at control level."
+      "weaker": "The fake engine does not hit-test. No test shows that a real drag on the mail row content Button reaches the row swipe detector."
     },
     {
       "id": "collections-102",
@@ -11270,9 +11301,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::shows seeded mail state and applies idempotent read visible flag and chosen deletion"
-      ],
-      "weaker": "Mounted through build(ctx) with the gallery test ctx, not the picker ctx."
+        "native_gallery_collections::native gallery collections::shows seeded mail state and applies idempotent read visible flag and chosen deletion",
+        "native_parity_weaker_gallery::native parity weaker gallery::collections-109 the gallery page context builds, ticks and disposes the mail rows"
+      ]
     },
     {
       "id": "collections-110",
@@ -11370,9 +11401,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet"
-      ],
-      "weaker": "For the pinned row, only Move.Interactable=false is asserted, not that the order is unchanged after a drag. Protected delete asserts Interactable=false and the row count."
+        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
+        "native_parity_weaker_rows::native parity weaker rows::collections-116 refuses locked selection, pinned movement and protected deletion in the run sheet"
+      ]
     },
     {
       "id": "collections-117",
@@ -11422,9 +11453,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "Only multi range selection. No single-mode refusal assertion."
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_rows::native parity weaker rows::collections-120 refuses unselectable rows in single mode, refuses pinned grabs and keeps absent predicates open"
+      ]
     },
     {
       "id": "collections-121",
@@ -11459,9 +11490,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::cancels native row gestures and keeps destructive opt-outs behind every action route",
         "native_collections::Compose native collections::respects edge full-swipe policy, edit affordances and focused destructive input",
-        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet"
-      ],
-      "weaker": "Asserted on a standalone RowActions (per-action enabled=false replaces rowDeletable), not through Table.rowActions or VirtualList rows. For 'still flags/archives', the per-action scope is not asserted."
+        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
+        "native_parity_weaker_rows::native parity weaker rows::collections-122 protects deletion on every route through table and list hosts but keeps other actions"
+      ]
     },
     {
       "id": "collections-123",
@@ -11503,9 +11534,9 @@
       "mainCases": 9,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "No test asserts: settling at the list end, content that fits the viewport never moving, a hard fling not pulled back, or a settle already on a boundary asking for no travel."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-125 snap resolves nearest, flick, fling, end and fitting content boundaries"
+      ]
     },
     {
       "id": "collections-126",
@@ -11529,9 +11560,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "The 'framework write is a rest' and 'anchor correction' cases are only implied (frameworkWrite() cancels). Default none is shown only by lists without snap that keep their offsets."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-127 engine-driven snap settles, travels, holds, yields and treats framework writes as rests"
+      ]
     },
     {
       "id": "collections-128",
@@ -11626,9 +11657,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::adapts table row and header height from native text bounds and preferred input",
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms"
+        "native_conformance::native constructor conformance::Table preserves caller properties refs events and cleanup in both constructor forms",
+        "native_parity_weaker_tables::native parity weaker tables::collections-133 fill and fixed columns align in every row, rows take variable heights, dispose frees"
       ],
-      "weaker": "No test compares header cell and body cell spans."
+      "weaker": "The test asserts the declared header and cell spans for a fill and a fixed column in every row, variable row heights, and a clean dispose. The fake engine has no layout solver, so the solved pixel X and width of each header cell against its body cells are not asserted."
     },
     {
       "id": "collections-134",
@@ -11641,9 +11673,10 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span"
+        "native_parity_apps::Collections::offsets the header by the reorder gutter and the scroll and matches the row cell span",
+        "native_parity_weaker_tables::native parity weaker tables::collections-134 the header follows the reorder and edit gutters so columns stay aligned"
       ],
-      "weaker": "The fake engine has no layout solver. The test compares the declared header and cell origins, widths and flex settings, not solved pixels.",
+      "weaker": "The test asserts the declared header origin and width against the declared row cell span with the reorder gutter, the row-action edit gutter, and a horizontal scroll. The solved pixels are not asserted because the fake engine has no layout solver. The separate selection-circle gutter is deleted design.",
       "apiPromise": "src collection_table.luau: header Position = reorderGutter - CanvasPosition.X; width minus disclosureWidth",
       "gap": {
         "description": "Untested alignment in edit (reorderable) mode and with the disclosure column.",
@@ -11697,9 +11730,9 @@
         "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
         "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
         "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
-        "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys"
-      ],
-      "weaker": "Single-mode replacement on a Table is only implied by the RunSheet test. Keyboard selection relies on native activation."
+        "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
+        "native_parity_weaker_tables::native parity weaker tables::collections-137 single replaces, multi toggles additively and keyboard focus walks and selects"
+      ]
     },
     {
       "id": "collections-138",
@@ -11774,9 +11807,9 @@
         "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
         "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
-        "native_collections::Compose native collections::lets domain callbacks reject table selection, sorting and resize requests"
-      ],
-      "weaker": "Only the ascending sort is asserted. The descending toggle and the resulting row order are not asserted (a probe confirmed they work). Coercion of numeric values is not asserted."
+        "native_collections::Compose native collections::lets domain callbacks reject table selection, sorting and resize requests",
+        "native_parity_weaker_tables::native parity weaker tables::collections-142 columns own value and render cells, coerce numbers and cycle the header sort"
+      ]
     },
     {
       "id": "collections-143",
@@ -11799,9 +11832,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions"
-      ],
-      "weaker": "Gap is asserted on VirtualGrid, not on Table, and not with the drop indicator."
+        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
+        "native_parity_weaker_tables::native parity weaker tables::collections-144 a Table row gap spaces the rows and the drop line follows the gap"
+      ]
     },
     {
       "id": "collections-145",
@@ -11815,9 +11848,10 @@
       "candidateCases": [
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
-        "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows"
-      ],
-      "weaker": "The system-interrupt (WindowFocusReleased) and screen-dismiss teardown are not asserted, nor is the absence of Move on non-reorderable tables."
+        "native_collections::Compose native collections::shares list selection and reorder policies and fails closed for protected rows",
+        "native_parity_weaker_rows::native parity weaker rows::collections-145 keeps the dragged row in place, drags single or block rows and ignores no-op drops",
+        "native_parity_weaker_rows::native parity weaker rows::collections-145 cancels a table drag on focus loss or dismissal and gives non-reorderable tables no drag"
+      ]
     },
     {
       "id": "collections-146",
@@ -11890,9 +11924,9 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection"
-      ],
-      "weaker": "Only the maxWidth clamp is asserted. There is no minWidth clamp and no assertion that a non-resizable column has no grip."
+        "native_collections::Compose native collections::keeps table cells alive across sort and native column resize and prunes selection",
+        "native_parity_weaker_tables::native parity weaker tables::collections-151 only resizable columns grow a grip that resizes and clamps both bounds"
+      ]
     },
     {
       "id": "collections-152",
@@ -12052,9 +12086,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "There is no Table gap test."
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_tables::native parity weaker tables::collections-164 a numeric Table gap drives row pitch and the drop slot arithmetic"
+      ]
     },
     {
       "id": "collections-165",
@@ -12101,9 +12135,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet"
-      ],
-      "weaker": "Only indirect: RunSheet finds a 'delete' action inside a Table row."
+        "native_gallery_workflows::native gallery workflows::honors locked selection pinned movement and protected deletion in RunSheet",
+        "native_parity_weaker_rows::native parity weaker rows::collections-168 wraps only table rows whose callback returns actions"
+      ]
     },
     {
       "id": "collections-169",
@@ -12217,9 +12251,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
-      ],
-      "weaker": "Asserted on VirtualList. Table body focus scroll is not asserted."
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-176 table body focus scrolls rows into view minimally in both directions"
+      ]
     },
     {
       "id": "collections-177",
@@ -12305,9 +12339,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "Only that a commit happens. It is not asserted that scrolling stops after the release."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-183 table autoscroll needs a drag and releases with the drop"
+      ]
     },
     {
       "id": "collections-184",
@@ -12574,9 +12608,10 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state"
+        "native_collections::Compose native collections::keeps block tables fully mounted and discloses collapsed columns without losing cell state",
+        "native_parity_weaker_tables::native parity weaker tables::collections-203 every collapsed width carries a More disclosure on each row that opens"
       ],
-      "weaker": "One collapse width only."
+      "weaker": "The test asserts that at every width from 20 to 460 with committed widths, when a header column collapses each row carries a More disclosure and the header and cells agree, and that the disclosure opens with the hidden value. The absolute touch height of the disclosure button is not asserted because the fake engine has no layout solver."
     },
     {
       "id": "collections-204",
@@ -12622,9 +12657,10 @@
       "auditClass": "d",
       "class": "a",
       "candidateCases": [
-        "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages"
+        "native_parity_apps::Collections::gives header and body cells the same column span under the neutral and ornate packages",
+        "native_parity_weaker_tables::native parity weaker tables::collections-207 header and body cells span the same columns in every shape and shipped package"
       ],
-      "weaker": "The fake engine has no layout solver. The test compares the declared column span under two packages, not solved X positions.",
+      "weaker": "The test asserts the declared header and cell spans in the viewport, block, reorder and collapsed shapes under the neutral package and every shippable reference package. The solved X positions are not asserted because the fake engine has no layout solver.",
       "apiPromise": "api.md Table column widths; header and body share columnFrame (collection_table.luau)",
       "gap": {
         "description": "No span comparison exists under any package.",
@@ -12646,9 +12682,9 @@
         "native_gallery_collections::native gallery collections::reveals distant entrants selects an unmounted range and moves keyed rows",
         "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size"
-      ],
-      "weaker": "No test asserts the overscan row below the viewport or the Table CanvasSize."
+        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-208 a virtual table mounts the viewport plus overscan below, spends the gap once and sizes its canvas"
+      ]
     },
     {
       "id": "collections-209",
@@ -12839,9 +12875,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent"
-      ],
-      "weaker": "The extent and placements are asserted. Window line membership and a tall single line are not."
+        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-222 a grid windows whole lines, a tall line alone, and a short last line keeps its lanes"
+      ]
     },
     {
       "id": "collections-223",
@@ -12854,9 +12890,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
-        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size"
-      ],
-      "weaker": "GC4 asserts retained < 100 for 5000 items. PP2 is list-only."
+        "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-223 a grid builds exactly the windowed cells and the same count for 100 and 10000 items"
+      ]
     },
     {
       "id": "collections-224",
@@ -12975,9 +13011,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
-        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions"
-      ],
-      "weaker": "The window change itself is not asserted for grids."
+        "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-231 engine scroll slides a vertical grid window to whole lines at canvas offsets"
+      ]
     },
     {
       "id": "collections-232",
@@ -13107,9 +13143,9 @@
       "candidateCases": [
         "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
-        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection"
-      ],
-      "weaker": "CanvasSize along X and lane heights are not asserted."
+        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-240 a horizontal grid sizes its x canvas, stacks lines rightward and splits lanes by the cross extent"
+      ]
     },
     {
       "id": "collections-241",
@@ -13133,9 +13169,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery_collections::native gallery collections::changes grid columns and rendered text through relevant native toolbar actions",
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "Only CanvasPosition.X is asserted."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-242 native X scroll slides a horizontal grid window along X"
+      ]
     },
     {
       "id": "collections-243",
@@ -13237,9 +13273,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection",
-        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input"
-      ],
-      "weaker": "CanvasSize along X and window membership are not asserted directly."
+        "native_collections::Compose native collections::snaps native scrolling to Compose measured boundaries and yields animation to input",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-249 a horizontal list sizes its x canvas, windows on the pitch and keeps focus visible along x"
+      ]
     },
     {
       "id": "collections-250",
@@ -13384,9 +13420,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
-      ],
-      "weaker": "The deprecated-spelling half is retired."
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-258 a list that declares no direction is vertical end to end"
+      ]
     },
     {
       "id": "collections-259",
@@ -13437,9 +13473,10 @@
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
         "native_collections::Compose native collections::defers initial offscreen focus until native geometry and suppresses navigation while editing",
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
-        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
+        "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::collections-262 list keys bind arrows and D-pad to one action that steps and reveals rows"
       ],
-      "weaker": "The tests fire the named InputAction Pressed. Real KeyCode/DPad bindings are not exercised."
+      "weaker": "The case checks that each Collection action binds exactly the arrow key and its D-pad KeyCode to one InputAction. The fake engine cannot send a real KeyCode through the InputContext, so engine dispatch needs a Studio check."
     },
     {
       "id": "collections-263",
@@ -13610,9 +13647,9 @@
         "native_collections::Compose native collections::observes automatic row sizes without overwriting content geometry",
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
-        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets"
-      ],
-      "weaker": "Automatic measurement on a horizontal list (AbsoluteSize.X) is not asserted."
+        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-274 a horizontal measured list sizes each item from its native width and shrinks back"
+      ]
     },
     {
       "id": "collections-275",
@@ -13702,9 +13739,10 @@
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
         "native_collections::Compose native collections::locks vertical gestures, opens short velocity flicks and cancels disabled drags",
         "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "Only NC17 composes RowActions inside a VirtualList row. The other behaviors are asserted on a standalone RowActions."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_rows::native parity weaker rows::collections-281 locks, coordinates, releases, fires once and follows reactive actions inside list rows",
+        "native_parity_weaker_rows::native parity weaker rows::collections-281 keeps a model-owned open row slid when virtualization remounts it"
+      ]
     },
     {
       "id": "collections-282",
@@ -13751,9 +13789,9 @@
         "native_collections::Compose native collections::measures localized row action labels and reveals truncated visible table values",
         "native_collections::Compose native collections::drops removed measurements and refreshes current-item row actions under stable keys",
         "native_collections::Compose native collections::uses native drag to reveal and invoke row actions with cancellation and coordination",
-        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal"
-      ],
-      "weaker": "The 'row is reusable after commit' half fails: see the kept-row bug."
+        "native_collections::Compose native collections::commits a destructive action once after Compose departure and cancels on disposal",
+        "native_parity_weaker_rows::native parity weaker rows::collections-284 measures, taps once, hands off with motion and collapses only the committed list row"
+      ]
     },
     {
       "id": "collections-285",
@@ -13916,9 +13954,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "Keep-visible and drop hit-testing with a non-zero gap are not asserted."
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-296 a gap stays out of the row for keep-visible, drop hit tests and the bounded window"
+      ]
     },
     {
       "id": "collections-297",
@@ -13952,9 +13990,9 @@
       "mainCases": 5,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions"
-      ],
-      "weaker": "CanvasSize and keep-visible with ragged rows are not asserted."
+        "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-299 ragged rows get their own boxes at running offsets, a full canvas and own-extent keep-visible"
+      ]
     },
     {
       "id": "collections-300",
@@ -13966,9 +14004,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets"
-      ],
-      "weaker": "There is no single tall row case."
+        "native_gallery_collections::native gallery collections::keeps variable and native measured posts anchored across all text offsets",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-300 a viewport inside one tall row windows that row alone and ragged windows stay bounded"
+      ]
     },
     {
       "id": "collections-301",
@@ -14053,9 +14091,9 @@
         "native_perf_principles::native performance invariants::scroll mountwork is independent of logical list size",
         "native_perf_principles::native performance invariants::idle heartbeat and identical state perform no native writes",
         "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice",
-        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds"
-      ],
-      "weaker": "The claim that a same-window scroll writes nothing is not asserted directly: PP2 compares across sizes. Async resource cancellation is covered only through Compose.cleanup counts."
+        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds",
+        "native_parity_weaker_virtual::native parity weaker virtual::collections-305 same-window scrolls and off-window edits write nothing, re-entry is fresh and async loads cancel"
+      ]
     },
     {
       "id": "collections-306",
@@ -14145,9 +14183,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
-        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll"
-      ],
-      "weaker": "Keyboard/gamepad reorder is a Table/VirtualList feature now, not a presenter navigateIntercept; covered in collections tests only."
+        "native_collections::Compose native collections::keeps native reorder capture and keyboard drop alive across offscreen autoscroll",
+        "native_parity_weaker_tables::native parity weaker tables::inputs-06 a gamepad grab moves a row with the D-pad and drops it with A"
+      ]
     },
     {
       "id": "inputs-07",
@@ -14873,9 +14911,9 @@
       "mainCases": 4,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::removes keyed chips toward the next then previous native target and caller fallback"
-      ],
-      "weaker": "Remove is fired via Activated only; body inertness and per-input paths not asserted."
+        "native_inputs::native input controls::removes keyed chips toward the next then previous native target and caller fallback",
+        "native_parity_weaker_rows::native parity weaker rows::inputs-58 keeps a removable chip body inert and removes once through every input"
+      ]
     },
     {
       "id": "inputs-59",
@@ -15147,9 +15185,10 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::requests native haptics and releases effects when the screen closes"
+        "native_gallery::native gallery::requests native haptics and releases effects when the screen closes",
+        "native_parity_weaker_gallery::native parity weaker gallery::inputs-77 sensory demo requests press before release, toggles off and on, remounts on and tears down"
       ],
-      "weaker": "Single mount; remount-restores-ON and PRESS-then-RELEASE ordering are not asserted; physical motor output is a pending live risk in parity_blockers.json."
+      "weaker": "Nothing headless can observe the physical motor output. The demo reports motorConfirmed=false."
     },
     {
       "id": "inputs-78",
@@ -18107,9 +18146,9 @@
         "native_collections::Compose native collections::follows appended rows only while native viewport stays at the end",
         "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent",
         "native_collections::Compose native collections::defers initial offscreen focus until native geometry and suppresses navigation while editing",
-        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds"
-      ],
-      "weaker": "Main swept 3 row heights x 2 viewports for anchor restore; candidate uses single fixtures."
+        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech1-72 measured feeds restore their anchor across widths and offsets, and grids keep cells and anchor on reflow"
+      ]
     },
     {
       "id": "mech1-73",
@@ -18168,9 +18207,10 @@
         "native_documentation::native documentation::executes README.md snippet 1",
         "native_documentation::native documentation::executes docs/guide/03-getting-started.md snippet 1",
         "native_documentation::native documentation::executes docs/guide/15-components.md snippet 1",
-        "native_documentation::native documentation::executes docs/guide/15-components.md snippet 2"
-      ],
-      "weaker": "Snippets execute; resource closure not asserted per snippet."
+        "native_documentation::native documentation::executes docs/guide/15-components.md snippet 2",
+        "native_parity_weaker_apps::Documentation and tooling::mech1-76 runs the README and getting-started counters and closes every resource on script teardown",
+        "native_parity_weaker_apps::Documentation and tooling::mech1-76 runs both component guide snippets and releases their Compose state and nodes"
+      ]
     },
     {
       "id": "mech1-77",
@@ -18448,9 +18488,9 @@
       "class": "a",
       "candidateCases": [
         "native_documentation::native documentation::executes docs/guide/15-adaptive-recipes.md snippet 2",
-        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent"
-      ],
-      "weaker": "Recipe executes headlessly without a width sweep; responsive columns tested once (4->5)."
+        "native_collections::Compose native collections::uses new grid neighbors when responsive columns change without changing total extent",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech1-96 recipe columns follow measured width across a sweep and container bands follow each panel width"
+      ]
     },
     {
       "id": "mech1-97",
@@ -19297,9 +19337,10 @@
       "mainCases": 17,
       "class": "a",
       "candidateCases": [
-        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together"
+        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together",
+        "native_parity_weaker_gallery::native parity weaker gallery::mech2-25 nested tint follows the package, disable blocks every input class and moves focus"
       ],
-      "weaker": "one case, one input path (fired Activated + SelectedObject); no per-paradigm pointer/touch/gamepad/Tab traversal, no pixel_quest package arm, no theme-dim assertion, no mount-identity check on blend"
+      "weaker": "The fake engine does not run Tab or D-pad traversal. No test shows that the engine skips Go and InnerGo when the panel is off. The fixture now dims its panel labels with a literal TextTransparency; only the controls dim through the theme tag."
     },
     {
       "id": "mech2-26",
@@ -19311,9 +19352,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together"
-      ],
-      "weaker": "close() called but no census asserted"
+        "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together",
+        "native_parity_weaker_gallery::native parity weaker gallery::mech2-26 inherited subtree teardown with the panel on or off leaves nothing live"
+      ]
     },
     {
       "id": "mech2-27",
@@ -19359,9 +19400,9 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds"
-      ],
-      "weaker": "no byte-identical differential against a non-pooled run"
+        "native_stress::native stress invariants::preserves keyed row content and bounded retention across 400 replayable mutation seeds",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech2-30 pooled rows are indistinguishable from unpooled rows at every scroll step and the pool stays bounded"
+      ]
     },
     {
       "id": "mech2-31",
@@ -20423,9 +20464,9 @@
       "mainCases": 7,
       "class": "a",
       "candidateCases": [
-        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling"
-      ],
-      "weaker": "Candidate reuses only the empty row container and re-renders content (disposed == rendered); no case asserts a reused container carries none of the previous row's attributes/tags or that shadow/enabled/padding cannot ..."
+        "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech3-03 a reused row container never carries the previous row's children, tags, attributes or props"
+      ]
     },
     {
       "id": "mech3-04",
@@ -20630,9 +20671,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection"
+        "native_gallery_collections::native gallery collections::renders three racing shelves with measured widths track art and native selection",
+        "native_parity_weaker_gallery::native parity weaker gallery::mech3-20 card shelves are one-up on a phone, several-up on a desktop and made of selectable cards"
       ],
-      "weaker": "Three shelves with measured widths and native selection; no one-up mobile or distant-card size assertion"
+      "weaker": "The fake engine does no layout or navigation. No test shows larger cards at the Distant TV preview or D-pad movement between shelves."
     },
     {
       "id": "mech3-21",
@@ -20759,7 +20801,7 @@
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
         "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
       ],
-      "weaker": "Covers VirtualList reaching offscreen keys; no generic scroll-to-visible for non-collection ScrollingFrames (engine selection autoscroll is native)"
+      "weaker": "Facet no longer has a scroll-to-visible API for a plain ScrollingFrame. The engine scrolls to the selection in a non-collection ScrollingFrame, and only a Studio check can show that. The collection keep-visible has headless tests in collections-176 and collections-262."
     },
     {
       "id": "mech3-32",
@@ -21562,9 +21604,9 @@
       "candidateCases": [
         "native_collections::Compose native collections::uses measured extents and column placements for both scroll directions",
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves"
-      ],
-      "weaker": "Index/window math is now Compose OrderedCollection (vendored); Facet cases cover measured extents, windowing status and insertion slots but not degenerate inputs, logarithmic search bounds or mid-gutter boundary snapping"
+        "native_collections::Compose native collections::reorders selected blocks with native drag and cancels stale or keyboard moves",
+        "native_parity_weaker_virtual::native parity weaker virtual::mech3-97 degenerate collections answer without error and a past-the-end offset windows the last rows"
+      ]
     },
     {
       "id": "mech3-98",
@@ -21921,9 +21963,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements"
+        "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::navigation-1-18 a long alert message scrolls inside a bounded region while the actions stay reachable"
       ],
-      "weaker": "Asserts the AlertMessage scroll height is bounded (<100) when content is 1000. It does not assert that the actions stay inside the card or scroll reachability through selection."
+      "weaker": "Card containment for the action buttons on 640x320 and 749x235 viewports needs real engine layout."
     },
     {
       "id": "navigation-1-19",
@@ -22640,9 +22683,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::resets the mounted callout showcase without replacing anchor identities"
+        "native_navigation::native navigation controls::resets the mounted callout showcase without replacing anchor identities",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-1-65 callout reset keeps both anchors, replaces the tips and replays the tip"
       ],
-      "weaker": "Anchor 'Plus' identity is checked, but 'Share' is not. The scenario's seen/saved report after reset and the second tip's 'waiting' state are not asserted."
+      "weaker": "The fake engine does not place surfaces. No test shows that no raised plate covers the Share anchor after reset or that Reset is at least 44 px tall."
     },
     {
       "id": "navigation-1-66",
@@ -23449,9 +23493,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/menus"
-      ],
-      "weaker": "Mount-only; the standalone diagnostic screen is not mounted separately."
+        "native_gallery::native gallery::mounts all_controls/menus",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-2-50 the menu scenario is inside All controls and also mounts standalone"
+      ]
     },
     {
       "id": "navigation-2-51",
@@ -24253,9 +24297,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties"
-      ],
-      "weaker": "Reflow is triggered by a narrow viewport (600) not by switching a desktop to distant viewing."
+        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-3-32 showroom and race setup reflow across viewports and survive the distant preview"
+      ]
     },
     {
       "id": "navigation-3-33",
@@ -24302,9 +24346,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties"
-      ],
-      "weaker": "Does not assert nil before mount, height growth for large, or reset back to compact."
+        "native_gallery::native gallery::keeps action controls ordered responsive and interactive through native layout properties",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-3-36 action controls report nil unmounted, the displayed rung, taller large controls and reset"
+      ]
     },
     {
       "id": "navigation-3-37",
@@ -26021,7 +26065,6 @@
       "candidateCases": [
         "native_parity_navigation::native parity navigation::keeps a retained tab's scroll position on return and resets it when restoreScroll is off"
       ],
-      "weaker": "Covers the native CanvasPosition kept on a retained panel and the restoreScroll = false reset. Main also restored a keyed anchor after a reorder for a page that was not retained; the candidate removed serialized bookmarks, and api.md does not promise them.",
       "apiPromise": "api.md TabView: \"The control owns scroll and focus restoration\"; nav_pages.luau restoreScroll=false resets descendant ScrollingFrames.",
       "gap": {
         "description": "Serialized keyed bookmarks for evicted pages are deleted (retention=\"top\" now loses scroll; plain content no longer anchors to a keyed row after reorder). What remains - native CanvasPosition kept on retained panels a...",
@@ -26041,9 +26084,10 @@
       "class": "a",
       "candidateCases": [
         "native_collections::Compose native collections::reuses row containers, replaces reactive items and anchors native scrolling",
-        "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders"
+        "native_navigation::native navigation controls::retains visited tab state across selection and declaration reorders",
+        "native_parity_weaker_virtual::native parity weaker virtual::navigation-4-68 a list in a hidden tab keeps its keyed anchor across data changes and resets on empty data"
       ],
-      "weaker": "Anchoring is tested for a removal above the viewport on a visible list, not while the tab is hidden; clamping to max on shorter data and reset to 0 on empty are not asserted (native ScrollingFrame clamping)."
+      "weaker": "Clamping to the new maximum on shorter data and the reset to 0 on empty data are engine ScrollingFrame clamping of CanvasPosition to CanvasSize, which the fake engine does not do."
     },
     {
       "id": "navigation-4-69",
@@ -26135,9 +26179,9 @@
       "mainCases": 2,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab"
-      ],
-      "weaker": "Only a right-side overflow on topBar; no sidebar (Y axis) or leading-side reveal."
+        "native_navigation::native navigation controls::fades native tab layers with Compose and reveals an offscreen selected tab",
+        "native_parity_weaker_scrolling::native parity weaker scrolling::navigation-5-05 selecting an off-screen tab reveals it on either side of a top bar or sidebar"
+      ]
     },
     {
       "id": "navigation-5-06",
@@ -26792,9 +26836,9 @@
       "class": "a",
       "candidateCases": [
         "native_gallery::native gallery::mounts all-controls with the native runtime",
-        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility"
-      ],
-      "weaker": "The standalone tab_view diagnostic scenario is gone; nested demo_tabs is only mounted and clicked."
+        "native_gallery_shell::native gallery shell parity::reports the selected retained leaf and propagates ancestor page visibility",
+        "native_parity_weaker_gallery::native parity weaker gallery::navigation-5-45 all controls nests page tabs inside the adaptable group navigation"
+      ]
     },
     {
       "id": "navigation-5-46",
@@ -27662,9 +27706,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_gallery::native gallery::mounts all_controls/progress"
-      ],
-      "weaker": "Mount-only; no dimensions or driven controls asserted."
+        "native_gallery::native gallery::mounts all_controls/progress",
+        "native_parity_weaker_gallery::native parity weaker gallery::paint-47 progress mounts inside all controls and its rung and value controls drive the indicators"
+      ]
     },
     {
       "id": "paint-48",
@@ -28695,9 +28739,9 @@
       "candidateCases": [
         "native_gallery::native gallery::mounts all_controls/basics",
         "native_gallery::native gallery::mounts all_controls/choices",
-        "native_gallery::native gallery::mounts all_controls/progress"
-      ],
-      "weaker": "Mount-only."
+        "native_gallery::native gallery::mounts all_controls/progress",
+        "native_parity_weaker_gallery::native parity weaker gallery::paint-125 all controls opens on the basics fixture with its settings and actions mounted"
+      ]
     },
     {
       "id": "paint-126",
@@ -28876,9 +28920,9 @@
       "class": "a",
       "candidateCases": [
         "producer:links (tools/lune/check_links_cli, full tier)",
-        "producer:links-selftest"
-      ],
-      "weaker": "Checked by a verify producer, not a spec case."
+        "producer:links-selftest",
+        "native_parity_weaker_apps::Documentation and tooling::paint-139 reports a dead link or heading in each theme and skinning document and passes the shipped ones"
+      ]
     },
     {
       "id": "paint-140",
@@ -29253,9 +29297,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::centers circular readouts when native text bounds fit the ring"
+        "native_themes_media::native themes and media::centers circular readouts when native text bounds fit the ring",
+        "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-11 circular readouts center only while native text bounds fit inside the ring"
       ],
-      "weaker": "TextBounds are injected; engine text measurement is not exercised (native evidence none)."
+      "weaker": "The centered/below decision is asserted at the exact 0.6 x diameter boundary with injected TextBounds, with Center alignment, no wrap and XY automatic size. The engine's own text measurement is not exercised."
     },
     {
       "id": "themes-P1-12",
@@ -29293,9 +29338,10 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::moves oversized circular readouts below the ring using native text bounds"
+        "native_themes_media::native themes and media::moves oversized circular readouts below the ring using native text bounds",
+        "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-14 a gauge keeps a long value whole and visible as native text grows"
       ],
-      "weaker": "Preferred text size is not varied; the oversized readout is simulated by injecting TextBounds (190x32)."
+      "weaker": "Growing TextBounds are injected to stand for larger preferred text; the readout stays visible, whole, centered below the ring and the gauge grows to fit. The engine's PreferredTextSize scaling is not exercised."
     },
     {
       "id": "themes-P1-15",
@@ -29604,9 +29650,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity"
-      ],
-      "weaker": "Instance identity and LayoutOrder on reorder asserted; lease retention on reorder and replacement of a changed image source are not."
+        "native_themes_media::native themes and media::preserves avatar initials presence rung changes and keyed roster identity",
+        "native_parity_weaker_virtual::native parity weaker virtual::themes-P1-35 avatar faces keep their resources on reorder and replace only a changed source or resource"
+      ]
     },
     {
       "id": "themes-P1-36",
@@ -30620,9 +30666,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_themes_media::native themes and media::preserves external cameras and forwards native viewport lighting"
-      ],
-      "weaker": "LightColor not asserted."
+        "native_themes_media::native themes and media::preserves external cameras and forwards native viewport lighting",
+        "native_parity_weaker_hud::native parity weaker hud-world::themes-P1-102 Stage forwards ambient, light color and light direction and keeps them reactive"
+      ]
     },
     {
       "id": "themes-P1-103",
@@ -34374,6 +34420,62 @@
       "file": "docs/guide/README.md",
       "title": "The guide index linked one of the seven extension playbooks",
       "fixedBy": "native_parity_apps::Public surface, catalog and theme corpus::documents every Facet.themes export and every capability in the guide catalog"
+    },
+    {
+      "id": "WA1",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/gallery/examples/02_playlist_table.luau",
+      "title": "The Rating column showed a resize grip and took resize keys, but the readout said that Rating is locked. The column now sets resizable = false.",
+      "fixedBy": "native_parity_weaker_tables::native parity weaker tables::apps2-168 pointer keyboard and gamepad resize the same playlist column and the readout follows"
+    },
+    {
+      "id": "WA2",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collection_table.luau",
+      "title": "With editing on and a destructive row action, the row cells moved right by the edit gutter, but the header did not. The Table now adds the widest row edit gutter to the header position and width, the collapse room and the canvas width.",
+      "fixedBy": "native_parity_weaker_tables::native parity weaker tables::collections-134 the header follows the reorder and edit gutters so columns stay aligned"
+    },
+    {
+      "id": "WA3",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collection_snap.luau",
+      "title": "A flick without a pointer press (wheel, trackpad or engine momentum) started from a stale offset. A fast flick up from row 8 went to the top, and a flick down after a snap did not advance. A scroll from rest now starts at the resting offset.",
+      "fixedBy": "native_parity_weaker_scrolling::native parity weaker scrolling::collections-125 snap resolves nearest, flick, fling, end and fitting content boundaries"
+    },
+    {
+      "id": "WA4",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collection_row_actions.luau",
+      "title": "A row stayed open and kept the shared open-row claim when the actions of its open side became empty. When the actions came back, the tray opened again without a swipe. The row now closes when its open side has no actions.",
+      "fixedBy": "native_parity_weaker_rows::native parity weaker rows::collections-281 locks, coordinates, releases, fires once and follows reactive actions inside list rows"
+    },
+    {
+      "id": "WA5",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "examples/gallery/scenarios/action_controls.luau",
+      "title": "The Distant TV preview scales the gallery by 1.5, but the action controls demo read the unscaled viewport width. At 1440 px the Showroom and Race Setup sections stayed side by side under the preview. The gallery now gives demos ctx.sceneViewport, the viewport divided by the preview scale, and the demo reads it.",
+      "fixedBy": "native_parity_weaker_gallery::native parity weaker gallery::navigation-3-32 showroom and race setup reflow across viewports and survive the distant preview"
+    },
+    {
+      "id": "WA6",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/collections.luau",
+      "title": "VirtualList and VirtualGrid wrote an equal CanvasSize again on each scroll and on each edit to a row outside the window. Table wrote its outer Size, body Size, body CanvasSize and header Position again on each vertical scroll. These properties now bind to the numeric extent and the horizontal scroll offset, so only a real change writes.",
+      "fixedBy": "native_parity_weaker_virtual::native parity weaker virtual::collections-305 same-window scrolls and off-window edits write nothing, re-entry is fresh and async loads cancel"
+    },
+    {
+      "id": "WA7",
+      "status": "fixed",
+      "evidence": "test",
+      "file": "src/ui/media.luau",
+      "title": "AvatarGroup kept the old resource lease and image when the resource of a member changed under the same id. A member with a resource is now keyed by its id and its resource, so only that face mounts again with a new lease.",
+      "fixedBy": "native_parity_weaker_virtual::native parity weaker virtual::themes-P1-35 avatar faces keep their resources on reorder and replace only a changed source or resource"
     }
   ]
 }
