@@ -267,6 +267,7 @@ return function(ctx: any, options: any)
 	end
 	local function page()
 		local collection
+		local side = Compose.cell(false)
 		local common = {
 			Name = "Collection",
 			from = rows,
@@ -274,7 +275,9 @@ return function(ctx: any, options: any)
 				return item.id
 			end,
 			LayoutOrder = 2,
-			Size = D2.new(1, 0, 0, 0),
+			Size = function(use)
+				return if use(side) then D2.new(0, 0, 1, 0) else D2.new(1, 0, 0, 0)
+			end,
 			status = status,
 			controls = controls,
 			Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
@@ -436,53 +439,82 @@ return function(ctx: any, options: any)
 			titleLine:set(use(titleBounds).Y)
 			bodyLine:set(use(bodyBounds).Y)
 		end)
-		return Host.Frame({
+		local root = Host.Frame({
 			Name = options.name,
 			Size = D2.fromScale(1, 1),
 			BackgroundTransparency = 1,
-			Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
-			Host.Frame "Toolbar" {
+			Host.UIListLayout({
+				SortOrder = E.SortOrder.LayoutOrder,
+				Padding = D.new(0, 8),
+				FillDirection = function(use)
+					return if use(side) then E.FillDirection.Horizontal else E.FillDirection.Vertical
+				end,
+			}),
+			Host.ScrollingFrame "ToolbarScroll" {
 				LayoutOrder = 1,
-				Size = D2.new(1, 0, 0, 0),
-				AutomaticSize = E.AutomaticSize.Y,
+				Size = function(use)
+					return if use(side) then D2.new(0.4, 0, 1, 0) else D2.new(1, 0, 0, 0)
+				end,
+				AutomaticSize = function(use)
+					return if use(side) then E.AutomaticSize.None else E.AutomaticSize.Y
+				end,
+				CanvasSize = D2.new(0, 0, 0, 0),
+				AutomaticCanvasSize = E.AutomaticSize.Y,
+				ScrollingDirection = E.ScrollingDirection.Y,
+				ScrollBarThickness = function(use)
+					return if use(side) then 4 else 0
+				end,
 				BackgroundTransparency = 1,
-				Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
-				UI.Label "Title" {
+				BorderSizePixel = 0,
+				Host.Frame "Toolbar" {
 					LayoutOrder = 1,
-					Text = options.title,
-					textRole = "title",
-					TextWrapped = true,
 					Size = D2.new(1, 0, 0, 0),
 					AutomaticSize = E.AutomaticSize.Y,
 					BackgroundTransparency = 1,
-				},
-				actionsFrame,
-				UI.Label "Status" {
-					LayoutOrder = 3,
-					Text = function(use)
-						local snapshot, count = use(status), 0
-						for _, on in use(selection) do
-							if on then
-								count += 1
+					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = D.new(0, 8) }),
+					UI.Label "Title" {
+						LayoutOrder = 1,
+						Text = options.title,
+						textRole = "title",
+						TextWrapped = true,
+						Size = D2.new(1, 0, 0, 0),
+						AutomaticSize = E.AutomaticSize.Y,
+						BackgroundTransparency = 1,
+					},
+					actionsFrame,
+					UI.Label "Status" {
+						LayoutOrder = 3,
+						Text = function(use)
+							local snapshot, count = use(status), 0
+							for _, on in use(selection) do
+								if on then
+									count += 1
+								end
 							end
-						end
-						local at = use(nativePosition)
-						return `{#use(rows)} rows · {snapshot.retained} mounted · {use(built)} built · {count} selected · {use(
-							moves
-						)} moves\nwindow {snapshot.first}–{snapshot.last} · text +{use(textOffset)} · offset {math.floor(
-							if options.horizontal then at.X else at.Y
-						)}`
-					end,
-					TextWrapped = true,
-					Size = D2.new(1, 0, 0, 0),
-					AutomaticSize = E.AutomaticSize.Y,
-					BackgroundTransparency = 1,
+							local at = use(nativePosition)
+							return `{#use(rows)} rows · {snapshot.retained} mounted · {use(built)} built · {count} selected · {use(
+								moves
+							)} moves\nwindow {snapshot.first}–{snapshot.last} · text +{use(textOffset)} · offset {math.floor(
+								if options.horizontal then at.X else at.Y
+							)}`
+						end,
+						TextWrapped = true,
+						Size = D2.new(1, 0, 0, 0),
+						AutomaticSize = E.AutomaticSize.Y,
+						BackgroundTransparency = 1,
+					},
 				},
 			},
 			collection,
 			titleProbe,
 			bodyProbe,
 		})
+		local area = observe(root, "AbsoluteSize")
+		Compose.watch(function(use)
+			local size = use(area)
+			side:set(size.Y > 0 and size.Y < 360 and size.X >= 480)
+		end)
+		return root
 	end
 	return {
 		screen = page,

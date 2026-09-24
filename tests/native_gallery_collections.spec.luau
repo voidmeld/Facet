@@ -227,6 +227,27 @@ t.describe("native gallery collections", function()
 		end
 	end)
 
+	t.it("moves the collection toolbar beside the rows when the page is short and wide", function()
+		local _, node, stop, engine = mount("measured_extents")
+		local scroll = find(node, "ToolbarScroll")
+		local page = scroll.Parent
+		local layout = page:FindFirstChildWhichIsA("UIListLayout")
+		local collection = find(page, "Collection")
+		t.expect(layout.FillDirection).toBe(engine.types.Enum.FillDirection.Vertical)
+		page.AbsoluteSize = engine.types.Vector2.new(644, 213)
+		t.expect(layout.FillDirection).toBe(engine.types.Enum.FillDirection.Horizontal)
+		t.expect(math.abs(scroll.Size.X.Scale - 0.4) < 1e-6).toBe(true)
+		t.expect(scroll.Size.Y.Scale).toBe(1)
+		t.expect(scroll.AutomaticCanvasSize).toBe(engine.types.Enum.AutomaticSize.Y)
+		t.expect(collection.Size.Y.Scale).toBe(1)
+		page.AbsoluteSize = engine.types.Vector2.new(401, 560)
+		t.expect(layout.FillDirection).toBe(engine.types.Enum.FillDirection.Vertical)
+		t.expect(scroll.Size.X.Scale).toBe(1)
+		t.expect(scroll.AutomaticSize).toBe(engine.types.Enum.AutomaticSize.Y)
+		t.expect(collection.Size.X.Scale).toBe(1)
+		stop()
+	end)
+
 	t.it("renders three racing shelves with measured widths track art and native selection", function()
 		local built, node, stop, engine = mount("card_rail")
 		for _, name in { "Rail", "WeekendRail", "RecommendedRail" } do

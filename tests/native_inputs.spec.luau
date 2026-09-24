@@ -942,6 +942,31 @@ t.describe("native input controls", function()
 		t.expect(node.Size.Y.Offset).toBe(64)
 		stop()
 	end)
+	t.it("keeps an authored circle axis dominant instead of fitting inside a zero box", function()
+		for _, case in { { x = 32, y = 0, axis = "Width" }, { x = 0, y = 72, axis = "Height" } } do
+			local node, stop, engine = world(function(UI, engine)
+				return UI.Button({
+					label = "Close",
+					shape = "circle",
+					controlSize = "compact",
+					Size = engine.types.UDim2.fromOffset(case.x, case.y),
+				})
+			end)
+			local aspect = node:FindFirstChildWhichIsA("UIAspectRatioConstraint")
+			t.expect(aspect.AspectRatio).toBe(1)
+			t.expect(aspect.AspectType).toBe(engine.types.Enum.AspectType.ScaleWithParentSize)
+			t.expect(aspect.DominantAxis).toBe(engine.types.Enum.DominantAxis[case.axis])
+			t.expect(node.Size.X.Offset).toBe(case.x)
+			t.expect(node.Size.Y.Offset).toBe(case.y)
+			stop()
+		end
+		local node, stop, engine = world(function(UI, engine)
+			return UI.Button({ label = "Close", shape = "circle", Size = engine.types.UDim2.fromOffset(40, 40) })
+		end)
+		t.expect(node:FindFirstChildWhichIsA("UIAspectRatioConstraint").AspectType)
+			.toBe(engine.types.Enum.AspectType.FitWithinMaxSize)
+		stop()
+	end)
 	t.it("shows numeric validation text with interruptible reduced-motion-aware feedback", function()
 		local value, number, reduced = Compose.cell("2"), Compose.cell(2), Compose.cell(false)
 		local node, stop, engine = world(function(UI)

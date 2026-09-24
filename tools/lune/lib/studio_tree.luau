@@ -66,6 +66,7 @@ function studio_tree.entries(mode: string?): { FileEntry }
 		addTree(entries, "examples/gallery/server", "ServerScriptService.Outpost", "Script")
 
 		addTree(entries, "examples/reference", "ReplicatedStorage.FacetReference", "Folder")
+		addTree(entries, "tools/studio/live", "ReplicatedStorage.FacetLive", "ModuleScript")
 	end
 	return entries
 end
