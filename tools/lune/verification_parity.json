@@ -17211,7 +17211,7 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_inputs::native input controls::commits and formats finite numeric input without committing out-of-range input"
+        "native_inputs::native input controls::commits and formats finite numeric input, clamps out-of-range input and refuses a non-number"
       ]
     },
     {
@@ -18636,7 +18636,7 @@
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle requests controlled and clears a writable mixed state",
         "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation",
-        "native_inputs::native input controls::commits and formats finite numeric input without committing out-of-range input",
+        "native_inputs::native input controls::commits and formats finite numeric input, clamps out-of-range input and refuses a non-number",
         "native_inputs::native input controls::does not mutate writable controlled models before callbacks accept requests"
       ]
     },

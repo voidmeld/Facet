@@ -327,7 +327,7 @@
       "cases": [
         "native_inputs::native input controls::distinguishes edits from external model updates and disconnects observation",
         "native_inputs::native input controls::limits UTF-8 characters, rejects validation and restores an edit on cancel",
-        "native_inputs::native input controls::commits and formats finite numeric input without committing out-of-range input",
+        "native_inputs::native input controls::commits and formats finite numeric input, clamps out-of-range input and refuses a non-number",
         "native_inputs::native input controls::clears search fields and submits the on-screen keyboard only once",
         "native_inputs::native input controls::edits a controlled map field without duplicating durable state",
         "native_inputs::native input controls::does not mutate writable controlled models before callbacks accept requests",
@@ -553,7 +553,7 @@
         "native_inputs"
       ],
       "cases": [
-        "native_inputs::native input controls::commits and formats finite numeric input without committing out-of-range input",
+        "native_inputs::native input controls::commits and formats finite numeric input, clamps out-of-range input and refuses a non-number",
         "native_inputs::native input controls::clears search fields and submits the on-screen keyboard only once",
         "native_inputs::native input controls::shows numeric validation text with interruptible reduced-motion-aware feedback",
         "native_inputs::native input controls::reflects external invalid state and rejects malformed invalid and numeric declarations"
