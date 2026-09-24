@@ -77,17 +77,18 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		return node
 	end
 	local function initials(name: string?): string
-		local first: string?, last: string?
+		local first: string?, last: string?, count = nil, nil, 0
 		for word in string.gmatch(name or "", "%S+") do
 			first = first or word
 			last = word
+			count += 1
 		end
 		local function character(word: string): string
 			return string.sub(word, 1, (utf8.offset(word, 2) or (#word + 1)) - 1)
 		end
 		return if first == nil
 			then ""
-			elseif first == last then character(first)
+			elseif count == 1 then character(first)
 			else character(first) .. character(last :: string)
 	end
 
@@ -1146,6 +1147,11 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		assert(
 			spec.overflow == nil or spec.overflow == "count" or spec.overflow == "ellipsis",
 			"Facet AvatarGroup invalid overflow"
+		)
+		assert(spec.form == nil or spec.form == "standard" or spec.form == "icon", "Facet AvatarGroup invalid form")
+		assert(
+			spec.onOverflow == nil or type(spec.onOverflow) == "function",
+			"Facet AvatarGroup onOverflow must be a function"
 		)
 		local maximum = spec.max or 4
 		assert(maximum >= 1 and maximum % 1 == 0, "Facet AvatarGroup max must be positive")
