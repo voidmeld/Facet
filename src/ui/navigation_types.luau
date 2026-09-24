@@ -270,6 +270,7 @@ export type Surfaces = {
 	within: (Instance?, Instance) -> boolean,
 	firstSelectable: (Instance, string?) -> GuiObject?,
 	preference: () -> (Compose.Use) -> number,
+	selecting: () -> (Compose.Use) -> boolean,
 	attach: <N>(N & Instance, { Types.Child }) -> N & Instance,
 	available: (GuiObject) -> Compose.Readable<boolean>,
 	centered: (GuiObject, number) -> GuiObject,

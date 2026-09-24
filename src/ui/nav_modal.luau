@@ -14,6 +14,17 @@ return function(ctx: Types.Context): Nav.Surfaces
 		return services.UserInputService or (if game then game:GetService("UserInputService") else nil)
 	end
 	local gui = service("GuiService") :: GuiService?
+	local input = service("UserInputService") :: UserInputService?
+	-- A surface takes selection only from a player who is navigating by selection: selection was
+	-- already active when it opened, or the preferred input is a gamepad. Pointer and touch players
+	-- never see a selection ring they did not ask for.
+	local function selecting(): (Core.Use) -> boolean
+		local active = gui ~= nil and gui.SelectedObject ~= nil
+		local preferred = if input and input.GetPropertyChangedSignal then ctx.observe(input, "PreferredInput") else nil
+		return function(use: Core.Use): boolean
+			return active or (preferred ~= nil and use(preferred) == E.PreferredInput.Gamepad)
+		end
+	end
 	-- Roblox's Background transparency preference scales every translucent surface behind content.
 	local function preference(): (Core.Use) -> number
 		local source = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "PreferredTransparency") else nil
@@ -69,6 +80,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		local spec: Nav.ModalOptions = options or {}
 		local previous = if gui then gui.SelectedObject else nil
 		local preferred = preference()
+		local focusIn = selecting()
 		local panel = content()
 		runtime.decorate(panel, {
 			SelectionGroup = true,
@@ -153,7 +165,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		if gui then
 			local mounted = ctx.observe(root, "Parent")
 			Compose.watch(function(use: Core.Use)
-				if use(mounted) then
+				if use(mounted) and focusIn(use) and not within(gui.SelectedObject, root) then
 					gui.SelectedObject = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
 				end
 			end)
@@ -291,6 +303,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 		within = within,
 		firstSelectable = firstSelectable,
 		preference = preference,
+		selecting = selecting,
 		overlay = overlay,
 		available = available,
 	}

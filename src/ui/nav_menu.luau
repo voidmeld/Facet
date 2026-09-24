@@ -302,9 +302,10 @@ return function(
 		ctx.action(modal, "MenuLeft", { E.KeyCode.Left, E.KeyCode.DPadLeft }, function(use: Core.Use)
 			return #use(path) > 0
 		end, back, { priority = 2100 })
+		local focusIn = surfaces.selecting()
 		Compose.watch(function(use: Core.Use)
 			local rows = use(current)
-			if gui and not nonmodal then
+			if gui and not nonmodal and focusIn(use) then
 				local target = if pendingFocus then surfaces.firstSelectable(panel, pendingFocus) else nil
 				if not target then
 					for _, item in rows do

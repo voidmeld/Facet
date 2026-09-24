@@ -791,6 +791,33 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("takes selection into a modal only for players navigating by selection", function()
+		local presented = Compose.cell(false)
+		local world = setup(function(UI, Host)
+			return Host.Frame "Screen" {
+				UI.Button "Opener" { label = "Open" },
+				UI.Alert {
+					isPresented = presented,
+					title = "Leave race?",
+					actions = { { id = "stay", label = "Stay", role = "cancel" } },
+				},
+			}
+		end)
+		presented:set(true)
+		t.expect(world.gui.SelectedObject).toBe(nil)
+		presented:set(false)
+		world.gui.SelectedObject = find(world.screen, "Opener")
+		presented:set(true)
+		t.expect(world.gui.SelectedObject.Name).toBe("stay")
+		presented:set(false)
+		t.expect(world.gui.SelectedObject.Name).toBe("Opener")
+		world.gui.SelectedObject = nil
+		world.input.PreferredInput = world.engine.types.Enum.PreferredInput.Gamepad
+		presented:set(true)
+		t.expect(world.gui.SelectedObject.Name).toBe("stay")
+		world.stop()
+	end)
+
 	t.it("darkens modal scrims as the player lowers background transparency", function()
 		local presented = Compose.cell(true)
 		local world = setup(function(UI)
