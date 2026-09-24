@@ -43,6 +43,8 @@ return {
 		local assist = signal(true)
 		local confirming = signal(false)
 		local tokens = signal({ "Rain", "No assists", "Friends" })
+		local editingTags = signal(false)
+		local chosenTags = signal({} :: { [string]: boolean })
 		local mounted = false
 		local seconds = 0
 		local readRung = function(): string?
@@ -238,6 +240,8 @@ return {
 		end
 		local function reset()
 			tokens:set({ "Rain", "No assists", "Friends" })
+			editingTags:set(false)
+			chosenTags:set({})
 			setRung("compact")
 			busy:set(false)
 			enabled:set(true)
@@ -602,6 +606,16 @@ return {
 					rowSlider,
 				}),
 				heading("Race tags"),
+				UI.Button "EditTags" {
+					label = function(use)
+						return if use(editingTags) then "Done" else "Edit"
+					end,
+					appearance = "soft",
+					controlSize = "compact",
+					onActivate = function()
+						editingTags:set(not editingTags:peek())
+					end,
+				},
 				Host.ScrollingFrame "Tokens" {
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 44),
@@ -629,6 +643,15 @@ return {
 								return UI.Chip "Token" {
 									label = item,
 									controlSize = "compact",
+									selected = function(use)
+										return use(chosenTags)[item] == true
+									end,
+									onToggle = function(value)
+										local nextChosen = table.clone(chosenTags:peek())
+										nextChosen[item] = value
+										chosenTags:set(nextChosen)
+									end,
+									editing = editingTags,
 									onRemove = function()
 										local nextItems = {}
 										for _, value in tokens:peek() do
@@ -879,6 +902,7 @@ return {
 				end
 				return {
 					tokenCount = #tokens:peek(),
+					editingTags = editingTags:peek(),
 					controlSize = readRung(),
 					count = count:peek(),
 					settings = { assistance = assist:peek(), music = rowVolume:peek() },

@@ -46,6 +46,12 @@ local fixtures = {
 	Chip = function()
 		return { label = "Chip", selected = Compose.cell(false) }
 	end,
+	NumberInput = function()
+		return { value = Compose.cell("1"), numericValue = Compose.cell(1) }
+	end,
+	DateTimePicker = function()
+		return { value = Compose.cell(nil), onChange = function() end }
+	end,
 	ShortcutHint = function()
 		return { keys = { { "Ctrl", "K" } } }
 	end,

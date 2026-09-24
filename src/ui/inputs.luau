@@ -5,6 +5,7 @@ local decoration = require("./native_decoration")
 local help = require("./help")
 local activation = require("./activation")
 local valueModel = require("./input_value")
+local textField = require("./text_field")
 local InputTypes = require("./input_types")
 local Shared = require("./types")
 local ThemeTypes = require("./theme_types")
@@ -23,6 +24,12 @@ type LevelSpec = Shared.TextButtonProps & ValueState<number> & InputTypes.LevelO
 	images: InputTypes.Images?,
 	tint: InputTypes.Tint?,
 }
+type Adjust = {
+	vertical: boolean?,
+	guard: boolean?,
+	arrows: ((ComposeTypes.Use, number) -> boolean)?,
+	extra: (((ComposeTypes.Use) -> boolean) -> ())?,
+}
 type ToggleButtonProps = InputTypes.ButtonProps & {
 	value: Shared.Value<boolean>?,
 	mixed: Shared.Value<boolean>?,
@@ -38,12 +45,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 	local D, D2, V2, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 	local noKey: Enum.KeyCode = assert(E.KeyCode:FromValue(0))
 	local dialogOrder = 0
+	local unskinned = setmetatable({} :: { [unknown]: boolean }, { __mode = "k" })
 	local roles: { [string]: boolean } = { default = true, cancel = true, destructive = true, onIndicator = true }
 	local function dynamic(source: unknown): boolean
 		return Compose.isReadable(source) or type(source) == "function"
 	end
 	local function enabled(
-		spec: InputTypes.EnabledOptions | InputTypes.TextInputOptions | InputTypes.NumberInputOptions | InputTypes.LevelOptions | { value: Shared.Value<number>, onChange: ((number) -> ())? },
+		spec: InputTypes.EnabledOptions | InputTypes.NumberInputOptions | InputTypes.LevelOptions | { value: Shared.Value<number>, onChange: ((number) -> ())? },
 		use: ComposeTypes.Use?
 	): boolean
 		local state = spec :: InputTypes.EnabledOptions
@@ -106,8 +114,32 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		apply: (number) -> (),
 		cancel: (() -> ())?,
 		minimum: number,
-		maximum: number
+		maximum: number,
+		options: Adjust?
 	): ()
+		local adjust: Adjust = options or {}
+		local landing = false
+		local function arrowHeld(): boolean
+			local input = ctx.config.services.UserInputService
+			if input == nil then
+				return false
+			end
+			local probe = (input :: unknown) :: {
+				IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)?,
+				IsGamepadButtonDown: ((UserInputService, Enum.UserInputType, Enum.KeyCode) -> boolean)?,
+			}
+			for _, key in { E.KeyCode.Up, E.KeyCode.Down, E.KeyCode.Left, E.KeyCode.Right } do
+				if probe.IsKeyDown and input:IsKeyDown(key) then
+					return true
+				end
+			end
+			for _, key in { E.KeyCode.DPadUp, E.KeyCode.DPadDown, E.KeyCode.DPadLeft, E.KeyCode.DPadRight } do
+				if probe.IsGamepadButtonDown and input:IsGamepadButtonDown(E.UserInputType.Gamepad1, key) then
+					return true
+				end
+			end
+			return false
+		end
 		local guiService = ctx.config.services.GuiService
 		local target = guiService and guiService.SelectedObject
 		local selected = Compose.cell(target ~= nil and (target == node or target:IsDescendantOf(node)))
@@ -118,6 +150,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				local inside = target ~= nil and (target == node or target:IsDescendantOf(node))
 				if selected:peek() and not inside and cancel then
 					cancel()
+				end
+				if inside and not selected:peek() and adjust.guard then
+					landing = arrowHeld()
 				end
 				selected:set(inside)
 			end)
@@ -153,9 +188,12 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							stopRepeat()
 						end
 					end)
-					local function bind(name, keys, source, direction)
+					local function bind(name, keys, source, direction, arrow: boolean?)
 						local action: InputAction
 						action = ctx.action(node, name, keys, source, function()
+							if arrow and landing then
+								return
+							end
 							stopRepeat()
 							apply(direction)
 							heldAction = action
@@ -181,6 +219,9 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 						end, {
 							priority = 250,
 							onReleased = function()
+								if arrow then
+									landing = false
+								end
 								if heldAction == action then
 									stopRepeat()
 								end
@@ -191,18 +232,31 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					bind("Increase", { E.KeyCode.Period, E.KeyCode.ButtonR1 }, active, 1)
 					if minimum ~= nil and maximum ~= nil then
 						for _, direction in { -1, 1 } do
+							local keys = if adjust.vertical
+								then (if direction < 0
+									then { E.KeyCode.Down, E.KeyCode.DPadDown }
+									else { E.KeyCode.Up, E.KeyCode.DPadUp })
+								else (if direction < 0
+									then { E.KeyCode.Left, E.KeyCode.DPadLeft }
+									else { E.KeyCode.Right, E.KeyCode.DPadRight })
 							bind(
 								if direction < 0 then "DecreaseArrow" else "IncreaseArrow",
-								if direction < 0
-									then { E.KeyCode.Left, E.KeyCode.DPadLeft }
-									else { E.KeyCode.Right, E.KeyCode.DPadRight },
+								keys,
 								function(use: ComposeTypes.Use)
+									local arrows = adjust.arrows
+									if arrows then
+										return active(use) and arrows(use, direction)
+									end
 									local value = read(spec.value, use)
 									return active(use) and (if direction < 0 then value > minimum else value < maximum)
 								end,
-								direction
+								direction,
+								true
 							)
 						end
+					end
+					if adjust.extra then
+						adjust.extra(active)
 					end
 					if cancel then
 						ctx.action(
@@ -701,12 +755,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			})
 		end
 
-		ctx.skin(node, "control", {
-			selected = spec.selected,
-			disabled = function(use: ComposeTypes.Use)
-				return not enabled(spec, use)
-			end,
-		})
+		if not unskinned[spec] then
+			ctx.skin(node, "control", {
+				selected = spec.selected,
+				disabled = function(use: ComposeTypes.Use)
+					return not enabled(spec, use)
+				end,
+			})
+		end
 
 		local guiState = if iconState then ctx.observe(node, "GuiState") else nil
 		local previousTags: { [string]: boolean } = {}
@@ -1046,469 +1102,20 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		if spec.haptic == nil then
 			p.haptic = true
 		end
+		if presentation ~= "button" then
+			unskinned[p] = true
+		end
 		local toggle = ctx.styled(UI.Button(p), "toggle")
 		if presentation ~= "button" then
 			toggle:AddTag("facet-toggle-row")
+			if spec.row ~= nil or spec.hint ~= nil or spec.icon ~= nil then
+				toggle:AddTag("facet-toggle-settings")
+			end
 		end
 		return toggle
 	end)
 
-	local textKeys = {
-		"value",
-		"numericValue",
-		"presentation",
-		"min",
-		"max",
-		"parse",
-		"format",
-		"validate",
-		"maxLength",
-		"enabled",
-		"disabled",
-		"placeholder",
-		"multiline",
-		"onChange",
-		"onCommit",
-		"onCancel",
-		"invalid",
-		"clearButton",
-		"clearButtonMode",
-	}
-	UI.TextInput = ctx.construct("TextInput", function(spec: InputTypes.TextInputImplementationProps): TextBox
-		assert(type(read(spec.value)) == "string", "Facet.TextInput: value must resolve to a string")
-		assert(
-			writable(spec.value) or type(spec.onChange) == "function",
-			"Facet.TextInput: a read-only value requires onChange"
-		)
-		for key, callback in
-			{
-				parse = spec.parse,
-				format = spec.format,
-				validate = spec.validate,
-				onChange = spec.onChange,
-				onCommit = spec.onCommit,
-				onCancel = spec.onCancel,
-			} :: { [string]: unknown }
-		do
-			assert(callback == nil or type(callback) == "function", `Facet.TextInput: {key} must be a function`)
-		end
-		local numeric = spec.presentation == "number"
-		assert(
-			not numeric or writable(spec.numericValue),
-			"Facet.TextInput: numeric presentation requires numericValue"
-		)
-		assert(not numeric or spec.multiline ~= true, "Facet.TextInput: numeric input must be single-line")
-		assert(spec.enabled == nil or spec.disabled == nil, "Facet.TextInput: use enabled or disabled, not both")
-		assert(
-			spec.presentation == nil or table.find({ "plain", "search", "number" }, spec.presentation),
-			"Facet.TextInput: invalid presentation"
-		)
-		for _, bound in { spec.min, spec.max } do
-			assert(
-				bound == nil or (type(bound) == "number" and bound == bound and math.abs(bound) < math.huge),
-				"Facet.TextInput: numeric bounds must be finite"
-			)
-		end
-		assert(spec.min == nil or spec.max == nil or spec.min <= spec.max, "Facet.TextInput: min must not exceed max")
-		assert(
-			spec.maxLength == nil or (spec.maxLength >= 0 and spec.maxLength % 1 == 0),
-			"Facet.TextInput: maxLength must be a nonnegative integer"
-		)
-		assert(
-			spec.invalid == nil or (Compose.isReadable(spec.invalid) and type(read(spec.invalid)) == "boolean"),
-			"Facet.TextInput: invalid must be a boolean readable"
-		)
-		local editing = Compose.cell(false)
-		local invalid = Compose.cell(false)
-		local validationMessage = Compose.cell("")
-		local mayReject = numeric or spec.invalid ~= nil
-		local errorTimeline = if mayReject then runtime.timeline({ duration = 0.24, autoplay = false }) else nil
-		local errorReduced = if errorTimeline then reducedMotion(ctx) else nil
-		if errorTimeline then
-			assert(errorTimeline):seek(0.24)
-		end
-		local textHeight, messageHeight = Compose.cell(18), Compose.cell(0)
-
-		local writing, disposed, snapshot = false, false, read(spec.value)
-		local node: TextBox
-		local function updateValue(value: string): ()
-			if read(spec.value) == value then
-				return
-			end
-			if spec.onChange then
-				spec.onChange(value)
-			else
-				(spec.value :: ComposeTypes.Cell<string>):set(value)
-			end
-		end
-		local function setText(value: string): ()
-			if node.Text ~= value then
-				writing = true
-				node.Text = value
-				writing = false
-			end
-		end
-		local function markInvalid(value: boolean, message: string?): ()
-			invalid:set(value)
-			validationMessage:set(if value then message or "Check this value." else "")
-			if writable(spec.invalid) then
-				(spec.invalid :: ComposeTypes.Cell<boolean>):set(value)
-			end
-			if value and errorTimeline and errorReduced and not errorReduced() then
-				errorTimeline:restart()
-			end
-		end
-
-		local function normalize(text: string): string?
-			local length = utf8.len(text)
-			if length == nil then
-				return nil
-			end
-			if spec.maxLength and length > spec.maxLength then
-				text = string.sub(text, 1, (utf8.offset(text, spec.maxLength + 1) :: number) - 1)
-			end
-			local normalized = if spec.validate then spec.validate(text) else text
-			if type(normalized) ~= "string" or utf8.len(normalized) == nil then
-				return nil
-			end
-			return normalized
-		end
-		local function propose(text: string): ()
-			if disposed or not enabled(spec) then
-				return
-			end
-			local accepted = normalize(text)
-			if accepted == nil then
-				setText(read(spec.value))
-				return
-			end
-			updateValue(accepted)
-			setText(read(spec.value))
-		end
-		local function cancel()
-			if not editing:peek() then
-				return
-			end
-			editing:set(false)
-			updateValue(snapshot)
-			setText(read(spec.value))
-			if node:IsFocused() then
-				node:ReleaseFocus(false)
-			end
-			if spec.onCancel then
-				spec.onCancel()
-			end
-		end
-		local function commit(reason: InputTypes.CommitReason): ()
-			if disposed or not editing:peek() then
-				return
-			end
-			editing:set(false)
-			if not enabled(spec) then
-				return
-			end
-			local value = read(spec.value)
-			if numeric then
-				local ok, number = pcall(function(text: string): number?
-					return if spec.parse then spec.parse(text) else tonumber(text)
-				end, value)
-				if disposed or not enabled(spec) then
-					return
-				end
-				if
-					not ok
-					or type(number) ~= "number"
-					or number ~= number
-					or math.abs(number) == math.huge
-					or (spec.min and number < spec.min)
-					or (spec.max and number > spec.max)
-				then
-					markInvalid(
-						true,
-						if not ok
-								or type(number) ~= "number"
-								or number ~= number
-								or math.abs(number) == math.huge
-							then "Enter a valid number."
-							elseif spec.min and number < spec.min then `Enter a value of at least {spec.min}.`
-							else `Enter a value of at most {spec.max}.`
-					)
-					return
-				end
-				local formattedOk, formatted = pcall(function(value: number): string
-					return if spec.format then spec.format(value) else tostring(value)
-				end, number)
-				if disposed or not enabled(spec) then
-					return
-				end
-				if not formattedOk or type(formatted) ~= "string" or utf8.len(formatted) == nil then
-					markInvalid(true)
-					return
-				end
-				if spec.validate then
-					local valid, normalized = pcall(spec.validate, formatted)
-					if disposed or not enabled(spec) then
-						return
-					end
-					if not valid or type(normalized) ~= "string" or utf8.len(normalized) == nil then
-						markInvalid(true)
-						return
-					end
-					formatted = normalized
-				end
-				if spec.maxLength and utf8.len(formatted) > spec.maxLength then
-					markInvalid(true)
-					return
-				end
-				if not enabled(spec) then
-					setText(read(spec.value))
-					return
-				end
-				local accepted = false
-				runtime:batch(function()
-					updateValue(formatted)
-					accepted = read(spec.value) == formatted
-					if accepted then
-						assert(spec.numericValue):set(number)
-					end
-				end)
-				if not accepted then
-					setText(read(spec.value))
-					markInvalid(true)
-					return
-				end
-				value = formatted
-				setText(formatted)
-				markInvalid(false)
-			else
-				local normalized = normalize(value)
-				if disposed or not enabled(spec) then
-					return
-				end
-				if normalized == nil then
-					markInvalid(true)
-					return
-				end
-				value = normalized
-				updateValue(value)
-				if read(spec.value) ~= value then
-					setText(read(spec.value))
-					markInvalid(true)
-					return
-				end
-				setText(value)
-			end
-			if spec.onCommit then
-				spec.onCommit(value, reason)
-			end
-		end
-		local p = props(spec, textKeys, {
-			Size = function(use: ComposeTypes.Use)
-				local message = if use(validationMessage) ~= "" then use(messageHeight) else 0
-				local minimum = if spec.multiline == true then 96 else 44
-				return D2.new(1, 0, 0, math.max(minimum, use(textHeight) + message + 16))
-			end,
-			Text = read(spec.value),
-			PlaceholderText = spec.placeholder or "",
-			ClearTextOnFocus = false,
-			MultiLine = spec.multiline == true,
-			TextWrapped = spec.multiline == true,
-			TextXAlignment = E.TextXAlignment.Left,
-			TextYAlignment = if mayReject or spec.multiline == true
-				then E.TextYAlignment.Top
-				else E.TextYAlignment.Center,
-			TextEditable = function(use: ComposeTypes.Use)
-				return enabled(spec, use)
-			end,
-			Selectable = function(use: ComposeTypes.Use)
-				return enabled(spec, use)
-			end,
-		})
-		p.Focused = function(...)
-			if enabled(spec) and not editing:peek() then
-				snapshot = read(spec.value)
-				editing:set(true)
-			end
-			if spec.Focused then
-				spec.Focused(...)
-			end
-		end
-		p.FocusLost = function(enterPressed, input)
-			if input and (input.KeyCode == E.KeyCode.Escape or input.KeyCode == E.KeyCode.ButtonB) then
-				cancel()
-			else
-				commit(if enterPressed then "submit" else "focusLost")
-			end
-			if spec.FocusLost then
-				spec.FocusLost(enterPressed, input)
-			end
-		end
-		table.insert(p, ctx.padding(10, 6))
-
-		local messageNode
-		if mayReject then
-			messageNode = ctx.styled(
-				ctx.text({
-					Name = "ValidationMessage",
-					Text = validationMessage,
-					Visible = function(use: ComposeTypes.Use)
-						return use(validationMessage) ~= ""
-					end,
-					Size = D2.new(1, 0, 0, 0),
-					AutomaticSize = E.AutomaticSize.Y,
-					TextWrapped = true,
-					Position = function(use: ComposeTypes.Use)
-						return D2.fromOffset(0, use(textHeight) + 4)
-					end,
-				}),
-				"validation"
-			)
-			table.insert(p, messageNode)
-			table.insert(
-				p,
-				Host.UIScale "ValidationPulse" {
-					Scale = function(use: ComposeTypes.Use)
-						if assert(errorReduced)(use) then
-							return 1
-						end
-						local phase = use(assert(errorTimeline).progress)
-						return 1 - 0.03 * math.sin(math.pi * phase) * (1 - phase)
-					end,
-				}
-			)
-		end
-
-		local mode = spec.clearButtonMode
-			or (if spec.clearButton or spec.presentation == "search" then "always" else "never")
-		assert(
-			table.find({ "always", "never", "whileEditing", "unlessEditing" }, mode),
-			"Facet.TextInput: invalid clearButtonMode"
-		)
-		if mode ~= "never" then
-			table.insert(
-				p,
-				UI.Button "Clear" {
-					label = "Clear",
-					Size = D2.fromOffset(44, 44),
-					AutomaticSize = E.AutomaticSize.None,
-					AnchorPoint = V2.new(1, 0.5),
-					Position = D2.fromScale(1, 0.5),
-					Visible = function(use: ComposeTypes.Use)
-						return enabled(spec, use)
-							and read(spec.value, use) ~= ""
-							and (
-								mode == "always"
-								or (mode == "whileEditing" and use(editing))
-								or (mode == "unlessEditing" and not use(editing))
-							)
-					end,
-					onActivate = function()
-						propose("")
-					end,
-				}
-			)
-		end
-		node = ctx.styled(ctx.styled(ctx.styled(Host.TextBox(p), "text"), "field"), "text-input")
-		if spec.multiline == true and not messageNode then
-			local bounds = ctx.observe(node, "TextBounds")
-			Compose.watch(function(use: ComposeTypes.Use)
-				textHeight:set(use(bounds).Y)
-			end)
-		end
-		if messageNode then
-			local bounds, messageBounds = ctx.observe(node, "TextBounds"), ctx.observe(messageNode, "TextBounds")
-			Compose.watch(function(use: ComposeTypes.Use)
-				textHeight:set(use(bounds).Y)
-				messageHeight:set(use(messageBounds).Y)
-			end)
-			local wasInvalid = false
-			Compose.watch(function(use: ComposeTypes.Use)
-				local sourceInvalid = read(spec.invalid, use) == true
-				if sourceInvalid and not wasInvalid and not invalid:peek() then
-					markInvalid(true)
-				end
-				if not sourceInvalid and wasInvalid then
-					markInvalid(false)
-				end
-				wasInvalid = sourceInvalid
-				if assert(errorReduced)(use) then
-					assert(errorTimeline):pause()
-					assert(errorTimeline):seek(0.24)
-				end
-			end)
-		end
-		ctx.action(node, "TextEditing", {
-			E.KeyCode.Up,
-			E.KeyCode.Down,
-			E.KeyCode.Left,
-			E.KeyCode.Right,
-			E.KeyCode.DPadUp,
-			E.KeyCode.DPadDown,
-			E.KeyCode.DPadLeft,
-			E.KeyCode.DPadRight,
-		}, editing, function() end, { priority = 10000 })
-
-		local _, editingContext = ctx.action(
-			node,
-			"Cancel",
-			{ E.KeyCode.Escape, E.KeyCode.ButtonB },
-			editing,
-			cancel,
-			{ priority = 10000 }
-		)
-		local nativeEditingAvailable = ctx.observe(editingContext, "Enabled")
-		Compose.watch(function(use: ComposeTypes.Use)
-			if not use(nativeEditingAvailable) and editing:peek() then
-				editing:set(false)
-				if node:IsFocused() then
-					node:ReleaseFocus(false)
-				end
-			end
-		end)
-		runtime.connect(node, "ReturnPressedFromOnScreenKeyboard", function()
-			if spec.multiline ~= true then
-				commit("submit")
-				if node:IsFocused() then
-					node:ReleaseFocus(false)
-				end
-			end
-		end)
-		attributes(node, {
-			invalid = function(use: ComposeTypes.Use)
-				return use(invalid) or read(spec.invalid, use) == true
-			end,
-			validationMessage = validationMessage,
-		})
-		Compose.cleanup(assert(runtime.host.observation).observeProperty(node, "Text", function()
-			if not writing and editing:peek() then
-				propose(node.Text)
-			end
-		end))
-		Compose.watch(function(use: ComposeTypes.Use)
-			setText(read(spec.value, use))
-			if enabled(spec, use) then
-				node:RemoveTag("facet-disabled")
-			else
-				node:AddTag("facet-disabled")
-			end
-			if not enabled(spec, use) and editing:peek() then
-				editing:set(false)
-				if node:IsFocused() then
-					node:ReleaseFocus(false)
-				end
-			end
-		end)
-
-		Compose.cleanup(function()
-			disposed = true
-		end)
-		ctx.skin(node, "field", {
-			disabled = function(use: ComposeTypes.Use)
-				return not enabled(spec, use)
-			end,
-		})
-		return node
-	end)
+	textField(ctx, UI)
 
 	UI.Stepper = ctx.construct("Stepper", function(spec: InputTypes.StepperImplementationProps): Frame
 		requireValue(spec, "number", "Stepper")
@@ -1635,215 +1242,14 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		return node
 	end
 
-	UI.Slider = ctx.construct("Slider", function(spec: InputTypes.SliderImplementationProps): Frame
-		requireValue(spec, "number", "Slider")
-		local model = valueModel(spec :: valueModel.Options, read)
-		local track: Frame
-		local dragging: boolean?
-		local snapshot: number?
-		local detent = ctx.config.pressHaptic
-		local function apply(value)
-			if enabled(spec) then
-				local moved = changed(spec, model.quantize(value))
-				if moved and detent and spec.step ~= nil then
-					detent:Play()
-				end
-				return moved
-			end
-			return false
-		end
-		local function fromPosition(position: Vector2): ()
-			local width = track.AbsoluteSize.X
-			if width > 0 then
-				apply(model.fromFraction((position.X - track.AbsolutePosition.X) / width))
-			end
-		end
-		local function cancel()
-			if dragging then
-				dragging = false
-				if snapshot ~= nil then
-					changed(spec, assert(snapshot))
-				end
-			end
-		end
-		local detector = Host.UIDragDetector "Drag" {
-			ResponseStyle = E.UIDragDetectorResponseStyle.CustomOffset,
-			Enabled = function(use: ComposeTypes.Use)
-				return enabled(spec, use)
-			end,
-			DragStart = function(position)
-				if enabled(spec) then
-					dragging, snapshot = true, read(spec.value)
-					if spec.tapToPosition ~= false then
-						fromPosition(position)
-					end
-				end
-			end,
-			DragContinue = function(position)
-				if dragging then
-					fromPosition(position)
-				end
-			end,
-			DragEnd = function()
-				if not dragging then
-					return
-				end
-				dragging = false
-				if spec.onCommit then
-					spec.onCommit(read(spec.value))
-				end
-			end,
-		}
-		track = ctx.styled(
-			Host.Frame({
-				Name = "Track",
-				Size = D2.new(1, 0, 0, 44),
-				BackgroundTransparency = 1,
-				Selectable = function(use: ComposeTypes.Use)
-					return enabled(spec, use)
-				end,
-				paintedPart({
-					Name = "Rail",
-					Size = D2.new(1, 0, 0, 6),
-					Position = D2.fromScale(0, 0.5),
-					AnchorPoint = V2.new(0, 0.5),
-					ctx.corner(3),
-				}, spec.trackImage, "slider-rail", "sliderTrack") :: ComposeTypes.Child,
-				ctx.styled(
-					Host.Frame "Fill" {
-						Size = function(use: ComposeTypes.Use)
-							return D2.new(model.fraction(read(spec.value, use)), 0, 0, 6)
-						end,
-						Position = D2.fromScale(0, 0.5),
-						AnchorPoint = V2.new(0, 0.5),
-						ctx.corner(3),
-					},
-					"slider-fill"
-				),
-				paintedPart({
-					Name = "Thumb",
-					Size = D2.fromOffset(24, 24),
-					AnchorPoint = V2.new(0.5, 0.5),
-					Position = function(use: ComposeTypes.Use)
-						return D2.fromScale(model.fraction(read(spec.value, use)), 0.5)
-					end,
-					ctx.corner(12),
-				}, spec.thumbImage, "slider-thumb", "sliderThumb"),
-				detector :: ComposeTypes.Child,
-			} :: Shared.FrameNativeProps),
-			"slider-track"
-		)
-		local trackLabel = (if spec.row then spec.row.title else nil) or spec.label
-		if trackLabel ~= nil then
-			attributes(track, {
-				AccessibleLabel = (function(use: ComposeTypes.Use): string
-					return read(trackLabel, use) or ""
-				end) :: Shared.Value<Shared.AttributeValue?>,
-			})
-		end
-		local fill = assert(track:FindFirstChild("Fill"))
-		assert(fill:IsA("Frame"))
-		ctx.skin(fill, "barFill")
-		local input = ctx.config.services.UserInputService
-		if input then
-			local preferred = ctx.observe(input, "PreferredInput")
-			Compose.watch(function(use: ComposeTypes.Use)
-				if use(preferred) == E.PreferredInput.Gamepad then
-					cancel()
-				end
-			end)
-		end
-		adjustment(track, spec, function(direction)
-			if apply(model.stepped(read(spec.value), direction)) and spec.onCommit then
-				spec.onCommit(read(spec.value))
-			end
-		end, cancel, model.min, model.max)
-		Compose.watch(function(use: ComposeTypes.Use)
-			if not enabled(spec, use) then
-				cancel()
-			end
-		end)
-		local readout = ctx.text({
-			Name = "Value",
-			Text = function(use: ComposeTypes.Use)
-				return model.format(read(spec.value, use))
-			end,
-		})
-		if not spec.row then
-			runtime.decorate(readout, {
-				Size = D2.fromOffset(44, 0),
-				AutomaticSize = E.AutomaticSize.XY,
-				TextXAlignment = E.TextXAlignment.Right,
-			})
-		end
-		local parts: { ComposeTypes.Child } = {}
-		if spec.row then
-			local row = spec.row
-			local header = { readout }
-			if spec.label or row.title then
-				table.insert(
-					header,
-					1,
-					ctx.text({
-						Name = "Label",
-						Text = row.title or spec.label,
-						Size = D2.fromOffset(0, 0),
-						AutomaticSize = E.AutomaticSize.Y,
-						TextWrapped = true,
-						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
-					})
-				)
-			end
-			table.insert(
-				parts,
-				ctx.row(header, { Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
-			)
-			if row.description then
-				table.insert(
-					parts,
-					ctx.text({
-						Name = "Description",
-						Text = row.description,
-						Size = D2.new(1, 0, 0, 0),
-						AutomaticSize = E.AutomaticSize.Y,
-						TextWrapped = true,
-					})
-				)
-			end
-			table.insert(parts, track)
-		else
-			if spec.label then
-				table.insert(parts, ctx.text({ Name = "Label", Text = spec.label }))
-			end
-			runtime.decorate(track, { Size = D2.fromOffset(0, 44) })
-			runtime.mount(function()
-				return Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill })
-			end, track)
-			table.insert(parts, track)
-			table.insert(parts, readout)
-		end
-		local native = props(spec, {
-			"value",
-			"min",
-			"max",
-			"step",
-			"format",
-			"enabled",
-			"onChange",
-			"onCommit",
-			"label",
-			"tapToPosition",
-			"row",
-			"thumbImage",
-			"trackImage",
-		}, { Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
-		local node = ctx.styled(if spec.row then ctx.column(parts, native) else ctx.row(parts, native), "slider")
-		if not spec.row then
-			assert(node:FindFirstChildWhichIsA("UIListLayout")).VerticalAlignment = E.VerticalAlignment.Center
-		end
-		valueAttributes(node, spec, model)
-		return node
-	end)
+	require("./slider")(ctx, UI, {
+		enabled = enabled,
+		writable = writable,
+		attributes = attributes,
+		valueAttributes = valueAttributes,
+		adjustment = adjustment,
+		paintedPart = paintedPart,
+	})
 
 	local function level(source: InputTypes.RatingProps | InputTypes.LevelPickerProps, rating: boolean): TextButton
 		local spec = (source :: Shared.TextButtonProps) :: LevelSpec
@@ -2075,70 +1481,37 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			"Facet.Chip: read-only selected requires onToggle"
 		)
 		assert(spec.selected ~= nil or spec.onRemove, "Facet.Chip: selected or onRemove is required")
+		assert(spec.editing == nil or spec.onRemove ~= nil, "Facet UI.Chip: editing requires onRemove")
+		if spec.selected ~= nil and spec.onRemove ~= nil and spec.editing == nil then
+			error("Facet UI.Chip: a selectable chip with onRemove requires editing, the caller's edit-mode cell", 0)
+		end
+		local removable = spec.onRemove ~= nil
+		local function editing(use: ComposeTypes.Use?): boolean
+			if not removable then
+				return false
+			end
+			return spec.selected == nil or read(spec.editing, use) == true
+		end
 		local p = table.clone(
 			spec :: Shared.TextButtonNativeProps & InputTypes.ButtonVisualOptions & InputTypes.ButtonInputOptions
 		) :: InputTypes.ButtonProps & {
 			onToggle: ((boolean) -> ())?,
 			onRemove: (() -> ())?,
+			editing: Shared.Value<boolean>?,
 			removeLabel: Shared.Value<string>?,
 			removeFocusFallback: Shared.Value<GuiObject?>?,
 			leading: Instance?,
 			trailing: Instance?,
 		}
-		p.onToggle, p.onRemove, p.removeLabel, p.removeFocusFallback, p.leading, p.trailing =
-			nil, nil, nil, nil, nil, nil
+		p.onToggle, p.onRemove, p.editing, p.removeLabel, p.removeFocusFallback, p.leading, p.trailing =
+			nil, nil, nil, nil, nil, nil, nil
 		p.ref = nil
-		p.onActivate = function()
-			if spec.selected then
-				local value = not read(spec.selected)
-				if spec.onToggle then
-					spec.onToggle(value)
-				else
-					(spec.selected :: ComposeTypes.Cell<boolean>):set(value)
-				end
-			end
-		end
-		p.Selectable = function(use: ComposeTypes.Use)
-			return spec.selected ~= nil and enabled(spec, use)
-		end
-		if spec.leading or spec.trailing then
-			p.Text = ""
-			local contents: { ComposeTypes.Child } = {}
-			if spec.leading then
-				table.insert(contents, spec.leading)
-			end
-			table.insert(contents, ctx.text({ Text = spec.label or "" }))
-			if spec.trailing then
-				table.insert(contents, spec.trailing)
-			end
-			table.insert(p, ctx.row(contents))
-		end
-		local rootProps: Shared.FrameNativeProps = {}
-		if spec.onRemove then
-			rootProps.Name, p.Name = p.Name, nil
-			rootProps.Size, p.Size = p.Size, nil
-			rootProps.Position, p.Position = p.Position, nil
-			rootProps.AnchorPoint, p.AnchorPoint = p.AnchorPoint, nil
-			rootProps.LayoutOrder, p.LayoutOrder = p.LayoutOrder, nil
-			rootProps.Visible, p.Visible = p.Visible, nil
-			rootProps.ZIndex, p.ZIndex = p.ZIndex, nil
-
-			p.Name = "Body"
-		end
-		if p.haptic == nil and spec.selected ~= nil then
-			p.haptic = true
-		end
-		local body = UI.Button(p)
-		if not spec.onRemove then
-			return ctx.styled(body, "chip")
-		end
-		local root: Frame
-		local remove: TextButton
+		local node: TextButton
 		local pendingFocus: GuiObject?
 		local gui = ctx.config.services.GuiService
-		local function candidate()
-			if root.Parent then
-				local siblings = root.Parent:GetChildren()
+		local function candidate(): GuiObject?
+			if node.Parent then
+				local siblings = node.Parent:GetChildren()
 				local ordinal = {}
 				for index, sibling in siblings do
 					ordinal[sibling] = index
@@ -2148,34 +1521,31 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					local second = if b:IsA("GuiObject") then b.LayoutOrder else 0
 					return if first == second then ordinal[a] < ordinal[b] else first < second
 				end)
-				local index = table.find(siblings, root)
-				local function target(at: number): GuiButton?
+				local index = table.find(siblings, node)
+				local function target(at: number): GuiObject?
 					local sibling = siblings[at]
-					if sibling then
-						for _, child in sibling:GetDescendants() do
-							if
-								child.Name == "Remove"
-								and child:IsA("GuiButton")
-								and child.Selectable
-								and ctx.available(child)
-							then
-								return child
-							end
-						end
+					if
+						sibling
+						and sibling:IsA("GuiObject")
+						and sibling:GetAttribute("editing") ~= nil
+						and sibling.Selectable
+						and ctx.available(sibling)
+					then
+						return sibling
 					end
 					return nil
 				end
 				if index then
 					for at = index + 1, #siblings do
-						local node = target(at)
-						if node then
-							return node
+						local found = target(at)
+						if found then
+							return found
 						end
 					end
 					for at = index - 1, 1, -1 do
-						local node = target(at)
-						if node then
-							return node
+						local found = target(at)
+						if found then
+							return found
 						end
 					end
 				end
@@ -2187,28 +1557,126 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				gui
 				and pendingFocus
 				and pendingFocus.Parent
-				and (gui.SelectedObject == remove or gui.SelectedObject == nil)
+				and (gui.SelectedObject == node or gui.SelectedObject == nil)
 			then
 				gui.SelectedObject = pendingFocus
 			end
 			pendingFocus = nil
 		end
-		remove = UI.Button "Remove" {
-			label = spec.removeLabel or "Remove",
-			enabled = spec.enabled,
-			onActivate = function()
-				if gui and gui.SelectedObject == remove then
-					pendingFocus = candidate()
+		local function remove()
+			if not enabled(spec) or not ctx.available(node) then
+				return
+			end
+			if gui and gui.SelectedObject == node then
+				pendingFocus = candidate()
+			end
+			assert(spec.onRemove)()
+			if node.Parent == nil then
+				restore()
+			end
+		end
+		p.onActivate = function()
+			if editing() then
+				remove()
+			elseif spec.selected then
+				local value = not read(spec.selected)
+				if spec.onToggle then
+					spec.onToggle(value)
+				else
+					(spec.selected :: ComposeTypes.Cell<boolean>):set(value)
 				end
-				spec.onRemove()
-				if root.Parent == nil then
-					restore()
+			end
+		end
+		p.Selectable = function(use: ComposeTypes.Use)
+			return (spec.selected ~= nil or removable) and enabled(spec, use)
+		end
+		if spec.leading or spec.trailing or removable then
+			p.Text = ""
+			local contents: { ComposeTypes.Child } = {}
+			if spec.leading then
+				table.insert(contents, spec.leading)
+			end
+			table.insert(contents, ctx.text({ Name = "Title", Text = spec.label or "" }))
+			if spec.trailing then
+				table.insert(contents, spec.trailing)
+			end
+			if removable then
+				table.insert(
+					contents,
+					ctx.text({
+						Name = "Remove",
+						Text = "×",
+						Visible = function(use: ComposeTypes.Use)
+							return editing(use)
+						end,
+					})
+				)
+			end
+			table.insert(p, ctx.row(contents, { Name = "Content" }))
+		end
+		if p.haptic == nil and spec.selected ~= nil then
+			p.haptic = true
+		end
+		node = ctx.styled(UI.Button(p), "chip")
+		if removable then
+			attributes(
+				node,
+				{
+					AccessibleLabel = function(use: ComposeTypes.Use): string
+						if not editing(use) then
+							return read(spec.label, use) or ""
+						end
+						local named = read(spec.removeLabel, use)
+						return named or `Remove {read(spec.label, use) or ""}`
+					end,
+					editing = function(use: ComposeTypes.Use)
+						return editing(use)
+					end,
+				} :: Shared.Attributes
+			)
+			local holding = false
+			local function removalHeld(): boolean
+				local input = ctx.config.services.UserInputService
+				local probe = (input :: unknown) :: { IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)? }?
+				if input == nil or probe == nil or probe.IsKeyDown == nil then
+					return false
 				end
-			end,
-		}
-		root = ctx.styled(ctx.row({ body, remove }, rootProps), "chip")
+				return input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace)
+			end
+			local focused: ComposeTypes.Readable<Instance?> = if gui
+				then ctx.observe(gui, "SelectedObject") :: ComposeTypes.Readable<Instance?>
+				else Compose.cell(nil :: Instance?)
+			local wasFocused = false
+			Compose.watch(function(use: ComposeTypes.Use)
+				local now = use(focused) == (node :: Instance)
+				if now and not wasFocused then
+					holding = removalHeld()
+				end
+				wasFocused = now
+			end)
+			ctx.action(
+				node,
+				"RemoveChip",
+				{ E.KeyCode.Delete, E.KeyCode.Backspace, E.KeyCode.ButtonX },
+				function(use: ComposeTypes.Use)
+					return use(focused) == (node :: Instance) and editing(use) and enabled(spec, use)
+				end,
+				function()
+					if holding then
+						return
+					end
+					remove()
+				end,
+				{
+					priority = 100,
+					onReleased = function()
+						holding = false
+					end,
+				}
+			)
+		end
 		Compose.cleanup(restore)
-		return root
+		return node
 	end)
 
 	UI.ShortcutHint = ctx.construct(

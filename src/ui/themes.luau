@@ -718,6 +718,10 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-toggle-row.facet-selected >> .facet-text", { TextColor3 = c("content") })
 	rule(".facet-toggle-row.facet-selected >> .facet-icon", { ImageColor3 = c("content") })
 	rule(".facet-toggle-row::UIPadding", { PaddingLeft = types.UDim.new(0, 0), PaddingRight = types.UDim.new(0, 0) })
+	rule(".facet-toggle-settings::UIPadding", {
+		PaddingLeft = types.UDim.new(0, math.max(12, buttonInsets.left or 0)),
+		PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0)),
+	})
 	rule(".facet-toggle-indicator", { BackgroundColor3 = c("control"), BackgroundTransparency = 0 })
 	rule(".facet-toggle-on", { BackgroundColor3 = c("accent") })
 	rule(".facet-toggle-switch >> .facet-toggle-mark", { BackgroundColor3 = c("onAccent") })
@@ -760,6 +764,8 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-menu-destructive >> .facet-icon", { ImageColor3 = c("danger") })
 	rule(".facet-menu::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
 	rule(".facet-step-circle::UIStroke", { Color = c("contentSecondary"), Thickness = 1 })
+	rule(".facet-invalid::UIStroke", { Color = c("danger"), Thickness = 1 })
+	rule(".facet-date-time-picker", { BackgroundTransparency = 1 })
 	for _, member in { ".facet-avatar", ".facet-button" } do
 		rule(".facet-avatar-stack > " .. member .. "::UIStroke", {
 			Color = c("surface"),
@@ -829,6 +835,17 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-segment-current >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-accent >> .facet-text", { TextColor3 = c("onAccent") })
 	rule(".facet-accent >> .facet-icon", { ImageColor3 = c("onAccent") })
+	rule(".facet-calendar-day", { BackgroundTransparency = 1 })
+	rule(".facet-calendar-day:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(".facet-calendar-band", { BackgroundColor3 = c("controlSelected"), BackgroundTransparency = 0 })
+	rule(".facet-calendar-disc", { BackgroundColor3 = c("accent"), BackgroundTransparency = 0 })
+	rule(".facet-calendar-end", { BackgroundColor3 = c("content") })
+	rule(".facet-calendar-today::UIStroke", { Color = c("accent"), Thickness = 1 })
+	rule(".facet-calendar-strike", { BackgroundColor3 = c("contentSecondary"), BackgroundTransparency = 0 })
+	rule(".facet-calendar-number", { FontFace = f({ weight = "SemiBold" }) })
+	rule(".facet-calendar-dim", { TextColor3 = c("contentSecondary"), FontFace = f({ weight = "Regular" }) })
+	rule(".facet-calendar-chosen", { TextColor3 = c("onAccent") })
+	rule(".facet-calendar-chosen-end", { TextColor3 = c("surface") })
 	rule(".facet-skinned", { BackgroundTransparency = 1 })
 	rule(".facet-toggle-checkbox.facet-skinned::UIStroke", { Transparency = 1 })
 	rule(".facet-menu.facet-skinned::UIStroke", { Transparency = 1 })

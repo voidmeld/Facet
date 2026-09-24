@@ -13,9 +13,14 @@ local ContentTypes = require("@self/ui/content_types")
 local ThemeTypes = require("@self/ui/theme_types")
 local LayoutTypes = require("@self/ui/layout_types")
 local OverlayTypes = require("@self/ui/overlay_types")
+local civilDate = require("@self/ui/civil_date")
+local CivilTypes = require("@self/ui/civil_date_types")
+local DateTimePickerTypes = require("@self/ui/date_time_picker_types")
+local arithmetic = require("@self/ui/arithmetic")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
+export type NumberInputProps = InputTypes.NumberInputProps
 export type StepperProps = InputTypes.StepperProps
 export type SliderProps = InputTypes.SliderProps
 export type RatingProps = InputTypes.RatingProps
@@ -85,9 +90,14 @@ export type PopoverSpec = OverlayTypes.PopoverSpec
 export type NoticeSpec = OverlayTypes.NoticeSpec
 export type NavBarSpec = OverlayTypes.NavBarSpec
 export type SnackbarSpec = OverlayTypes.SnackbarSpec
+export type DateTimePickerProps = DateTimePickerTypes.DateTimePickerProps
 export type Controls = ControlTypes.Controls
 export type ControlOptions = ControlTypes.Config
 export type ThemePackage = ThemeTypes.ThemePackage
+export type CivilDate = CivilTypes.CivilDate
+export type CivilRange = CivilTypes.Range
+export type CivilLocale = CivilTypes.Locale
+export type CivilDateModule = CivilTypes.Module
 export type Cell<T> = Compose.Cell<T>
 export type Readable<T> = Compose.Readable<T>
 export type Runtime = Compose.Runtime
@@ -102,6 +112,8 @@ export type Facet = {
 	Roblox: ComposeRobloxModule,
 	controls: (Runtime, ControlOptions?) -> Controls,
 	themes: ThemeTypes.Themes,
+	civilDate: CivilTypes.Module,
+	recipes: { arithmetic: { parse: (unknown) -> number? } },
 	bind: (ComposeModule, ComposeRobloxModule) -> Facet,
 }
 
@@ -129,6 +141,9 @@ local USED = {
 	"withOwner",
 }
 
+local recipes: { arithmetic: { parse: (unknown) -> number? } } =
+	table.freeze({ arithmetic = table.freeze({ parse = arithmetic.parse }) })
+
 local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 	local fields = (core :: unknown) :: { [string]: unknown }
 	for _, name in USED do
@@ -153,6 +168,8 @@ local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 			return createControls(core, runtime, options)
 		end,
 		themes = bindThemes(core),
+		civilDate = civilDate,
+		recipes = recipes,
 		bind = bind,
 	})
 	return surface

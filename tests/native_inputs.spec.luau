@@ -52,6 +52,7 @@ t.describe("native input controls", function()
 			return runtime.constructors.Frame({
 				UI.Chip({
 					selected = Compose.cell(false),
+					editing = Compose.cell(true),
 					onRemove = function() end,
 					ref = function(root)
 						table.insert(chipRefs, root)
@@ -67,7 +68,7 @@ t.describe("native input controls", function()
 		end)
 		t.expect(#chipRefs).toBe(1)
 		t.expect(#hintRefs).toBe(1)
-		t.expect(chipRefs[1].ClassName).toBe("Frame")
+		t.expect(chipRefs[1].ClassName).toBe("TextButton")
 		t.expect(hintRefs[1].ClassName).toBe("Frame")
 		t.expect(chipRefs[1].Parent).toBe(node)
 		t.expect(hintRefs[1].Parent).toBe(node)
@@ -256,9 +257,10 @@ t.describe("native input controls", function()
 		stop()
 	end)
 
-	t.it("commits and formats finite numeric input without committing out-of-range input", function()
+	t.it("commits and formats finite numeric input, clamps out-of-range input and refuses a non-number", function()
 		local value, number, invalid = Compose.cell("2"), Compose.cell(2), Compose.cell(false)
 		local commits = 0
+		local reasons = {}
 		local node, stop = world(function(UI)
 			return UI.TextInput({
 				value = value,
@@ -270,8 +272,9 @@ t.describe("native input controls", function()
 				format = function(n)
 					return string.format("%.1f", n)
 				end,
-				onCommit = function()
+				onCommit = function(committed, reason)
 					commits += 1
+					table.insert(reasons, `{committed}:{reason}`)
 				end,
 			})
 		end)
@@ -285,9 +288,16 @@ t.describe("native input controls", function()
 		node:CaptureFocus()
 		node.Text = "11"
 		node:ReleaseFocus(true)
-		t.expect(number:peek()).toBe(7)
-		t.expect(commits).toBe(1)
+		t.expect(number:peek()).toBe(10)
+		t.expect(value:peek()).toBe("10.0")
+		t.expect(invalid:peek()).toBe(false)
+		node:CaptureFocus()
+		node.Text = "1e1"
+		node:ReleaseFocus(true)
+		t.expect(number:peek()).toBe(10)
+		t.expect(commits).toBe(2)
 		t.expect(invalid:peek()).toBe(true)
+		t.expect(table.concat(reasons, " ")).toBe("7:submit 10:clamped")
 		stop()
 	end)
 
@@ -978,9 +988,9 @@ t.describe("native input controls", function()
 		local label = find(node, "ValidationMessage")
 		label.TextBounds = engine.types.Vector2.new(200, 18)
 		node:CaptureFocus()
-		node.Text = "11"
+		node.Text = "1.2.3"
 		node:ReleaseFocus(true)
-		t.expect(label.Text).toBe("Enter a value of at most 10.")
+		t.expect(label.Text).toBe("Enter a valid number.")
 		t.expect(label.Visible).toBe(true)
 		t.expect(node.Size.Y.Offset >= 54).toBe(true)
 		engine.heartbeat.fire(0.08)
@@ -1088,14 +1098,14 @@ t.describe("native input controls", function()
 			return { services = { GuiService = gui } }
 		end)
 		local function remove(id)
-			local target = find(find(node, id), "Remove")
+			local target = find(node, id)
 			gui.SelectedObject = target
 			target.Activated.fire()
 		end
 		remove("B")
-		t.expect(gui.SelectedObject).toBe(find(find(node, "C"), "Remove"))
+		t.expect(gui.SelectedObject).toBe(find(node, "C"))
 		remove("C")
-		t.expect(gui.SelectedObject).toBe(find(find(node, "A"), "Remove"))
+		t.expect(gui.SelectedObject).toBe(find(node, "A"))
 		remove("A")
 		t.expect(gui.SelectedObject).toBe(fallback)
 		stop()
@@ -1121,7 +1131,7 @@ t.describe("native input controls", function()
 			gui = engine.new("GuiService")
 			return { services = { GuiService = gui } }
 		end)
-		local remove = find(node, "Remove")
+		local remove = find(node, "Delayed")
 		gui.SelectedObject = remove
 		remove.Activated.fire()
 		t.expect(gui.SelectedObject).toBe(remove)

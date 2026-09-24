@@ -40,9 +40,11 @@ to select a control. Then read the exact contract of that control in the
 | Main-axis fill | `UI.fill` |
 | One reactive graph with the game's own Compose | `Facet.bind(Compose, Roblox)`; `Facet.COMPOSE_COMMIT` |
 | Semantic native styling and art | `Facet.themes` |
+| Civil dates, and an arithmetic parser for number fields | `Facet.civilDate`, `Facet.recipes` |
 | Activation and rich action rows | `UI.Button` |
 | Boolean and mixed selection | `UI.Toggle` |
-| Native editing and numeric input | `UI.TextInput` |
+| Native editing, field chrome and numeric input | `UI.TextInput`, `UI.NumberInput` |
+| Civil date and date range fields with a calendar | `UI.DateTimePicker` |
 | Numeric adjustment | `UI.Stepper`, `UI.Slider` |
 | Rating and discrete levels | `UI.Rating`, `UI.LevelPicker` |
 | Up and down votes | `UI.Vote` |

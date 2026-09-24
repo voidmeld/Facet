@@ -15,7 +15,7 @@ return function(
 		SplitButton: Nav.SplitButtonConstructor,
 		ComboBox: Types.Constructor<Nav.ComboBoxSpec, Frame>,
 		Button: Types.Constructor<Inputs.ButtonProps, TextButton>,
-		TextInput: Types.Constructor<Inputs.TextInputProps, TextBox>,
+		TextInput: Types.Constructor<Inputs.TextInputProps, TextBox | Frame>,
 		Badge: Types.Constructor<Media.BadgeProps, GuiObject>,
 		Avatar: Types.Constructor<Media.AvatarProps, TextButton>,
 	},
@@ -576,6 +576,29 @@ return function(
 		ctx.action(modal, "MenuLeft", { E.KeyCode.Left, E.KeyCode.DPadLeft }, function(use: ComposeTypes.Use)
 			return #use(path) > 0
 		end, back, { priority = 2100 })
+		local focusIn = surfaces.selecting()
+		local placed = ctx.observe(modal, "Parent")
+		Compose.watch(function(use: ComposeTypes.Use)
+			local rows = use(current)
+			if gui and not nonmodal and pendingFocus == nil and use(placed) and focusIn(use) then
+				for _, item in rows do
+					if item.divider ~= true then
+						local live = actionItem(item)
+						if
+							live.selected
+							and live.selected:peek() == live.value
+							and read(live.enabled, use) ~= false
+						then
+							local target = surfaces.firstSelectable(panel, tostring(live.id))
+							if target then
+								gui.SelectedObject = target
+								return
+							end
+						end
+					end
+				end
+			end
+		end)
 		local focusIn = surfaces.selecting()
 		Compose.watch(function(use: ComposeTypes.Use)
 			local rows = use(current)
@@ -1616,7 +1639,7 @@ return function(
 			spec.text:set(label(spec.value:peek()))
 			errorText:set("")
 		end
-		local editor = UI.TextInput "Editor" {
+		local created = UI.TextInput "Editor" {
 			value = spec.text,
 			placeholder = spec.placeholder,
 			enabled = spec.enabled,
@@ -1640,6 +1663,9 @@ return function(
 				editing:set(false)
 			end,
 		}
+		assert(created:IsA("TextBox"), "Facet ComboBox: the editor is a TextBox")
+		local editor = created
+
 		local function open()
 			if read(spec.enabled) ~= false then
 				opened:set(true)

@@ -14,12 +14,15 @@ and styling. This reference describes the `0.12.0` surface.
 | `controls(runtime, options?)` | Returns the control constructor table for that native runtime. |
 | `themes` | Theme package definitions, native StyleSheet compilation, icons and skins. |
 | `COMPOSE_COMMIT` | The full Compose commit of the pinned copy. The Facet tests use this commit. |
+| `civilDate` | Calendar arithmetic, words and fixed-offset instants for civil dates. See [Civil dates](#civil-dates). |
+| `recipes` | Opt-in helpers. `recipes.arithmetic.parse` is a bounded arithmetic parser for a number field. See [Recipes](#recipes). |
 | `bind(Compose, Roblox)` | Returns a Facet table whose `controls` and `themes` use the Compose core module and the Compose Roblox module that you give. See [Your own Compose](#your-own-compose). |
 
 ### Types
 
 The exported Luau types include `Facet`, `ComposeModule`, `ComposeRobloxModule`,
-`Controls`, `ControlOptions`, `ThemePackage`,
+`Controls`, `ControlOptions`, `ThemePackage`, `CivilDate`, `CivilRange`,
+`CivilLocale`, `CivilDateModule`,
 and the `Props` and `Spec` contracts of each control. The layout types include
 `Space`, `Padding` and `Extent`. `Cell<T>`, `Readable<T>`,
 `Runtime`, `Owner` and `Use` are the Compose types. Collection, menu and picker
@@ -44,7 +47,9 @@ sources keep their native types.
 
 Run `python3 tools/check_types.py` to check the Facet runtime source and the
 positive and compile-fail public API witnesses. The checker uses pinned Roblox
-definitions. It reports vendor diagnostics separately. It does not accept a
+definitions. It raises the `LuauTarjanChildLimit` analyzer flag to 100000,
+because the old Luau solver stops at its default limit of 10000 on the full
+`Facet` type and reports "Code is too complex to typecheck". It reports vendor diagnostics separately. It does not accept a
 `--!strict` directive alone as proof of a typed API.
 
 ### Mounting
@@ -369,24 +374,136 @@ the control updates the writable cell. `presentation` is `switch`, `checkbox` or
 `leading` or `trailing`. The label, row, hint, enabled and common button styling
 options apply.
 
+A switch or checkbox Toggle paints no plate and takes no `control` art from a
+theme package. A settings row (a Toggle with `row`, `hint` or `icon`) has the
+`facet-toggle-settings` tag. Its horizontal padding is the padding of a
+Button, so its content lines up with Button rows in each theme.
+
 ### TextInput
 
 `value` is the string model. Roblox TextBox owns editing, IME, the caret, the
 text selection and focus. `onChange(text)` handles user edits. An external
-model update does not send it. `onCommit(text, reason)` receives `submit` or
-`focusLost`. `onCancel` observes cancellation and the restoration of the initial
-value of the edit.
+model update does not send it. `onCommit(value, reason)` receives `submit` or
+`focusLost`. The number presentation also reports `clamped`. `onCancel`
+observes cancellation and the restoration of the initial value of the edit.
 
 `presentation` is `plain`, `search` or `number`. The number presentation also
-uses a writable `numericValue`, `min`, `max`, `parse` and `format`. If a
-callback disables the input during a commit, the commit stops. `numericValue`
-does not change and `onCommit` does not run.
-`validate(proposed)` returns the accepted text, or `nil` to reject it.
-`maxLength` counts UTF-8 characters.
+uses a writable `numericValue`, `min`, `max`, `parse` and `format`, and the
+number options of [NumberInput](#numberinput). If a callback disables the input
+during a commit, the commit stops. `numericValue` does not change and
+`onCommit` does not run. `validate(proposed)` returns the accepted text, or
+`nil` to reject it. `maxLength` counts UTF-8 characters.
 
 The other options are `placeholder`, `multiline`, `invalid`, `enabled`,
 `disabled`, `clearButton` and `clearButtonMode` (`never`, `always`,
 `whileEditing` or `unlessEditing`). Native TextBox properties stay available.
+
+- `readOnly`: a boolean or a readable boolean. A read-only field stays
+  selectable, keeps full contrast and can take focus. `TextEditable` is false,
+  the control refuses each edit, the clear button does not show and focus loss
+  commits nothing. A live change keeps the same TextBox and the edit.
+- `selectOnFocus`: `none` (the default), `all` or `end`, or a readable of one.
+  The control applies it once for each focus session. A pointer focus applies
+  it at the release of that pointer. Other focus applies it at once. A change
+  during focus applies at the next focus. A live value that is not one of the
+  three words causes an error, and the control keeps the last correct word. The
+  TextBox has the `selectOnFocus` attribute only when you supply the option.
+- `visibleLines`: a whole number of at least 1, for a multiline field only. The
+  field shows that number of body lines in a native ScrollingFrame named
+  `Viewport`. Longer text scrolls in the viewport, and the viewport keeps its
+  size.
+
+#### Field chrome
+
+A field can have these field chrome options: `label`, `requiredMark`, `hint`,
+`errorText`, `leading`, `trailing`, `controlSize`, `appearance` and `corners`.
+A field without chrome options, number units, step buttons or `visibleLines`
+keeps the native TextBox as its root. Other fields return a Frame. The root
+Frame holds these children in order:
+
+1. `Label`: a TextButton that is not selectable. Its `Title` text is the label.
+   Activation focuses the TextBox. The label is 44 pixels tall or more, and
+   its words sit at the bottom. It follows `enabled`.
+2. `Input`: the plate. It holds `SearchIcon` or `Leading`, `Prefix`, the
+   TextBox named `Field`, `Suffix`, `Clear`, `Decrement`, `Increment` and
+   `Trailing`, in that order. A named `controlSize` puts the plate in an
+   `Input+target` Frame that is 44 pixels tall or more.
+3. `Message`: one line. It shows `errorText` when it is not empty, then the
+   number rejection text, then `hint`. An error shows the `status.error` mark
+   (`MessageMark`), adds the `facet-validation` tag to the text and the
+   `facet-invalid` tag to the plate. The plate does not move or shake.
+
+`requiredMark` is `required` or `optional`. It is notation only. It does not
+validate. `required` adds ` *` to the label text, also for a readable label.
+`optional` adds no word. Put localized "optional" text in `hint`.
+
+`leading` and `trailing` are native Instances. `leading` is decoration and is
+not a focus stop. A search field refuses `leading`, because its search mark
+leads. The focusable parts of `trailing` come after the TextBox and the clear
+button.
+
+`appearance` is `standard` (the `facet-field` plate), `contrast` (the
+`facet-control` plate) or `utility` (no plate). A readable word changes the tag
+in place. A word that is not one of these causes an error, and the plate keeps
+the last correct paint. `corners` is `pill` or `square`. It adds a native
+UICorner named `Corners`. `controlSize` is `compact`, `regular` or `large`.
+
+A word that the chrome does not know causes an error that names the option.
+
+### NumberInput
+
+`UI.NumberInput(spec)` is `UI.TextInput` with `presentation = "number"`. It
+refuses `presentation`. `value` (the editable string) and `numericValue` (the
+committed number) are cells that you own. Each TextInput option applies. These
+options are for the number presentation only:
+
+- `step`: a finite number above zero. The default is 1.
+- `precision`: a whole number of decimal places from 0 to 10. A commit and a
+  step press round half away from zero. Typing does not round.
+- `stepButtons`: two 44 by 44 buttons, `Decrement` and `Increment`, after the
+  clear button. They are ordinary focus stops and do not take the arrow keys.
+  The control disables a button at the bound that it faces, and disables both
+  buttons when the field is read-only or disabled. A press commits with `submit`. With `min` and
+  `max`, a press follows the step grid from `min`.
+- `prefix` and `suffix`: a string or a readable string beside the TextBox.
+  They are not part of the draft.
+- `scrub`: a boolean or a readable boolean. A horizontal drag across the
+  TextBox changes the number. See below.
+
+Without `precision`, a step press or a scrub rounds to the decimal places of
+`step` and `min`. Thus three presses of 0.1 give 0.3.
+
+A commit parses the draft. The default parser accepts an optional sign, digits
+and one decimal point only. It refuses an exponent, grouping, hex and blanks.
+`Facet.recipes.arithmetic.parse` adds arithmetic. A number outside `min` or
+`max` becomes the bound, and `onCommit(number, "clamped")` reports it. A draft
+that is empty, a sign alone or a point alone is incomplete. At commit, the
+field restores the text of the last committed number and shows no message,
+unless `requiredMark` is `required`. A draft that is not a number keeps its
+text and shows "Enter a valid number.". `onCommit` receives the number.
+
+`scrub` starts after 6 pixels of mouse travel or 14 pixels of touch travel. A
+tap below that distance stays a native tap. A drag that is mostly vertical
+stays native. A horizontal drag ends the edit without a commit and restores
+the text of the edit start. Then each 8 pixels of total travel is one `step`,
+with the rounding and bounds of the step buttons. `onChange` reports each new
+text. The release commits once with `submit`. Escape or ButtonB, a change of
+PreferredInput, disabling, `readOnly`, `scrub` turning off and disposal cancel
+the drag: the number and the text return to the values at the drag start, and
+nothing commits. A write of your own to `numericValue` during a drag ends the
+drag, and your number stays.
+
+```luau
+local draft, laps = Compose.cell("3"), Compose.cell(3)
+UI.NumberInput "Laps" {
+    value = draft,
+    numericValue = laps,
+    min = 1,
+    max = 99,
+    stepButtons = true,
+    label = "Laps",
+}
+```
 
 ### Stepper and Slider
 
@@ -402,6 +519,48 @@ the control height. `row` gives a stacked title, description and track.
 Slider also supports `onCommit(value)`, `tapToPosition` (default true),
 `thumbImage`, `trackImage` and `row`. Dragging uses native drag detection.
 Keyboard and gamepad adjustment use the input actions of the control.
+
+Slider shapes. `axis`, `range`, `minGap` and `thumb` are construction options.
+A readable value for one of them causes an error that names the option.
+
+- `axis`: `x` (the default) or `y`. A `y` track runs from bottom to top. Its
+  arrows are Up and Down, and Left and Right do not change it. The arrow that
+  moves the selection onto a slider does not also change the value.
+- `range`: `value` holds `{ lower, upper }`. Each change calls
+  `onChange(pair, { thumb = "lower" | "upper" })`, and each completed gesture
+  calls `onCommit(pair, { thumb })` once. The two handles, `HandleLower` and
+  `HandleUpper`, are 44 by 44 selection stops, and the fill spans between
+  them. The handles never cross. A drag keeps the handle that it started
+  with. A press on the track moves the nearer handle. For coincident handles,
+  a press below the pair moves the lower one and a press above moves the upper
+  one. The arrows move the selected handle and stay on it when `minGap` stops
+  the move. With gamepad input, the arrows move the selection between the
+  handles until ButtonA engages the handle. ButtonB releases it. A pair that
+  is not legal at construction causes an error. A pair that becomes illegal
+  later is not painted or written back: the control keeps the last legal pair
+  and adds a line to the `diagnostics` attribute.
+- `minGap`: a number from 0 (the default) to the width of the range. It is the
+  least distance between the handles.
+- `thumb`: `always` (the default), `auto` or `none`. `auto` shows the handle on
+  hover, selection, drag and with touch input. `none` never shows it. Input
+  and the readout do not change.
+- `thumbContent(info)`: builds the knob once for each handle.
+  `info = { thumb, value, fraction, dragging, enabled }`. `thumb` is `value`,
+  `lower` or `upper`. The other four are readables. The knob has no
+  `sliderThumb` art and grows from 24 by 24 to fit its content. You cannot
+  use it with `thumbImage`.
+- `trackContent()`: builds a track node once, for example a colour ramp. It
+  replaces the rail and the fill, and fills the track. You cannot use it with
+  `trackImage`.
+- `rotation`: degrees, or a readable of them. It turns the painted track only.
+  The control turns a press back by the same angle, so it reads the value that the
+  upright track reads. The label and the readout stay upright.
+- `controlSize`: `compact`, `regular` or `large`. It sets the painted track
+  thickness (4, 6 or 8 pixels). The track stays 44 pixels thick as a target.
+
+Losing the input class during a drag (a change of `PreferredInput`) restores
+the value, or the whole pair, from the start of the drag. The later move and
+release commit nothing.
 
 ### Rating and LevelPicker
 
@@ -451,8 +610,22 @@ Stepper.
 ### Chip and ShortcutHint
 
 Chip takes `label` and either a boolean `selected` or `onRemove`.
-`onToggle(next)` is controlled. The removal options are `removeLabel`,
-`removeFocusFallback`, and native `leading` and `trailing` children.
+`onToggle(next)` is controlled. The other options are `editing`,
+`removeLabel`, `removeFocusFallback`, and native `leading` and `trailing`
+children.
+
+Removal is edit mode. A chip with both `selected` and `onRemove` requires
+`editing`, a boolean or a readable boolean that you own. A chip with
+`onRemove` and no `selected` is always in edit mode. Outside edit mode, a
+chip only selects and shows no close mark. In edit mode, a `Remove` text mark
+shows inside the one chip button, and the `AccessibleLabel` attribute is
+`removeLabel` (the default is "Remove" and the label). Then activation, and
+Delete, Backspace or ButtonX while the chip is selected, call `onRemove`. The
+mark is not a separate button or focus stop. `onRemove` does not change your
+collection. Remove the item yourself. When a selected chip is removed,
+selection moves to the next removable chip, then the previous one, then
+`removeFocusFallback`. A Delete or Backspace key that is still down when
+selection arrives does not remove the next chip.
 
 ShortcutHint takes `keys = { { "Ctrl", "K" } }` or an `action` InputAction. It
 also takes an optional `separator` and `controlSize`. The default separator is
@@ -475,7 +648,8 @@ menus keep the control-specific navigation of the menu.
 - `presentation` is `automatic`, `menu` or `sheet`. `backLabel` sets the text
   of the Back row.
 - When the player navigates by selection, an open menu selects its first
-  enabled item. Back and Left close one level and return the selection to the
+  enabled item. If an enabled selected item holds the value of its group, the
+  menu selects that item instead. Back and Left close one level and return the selection to the
   item that opened it.
 - The menu panel scales and fades from the edge nearest to its trigger. See
   [Motion](#motion).
@@ -1363,6 +1537,207 @@ native styling intentionally. Give the same theme package readable to
 `createStyleSheet(runtime, package)`. Mount the resulting sheet and a native
 StyleLink in the target tree. See [custom themes](../guide/09-custom-themes.md)
 and [skins](../guide/10-rich-skinning.md).
+
+### DateTimePicker
+
+`UI.DateTimePicker(spec)` returns a Frame. The player uses it to choose a
+calendar date, a date range, or a date with a time. For a count of days, use
+`UI.NumberInput`. For a few fixed dates, use `UI.Picker`.
+
+```luau
+local raceDay = Compose.cell({ year = 2026, month = 10, day = 3 })
+UI.DateTimePicker "RaceDay" {
+    label = "Race day",
+    value = raceDay,
+    onChange = function(date)
+        raceDay:set(date)
+    end,
+    min = { year = 2026, month = 1, day = 1 },
+}
+```
+
+The values are civil dates. See [Civil dates](#civil-dates). A date has no
+time zone, so it does not move a day where the player sees it.
+
+- `selection`: `single` (the default) or `range`. Set it at construction.
+- A single picker uses `value`, `onChange(date)` and `onCommit(date)`. A range
+  picker uses `range = { start?, finish? }`, `onRangeChange(range)` and
+  `onRangeCommit(range)`. The keys of the other mode cause an error.
+- `time`: a single picker only. The value also has `hour` and `minute`.
+  `minuteStep` is the minute grid. It must divide 60. The default is 5.
+  `hourCycle` is 12 or 24. The default comes from `locale`.
+- `min` and `max`: inclusive bounds, or readables of them. `isDateDisabled(date)`
+  returns true for a day that the player cannot choose.
+- `weekStart`: 1 (Sunday) to 7 (Saturday). The default is 1.
+- `locale`: `months`, `weekdays` (short names, Sunday first), `order` (`mdy`,
+  `dmy` or `ymd`), `separator` and `hourCycle`.
+- `clock()`: returns today. The default is the local clock of the player.
+  `referenceDate` sets the month that an empty picker opens on.
+- `presets`: a range picker only. Each preset is
+  `{ id, label, range = function(today) }`.
+- `draft`: adds Reset all, Cancel and Apply.
+- `style`: `automatic` (the default) or `inline`. Set it at construction.
+  `automatic` is a field that opens a calendar panel. `inline` shows the
+  calendar in place.
+- `format(date)`: the words of the field. A custom `format` turns off typed
+  entry. `placeholder` is the text of an empty field.
+- `isPresented`, `onPresentedChange(next)` and `onDismiss(reason)`: the open
+  state of the panel. The reason is `activate`, `outside`, `cancel`,
+  `anchorLost` or `apply`. Without `isPresented`, the control keeps its own
+  open state.
+- `enabled` and `readOnly`: booleans or readables. A read-only picker can omit
+  the change callback.
+- The field chrome keys: `label`, `requiredMark`, `hint`, `errorText`,
+  `controlSize`, `appearance` and `corners`. See
+  [Field chrome](#field-chrome).
+
+#### Proposals and commits
+
+The value belongs to you. A pick sends a proposal to `onChange` or
+`onRangeChange`. The calendar shows only the value that you then hold. If you
+refuse a pick, the calendar does not change.
+
+Without `draft`, each change commits at once. A pick, a time step and a typed
+date each call `onCommit`. A single pick without `time` also closes the panel.
+In a range, the first pick sets `start`. The second pick sets `finish`. If the
+second day is earlier, the two ends change places. `onRangeCommit` runs only
+when both ends are set. B, Escape and a tap outside close the panel and keep
+the value.
+
+With `draft = true`, only Apply commits. Typed text also only proposes. Each
+other way out proposes the value that the panel opened with. Cancel does this
+too. Reset all proposes an empty value. If you write the value while the panel
+is open, your value becomes the value that Cancel restores.
+
+A pointer or a finger can drag the start or the end of a complete range. Each
+move proposes a new range. If the end crosses the other end, the two ends
+change places. The release commits once, as the draft rules permit. A cancelled
+drag proposes the range that the drag started from. A press on another day
+does not start a drag, so a tap there still picks.
+
+#### The field
+
+The field is the `Field` plate in the field chrome. When the preferred input
+is keyboard and mouse, the field holds a native TextBox named `Entry`.
+Otherwise, it holds a button named `Show`. The calendar button `Open` is at
+the trailing edge of the plate.
+
+`Entry` takes the numeric form of the locale when focus leaves it. A year has
+four digits. A typed range is two dates with " – " or " - " between them. If
+the text is not a date, or the day is not available, the text stays. The field
+shows the error in the message line and adds the `facet-invalid` tag to the
+plate. Nothing commits. An empty text proposes an empty value.
+
+The panel opens below the field, aligned to its leading edge. If there is not
+sufficient room below, the panel opens above the field. The panel stays 8
+pixels from the screen edges. The `CalendarSurface` ScrollingFrame holds the
+calendar. It is never taller than the screen, so a tall calendar scrolls. On a touch screen narrower than 600 pixels, the
+panel is a sheet at the bottom of the screen with a Done button. On a ten-foot
+screen, the panel is a sheet at the center of the screen. The panel is a native
+modal. A tap outside the panel, B or Escape closes it. When it closes, the
+selection returns to the control that had it before.
+
+#### The calendar
+
+The `Calendar` frame holds these parts in order:
+
+1. `Header`: `Previous`, the `Month` and `Year` menus, and `Next`.
+2. `Panes`: `Pane1`, and `Pane2` for a wide range picker. Each pane holds
+   `Weekdays` and `Days`, with 42 day buttons `D1` to `D42`.
+3. `PageHint`: the page keys, only while the preferred input is a gamepad.
+4. `Time`: the `Hour` and `Minute` number fields, and `Half` (AM and PM) on a
+   12-hour clock. On touch, it also holds the `Times` list.
+5. `Presets`: one chip for each preset, named `Preset-<id>`.
+6. `Actions`: `ResetAll` at the leading edge, then `Cancel` and `Apply` in the
+   `Commit` row. A sheet without `draft` shows `Done`.
+
+A single date shows one month. A range shows two consecutive months when the
+width holds them. The title of each month shows only with two months.
+
+A day outside `min` and `max`, or refused by `isDateDisabled`, stays in the
+grid. It is selectable, its label ends with "unavailable", its `Strike` line
+shows, and a press does nothing. A day of the next or the previous month is
+dim. A press chooses it, but it is not selectable.
+
+The month menu disables a month outside the bounds. The year menu lists only
+the years inside `min` and `max`. A side with no bound lists 100 years from
+the shown year. Each menu opens with the selection on the shown month or year.
+A choice moves the calendar to the nearest month inside the bounds. `Previous`
+and `Next` stop at a month that is fully outside the bounds.
+
+The day buttons use native GuiService selection. The arrow keys and the
+D-pad move one day or one week. Right on the last day of a week moves to the
+next day. Left and Right page the month past the first or the last day. Up and
+Down move across the shown months. From the first row, Up goes to the `Month`
+menu. From the last row, Down goes to the `Hour` field, else to the first
+action, else to the next control below. L1, R1, Comma and Period page the
+month from each day. When selection enters the grid from another control, it
+goes to the chosen day, else to today.
+
+`time` adds the `Hour` and `Minute` fields. Their step buttons follow the
+minute grid. The top minute is the last step before 60. `Half` changes between
+AM and PM. On touch, the `Times` list shows each time on the minute grid. It
+opens at the held time, else at the time of `clock()`.
+
+#### Native state
+
+`ref` receives the root Frame. The root has the `facet-date-time-picker` tag
+and these attributes: `month` (for example `2026-09`), `dual`, `route`
+(`inline`, `popover` or `sheet`), `presented`, `text`, `typedError` and
+`diagnostics`. A readable value that is not a legal date does not change the
+picker. The picker keeps the last legal value, adds one to `diagnostics`, and
+sends the message to the `onError` factory option.
+
+The theme paints the calendar through these tags: `facet-calendar-day`,
+`facet-calendar-band`, `facet-calendar-disc`, `facet-calendar-end`,
+`facet-calendar-today`, `facet-calendar-strike`, `facet-calendar-number`,
+`facet-calendar-dim`, `facet-calendar-chosen` and `facet-calendar-chosen-end`.
+
+## Civil dates
+
+`Facet.civilDate` is the calendar that `UI.DateTimePicker` keeps its values in.
+A `CivilDate` is `{ year, month, day, hour?, minute? }` in no time zone. A
+`CivilRange` is `{ start?, finish? }`.
+
+- Arithmetic: `isLeap(year)`, `daysIn(year, month)`, `toDays(d)` and
+  `fromDays(n)` (days from 1970-01-01), `dateOf(d)` (the date without its
+  time), `addDays(d, n)`, `addMonths(d, n)`, `compare(a, b)` (by date),
+  `same(a, b)` (every field), `weekday(d)` (1 is Sunday),
+  `monthGrid(year, month, weekStart)` (six weeks of dates),
+  `within(d, min?, max?)`, `clampRange(range, min?, max?)` and
+  `problem(d, withTime?)`. `addMonths` clamps the day: January 31 plus one
+  month is the last day of February. `clampRange` returns `nil` when the range
+  is fully outside the bounds. `problem` returns why a value is not a date, or
+  `nil`.
+- Words: `format(d, locale?)`, `formatTime(d, hourCycle)` and
+  `parse(text, locale?, withTime?)`. They use the numeric order of the locale.
+  `parse` returns two values, `(date?, why?)`. Test the date before you use it.
+  A year has four digits. On a 12-hour clock, an hour from 1 to 12 needs AM or
+  PM. `ENGLISH` is the default locale: `months`, `weekdays` (Sunday first),
+  `order` (`mdy`, `dmy` or `ymd`), `separator` and `hourCycle`.
+- Instants: `fromUnix(seconds, offsetMinutes)` and
+  `toUnix(date, offsetMinutes)` always name their offset. There is no zone
+  database. Convert a zone with daylight time to a fixed offset yourself.
+  `systemClock(offsetMinutes?)` returns the default clock: the local date and
+  time of the player, or the engine clock at the offset that you name.
+
+```luau
+local civil = Facet.civilDate
+local start = { year = 2026, month = 2, day = 27 }
+print(civil.format(civil.addDays(start, 3))) -- "03/02/2026"
+local date, why = civil.parse("02/30/2026")
+if date == nil then
+    print(why)
+end
+```
+
+## Recipes
+
+`Facet.recipes.arithmetic.parse(text)` returns a finite number or `nil` for
+any value. Give it to a number field as `parse`. It accepts `+`, `-`, `*`, `/`,
+parentheses, the typographic signs `×`, `÷` and `−`, and blanks. It refuses a
+division by zero, an exponent, a hex number, more than 256 characters and more
+than 32 levels of nesting. It never compiles the text.
 
 ## Native targets and boundaries
 
