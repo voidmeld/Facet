@@ -25,6 +25,18 @@ local galleryAssets = require("../examples/gallery/examples/assets")
 local fs = require("@lune/fs")
 local gallery = require("../examples/gallery/client/screen")
 local catalogue = require("../examples/gallery/client/demo_picker")
+local process = require("@lune/process")
+local scaffold = require("../tools/lune/scaffold")
+local outpost = require("../examples/gallery/examples/outpost_terminal")
+local nativeApp = require("../bench/native_app")
+local perfLab = require("../examples/performance/lab/perf_lab")
+local perfModules = {
+	sensory = require("../examples/performance/lab/sensory"),
+	dataset = require("../examples/performance/lab/dataset"),
+	rows = require("../examples/performance/lab/rows"),
+	capture = require("../examples/performance/lab/capture"),
+	workloads = require("../examples/performance/lab/workloads"),
+}
 local Compose = Facet.Compose
 
 type World = {
@@ -2518,6 +2530,357 @@ t.describe("native parity reference applications", function()
 			t.expect(explicit.Text).toBe("K or F1")
 			t.expect(find(node, "GuideText")).toBeNil()
 			stop()
+		end)
+	end)
+
+	t.describe("Gallery layouts", function()
+		local function scenario(name: string): (any, any, () -> (), any)
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local viewport = Compose.cell({ width = 1280, height = 720 })
+			local ctx: { [string]: any } = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = runtime,
+				Host = runtime.constructors,
+				types = engine.types,
+				viewport = viewport,
+				inputTarget = engine.new("Folder"),
+				worldTarget = engine.new("Folder"),
+				runService = { Heartbeat = engine.heartbeat },
+				UI = Facet.controls(runtime, { types = engine.types, viewport = viewport } :: any),
+			}
+			local built
+			local stop, node = runtime.mount(function()
+				built = (require :: any)("../examples/gallery/scenarios/" .. name).build(ctx)
+				return built.screen()
+			end, engine.new("ScreenGui"))
+			return built, node, function()
+				stop()
+				runtime:dispose()
+			end, engine
+		end
+
+		t.it("slides the card rail window along X when the engine scrolls sideways", function()
+			local built, node, stop, engine = scenario("card_rail")
+			local V2 = engine.types.Vector2
+			local rail = assert(find(node, "Rail"))
+			rail.AbsoluteSize = V2.new(400, 300)
+			rail.AbsoluteWindowSize = V2.new(400, 300)
+			local weekend = built.report().rails.WeekendRail
+			local before = built.report().rails.Rail
+			t.expect(before.status.direction).toBe("horizontal")
+			t.expect(before.status.first).toBe(1)
+			t.expect(find(rail, "Card_c1") ~= nil).toBe(true)
+			local extent = before.itemExtent + 8
+			rail.CanvasPosition = V2.new(extent * 15, 0)
+			local after = built.report().rails.Rail
+			t.expect(after.offset).toBe(extent * 15)
+			t.expect(after.status.first > before.status.first).toBe(true)
+			t.expect(after.status.first <= 16 and after.status.last >= 16).toBe(true)
+			t.expect(find(rail, "Card_c1")).toBeNil()
+			t.expect(find(rail, "Card_c16") ~= nil).toBe(true)
+			t.expect(after.status.retained < 12).toBe(true)
+			t.expect(same(built.report().rails.WeekendRail, weekend)).toBe(true)
+			press(rail, "Card_c16")
+			t.expect(built.report().selectedKey).toBe("c16")
+			t.expect(hasText(node, "Selected: Livery 016 · Rally")).toBe(true)
+			stop()
+		end)
+
+		t.it("flips wrapping on the same tag nodes and aligns only the block", function()
+			local built, node, stop, engine = scenario("flow_wrap")
+			local E = engine.types.Enum
+			local cloud = assert(find(node, "Cloud"))
+			local block = assert(find(node, "AlignBox"))
+			local tags = cloud:GetChildren()
+			local shorts = block:GetChildren()
+			local cloudLayout = assert(cloud:FindFirstChildWhichIsA("UIListLayout"))
+			local blockLayout = assert(block:FindFirstChildWhichIsA("UIListLayout"))
+			t.expect(cloudLayout.Wraps).toBe(true)
+			press(node, "WrapToggle")
+			t.expect(built.report().wrap).toBe(false)
+			t.expect(cloudLayout.Wraps).toBe(false)
+			t.expect(blockLayout.Wraps).toBe(true)
+			local after = cloud:GetChildren()
+			t.expect(#after).toBe(#tags)
+			for index, child in tags do
+				t.expect(after[index]).toBe(child)
+			end
+			press(node, "WrapToggle")
+			t.expect(cloudLayout.Wraps).toBe(true)
+			t.expect(blockLayout.HorizontalAlignment).toBe(E.HorizontalAlignment.Left)
+			press(node, "BlockAlign", "end")
+			t.expect(built.report().align).toBe("end")
+			t.expect(blockLayout.HorizontalAlignment).toBe(E.HorizontalAlignment.Right)
+			t.expect(cloudLayout.HorizontalAlignment).toBe(E.HorizontalAlignment.Left)
+			press(node, "BlockAlign", "center")
+			t.expect(blockLayout.HorizontalAlignment).toBe(E.HorizontalAlignment.Center)
+			local now = block:GetChildren()
+			for index, child in shorts do
+				t.expect(now[index]).toBe(child)
+			end
+			stop()
+		end)
+	end)
+
+	t.describe("Outpost terminal", function()
+		local function terminalWorld(options: any): (any, any, () -> ())
+			local engine: any = engineLib.new()
+			local runtime = Facet.Roblox.createRuntime(engine)
+			local ctx = {
+				Facet = Facet,
+				Compose = Compose,
+				runtime = runtime,
+				Host = runtime.constructors,
+				UI = Facet.controls(runtime, { types = engine.types } :: any),
+				types = engine.types,
+			}
+			local built
+			local stop, node = runtime.mount(function()
+				built = outpost.build(ctx, options)
+				return built.screen()
+			end, engine.new("ScreenGui"))
+			return built, node, function()
+				stop()
+				runtime:dispose()
+			end
+		end
+
+		t.it("sends nothing before engagement, updates the budget verdict and exits once", function()
+			local sent, exits = {}, 0
+			local built, node, stop = terminalWorld({
+				send = function(envelope)
+					table.insert(sent, envelope)
+				end,
+				onExit = function()
+					exits += 1
+				end,
+			})
+			local steps = built.steps
+			t.expect(built.report().message).toBe(outpost.rules.OBJECTIVE)
+			t.expect(find(node, "Message").Text).toBe(outpost.rules.OBJECTIVE)
+			t.expect(find(node, "Apply").Interactable).toBe(false)
+			local refused = steps.apply()
+			t.expect(refused.sent).toBe(false)
+			t.expect(refused.reason).toBe("idle")
+			t.expect(#sent).toBe(0)
+			steps.engage()
+			t.expect(find(node, "Budget").Text).toBe(`3 of {outpost.rules.TOTAL} units allocated — 3 spare`)
+			press(node, "workshopStep", "Increase")
+			press(node, "workshopStep", "Increase")
+			t.expect(built.report().draft.workshop).toBe(2)
+			t.expect(find(node, "Budget").Text).toBe(`5 of {outpost.rules.TOTAL} units allocated — 1 spare`)
+			t.expect(steps.setValue("workshop", 4).value).toBe(4)
+			t.expect(find(node, "Budget").Text).toBe(`7 of {outpost.rules.TOTAL} units allocated — -1 spare`)
+			local verdict = built.report().verdict
+			t.expect(verdict.ok).toBe(false)
+			t.expect(find(node, "Message").Text).toBe(verdict.message)
+			t.expect(find(node, "Apply").Interactable).toBe(false)
+			t.expect(steps.apply().sent).toBe(false)
+			t.expect(#sent).toBe(0)
+			steps.setValue("door", 2)
+			steps.setValue("beacon", 1)
+			steps.setValue("workshop", 2)
+			t.expect(find(node, "Apply").Interactable).toBe(true)
+			local request = steps.apply()
+			t.expect(request.sent).toBe(true)
+			t.expect(#sent).toBe(1)
+			steps.confirm(request.requestId, { allocation = request.allocation })
+			t.expect(built.report().outcome.ok).toBe(true)
+			steps.setValue("door", 3)
+			t.expect(built.report().outcome).toBeNil()
+			t.expect(steps.exit("cancel")).toBe(true)
+			t.expect(built.report().exitReason).toBe("cancel")
+			t.expect(steps.exit("again")).toBe(false)
+			t.expect(built.report().exitReason).toBe("cancel")
+			t.expect(exits).toBe(1)
+			t.expect(#sent).toBe(1)
+			t.expect(steps.apply().sent).toBe(false)
+			stop()
+		end)
+
+		t.it("needs only activation for every control and keeps its content module engine-free", function()
+			local source = fs.readFile("examples/gallery/examples/outpost_terminal/init.luau")
+			for _, banned in { "UIDragDetector", "DragStart", "game:GetService", "Instance.new", "workspace" } do
+				t.expect(string.find(source, banned, 1, true)).toBeNil()
+			end
+			local rules = fs.readFile("examples/gallery/examples/outpost_terminal/rules.luau")
+			for _, banned in { "game:GetService", "Instance.new", "Compose", "Host." } do
+				t.expect(string.find(rules, banned, 1, true)).toBeNil()
+			end
+			local built, node, stop = terminalWorld({ send = function() end })
+			built.steps.engage()
+			local buttons = 0
+			for _, child in node:GetDescendants() do
+				t.expect(child.ClassName ~= "UIDragDetector").toBe(true)
+				t.expect(child.Draggable ~= true).toBe(true)
+				if child.ClassName == "TextButton" then
+					buttons += 1
+				end
+			end
+			t.expect(buttons >= 9).toBe(true)
+			for _, consumer in outpost.rules.CONSUMERS do
+				local before = built.report().draft[consumer.id]
+				press(node, consumer.id .. "Step", if before > 0 then "Decrease" else "Increase")
+				t.expect(built.report().draft[consumer.id] ~= before).toBe(true)
+			end
+			press(node, "Reset")
+			t.expect(built.report().status).toBe("pending")
+			stop()
+		end)
+	end)
+
+	t.describe("Performance lab", function()
+		local function lab(): (any, any)
+			local world = nativeApp()
+			local probe
+			world.heartbeat = world.engine.heartbeat
+			world.captureFacts = function()
+				return {
+					evidenceClass = "lune",
+					capturedAtIso = "2026-09-24T00:00:00Z",
+					sourceStamp = "test",
+					placeName = "headless",
+					viewport = "800x600",
+					orientation = "landscape",
+					graphicsQualityLevel = "n/a",
+					frameTarget = "n/a",
+					studioVersion = "n/a",
+					deviceLabel = "lune",
+					thermalNote = "n/a",
+				}
+			end
+			world.probe = function(value)
+				probe = value
+			end
+			world.runtime.mount(function()
+				return world.Host.ScreenGui({ perfLab.build(world, perfModules) })
+			end, world.target)
+			return world, probe
+		end
+
+		t.it("clamps a requested row count to the dataset ceiling", function()
+			local world, probe = lab()
+			local ceiling = perfModules.dataset.MAX_ROWS
+			probe.select("dense-scroll", ceiling * 10)
+			t.expect(probe.state().rows).toBe(ceiling)
+			t.expect(#probe.state().active.rows:peek()).toBe(ceiling)
+			probe.select("dense-scroll", 0)
+			t.expect(probe.state().rows).toBe(1)
+			world.dispose()
+		end)
+
+		t.it("calls two captures the same workload only when every identity field agrees", function()
+			local world, probe = lab()
+			probe.select("dense-scroll", 200)
+			local a = probe.capture()
+			local b = table.clone(a)
+			local same, differences = perfModules.capture.sameWorkload(a, b)
+			t.expect(same).toBe(true)
+			t.expect(#differences).toBe(0)
+			t.expect(#perfModules.capture.IDENTITY_FIELDS >= 12).toBe(true)
+			for _, field in perfModules.capture.IDENTITY_FIELDS do
+				local changed = table.clone(a)
+				changed[field] = tostring(a[field]) .. "-changed"
+				local agreed, named = perfModules.capture.sameWorkload(a, changed)
+				t.expect(agreed).toBe(false)
+				t.expect(#named).toBe(1)
+				t.expect(string.find(named[1], field .. ":", 1, true)).toBe(1)
+			end
+			local volatile = table.clone(a)
+			volatile.capturedAtIso = "2027-01-01T00:00:00Z"
+			t.expect((perfModules.capture.sameWorkload(a, volatile))).toBe(true)
+			world.dispose()
+		end)
+	end)
+
+	t.describe("Documentation and tooling", function()
+		local function files(root: string, suffix: string, out: { string }): { string }
+			for _, name in fs.readDir(root) do
+				local path = root .. "/" .. name
+				if fs.isDir(path) then
+					files(path, suffix, out)
+				elseif string.sub(name, -#suffix) == suffix then
+					table.insert(out, path)
+				end
+			end
+			return out
+		end
+
+		t.it("calls only Facet exports that exist from every shipped client entry point", function()
+			local function missing(source: string): { string }
+				local out = {}
+				for name in string.gmatch(source, "Facet%.([%a_][%w_]*)") do
+					if (Facet :: any)[name] == nil then
+						table.insert(out, name)
+					end
+				end
+				return out
+			end
+			local entries = files("examples", ".client.luau", {})
+			t.expect(#entries >= 3).toBe(true)
+			local calls = 0
+			for _, path in entries do
+				local source = fs.readFile(path)
+				for _ in string.gmatch(source, "Facet%.([%a_][%w_]*)") do
+					calls += 1
+				end
+				t.expect(`{path}: {table.concat(missing(source), ",")}`).toBe(`{path}: `)
+			end
+			t.expect(calls > 5).toBe(true)
+			t.expect(table.concat(missing("Facet.controls(runtime) Facet.nonexistentExport()"), ","))
+				.toBe("nonexistentExport")
+			t.expect(#missing("local x = game.ReplicatedStorage.Facet")).toBe(0)
+		end)
+
+		t.it("keeps every shipped document from claiming virtual-reality support", function()
+			local documents = files("docs", ".md", { "AGENTS.md", "README.md" })
+			local claims, denials = {}, 0
+			for _, path in documents do
+				for line in string.gmatch(fs.readFile(path), "[^\n]+") do
+					local lowered = string.lower(line)
+					local mentions = string.find(lowered, "%f[%a]vr%f[%A]")
+						or string.find(lowered, "virtual.reality")
+						or string.find(lowered, "gaze")
+					if mentions then
+						local negated = string.find(lowered, "%f[%a]no%f[%A]")
+							or string.find(lowered, "not")
+							or string.find(lowered, "never")
+							or string.find(lowered, "without")
+						if negated then
+							denials += 1
+						else
+							for _, claim in { "supports vr", "vr support", "vr-ready", "works in vr", "vr mode" } do
+								if string.find(lowered, claim, 1, true) then
+									table.insert(claims, `{path}: {line}`)
+								end
+							end
+						end
+					end
+				end
+			end
+			t.expect(table.concat(claims, "\n")).toBe("")
+			t.expect(denials >= 2).toBe(true)
+		end)
+
+		t.it("scaffolds formatter-clean control source", function()
+			local plan = scaffold.plan("control", "proof_control")
+			local sources = { plan.files[1].content }
+			for _, edit in plan.edits do
+				table.insert(sources, scaffold.applyEdit(fs.readFile(edit.path), edit))
+			end
+			for index, source in sources do
+				local result = process.exec("stylua", { "--check", "-" }, { stdio = { stdin = source } })
+				t.expect(`{index}: {result.ok}`).toBe(`{index}: true`)
+				t.expect(string.find(source, "\n\n\n", 1, true)).toBeNil()
+				local lines = string.split(source, "\n")
+				for index = 2, #lines do
+					t.expect(string.find(lines[index], "--", 1, true)).toBeNil()
+				end
+			end
+			local bad = process.exec("stylua", { "--check", "-" }, { stdio = { stdin = "local x   =  1\n" } })
+			t.expect(bad.ok).toBe(false)
 		end)
 	end)
 end)
