@@ -1151,7 +1151,10 @@ Picker is a field. These options apply:
 - `requiredMark`, `hint` and `errorText`: as on [TextInput](#field-chrome). The
   message line shows under the picker in each style. An error adds the
   `facet-invalid` tag to a menu trigger. The picker does not move.
-- `controlSize`: the height of the menu trigger, the segments and the rows.
+- `controlSize`: the height of the menu trigger, the segmented track and the
+  rows. A horizontal segmented track is one control height tall. Each segment
+  fills the track inside a 3 pixel inset on all sides. The corner radius of a
+  segment is the track radius minus the inset.
 - `appearance`: for `menu` and `navigationLink`, `standard`, `contrast` (the
   emphasis plate) or `utility`. For `segmented`, `filled` (the default plate),
   `stroke` (the `facet-segmented-stroke` tag) or `utility` (no plate).
@@ -1162,7 +1165,9 @@ Picker is a field. These options apply:
 - `maxHeight`: for `menu`, `navigationLink` and `automatic`, a finite number of
   pixels above zero. It caps the open panel. The panel always shows one row.
 - `indicatorPosition`: for `radioGroup` only, `leading` (the default) or
-  `trailing`. It puts the radio mark on that edge of each row.
+  `trailing`. It puts the radio mark in its own slot on that edge of the
+  content row of each option. The label is next to the mark and does not go
+  under it.
 
 A labelled `menu` picker shows its title above a trigger at the leading edge.
 A labelled `navigationLink` shows the title and the chosen value in one row
@@ -1246,7 +1251,10 @@ the retained pages and their disposal.
 A push slides the new page in from the trailing edge. The covered page moves
 30 percent to the leading edge and dims. A pop plays the reverse. The popped
 page stays until its motion completes. It cannot be interacted with, and it
-cannot hold the selection. The default motion is a critically damped Compose
+cannot hold the selection. While a page moves, both pages are opaque. Each page
+gets the background color of the nearest opaque container of the stack. A
+separate black shade frame dims the covered page from 0 to 0.1 opacity. The page
+content does not change its transparency. At rest, the pages are transparent. The default motion is a critically damped Compose
 spring. `transition = { seconds, ease }` replaces the slide with a crossfade
 that uses those Compose tween options.
 `transition = false` disables motion. The pages that are present when the
@@ -1701,8 +1709,10 @@ leading?, center?, trailing?, gap?, padding? }`.
 
 The first row holds Back, `leading` and a `center` that fills the remaining
 width. Without `center`, the title shows on one line and truncates. `trailing`
-is one GuiObject. Put a cluster in a Frame. When the center would fall under
-`controls.popup.panelWidth`, the trailing node moves to a second row. The
+is one GuiObject. Put a cluster in a Frame. The title and the trailing node
+stay on one row when the full title fits beside the trailing node. When the
+full title does not fit, the trailing node moves to a second row. Without a
+title, the bar uses `controls.popup.panelWidth` as the minimum center width. The
 center is not rebuilt, so a search field keeps its text. Back shows the
 `chevron.leading` icon. `gap` and `padding` are pixels or `space` metric
 names.

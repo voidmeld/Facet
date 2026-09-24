@@ -1745,6 +1745,9 @@ return function(
 		end
 		assert(table.find({ "segmented", "inline", "radioGroup", "navigationLink" }, style), "Unknown Picker style")
 		local vertical = style ~= "segmented" or read(spec.axis) == "y"
+		local function across(use: ComposeTypes.Use?): boolean
+			return style == "segmented" and read(spec.axis, use) ~= "y"
+		end
 		local children: { ComposeTypes.Child } = {
 			Host.UIListLayout({
 				FillDirection = function(use: ComposeTypes.Use)
@@ -1784,14 +1787,19 @@ return function(
 						Name = tostring(source:peek().id or source:peek().value),
 						LayoutOrder = index,
 						Size = function(use: ComposeTypes.Use)
+							if across(use) then
+								return D2.fromScale(0, 1)
+							end
 							local height = if spec.controlSize ~= nil
 								then ctx.controlSize(spec.controlSize, "height", use)
 								else 44
-							return if style ~= "segmented" or read(spec.axis, use) == "y"
-								then D2.new(1, 0, 0, height)
-								else D2.fromOffset(0, height)
+							return D2.new(1, 0, 0, height)
 						end,
-						AutomaticSize = if style ~= "segmented" then E.AutomaticSize.Y else nil,
+						AutomaticSize = if style ~= "segmented"
+							then E.AutomaticSize.Y
+							else function(use: ComposeTypes.Use)
+								return if across(use) then E.AutomaticSize.X else E.AutomaticSize.XY
+							end,
 						label = function(use: ComposeTypes.Use)
 							if read(spec.iconOnly, use) then
 								return ""
@@ -1803,6 +1811,7 @@ return function(
 								.. (if badge ~= nil and badge ~= "" then " (" .. tostring(badge) .. ")" else "")
 						end,
 						subtitle = if source:peek().description ~= nil
+								or style == "radioGroup"
 								or Compose.isReadable(spec.options)
 								or type(spec.options) == "function"
 							then function(use: ComposeTypes.Use)
@@ -1840,34 +1849,29 @@ return function(
 					end
 					if style == "radioGroup" then
 						local trailing = spec.indicatorPosition == "trailing"
-						local mark = ctx.styled(
-							Host.Frame "Indicator" {
-								Size = D2.fromOffset(18, 18),
-								AnchorPoint = V2.new(if trailing then 1 else 0, 0.5),
-								Position = if trailing then D2.new(1, -12, 0.5, 0) else D2.new(0, 12, 0.5, 0),
-								BackgroundTransparency = 1,
-								ZIndex = 2,
-								ctx.corner(9) :: Types.Child,
+						runtime.mountFragment(function()
+							return {
 								ctx.styled(
-									Host.Frame "Dot" {
-										AnchorPoint = V2.new(0.5, 0.5),
-										Position = D2.fromScale(0.5, 0.5),
-										Size = D2.fromOffset(8, 8),
-										Visible = selected,
-										ctx.corner(4) :: Types.Child,
+									Host.Frame "Indicator" {
+										Size = D2.fromOffset(18, 18),
+										LayoutOrder = if trailing then 1000 else 0,
+										BackgroundTransparency = 1,
+										ctx.corner(9) :: Types.Child,
+										ctx.styled(
+											Host.Frame "Dot" {
+												AnchorPoint = V2.new(0.5, 0.5),
+												Position = D2.fromScale(0.5, 0.5),
+												Size = D2.fromOffset(8, 8),
+												Visible = selected,
+												ctx.corner(4) :: Types.Child,
+											},
+											"fill"
+										) :: Types.Child,
 									},
-									"fill"
-								) :: Types.Child,
-							},
-							"radio-mark"
-						)
-						surfaces.attach(button, {
-							mark,
-							Host.UIPadding({
-								PaddingLeft = D.new(0, if trailing then 12 else 40),
-								PaddingRight = D.new(0, if trailing then 40 else 12),
-							}),
-						})
+									"radio-mark"
+								),
+							}
+						end, (assert(button:FindFirstChild("Content"), "Picker radio rows use a content row")))
 					end
 					if
 						source:peek().indicator ~= nil
@@ -1904,7 +1908,11 @@ return function(
 						})
 					end
 					surfaces.attach(button, {
-						Host.UISizeConstraint({ MinSize = V2.new(44, if spec.controlSize ~= nil then 0 else 44) }),
+						Host.UISizeConstraint({
+							MinSize = function(use: ComposeTypes.Use)
+								return V2.new(44, if spec.controlSize ~= nil or across(use) then 0 else 44)
+							end,
+						}),
 						Compose.show(function(use: ComposeTypes.Use)
 							return read(spec.indicator, use) == "underline" and selected(use)
 						end, function()
@@ -1965,11 +1973,26 @@ return function(
 				end,
 			})
 		)
+		local labelled = spec.label ~= nil and not vertical
 		local defaults: Types.FrameNativeProps = {
 			Name = "Picker",
 			BackgroundTransparency = if style == "segmented" then nil else 1,
-			Size = D2.new(1, 0, 0, 0),
-			AutomaticSize = E.AutomaticSize.Y,
+			Size = if style == "segmented"
+				then function(use: ComposeTypes.Use)
+					if not across(use) then
+						return D2.new(1, 0, 0, 0)
+					end
+					return D2.new(if labelled then 0 else 1, 0, 0, ctx.controlSize(spec.controlSize, "height", use))
+				end
+				else D2.new(1, 0, 0, 0),
+			AutomaticSize = if style == "segmented"
+				then function(use: ComposeTypes.Use)
+					return if not across(use)
+						then E.AutomaticSize.Y
+						elseif labelled then E.AutomaticSize.X
+						else E.AutomaticSize.None
+				end
+				else E.AutomaticSize.Y,
 		}
 		local p = if spec.label == nil then ctx.props(spec, pickerKeys, defaults) else defaults
 		for _, child in children do
@@ -2026,8 +2049,6 @@ return function(
 		runtime.mount(function()
 			return Host.UIFlexItem({ FlexMode = E.UIFlexMode.Grow })
 		end, label)
-		picker.Size = D2.new(0, 0, 0, 0)
-		picker.AutomaticSize = E.AutomaticSize.XY
 		local row = ctx.row({ label, picker }, outer)
 		local layout = assert(row:FindFirstChildWhichIsA("UIListLayout"))
 		layout.VerticalAlignment = E.VerticalAlignment.Center

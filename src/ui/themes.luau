@@ -494,6 +494,8 @@ local function font(types: Engine.RobloxTypes, value: ThemeTypes.FontSpec | Font
 	)
 end
 
+local SEGMENT_INSET = 3
+
 type NativeRule = { id: string, selector: string, properties: ThemeTypes.RuleProperties, priority: number }
 local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, types: Engine.RobloxTypes): { NativeRule }
 	local palette = paletteFor(package, selected)
@@ -792,6 +794,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-menu-item:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(".facet-menu-destructive", { BackgroundTransparency = 1, TextColor3 = c("danger") })
 	rule(".facet-menu-destructive:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(".facet-menu-destructive:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(".facet-menu-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
 	rule(".facet-menu-destructive >> .facet-icon", { ImageColor3 = c("danger") })
 	rule(".facet-menu::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
@@ -814,12 +817,15 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	end
 	rule(".facet-quiet-destructive", { TextColor3 = c("danger") })
 	rule(".facet-quiet-destructive:Hover", { TextColor3 = c("danger") })
+	rule(".facet-quiet-destructive:Press", { TextColor3 = c("danger") })
 	rule(".facet-quiet-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
 	rule(".facet-quiet-destructive >> .facet-icon", { ImageColor3 = c("danger") })
 	rule(".facet-tab-item", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(".facet-tab-item:Hover", { BackgroundTransparency = 1, TextColor3 = c("content") })
 	rule(".facet-tab-item:Hover >> .facet-button-caption", { TextColor3 = c("content") })
+	rule(".facet-tab-item:Press", { BackgroundTransparency = 1, TextColor3 = c("content") })
+	rule(".facet-tab-item:Press >> .facet-button-caption", { TextColor3 = c("content") })
 	rule(".facet-tab-current", { TextColor3 = c("content") })
 	rule(".facet-tab-current >> .facet-button-caption", { TextColor3 = c("content") })
 	rule(".facet-tab-item.facet-selected", { BackgroundTransparency = 0, TextColor3 = onSelected })
@@ -837,32 +843,41 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-stepper-button:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(".facet-choice", { BackgroundTransparency = 1, TextXAlignment = types.Enum.TextXAlignment.Left })
 	rule(".facet-choice:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(".facet-choice:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(
 		".facet-choice-current",
 		{ BackgroundTransparency = 0.82, BackgroundColor3 = c("accent"), TextColor3 = c("accent") }
 	)
 	rule(".facet-choice-current:Hover", { BackgroundTransparency = 0.72, BackgroundColor3 = c("accent") })
+	rule(".facet-choice-current:Press", { BackgroundTransparency = 0.62, BackgroundColor3 = c("accent") })
 	rule(".facet-choice-current >> .facet-button-caption", { TextColor3 = c("accent") })
 	rule(".facet-choice-current >> .facet-icon", { ImageColor3 = c("accent") })
 	rule(".facet-segmented", { BackgroundColor3 = c("control"), BackgroundTransparency = 0, BorderSizePixel = 0 })
-	rule(".facet-segmented::UICorner", { CornerRadius = types.UDim.new(0, package.metrics.radii.control + 2) })
+	local trackRadius = package.metrics.radii.control + 2
+	rule(".facet-segmented::UICorner", { CornerRadius = types.UDim.new(0, trackRadius) })
 	rule(".facet-segmented::UIPadding", {
-		PaddingLeft = types.UDim.new(0, 3),
-		PaddingRight = types.UDim.new(0, 3),
-		PaddingTop = types.UDim.new(0, 3),
-		PaddingBottom = types.UDim.new(0, 3),
+		PaddingLeft = types.UDim.new(0, SEGMENT_INSET),
+		PaddingRight = types.UDim.new(0, SEGMENT_INSET),
+		PaddingTop = types.UDim.new(0, SEGMENT_INSET),
+		PaddingBottom = types.UDim.new(0, SEGMENT_INSET),
 	})
 	rule(".facet-segment", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
+	rule(".facet-segment::UICorner", { CornerRadius = types.UDim.new(0, math.max(0, trackRadius - SEGMENT_INSET)) })
 	rule(".facet-segment >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(
 		".facet-segment:Hover",
 		{ BackgroundTransparency = 0, BackgroundColor3 = c("controlHover"), TextColor3 = c("content") }
 	)
 	rule(
+		".facet-segment:Press",
+		{ BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed"), TextColor3 = c("content") }
+	)
+	rule(
 		".facet-segment-current",
 		{ BackgroundTransparency = 0, BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") }
 	)
 	rule(".facet-segment-current:Hover", { BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") })
+	rule(".facet-segment-current:Press", { BackgroundColor3 = c("accent"), TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-button-caption", { TextColor3 = c("onAccent") })
 	rule(".facet-segment-current >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-menu-destructive >> .facet-text", { TextColor3 = c("danger") })
@@ -876,6 +891,7 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-accent >> .facet-icon", { ImageColor3 = c("onAccent") })
 	rule(".facet-calendar-day", { BackgroundTransparency = 1 })
 	rule(".facet-calendar-day:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(".facet-calendar-day:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(".facet-calendar-band", { BackgroundColor3 = c("controlSelected"), BackgroundTransparency = 0 })
 	rule(".facet-calendar-disc", { BackgroundColor3 = c("accent"), BackgroundTransparency = 0 })
 	rule(".facet-calendar-end", { BackgroundColor3 = c("content") })
