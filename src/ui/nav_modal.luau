@@ -568,7 +568,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 					Name = "Help",
 					AutomaticSize = E.AutomaticSize.XY,
 					Size = D2.fromOffset(0, 0),
-					ZIndex = 120,
+					ZIndex = 96,
 				}
 				table.insert(panelProps, ctx.padding(8, 6))
 				table.insert(

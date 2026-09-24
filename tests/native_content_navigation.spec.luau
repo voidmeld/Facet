@@ -185,6 +185,30 @@ t.describe("native content navigation deltas", function()
 		toggles.stop()
 	end)
 
+	t.it("centres the selected row again when the row layout settles after the first measure", function()
+		local year = Compose.cell(2026)
+		local list = {}
+		for value = 1926, 2126 do
+			table.insert(list, { id = `y{value}`, label = tostring(value), selected = year, value = value })
+		end
+		local world = menuWorld({ label = "Year", items = list })
+		local panel = openMenu(world, true)
+		local chosen = world.find("y2026", panel)
+		local rows = panel:FindFirstChild("MenuRows", true)
+		local layout = rows:FindFirstChildWhichIsA("UIListLayout")
+		rows.AbsolutePosition = Vector2.new(0, 0)
+		chosen.AbsolutePosition = Vector2.new(0, 132)
+		chosen.AbsoluteSize = Vector2.new(220, 44)
+		rows.AbsoluteSize = Vector2.new(220, 201 * 44 + 16)
+		panel.AbsoluteSize = Vector2.new(220, 400)
+		t.expect(panel.CanvasPosition.Y).toBe(0)
+		chosen.AbsolutePosition = Vector2.new(0, 100 * 44 + 8)
+		layout.AbsoluteContentSize = Vector2.new(220, 201 * 44 + 16)
+		local center = panel.CanvasPosition.Y + 400 / 2
+		t.expect(math.abs(center - (100 * 44 + 8 + 22)) <= 1).toBe(true)
+		world.stop()
+	end)
+
 	t.it("bounds the whole panel by maxHeight while the rows keep their ids and activation", function()
 		local picked: { string } = {}
 		local world = menuWorld({

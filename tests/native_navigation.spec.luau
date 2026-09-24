@@ -1746,6 +1746,35 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("paints a presented modal above a visible callout", function()
+		local world = setup(function(UI, Host)
+			local anchor = UI.Button "Anchor" { label = "Anchor" }
+			return Host.Frame({
+				anchor,
+				UI.Callout({
+					anchor = anchor,
+					isPresented = Compose.cell(true),
+					onRetire = function() end,
+					content = function()
+						return UI.Label({ text = "Tip" })
+					end,
+				}),
+				UI.Alert({
+					isPresented = Compose.cell(true),
+					title = "Leave?",
+					actions = { { id = "Stay", label = "Stay" } },
+				}),
+			})
+		end)
+		world.settle()
+		local callout, modal = find(world.screen, "CalloutPanel"), find(world.screen, "AlertModal")
+		t.expect(callout ~= nil and modal ~= nil).toBe(true)
+		t.expect(callout.ZIndex < modal.ZIndex).toBe(true)
+		local arrow = find(world.screen, "Arrow")
+		t.expect(arrow == nil or arrow.ZIndex < modal.ZIndex).toBe(true)
+		world.stop()
+	end)
+
 	t.it("places a callout inside the overlay parent that receives it", function()
 		local engine = engines.new()
 		local gui = engine.new("GuiService")

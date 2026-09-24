@@ -1392,6 +1392,7 @@ teaching attached to a control. It is not a second application presenter.
 `edge = "top"` puts the callout above the anchor. If there is no room above
 and there is room below, the callout goes below the anchor. The callout
 scales and fades from the edge nearest to its anchor. See [Motion](#motion).
+A callout and a help plate paint above a snackbar and below a presented modal.
 
 The plate parts are optional, but the plate must show something:
 

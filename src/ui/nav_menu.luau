@@ -642,8 +642,11 @@ return function(
 			end
 		end)
 		local centered: string? = nil
+		local rowLayout = rows:FindFirstChildWhichIsA("UIListLayout")
+		local laidOut = if rowLayout then ctx.observe(rowLayout, "AbsoluteContentSize") else Compose.cell(V2.zero)
 		Compose.watch(function(use: ComposeTypes.Use)
-			local level = table.concat(use(path), "/")
+			local content = use(laidOut) :: Vector2?
+			local level = table.concat(use(path), "/") .. "@" .. tostring(if content then content.Y else 0)
 			if centered == level then
 				return
 			end

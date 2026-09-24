@@ -976,7 +976,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					Size = function(use: ComposeTypes.Use)
 						return D2.fromOffset(math.min(280, math.max(44, use(extent).X - 16)), 0)
 					end,
-					ZIndex = 110,
+					ZIndex = 95,
 				})
 				surfaces.popover(panel, amount, function(use: ComposeTypes.Use): (Vector2, Vector2)
 					local at, anchorAt, anchorSize, offset, box =
@@ -992,7 +992,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Size = D2.fromOffset(10, 10),
 							Rotation = 45,
 							BorderSizePixel = 0,
-							ZIndex = 109,
+							ZIndex = 94,
 							Host.UIGradient "PresentationFade" {
 								Transparency = function(use: ComposeTypes.Use)
 									return ctx.types.NumberSequence.new(1 - amount(use))
