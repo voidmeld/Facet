@@ -64,6 +64,7 @@ function world.new(build: (any, any, any, any) -> any, options: any?): any
 		theme = o.theme,
 		reducedMotion = o.reducedMotion,
 		controlSize = o.controlSize,
+		onError = o.onError,
 	})
 	local target = engine.new("Folder")
 	local V = engine.types.Vector2

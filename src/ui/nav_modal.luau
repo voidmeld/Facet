@@ -3,6 +3,8 @@ local Types = require("./types")
 local Nav = require("./navigation_types")
 local ComposeTypes = require("../vendor/compose/core")
 local help = require("./help")
+local Inputs = require("./input_types")
+local placement = require("./overlay_placement")
 
 return function(ctx: Types.Context): Nav.Surfaces
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
@@ -301,7 +303,11 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end,
 		})
 	end
-	help.register(ctx, function(anchor: GuiObject, text: Types.Value<string>)
+	help.register(ctx, function(anchor: GuiObject, value: Inputs.Help)
+		local structured: Inputs.HelpSpec? = if type(value) == "table" and not Compose.isReadable(value)
+			then value :: Inputs.HelpSpec
+			else nil
+		local text: Types.Value<string> = if structured then structured.body else value :: Types.Value<string>
 		local state = ctx.observe(anchor, "GuiState")
 		local selection = if gui and gui.GetPropertyChangedSignal then ctx.observe(gui, "SelectedObject") else nil
 		local preferred = if input and input.GetPropertyChangedSignal then ctx.observe(input, "PreferredInput") else nil
@@ -353,33 +359,82 @@ return function(ctx: Types.Context): Nav.Surfaces
 					AutomaticSize = E.AutomaticSize.Y,
 				})
 				label:AddTag("facet-type-caption")
-				local panel = Host.Frame "Help" {
+				local panelProps: Types.FrameNativeProps = {
+					Name = "Help",
 					AutomaticSize = E.AutomaticSize.XY,
 					Size = D2.fromOffset(0, 0),
 					ZIndex = 120,
+				}
+				table.insert(
+					panelProps,
 					Host.UIPadding({
 						PaddingLeft = ctx.types.UDim.new(0, 8),
 						PaddingRight = ctx.types.UDim.new(0, 8),
 						PaddingTop = ctx.types.UDim.new(0, 6),
 						PaddingBottom = ctx.types.UDim.new(0, 6),
-					}) :: Types.Child,
-					label,
-					measure,
-				}
+					})
+				)
+				table.insert(
+					panelProps,
+					Host.UIListLayout({ SortOrder = E.SortOrder.LayoutOrder, Padding = ctx.types.UDim.new(0, 4) })
+				)
+				if structured and structured.title ~= nil then
+					local title = structured.title
+					local heading = ctx.text({
+						Name = "HelpTitle",
+						LayoutOrder = 1,
+						Text = function(use: ComposeTypes.Use)
+							return ctx.read(title, use) or ""
+						end,
+					})
+					heading:AddTag("facet-type-heading")
+					table.insert(panelProps, heading)
+				end
+				runtime.decorate(label, {
+					LayoutOrder = 2,
+					Visible = function(use: ComposeTypes.Use)
+						return (ctx.read(text, use) or "") ~= ""
+					end,
+				})
+				table.insert(panelProps, label)
+				if structured and structured.shortcut then
+					local chords: { string } = {}
+					for _, chord in structured.shortcut do
+						table.insert(chords, table.concat(chord, "+"))
+					end
+					local hint = ctx.text({
+						Name = "HelpShortcut",
+						LayoutOrder = 3,
+						Text = table.concat(chords, " or "),
+					})
+					hint:AddTag("facet-type-caption")
+					hint:AddTag("facet-secondary")
+					table.insert(panelProps, hint)
+				end
+				runtime.decorate(measure, { LayoutOrder = 4 })
+				table.insert(panelProps, measure)
+				local panel = Host.Frame(panelProps)
 				local measured = ctx.observe(panel, "AbsoluteSize")
+				local edge = if structured and structured.edge then structured.edge else "top"
+				local align = if structured and structured.align then structured.align else "center"
 				runtime.decorate(panel, {
 					Position = function(use: ComposeTypes.Use)
 						local anchorAt, anchorSize, offer, offset, box =
 							use(at), use(bounds), use(extent), use(origin), use(measured)
-						local x = anchorAt.X - offset.X + (anchorSize.X - box.X) / 2
-						local y = anchorAt.Y - offset.Y - box.Y - 6
-						if y < 8 then
-							y = anchorAt.Y - offset.Y + anchorSize.Y + 6
-						end
-						return D2.fromOffset(
-							math.clamp(x, 8, math.max(8, offer.X - box.X - 8)),
-							math.clamp(y, 8, math.max(8, offer.Y - box.Y - 8))
-						)
+						local solved = placement.solve({
+							source = {
+								x = anchorAt.X - offset.X,
+								y = anchorAt.Y - offset.Y,
+								w = anchorSize.X,
+								h = anchorSize.Y,
+							},
+							size = { w = box.X, h = box.Y },
+							safe = { x = 8, y = 8, w = math.max(0, offer.X - 16), h = math.max(0, offer.Y - 16) },
+							edge = edge,
+							align = align,
+							gap = 6,
+						})
+						return D2.fromOffset(solved.x, solved.y)
 					end,
 				})
 				return ctx.styled(panel, "tooltip")

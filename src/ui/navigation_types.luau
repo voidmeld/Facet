@@ -191,10 +191,15 @@ export type SheetSpec = Types.FrameProps & {
 	scrollPolicy: ("always" | "atLargestDetent")?,
 }
 export type SheetRequest = (string) -> boolean
-export type CalloutRetirement = "featureUsed" | "seen" | "dismissed" | "tapAway"
+export type CalloutRetirement = "featureUsed" | "seen" | "dismissed" | "tapAway" | "action"
 export type CalloutSpec = Types.FrameProps & {
 	anchor: GuiObject,
-	content: Content,
+	content: Content?,
+	title: Value<string>?,
+	media: Overlay.Media?,
+	steps: { index: number, count: number }?,
+	actions: { Overlay.Action }?,
+	closeButton: boolean?,
 	dismissLabel: Value<string>?,
 	edge: Value<"top" | "bottom">?,
 	align: Value<"leading" | "center" | "trailing">?,

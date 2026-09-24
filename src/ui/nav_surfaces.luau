@@ -3,6 +3,8 @@ local Types = require("./types")
 local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
 local ComposeTypes = require("../vendor/compose/core")
+local parts = require("./overlay_parts")
+local Overlay = require("./overlay_types")
 
 type Controls = {
 	DisclosureGroup: Types.Constructor<Nav.DisclosureGroupSpec, Frame>,
@@ -663,6 +665,35 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	UI.Callout = ctx.construct("Callout", function(spec: Nav.CalloutSpec): Frame
 		assert(type(spec.onRetire) == "function", "Callout requires onRetire")
 		assert(spec.anchor, "Callout requires a native anchor")
+		local where = "UI.Callout"
+		parts.checkMedia(where, spec.media)
+		local actionCount = parts.checkActions(ctx, where, spec.actions, 2)
+		if spec.closeButton ~= nil and type(spec.closeButton) ~= "boolean" then
+			error(`Facet {where}: closeButton must be true or false`, 0)
+		end
+		if spec.title ~= nil and not parts.bound(ctx, spec.title, "string") then
+			error(`Facet {where}: title must be a string or a bound string`, 0)
+		end
+		local steps = spec.steps
+		if steps ~= nil then
+			local index = if type(steps) == "table" then steps.index else nil
+			local count = if type(steps) == "table" then steps.count else nil
+			local function whole(value: unknown): boolean
+				return type(value) == "number" and value == math.floor(value) and value < math.huge
+			end
+			if
+				not whole(index)
+				or not whole(count)
+				or (index :: number) < 1
+				or (index :: number) > (count :: number)
+			then
+				error(`Facet {where}: steps must be \{ index, count } with whole numbers 1 <= index <= count`, 0)
+			end
+		end
+		if spec.content == nil and spec.title == nil and spec.media == nil and steps == nil and actionCount == 0 then
+			error(`Facet {where}: nothing to show. Supply content, or a title, media, steps or actions`, 0)
+		end
+		local calloutOwner = assert(Compose.currentOwner())
 		local retired = Compose.cell(false)
 		local anchorAvailable = surfaces.available(spec.anchor)
 		local eligible = Compose.formula(function(use: ComposeTypes.Use)
@@ -713,9 +744,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"onShow",
 			"onHide",
 			"isPresented",
+			"title",
+			"media",
+			"steps",
+			"actions",
+			"closeButton",
 		}, "Callout")
 		local function retire(reason: Nav.CalloutRetirement): ()
-			if retired:peek() then
+			if retired:peek() or calloutOwner.isDisposed() then
 				return
 			end
 			retired:set(true)
@@ -731,7 +767,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		surfaces.attach(root, {
 			surfaces.overlay(spec.anchor, visible, function()
 				if spec.onShow then
-					spec.onShow()
+					local ok: boolean, failure: unknown = pcall(spec.onShow)
+					if not ok then
+						if ctx.config.onError then
+							ctx.config.onError(failure)
+						else
+							warn(`Facet UI.Callout: onShow failed: {tostring(failure)}`)
+						end
+					end
 				end
 				Compose.cleanup(function()
 					if spec.onHide then
@@ -740,18 +783,113 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end)
 				local position, size =
 					ctx.observe(spec.anchor, "AbsolutePosition"), ctx.observe(spec.anchor, "AbsoluteSize")
-				local panel = ctx.styled(
-					ctx.column({
-						body(spec.content, nil),
+				local rows: { Types.Child } = {}
+				if spec.title ~= nil or spec.closeButton == true then
+					local header: { Types.Child } = {}
+					if spec.title ~= nil then
+						local title = spec.title
+						local heading = ctx.text({
+							Name = "Title",
+							Text = function(use: ComposeTypes.Use)
+								return read(title, use) or ""
+							end,
+							TextWrapped = true,
+							Size = D2.new(1, 0, 0, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+							Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+						})
+						heading:AddTag("facet-type-heading")
+						table.insert(header, heading)
+					end
+					if spec.closeButton == true then
+						table.insert(
+							header,
+							UI.Button "Close" {
+								name = "Close",
+								icon = "close",
+								Size = D2.fromOffset(44, 44),
+								AutomaticSize = E.AutomaticSize.None,
+								onActivate = function()
+									retire("dismissed")
+								end,
+							}
+						)
+					end
+					local row = ctx.row(
+						header,
+						{ Name = "Header", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }
+					)
+					table.insert(rows, row)
+				end
+				if spec.media then
+					table.insert(rows, parts.media(ctx, spec.media))
+				end
+				if spec.content ~= nil then
+					table.insert(rows, body(spec.content, nil))
+				end
+				if steps then
+					table.insert(
+						rows,
+						ctx.styled(
+							ctx.text({
+								Name = "Steps",
+								Text = `{steps.index} of {steps.count}`,
+							}),
+							"secondary"
+						)
+					)
+				end
+				local actions: { Overlay.Action } = spec.actions or {}
+				if #actions > 0 then
+					local buttons: Types.FrameNativeProps = {
+						Name = "Actions",
+						BackgroundTransparency = 1,
+						Size = D2.new(1, 0, 0, 0),
+						AutomaticSize = E.AutomaticSize.Y,
+					}
+					table.insert(
+						buttons,
+						Host.UIListLayout({
+							FillDirection = E.FillDirection.Horizontal,
+							HorizontalFlex = E.UIFlexAlignment.Fill,
+							SortOrder = E.SortOrder.LayoutOrder,
+							Padding = ctx.types.UDim.new(0, 8),
+						})
+					)
+					for index, action in actions do
+						table.insert(
+							buttons,
+							UI.Button({
+								Name = action.id,
+								label = action.label,
+								role = action.role,
+								enabled = action.enabled,
+								busy = action.busy,
+								LayoutOrder = index,
+								onActivate = function()
+									parts.call(action.onActivate, function()
+										retire("action")
+									end)
+								end,
+							})
+						)
+					end
+					table.insert(rows, Host.Frame(buttons))
+				else
+					table.insert(
+						rows,
 						UI.Button "Dismiss" {
 							label = spec.dismissLabel or "Got it",
 							onActivate = function()
 								retire("dismissed")
 							end,
-						},
-						ctx.padding(12, 12),
-						ctx.corner(),
-					}, {
+						}
+					)
+				end
+				table.insert(rows, ctx.padding(12, 12))
+				table.insert(rows, ctx.corner())
+				local panel = ctx.styled(
+					ctx.column(rows, {
 						Name = "CalloutPanel",
 						BackgroundTransparency = 0,
 						Size = D2.fromOffset(280, 0),
