@@ -575,6 +575,14 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		end
 	end
 
+	rule(".facet-toggle-row", { BackgroundTransparency = 1 })
+	rule(".facet-toggle-row:Hover", { BackgroundTransparency = 0, BackgroundColor3 = c("controlHover") })
+	rule(".facet-toggle-row:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
+	rule(".facet-toggle-indicator", { BackgroundColor3 = c("control"), BackgroundTransparency = 0 })
+	rule(".facet-toggle-on", { BackgroundColor3 = c("accent") })
+	rule(".facet-toggle-switch >> .facet-toggle-mark", { BackgroundColor3 = c("onAccent") })
+	rule(".facet-toggle-checkbox >> .facet-toggle-mark", { BackgroundColor3 = c("onAccent") })
+	rule(".facet-toggle-checkbox::UIStroke", { Color = c("contentSecondary"), Thickness = 1.5, Transparency = 0.2 })
 	rule(".facet-tooltip", { BackgroundColor3 = c("surfaceStrong"), BackgroundTransparency = 0, BorderSizePixel = 0 })
 	rule(".facet-tooltip::UICorner", { CornerRadius = types.UDim.new(0, 6) })
 	rule(".facet-tooltip::UIStroke", { Color = c("hairline"), Transparency = 0.4, Thickness = 1 })

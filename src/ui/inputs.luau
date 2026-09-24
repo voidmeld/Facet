@@ -871,7 +871,13 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					mark.Visible = value or mixed
 				end
 				indicator:SetAttribute("selected", value or mixed)
+				if value or mixed then
+					indicator:AddTag("facet-toggle-on")
+				elseif indicator:HasTag("facet-toggle-on") then
+					indicator:RemoveTag("facet-toggle-on")
+				end
 			end
+			indicator:AddTag(if presentation == "switch" then "facet-toggle-switch" else "facet-toggle-checkbox")
 			if dynamic(spec.value) or dynamic(spec.mixed) then
 				Compose.watch(updateIndicator)
 			else
@@ -920,7 +926,11 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				table.insert(p, indicator)
 			end
 		end
-		return ctx.styled(UI.Button(p), "toggle")
+		local toggle = ctx.styled(UI.Button(p), "toggle")
+		if presentation ~= "button" then
+			toggle:AddTag("facet-toggle-row")
+		end
+		return toggle
 	end)
 
 	local textKeys = {
