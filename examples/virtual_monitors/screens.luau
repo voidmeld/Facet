@@ -388,14 +388,32 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			text("Title", function(use)
 				return use(current).title
 			end, 18, { TextWrapped = false, TextTruncate = E.TextTruncate.AtEnd, Font = E.Font.BuilderSansBold }),
-			text("Facts", function(use)
-				local game = use(current)
-				return game.rating .. "  ·  " .. game.players
-			end, 13, { TextWrapped = false, TextTruncate = E.TextTruncate.AtEnd }, "facet-secondary"),
+			row("Live", {
+				UI.StatusIndicator "LiveDot" {
+					status = "success",
+					name = "Live now",
+				},
+				text(
+					"Facts",
+					function(use)
+						local game = use(current)
+						return game.rating .. "  ·  " .. game.players
+					end,
+					13,
+					{
+						TextWrapped = false,
+						TextTruncate = E.TextTruncate.AtEnd,
+						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }),
+					},
+					"facet-secondary"
+				),
+			}, { Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }),
 		}, {
 			Position = D2.new(0, 12, 1, -8),
 			AnchorPoint = V2.new(0, 1),
-			Size = D2.new(1, -100, 0, 0),
+			Size = function(use)
+				return D2.new(1, if #use(current).friends > 0 then -104 else -24, 0, 0)
+			end,
 		})
 		local footerHeight = Compose.cell(42)
 		Compose.cleanup(runtime.host.observation.observeProperty(footer, "AbsoluteSize", function()
@@ -431,20 +449,36 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				Active = false,
 			}),
 			footer,
-			button("Save", function(use)
-				return if use(model.saved)[use(current).id] then "Saved" else "Save"
+			Compose.show(function(use)
+				return #use(current).friends > 0
 			end, function()
-				model.toggleSaved(current:peek().id)
-			end, {
-				Position = D2.new(1, -10, 1, -10),
-				AnchorPoint = V2.new(1, 1),
-				Size = D2.fromOffset(72, 36),
-				AutomaticSize = E.AutomaticSize.None,
+				return UI.AvatarGroup "Friends" {
+					items = function(use)
+						return use(current).friends
+					end,
+					max = 3,
+					layout = "stacked",
+					diameter = 28,
+					Position = D2.new(1, -12, 1, -12),
+					AnchorPoint = V2.new(1, 1),
+				}
+			end),
+			UI.Button "Save" {
+				name = function(use)
+					return if use(model.saved)[use(current).id] then "Saved" else "Save"
+				end,
+				icon = function(use)
+					return if use(model.saved)[use(current).id] then "checkmark" else "increment"
+				end,
+				shape = "circle",
+				appearance = "soft",
 				controlSize = "compact",
-				TextSize = 13,
-				BackgroundTransparency = 1,
-				role = "cancel",
-			}),
+				onActivate = function()
+					model.toggleSaved(current:peek().id)
+				end,
+				Position = D2.new(1, -10, 0, 10),
+				AnchorPoint = V2.new(1, 0),
+			},
 		})
 		card:AddTag("facet-panel")
 		local drag = Host.UIDragDetector "SaveDrag" {
