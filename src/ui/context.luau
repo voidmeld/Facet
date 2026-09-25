@@ -90,6 +90,9 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		return value :: T
 	end
 	ctx.read = (read :: unknown) :: Shared.Read
+	ctx.readSource = function<T>(source: ComposeTypes.Readable<T>, use: ComposeTypes.Use?): T
+		return if use then use(source) else source:peek()
+	end
 	local function live(value: unknown): boolean
 		return Compose.isReadable(value) or type(value) == "function"
 	end
@@ -232,7 +235,9 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		local mouse, touch, gamepad =
 			observe(input, "MouseEnabled"), observe(input, "TouchEnabled"), observe(input, "GamepadEnabled")
 		return function(use: ComposeTypes.Use?): boolean
-			return ctx.read(mouse, use) == true and ctx.read(touch, use) ~= true and ctx.read(gamepad, use) ~= true
+			return ctx.readSource(mouse, use) == true
+				and ctx.readSource(touch, use) ~= true
+				and ctx.readSource(gamepad, use) ~= true
 		end
 	end
 	function ctx.hitFloor(): (ComposeTypes.Use?) -> number
@@ -593,7 +598,7 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 	end
 	function ctx.available(node: Instance, use: ComposeTypes.Use?): boolean
 		local scopes = ctx.read(ctx.modalScopes, use)
-		local portals = ctx.read(ctx.modalPortals, use)
+		local portals = ctx.readSource(ctx.modalPortals, use)
 		local modal: Instance? = scopes[#scopes]
 		local function inside(at: Instance?, visited: { [Instance]: boolean }): boolean
 			if not at or visited[at] then

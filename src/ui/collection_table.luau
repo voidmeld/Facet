@@ -18,6 +18,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 	local lists = layoutKit.of(ctx)
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
 	local read = ctx.read
+	local readSource = ctx.readSource
 	local D2, V2, E = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 	local behavior = {
 		"from",
@@ -222,7 +223,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end
 		end)
 		local collapsed = Compose.formula(function(use: ComposeTypes.Use)
-			local columns, offer, resized = read(spec.columns, use), use(viewportWidth), read(widths, use)
+			local columns, offer, resized = read(spec.columns, use), use(viewportWidth), readSource(widths, use)
 			local hidden: { [string]: boolean } = {}
 			local candidates: { { id: string, width: number, priority: number } } = {}
 			local needed = 0
@@ -266,7 +267,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			use: ComposeTypes.Use
 		): number?
 			local column = use(current)
-			return read(widths, use)[column.id] or column.width
+			return readSource(widths, use)[column.id] or column.width
 		end
 		local function columnFrame(
 			current: ComposeTypes.Readable<CollectionTypes.TableColumn<V, K>>,
@@ -321,7 +322,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 					appearance = "utility",
 					TextXAlignment = E.TextXAlignment.Left,
 					label = function(use: ComposeTypes.Use)
-						local value, order = use(current), read(sort, use)
+						local value, order = use(current), readSource(sort, use)
 						local suffix = if order and order.column == value.id
 							then (if order.direction == "descending" then " ↓" else " ↑")
 							else ""
@@ -331,7 +332,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 						return use(current).sortable ~= false
 					end,
 					onActivate = function()
-						local order = read(sort)
+						local order = readSource(sort)
 						local descending = order and order.column == column.id and order.direction == "ascending"
 						local nextSort: CollectionTypes.Sort = {
 							column = column.id,
@@ -380,7 +381,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 							end,
 							DragContinue = function(position)
 								local value = current:peek()
-								local nextWidths = table.clone(read(widths))
+								local nextWidths = table.clone(readSource(widths))
 								nextWidths[value.id] = math.clamp(
 									startingWidth + position.X - startingPosition,
 									value.minWidth or 48,
@@ -404,7 +405,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 					end)
 					local function adjust(delta: number): ()
 						local value = current:peek()
-						local nextWidths = table.clone(read(widths))
+						local nextWidths = table.clone(readSource(widths))
 						nextWidths[value.id] = math.clamp(
 							(nextWidths[value.id] or frame.AbsoluteSize.X) + delta,
 							value.minWidth or 48,

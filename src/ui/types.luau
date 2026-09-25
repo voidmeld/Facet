@@ -142,12 +142,7 @@ export type Config = {
 	onError: ((unknown) -> ())?,
 }
 export type ResolvedConfig = Config & { services: Services }
-export type Read =
-	(<T>(ComposeTypes.Cell<T>, Use?) -> T)
-	& (<T>(ComposeTypes.Formula<T>, Use?) -> T)
-	& (<T>(ComposeTypes.Readable<T>, Use?) -> T)
-	& (<T>(ComposeTypes.Body<T>, Use?) -> T)
-	& (<T>(Value<T>, Use?) -> T)
+export type Read = <T>(Value<T>, Use?) -> T
 export type ModalPortal = { node: Instance, anchor: Instance }
 export type ActionBinding = string | Enum.KeyCode | InputBindingNativeProps
 export type ActionSettings = { priority: number?, sink: boolean?, onReleased: (() -> ())?, capture: boolean? }
@@ -160,6 +155,7 @@ export type Context = {
 	config: ResolvedConfig,
 	metrics: { textSize: number, controlHeight: number, gap: number, cornerRadius: number },
 	read: Read,
+	readSource: <T>(Readable<T>, Use?) -> T,
 	metric: (string, Use?) -> number,
 	controlSize: (Value<ControlSize>?, "height" | "paddingX" | "iconSize", Use?) -> number,
 	pointerOnly: () -> (Use?) -> boolean,

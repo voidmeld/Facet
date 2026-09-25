@@ -55,6 +55,7 @@ end
 
 return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): ()
 	local runtime, Host, Compose, read = ctx.runtime, ctx.Host, ctx.Compose, ctx.read
+	local readSource = ctx.readSource
 	local D, D2, V2, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 	local function dynamic(source: unknown): boolean
 		return Compose.isReadable(source) or type(source) == "function"
@@ -362,7 +363,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 			end)
 		end
 		local function pair(use: ComposeTypes.Use?): Range
-			return assert(read(legal, use))
+			return assert(readSource(legal, use))
 		end
 		local function single(use: ComposeTypes.Use?): number
 			return read(spec.value :: Shared.Value<number>, use)

@@ -466,7 +466,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local function observeSelection(): Shared.Value<boolean>
 			local selected = ctx.observe(assert(guiService), "SelectedObject")
 			return function(use: ComposeTypes.Use)
-				local target = read(selected, use)
+				local target = use(selected)
 				return node and target == node or false
 			end
 		end

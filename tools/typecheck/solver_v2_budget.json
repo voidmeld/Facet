@@ -1,7 +1,7 @@
 {
   "ownedDiagnostics": {
-    "full": 869,
-    "owned-source": 623
+    "full": 792,
+    "owned-source": 546
   },
   "missedProbes": [
     "Theme numeric metric"

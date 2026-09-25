@@ -18,6 +18,7 @@ type PooledRow = { node: Frame, owner: ComposeTypes.Owner }
 return function(ctx: Types.Context, UI: Controls): ()
 	local Compose, Host, runtime = ctx.Compose, ctx.Host, ctx.runtime
 	local read = ctx.read
+	local readSource = ctx.readSource
 	local props, observe = ctx.props, ctx.observe
 	local D2, V2, E = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 	local gui = ctx.config.guiService
@@ -688,7 +689,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 			end
 		end)
 		local function eligible(use: ComposeTypes.Use): boolean
-			local node = read(selected, use)
+			local node = readSource(selected, use)
 			if node == nil or not belongsTo(node, root) then
 				return false
 			end

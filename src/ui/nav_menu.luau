@@ -2568,7 +2568,7 @@ return function(
 					local panel = popup
 					local target: GuiObject?
 					if panel then
-						for _, item in read(choices) do
+						for _, item in Compose.sample(choices) do
 							if item.divider ~= true and read(item.enabled) ~= false then
 								target = surfaces.firstSelectable(panel, item.id)
 								if target then

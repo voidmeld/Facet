@@ -77,7 +77,7 @@ local function writable(source: unknown): boolean
 end
 
 return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
-	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
+	local Compose, Host, runtime, read, readSource = ctx.Compose, ctx.Host, ctx.runtime, ctx.read, ctx.readSource
 	local E, D, D2, V2 = ctx.types.Enum, ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2
 	local C3 = ctx.types.Color3
 	local chrome = fieldChrome(ctx)
@@ -488,15 +488,15 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 			return nil
 		end
 		local function valueText(use: Use?): string
-			local value = read(held, use)
+			local value = readSource(held, use)
 			if value == nil then
 				return spec.placeholder or ""
 			end
-			local a = read(alphaHeld, use)
+			local a = readSource(alphaHeld, use)
 			return color.hex(value, if hasAlpha and a < 1 then a else nil)
 		end
 		local function semanticName(use: Use?): string
-			local words = brickName(read(held, use)) or valueText(use)
+			local words = brickName(readSource(held, use)) or valueText(use)
 			local label = read(spec.label, use)
 			return if type(label) == "string" and label ~= "" then `{label}, {words}` else words
 		end
@@ -520,7 +520,7 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 			if spec.isPresented ~= nil then
 				return read(spec.isPresented, use) == true
 			end
-			return read(ownOpen, use)
+			return readSource(ownOpen, use)
 		end
 		local function requestPresented(next: boolean)
 			if next and (disposed or not interactive()) then
@@ -1036,11 +1036,11 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 			end
 			local function saveCell(index: ComposeTypes.Readable<number>): TextButton
 				local function fresh(use: Use?): boolean
-					local value = read(held, use)
-					if value == nil or read(editing, use) then
+					local value = readSource(held, use)
+					if value == nil or readSource(editing, use) then
 						return false
 					end
-					for _, entry in read(swatchList, use) do
+					for _, entry in readSource(swatchList, use) do
 						if color.same(entry.color, value) or entry.key == color.hex(value) then
 							return false
 						end
