@@ -2371,6 +2371,34 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("keeps a full-screen alert's content and actions in a centred readable column", function()
+		for _, case in { { nil, 960 }, { 700, 700 } } do
+			local shown = Compose.cell(false)
+			local world = setup(function(UI, Host)
+				return Host.Frame({
+					UI.Alert({
+						isPresented = shown,
+						title = "Detail",
+						surface = "fullScreen",
+						maxWidth = case[1],
+						actions = { { id = "done", label = "Done", role = "cancel" } },
+					}),
+				})
+			end)
+			shown:set(true)
+			local panel = find(world.screen, "AlertPanel")
+			for _, name in { "AlertMessage", "Actions" } do
+				local node = find(panel, name)
+				t.expect(node.AnchorPoint.X).toBe(0.5)
+				t.expect(node.Position.X.Scale).toBe(0.5)
+				local cap = node:FindFirstChild("ReadableWidth")
+				t.expect(cap ~= nil).toBe(true)
+				t.expect(cap.MaxSize.X).toBe(case[2])
+			end
+			world.stop()
+		end
+	end)
+
 	t.it("makes full-screen source transitions immediate under native reduced motion", function()
 		local shown = Compose.cell(false)
 		local world = setup(function(UI, Host, engine, gui)

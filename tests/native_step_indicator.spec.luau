@@ -108,6 +108,15 @@ t.describe("native StepIndicator", function()
 		world.stop()
 	end)
 
+	t.it("reserves space under the row so the underline never crosses the state word", function()
+		local world = mount({ steps = workflow(), current = "ship" })
+		local padding = world.find("Row"):FindFirstChildWhichIsA("UIPadding")
+		t.expect(padding ~= nil).toBe(true)
+		local underline = world.find("Underline")
+		t.expect(padding.PaddingBottom.Offset >= underline.Size.Y.Offset + 2).toBe(true)
+		world.stop()
+	end)
+
 	t.it("keeps the own cue and state word of an errored or completed current step", function()
 		local steps = workflow()
 		steps[2].state = "error"

@@ -209,6 +209,8 @@ t.describe("native Pagination", function()
 			t.expect(wide.find("Slot-5000").Size.X.Offset >= 44).toBe(true)
 			t.expect(wide.find("Slot-5000").Size.X.Offset).toBe(56)
 			t.expect(wide.find("Page-5000"):FindFirstChild("SlotLimit").MaxSize.X).toBe(56)
+			local compact = require("../src").themes.neutralPackage().metrics.controlSizes.compact.height
+			t.expect(wide.find("Page-1"):FindFirstChild("SlotLimit").MinSize.X).toBe(compact)
 			wide.stop()
 			local expected = {
 				[360] = "previous 1 … 4999 [5000] 5001 next",

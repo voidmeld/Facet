@@ -1207,6 +1207,9 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 				return UI.NumberInput({
 					Name = name,
 					label = name,
+					Size = D2.new(0, 0, 0, 0),
+					AutomaticSize = E.AutomaticSize.Y,
+					Host.UIFlexItem({ FlexMode = E.UIFlexMode.Fill }) :: Shared.Child,
 					value = text,
 					numericValue = number,
 					min = lo,
@@ -1258,7 +1261,7 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 				return v.minute or 0
 			end, withMinute)
 			downTarget:set(hour:FindFirstChild("Field", true) :: GuiObject?)
-			local parts: { Shared.Child } = { hour, minute }
+			local parts: { Shared.Child } = {}
 			if hourCycle == 12 then
 				local half = Compose.cell("AM")
 				Compose.watch(function(use: Use)
@@ -1294,7 +1297,10 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 				}
 				table.insert(parts, UI.Picker(halfSpec))
 			end
-			local fields = ctx.row(parts, { Name = "Fields" })
+			local fields = ctx.row(
+				{ hour, minute },
+				{ Name = "Fields", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }
+			)
 			assert(fields:FindFirstChildWhichIsA("UIListLayout")).VerticalAlignment = E.VerticalAlignment.Bottom
 			local times: { TimeRow } = {}
 			for minutes = 0, 24 * 60 - 1, minuteStep do
@@ -1348,10 +1354,9 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 				}
 				return UI.VirtualList(timesSpec)
 			end)
-			return ctx.column(
-				{ fields, list },
-				{ Name = "Time", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y }
-			)
+			table.insert(parts, 1, fields)
+			table.insert(parts, list)
+			return ctx.column(parts, { Name = "Time", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 		end
 
 		local function presetRow(): Frame

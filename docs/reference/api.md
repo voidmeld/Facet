@@ -1547,7 +1547,9 @@ Motion options:
 
 - `transition = { source = nativeNode, seconds = 0.2, ease = Compose.easing.outQuad }`
   enables native source motion. `source` can also be a readable.
-- `surface = "fullScreen"` fills the native presentation area.
+- `surface = "fullScreen"` fills the native presentation area. The content
+  and the actions stay in a centered column. The column is not wider than
+  `maxWidth` (default 960 pixels).
 - With `surface = "fullScreen"` and a source transition, both bounds
   interpolate from the source rectangle. The alert content keeps its final
   size and the growing panel clips it. A non-interactive native snapshot at

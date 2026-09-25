@@ -313,6 +313,9 @@ return function(
 							propose("page", page)
 						end,
 						Host.UISizeConstraint "SlotLimit" {
+							MinSize = function(use: ComposeTypes.Use)
+								return V2.new(ctx.controlSize("compact", "height", use), 0)
+							end,
 							MaxSize = function(use: ComposeTypes.Use)
 								return V2.new(slotWidth(page, use), math.huge)
 							end,

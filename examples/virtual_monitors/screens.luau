@@ -800,7 +800,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				hint = function(use)
 					local session = use(model.sessions)[selected.id]
 					return if session
-						then `Friends see {civil.format(session)} at {civil.formatTime(session, 12)}.`
+						then `Friends see {civil.format(civil.dateOf(session))} at {civil.formatTime(session, 12)}.`
 						else "Pick a time to play with friends."
 				end,
 			},
@@ -827,12 +827,18 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			UI.HStack "DetailsTabs" {
 				width = "fill",
 				gap = "s",
-				button("AboutTab", "About", function()
-					model.detailTab:set("about")
-				end),
-				button("SimilarTab", "Similar games", function()
-					model.detailTab:set("similar")
-				end),
+				UI.Picker "DetailSection" {
+					selected = model.detailTab,
+					onChange = function(value)
+						model.detailTab:set(value)
+					end,
+					style = "segmented",
+					sizing = "hug",
+					options = {
+						{ value = "about", label = "About" },
+						{ value = "similar", label = "Similar games" },
+					},
+				},
 				UI.Spacer "TabsGap" { minLength = "s" },
 				button("SaveDetail", saveAction(current).label, function()
 					model.save(current:peek())
@@ -1006,7 +1012,11 @@ function screens.create(Facet: any, runtime: any, actions: any)
 		end
 		local savedShelf = button("Saved", "Saved", function()
 			model.shelf:set("saved")
-		end)
+		end, {
+			selected = function(use)
+				return use(model.shelf) == "saved"
+			end,
+		})
 		local shelves = UI.HStack "Shelves" {
 			width = function(use)
 				return if short(use) and not compact(use) then "hug" else "fill"
@@ -1015,13 +1025,18 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			align = "center",
 			button("Browse", "Browse", function()
 				model.shelf:set("browse")
-			end),
+			end, {
+				selected = function(use)
+					return use(model.shelf) == "browse"
+				end,
+			}),
 			UI.badged(savedShelf, function(use)
 				return #use(model.savedGames)
 			end),
 			UI.Text "Count" {
 				text = function(use)
-					return `{#use(model.visibleGames)} games`
+					local count = #use(model.visibleGames)
+					return `{count} {if count == 1 then "game" else "games"}`
 				end,
 				textRole = "caption",
 				role = "secondary",
@@ -1245,7 +1260,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				end))
 			end),
 			Compose.show(function(use)
-				return use(model.shelf) == "saved"
+				return use(model.shelf) == "saved" and #use(model.savedGames) > 0
 			end, function()
 				return feedFrame(UI.Table "SavedGames" {
 					from = model.savedGames,
@@ -1285,7 +1300,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						{
 							id = "session",
 							label = "Session",
-							width = 120,
+							width = 176,
 							value = function(item)
 								local session = model.sessions:peek()[item.id]
 								return if session then civil.format(session) else "—"
@@ -1312,7 +1327,9 @@ function screens.create(Facet: any, runtime: any, actions: any)
 									Name = "Note_" .. id,
 									value = draft,
 									placeholder = "Add a note",
-									Size = D2.new(1, 0, 1, -12),
+									AnchorPoint = V2.new(0, 0.5),
+									Position = D2.fromScale(0, 0.5),
+									Size = D2.new(1, -8, 1, -16),
 									AutomaticSize = E.AutomaticSize.None,
 									onCommit = function(value)
 										model.setNote(id, value)

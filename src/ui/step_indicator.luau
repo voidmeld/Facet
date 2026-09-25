@@ -394,6 +394,11 @@ return function(
 					return D.new(0, ctx.metric("space.m", use))
 				end,
 			}) :: Types.Child,
+			Host.UIPadding({
+				PaddingBottom = function(use: ComposeTypes.Use)
+					return D.new(0, ctx.metric("space.xs", use) + 2)
+				end,
+			}) :: Types.Child,
 			rowItems,
 		})
 		local underline = ctx.styled(

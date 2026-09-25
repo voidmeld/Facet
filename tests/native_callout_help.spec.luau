@@ -594,3 +594,49 @@ t.describe("native help: the structured form and the live plate", function()
 		w.stop()
 	end)
 end)
+
+t.describe("native Callout: layering", function()
+	t.it("paints above the modal layer that holds its anchor and stays under modals elsewhere", function()
+		local w = overlay.new(function(UI, Host)
+			local plain = UI.Button "Plain" { label = "+" }
+			local held = UI.Button "Held" { label = "+" }
+			return Host.Folder({
+				Name = "Root",
+				Host.Frame({ Name = "Page", ZIndex = 1, plain }),
+				Host.Frame({ Name = "Modal", ZIndex = 100, held }),
+				UI.Callout "Low" {
+					anchor = plain,
+					isPresented = true,
+					content = tip(Host),
+					onRetire = function() end,
+				},
+			})
+		end)
+		local panel = w.find("CalloutPanel")
+		t.expect(panel ~= nil).toBe(true)
+		t.expect(panel.ZIndex).toBe(95)
+		w.stop()
+		local lifted = overlay.new(function(UI, Host)
+			local held = UI.Button "Held" { label = "+" }
+			return Host.Folder({
+				Name = "Root",
+				Host.Frame({ Name = "Modal", ZIndex = 100, held }),
+				UI.Callout "High" {
+					anchor = held,
+					isPresented = true,
+					content = tip(Host),
+					onRetire = function() end,
+				},
+			})
+		end)
+		local high = lifted.find("CalloutPanel")
+		t.expect(high ~= nil).toBe(true)
+		t.expect(high.ZIndex > 100).toBe(true)
+		local arrow = lifted.find("Arrow")
+		if arrow then
+			t.expect(arrow.ZIndex > 100).toBe(true)
+			t.expect(arrow.ZIndex < high.ZIndex).toBe(true)
+		end
+		lifted.stop()
+	end)
+end)
