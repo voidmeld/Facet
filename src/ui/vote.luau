@@ -99,7 +99,7 @@ return function(
 					LayoutOrder = order,
 					BackgroundTransparency = 1,
 					Size = function(use: ComposeTypes.Use)
-						local side = ctx.controlSize(spec.controlSize, "height", use)
+						local side = math.max(ctx.controlSize(spec.controlSize, "height", use), floor(use))
 						return D2.fromOffset(side, side)
 					end,
 					Attributes = {

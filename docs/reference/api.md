@@ -1042,6 +1042,10 @@ A readable value for one of them causes an error that names the option.
   upright track reads. The label and the readout stay upright.
 - `controlSize`: `xsmall`, `compact`, `regular` or `large`. It sets the painted
   track thickness (3, 4, 6 or 8 pixels). The track stays 44 pixels thick as a target.
+  The rung also sets the thumb. The thumb is 24 pixels plus the rung's icon size
+  less the `regular` icon size, so `regular` keeps the 24 pixel thumb.
+- The track is at least 44 pixels long. A cell that fits its content keeps a
+  track that you can drag.
 
 Losing the input class during a drag (a change of `PreferredInput`) restores
 the value, or the whole pair, from the start of the drag. The later move and
@@ -1082,7 +1086,9 @@ true. `summary` is your own text, such as "99% liked". The optional
 - `readOnly = true` shows the same icons with your choice marked, with no
   Button and no selection stop. It is not disabled paint. A later
   `readOnly = false` without `onChange` keeps the vote read-only, with a
-  warning and a diagnostic line.
+  warning and a diagnostic line. Each read-only mark has the size of an
+  interactive option at the same `controlSize`: the rung height, and not less
+  than `targetSizes.minimum`.
 - `enabled = false` gives the ordinary disabled Buttons. A late value that is
   not legal keeps the last legal value.
 
@@ -1118,7 +1124,9 @@ and `onSelection` colors when a palette of the theme package declares
 
 ShortcutHint takes `keys = { { "Ctrl", "K" } }` or an `action` InputAction. It
 also takes an optional `separator` and `controlSize`. The default separator is
-` / `.
+` / `. The theme metric `controls.shortcutHint.capStroke` sets the width of the
+cap outline. Without it, the outline is `strokes.hairline`. A value of 0 draws
+no outline.
 
 ## Menus and navigation
 
@@ -1767,7 +1775,9 @@ state changes. It is never modal.
 - `message`: required, a string or a bound string. `title` is optional.
 - `severity`: `info` (the default), `success`, `warning` or `error`.
 - `appearance`: `standard` or `emphasis`. `emphasis` fills the plate with the
-  severity color.
+  severity color. A `standard` plate pads its content by the theme's `panel`
+  chrome `contentInsets`, and not less than 8 pixels, so art in the frame does
+  not cover the content. The title wraps and is never cut.
 - `icon`: `true` (the severity icon), `false`, or an icon name or source.
 - `link`: `{ label, onActivate }`. It uses the link appearance on a standard
   plate.
@@ -2080,7 +2090,7 @@ press.
 | `Label` | `text` or `label`, icon and iconPosition, textRole and role, `truncate`, `textSize`, and native text properties. `textRole` is one of `TYPE_ROLES`. Another value causes an error. Without an icon, it returns a TextLabel. With an icon, it returns a Frame row that holds the icon and a TextLabel. Native properties then apply to that Frame, so give it Frame properties only. See [Label text fit](#label-text-fit). |
 | `Badge` | `label`, `status`, an optional icon and position, appearance, corners and control size. The icon and the label share one pill. The status appearance keeps a neutral pill and shows the status as a leading dot. |
 | `StatusIndicator` | `status`: `neutral`, `info`, `success`, `warning`, `error` or `accent`. `form`: dot, ring, square or dash. Optional `count`, `max`, `diameter` and `name`. The `name` sets the accessible label. A ring is a native inner stroke in the status color. A count grows into a pill that is never narrower than it is tall. |
-| `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. The endLabel shows after the value. With a label, a bar shows the value and the endLabel on the label row. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. |
+| `ProgressView` | `value`, `min` (0), `max` (1). `presentation`: bar, circular or spinner. label and endLabel, showValue and format, diameter, thickness, segments, and an optional trail `{ delay, duration }`. The endLabel shows after the value. With a label, a bar shows the value and the endLabel on the label row. Segments require the bar presentation. Diameter requires circular or spinner. A trail holds on damage, settles over its duration, and snaps on healing or reduced motion. A circular value is centered when the native text bounds fit. Otherwise it shows below the ring. A circular ring with no thickness uses 8 percent of its diameter, and not less than the theme metric. On a bar, `controlSize` sets the track thickness: `xsmall` and `compact` use `space.xs`, and `regular` and `large` use `controls.progress.trackHeight`. A bar refuses `controlSize` together with `thickness`. |
 | `Skeleton` | A loading placeholder with a configurable form and line count. |
 | `AsyncImage` | An image or source, an optional resource or loader, a placeholder, a failure label and a status callback. `imageProperties` forwards native properties and children to the inner ImageLabel. |
 | `Avatar` | `name`; image, userId or resource; loader and onStatus; presence online, away, busy or offline; presence label and mark; diameter or controlSize; standard or icon form; optional activation. |
@@ -2245,6 +2255,12 @@ The metrics also have optional entries:
 - `strokes.utility`: a number of pixels. When it is more than 0, a
   `utility` Button draws a hairline outline of that width. Without it, a
   utility Button has no outline.
+- `controls.shortcutHint.capStroke`: a number of pixels for the ShortcutHint
+  cap outline. Without it, the outline is `strokes.hairline`. A value of 0 draws
+  no outline.
+- `controls.shortcutHint.capGap`: a number of pixels. `define` accepts it for
+  packages that also target main. The native ShortcutHint draws each chord as
+  one label, so it has no gap between caps to set.
 
 StyleSheet rules own ordinary paint. Explicit Instance properties override
 native styling intentionally. Give the same theme package readable to

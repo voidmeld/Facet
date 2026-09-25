@@ -55,7 +55,7 @@ end
 
 return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): ()
 	local runtime, Host, Compose, read = ctx.runtime, ctx.Host, ctx.Compose, ctx.read
-	local D2, V2, E = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
+	local D, D2, V2, E = ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 	local function dynamic(source: unknown): boolean
 		return Compose.isReadable(source) or type(source) == "function"
 	end
@@ -128,6 +128,21 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 		vertical: boolean,
 		target: boolean
 	): Frame
+		local knobSize = function(use: ComposeTypes.Use?): number
+			if spec.controlSize == nil then
+				return KNOB
+			end
+			local icon = ctx.controlSize(spec.controlSize, "iconSize", use)
+			return math.max(8, KNOB + icon - ctx.controlSize("regular", "iconSize", use))
+		end
+		local knobBox = function(use: ComposeTypes.Use): UDim2
+			local side = knobSize(use)
+			return D2.fromOffset(side, side)
+		end
+		local knobFloor = function(use: ComposeTypes.Use): Vector2
+			local side = knobSize(use)
+			return V2.new(side, side)
+		end
 		local size = if target then 44 else KNOB
 		local native: Shared.FrameNativeProps = {
 			Name = name,
@@ -145,10 +160,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 				Name = name,
 				AnchorPoint = V2.new(0.5, 0.5),
 				Position = native.Position,
-				Size = D2.fromOffset(KNOB, KNOB),
+				Size = knobBox,
 				Visible = shown,
 				ZIndex = 3,
-				ctx.corner(KNOB / 2),
+				Host.UICorner({ CornerRadius = D.new(0.5, 0) }),
 			}, spec.thumbImage, "slider-thumb", "sliderThumb")
 		end
 		local mark: GuiObject
@@ -174,7 +189,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 				Size = D2.fromOffset(0, 0),
 				AutomaticSize = E.AutomaticSize.XY,
 				Visible = shown,
-				Host.UISizeConstraint({ MinSize = V2.new(KNOB, KNOB) }) :: ComposeTypes.Child,
+				Host.UISizeConstraint({ MinSize = knobFloor }) :: ComposeTypes.Child,
 				Host.UIListLayout({
 					HorizontalAlignment = E.HorizontalAlignment.Center,
 					VerticalAlignment = E.VerticalAlignment.Center,
@@ -186,16 +201,16 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 				Name = "Knob",
 				AnchorPoint = V2.new(0.5, 0.5),
 				Position = D2.fromScale(0.5, 0.5),
-				Size = D2.fromOffset(KNOB, KNOB),
+				Size = knobBox,
 				Visible = shown,
-				ctx.corner(KNOB / 2),
+				Host.UICorner({ CornerRadius = D.new(0.5, 0) }),
 			}, spec.thumbImage, "slider-thumb", "sliderThumb")
 		end
 		if not target then
 			native.BackgroundTransparency = 1
 			native.Size = D2.fromOffset(0, 0)
 			native.AutomaticSize = E.AutomaticSize.XY
-			table.insert(native, Host.UISizeConstraint({ MinSize = V2.new(KNOB, KNOB) }))
+			table.insert(native, Host.UISizeConstraint({ MinSize = knobFloor }))
 			table.insert(native, mark)
 			return Host.Frame(native)
 		end
@@ -557,6 +572,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 			)
 		end
 		table.insert(trackChildren, detector)
+		table.insert(trackChildren, Host.UISizeConstraint({ MinSize = V2.new(44, 44) }))
 		local trackProps: Shared.FrameNativeProps = {
 			Name = "Track",
 			Size = if vertical then D2.new(0, 44, 1, 0) else D2.new(1, 0, 0, 44),

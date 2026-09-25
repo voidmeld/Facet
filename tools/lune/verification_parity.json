@@ -473,8 +473,8 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1670,
-      "c": 837,
+      "a": 1684,
+      "c": 845,
       "b": 307,
       "d": 1
     },
@@ -492,9 +492,9 @@
       "tools/check_types.py with tests/types/*_witness.luau (not a lune case)",
       "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)"
     ],
-    "contracts": 2815,
+    "contracts": 2837,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 577
+    "coveredButWeaker": 588
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -45011,6 +45011,336 @@
       "candidateCases": [
         "native_foundation_parity::native plain Toggle::a plain compact checkbox paints no wash, labels at its role and still toggles"
       ]
+    },
+    {
+      "id": "post-port27-001",
+      "group": "layout-geometry",
+      "title": "A hugging stack gives a fill text its measured natural width",
+      "mainSpecs": [
+        "fill_minimum"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "The layout solver and its fill weights are deleted; native UIListLayout, UIFlexItem and AutomaticSize own a stack's size (see mech1-123)."
+    },
+    {
+      "id": "post-port27-002",
+      "group": "layout-geometry",
+      "title": "A long fill text wraps at the offer and stays inside its hugging cell",
+      "mainSpecs": [
+        "fill_minimum"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "The layout solver and its fill weights are deleted; native TextWrapped with AutomaticSize owns the wrap (see mech1-123)."
+    },
+    {
+      "id": "post-port27-003",
+      "group": "layout-geometry",
+      "title": "A content stack keeps its fill-box minima",
+      "mainSpecs": [
+        "fill_minimum"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "The layout solver and its fill minima are deleted (see mech1-123)."
+    },
+    {
+      "id": "post-port27-004",
+      "group": "layout-geometry",
+      "title": "Measure memo seed 91: a cut label reports truncated",
+      "mainSpecs": [
+        "measure_memo"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "The measure memo and its truncation verdict are deleted with the solver."
+    },
+    {
+      "id": "post-port27-005",
+      "group": "menus-pickers",
+      "title": "The menu's own submenu row shows its chevron beside a shortcut row",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: menu submenu rows::a submenu row shows its chevron beside a shortcut row, and the shortcut row shows none"
+      ],
+      "weaker": "The native row is one Button with a trailingIcon, so every row form shows the chevron. The rectangle inside the row is native layout."
+    },
+    {
+      "id": "post-port27-006",
+      "group": "controls-values",
+      "title": "Slider in a hugging cell keeps one target of travel (axis x)",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Slider rung thumb and track floor::axis x: the track keeps one target of travel in a hugging cell"
+      ],
+      "weaker": "A UISizeConstraint floors the Track at 44 px on both axes. The solved length is native."
+    },
+    {
+      "id": "post-port27-007",
+      "group": "controls-values",
+      "title": "Slider in a hugging cell keeps one target of travel (axis y)",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Slider rung thumb and track floor::axis y: the track keeps one target of travel in a hugging cell"
+      ],
+      "weaker": "A UISizeConstraint floors the Track at 44 px on both axes. The solved length is native."
+    },
+    {
+      "id": "post-port27-008",
+      "group": "controls-values",
+      "title": "Slider compact and large thumbs differ; regular is the theme thumb",
+      "mainSpecs": [
+        "value_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Slider rung thumb and track floor::compact and large thumbs differ, and regular is the theme's thumb"
+      ],
+      "weaker": "The native thumb is the 24 px knob changed by the rung's icon size less the regular icon size (compact 20, large 28), so regular stays the theme thumb."
+    },
+    {
+      "id": "post-port27-009",
+      "group": "controls-values",
+      "title": "A ProgressView bar spends its rung on track thickness",
+      "mainSpecs": [
+        "display_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: ProgressView rungs::a bar spends its rung on track thickness: small rungs thin, regular and large the theme track"
+      ]
+    },
+    {
+      "id": "post-port27-010",
+      "group": "controls-values",
+      "title": "A large ring shows its value; smaller rungs refuse the readout",
+      "mainSpecs": [
+        "display_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: ProgressView rungs::a large ring shows its value in the gauge"
+      ],
+      "weaker": "A native ring shows its value at every rung: centred when the text bounds fit, else under the ring. It does not refuse a smaller rung."
+    },
+    {
+      "id": "post-port27-011",
+      "group": "controls-values",
+      "title": "A ring's height refusal names controlSize and diameter",
+      "mainSpecs": [
+        "display_controls"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "There is no ProgressView height option. The native thickness option also sets a ring's stroke, so a ring has nothing to refuse."
+    },
+    {
+      "id": "post-port27-012",
+      "group": "controls-values",
+      "title": "Refuses a bar rung with height, diameter plus rung, and non-string end phrases",
+      "mainSpecs": [
+        "display_controls"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: ProgressView rungs::refuses a bar rung with a thickness"
+      ],
+      "weaker": "The native bar takes thickness in place of height. The existing construction check refuses a diameter on a bar."
+    },
+    {
+      "id": "post-port27-013",
+      "group": "controls-values",
+      "title": "A readOnly vote keeps the interactive strip's rung height",
+      "mainSpecs": [
+        "vote"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Vote and one rung plate height::a readOnly vote keeps the interactive strip's rung height"
+      ]
+    },
+    {
+      "id": "post-port27-014",
+      "group": "hud-world",
+      "title": "The HUD paint probe skips a hidden node",
+      "mainSpecs": [
+        "hud_paint_probe"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "The paint probe fixture is deleted (see apps-219)."
+    },
+    {
+      "id": "post-port27-015",
+      "group": "paint-theming",
+      "title": "The Badge status mark takes the plate's lettering with no page-colour ring",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Badge status mark::the status mark has no page-colour ring and reads against the badge plate"
+      ],
+      "weaker": "The native status plate is the neutral control plate, so the mark keeps its status colour, which differs from the plate in every tested package. The mark has no cutout."
+    },
+    {
+      "id": "post-port27-016",
+      "group": "paint-theming",
+      "title": "An unplated utility badge keeps the status colour on its mark",
+      "mainSpecs": [
+        "badge"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Badge status mark::an unplated utility badge draws no status mark"
+      ],
+      "weaker": "A native utility badge draws no mark. The main case accepts no mark."
+    },
+    {
+      "id": "post-port27-017",
+      "group": "paint-theming",
+      "title": "ShortcutHint keycap stroke and chord gap are theme metrics",
+      "mainSpecs": [
+        "shortcut_hint"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: ShortcutHint keycap outline::the keycap stroke is a theme metric: Neutral the hairline, 0 draws none"
+      ],
+      "weaker": "capStroke sets the .facet-shortcut-hint::UIStroke rule. The native hint draws a chord as one label, so capGap is accepted but has no gap to set."
+    },
+    {
+      "id": "post-port27-018",
+      "group": "controls-values",
+      "title": "The rung sizes the step marker; regular is the medium icon",
+      "mainSpecs": [
+        "step_indicator"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: StepIndicator rung marker::the rung sizes the step marker, and regular is the theme's medium icon"
+      ]
+    },
+    {
+      "id": "post-port27-019",
+      "group": "layout-geometry",
+      "title": "A plated GridRow keeps its cells' text inside the theme chrome",
+      "mainSpecs": [
+        "grid_row"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "UI.Grid and UI.GridRow are deleted (see mech2-05)."
+    },
+    {
+      "id": "post-port27-020",
+      "group": "paint-theming",
+      "title": "An art theme's frame carve holds the Notice content at every rung",
+      "mainSpecs": [
+        "notice"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Notice plate carve::an art theme's panel carve pads the standard plate; emphasis keeps the plain inset"
+      ],
+      "weaker": "The standard plate's UIPadding is the larger of 8 px and the panel contentInsets. The case asserts the padding; the painted rectangles are live. The native title wraps, so a narrow plate does not cut it and it needs no disclosure.",
+      "needsLive": "port27-notice-carve"
+    },
+    {
+      "id": "post-port27-021",
+      "group": "paint-theming",
+      "title": "One rung, one plate height across the shipped packages",
+      "mainSpecs": [
+        "control_rung_heights"
+      ],
+      "mainCases": 9,
+      "class": "a",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "candidateCases": [
+        "native_lab_audit_parity::native lab audit: Vote and one rung plate height::neutral: a Button, the segmented track and a checkbox land on one rung height",
+        "native_lab_audit_parity::native lab audit: Vote and one rung plate height::pixel_quest: a Button, the segmented track and a checkbox land on one rung height",
+        "native_lab_audit_parity::native lab audit: Vote and one rung plate height::fantasy_ornate: a Button, the segmented track and a checkbox land on one rung height",
+        "native_lab_audit_parity::native lab audit: Vote and one rung plate height::scifi_hud: a Button, the segmented track and a checkbox land on one rung height"
+      ],
+      "weaker": "The case asserts the Button, segmented Picker and checkbox Toggle Size offsets in four packages. TextInput, the menu trigger and the art carve deltas that main pins are live.",
+      "needsLive": "port27-rung-heights"
+    },
+    {
+      "id": "post-port27-022",
+      "group": "controls-values",
+      "title": "A content-sized Toggle refusal names the plain form",
+      "mainSpecs": [
+        "toggle_presentations"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "family": "lab-audit",
+      "removal": "The native Toggle has no content-sized width refusal. AutomaticSize sizes every form to its label."
     }
   ],
   "bugs": [
@@ -45563,6 +45893,20 @@
         "port26-underline-live",
         "port26-utility-stroke",
         "port26-xsmall-rung"
+      ]
+    },
+    "lab-audit": {
+      "mainCommit": "cb75b46bdde9542812e3672ccd7a2e3032d88380",
+      "since": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "contracts": 22,
+      "mainCases": 30,
+      "mainCasesByClass": {
+        "a": 22,
+        "c": 8
+      },
+      "needsLive": [
+        "port27-notice-carve",
+        "port27-rung-heights"
       ]
     }
   }

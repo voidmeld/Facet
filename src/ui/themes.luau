@@ -791,6 +791,17 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 		TextSize = package.metrics.typography.caption.size,
 	})
 	rule(".facet-shortcut-hint::UICorner", { CornerRadius = types.UDim.new(0, 6) })
+	local families: { [string]: { [string]: number } } = package.metrics.controls or {}
+	local hintFamily: { [string]: number } = families.shortcutHint or {}
+	local capStroke = hintFamily.capStroke or package.metrics.strokes.hairline or 1
+	if capStroke > 0 then
+		rule(".facet-shortcut-hint::UIStroke", {
+			Color = c("hairline"),
+			Transparency = extra.hairlineOpacity or 0.92,
+			Thickness = capStroke,
+			ApplyStrokeMode = types.Enum.ApplyStrokeMode.Border,
+		})
+	end
 	rule(".facet-shortcut-hint::UIPadding", {
 		PaddingLeft = types.UDim.new(0, 8),
 		PaddingRight = types.UDim.new(0, 8),

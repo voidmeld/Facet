@@ -491,6 +491,10 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			spec.diameter == nil or presentation ~= "bar",
 			"Facet ProgressView diameter requires a circular presentation"
 		)
+		assert(
+			presentation ~= "bar" or spec.controlSize == nil or spec.thickness == nil,
+			"Facet ProgressView: give thickness or controlSize, not both (a bar's rung is its track thickness)"
+		)
 		local count = spec.segments or 1
 		assert(
 			type(count) == "number" and count >= 1 and count < math.huge and count % 1 == 0,
@@ -584,7 +588,13 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			local track: Engine.FrameNativeProps = {
 				Name = "Track",
 				Size = function(use: ComposeTypes.Use)
-					local thickness = read(spec.thickness, use) or metric("controls.progress.trackHeight", use)
+					local rung = read(spec.controlSize, use)
+					local thickness = read(spec.thickness, use)
+						or (
+							if rung == "xsmall" or rung == "compact"
+								then metric("space.xs", use)
+								else metric("controls.progress.trackHeight", use)
+						)
 					return if vertical(use) then D2.new(0, thickness, 1, 0) else D2.new(1, 0, 0, thickness)
 				end,
 				ClipsDescendants = false,

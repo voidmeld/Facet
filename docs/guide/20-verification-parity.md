@@ -1318,6 +1318,35 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-port26-037 | `toggle_presentations` | 1 | a | `a plain compact checkbox paints no wash, labels at its role and still toggles`, `the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline` | Activation fires the native Activated event; the 36 px row is its Size offset. |
 | post-port26-038 | `toggle_presentations` | 1 | a | `a plain compact checkbox paints no wash, labels at its role and still toggles` |  |
 
+### Lab audit
+
+`main` added these cases after `7c364ca0`, up to `cb75b46b`. They cover the stack fill demand, the Menu submenu chevron, the Slider rung thumb and track floor, the ProgressView bar rungs and ring readout, the read-only Vote rung, the HUD paint probe, the Badge status mark, the ShortcutHint `capStroke` and `capGap` metrics, the StepIndicator rung marker, the GridRow chrome inset, the Notice plate carve and title, and one plate height for each rung. The family has 22 contracts and 30 main cases (a: 22, c: 8). A case in `needsLive` also needs a live Studio check. The candidate spec is `native_lab_audit_parity`.
+
+| Contract | Main spec | Main cases | Class | Candidate cases | Note |
+|---|---|---:|---|---|---|
+| post-port27-001 | `fill_minimum` | 1 | c | - | The layout solver and its fill weights are deleted; native UIListLayout, UIFlexItem and AutomaticSize own a stack's size (see mech1-123). |
+| post-port27-002 | `fill_minimum` | 1 | c | - | The layout solver and its fill weights are deleted; native TextWrapped with AutomaticSize owns the wrap (see mech1-123). |
+| post-port27-003 | `fill_minimum` | 1 | c | - | The layout solver and its fill minima are deleted (see mech1-123). |
+| post-port27-004 | `measure_memo` | 1 | c | - | The measure memo and its truncation verdict are deleted with the solver. |
+| post-port27-005 | `menu` | 1 | a | `a submenu row shows its chevron beside a shortcut row, and the shortcut row shows none` | The native row is one Button with a trailingIcon, so every row form shows the chevron. The rectangle inside the row is native layout. |
+| post-port27-006 | `value_controls` | 1 | a | `axis x: the track keeps one target of travel in a hugging cell` | A UISizeConstraint floors the Track at 44 px on both axes. The solved length is native. |
+| post-port27-007 | `value_controls` | 1 | a | `axis y: the track keeps one target of travel in a hugging cell` | A UISizeConstraint floors the Track at 44 px on both axes. The solved length is native. |
+| post-port27-008 | `value_controls` | 1 | a | `compact and large thumbs differ, and regular is the theme's thumb` | The native thumb is the 24 px knob changed by the rung's icon size less the regular icon size (compact 20, large 28), so regular stays the theme thumb. |
+| post-port27-009 | `display_controls` | 1 | a | `a bar spends its rung on track thickness: small rungs thin, regular and large the theme track` |  |
+| post-port27-010 | `display_controls` | 1 | a | `a large ring shows its value in the gauge` | A native ring shows its value at every rung: centred when the text bounds fit, else under the ring. It does not refuse a smaller rung. |
+| post-port27-011 | `display_controls` | 1 | c | - | There is no ProgressView height option. The native thickness option also sets a ring's stroke, so a ring has nothing to refuse. |
+| post-port27-012 | `display_controls` | 1 | a | `refuses a bar rung with a thickness` | The native bar takes thickness in place of height. The existing construction check refuses a diameter on a bar. |
+| post-port27-013 | `vote` | 1 | a | `a readOnly vote keeps the interactive strip's rung height` |  |
+| post-port27-014 | `hud_paint_probe` | 1 | c | - | The paint probe fixture is deleted (see apps-219). |
+| post-port27-015 | `badge` | 1 | a | `the status mark has no page-colour ring and reads against the badge plate` | The native status plate is the neutral control plate, so the mark keeps its status colour, which differs from the plate in every tested package. The mark has no cutout. |
+| post-port27-016 | `badge` | 1 | a | `an unplated utility badge draws no status mark` | A native utility badge draws no mark. The main case accepts no mark. |
+| post-port27-017 | `shortcut_hint` | 1 | a | `the keycap stroke is a theme metric: Neutral the hairline, 0 draws none` | capStroke sets the .facet-shortcut-hint::UIStroke rule. The native hint draws a chord as one label, so capGap is accepted but has no gap to set. |
+| post-port27-018 | `step_indicator` | 1 | a | `the rung sizes the step marker, and regular is the theme's medium icon` |  |
+| post-port27-019 | `grid_row` | 1 | c | - | UI.Grid and UI.GridRow are deleted (see mech2-05). |
+| post-port27-020 | `notice` | 1 | a | `an art theme's panel carve pads the standard plate; emphasis keeps the plain inset` | The standard plate's UIPadding is the larger of 8 px and the panel contentInsets. The case asserts the padding; the painted rectangles are live. The native title wraps, so a narrow plate does not cut it and it needs no disclosure. Live: `port27-notice-carve`. |
+| post-port27-021 | `control_rung_heights` | 9 | a | `neutral: a Button, the segmented track and a checkbox land on one rung height`, `pixel_quest: a Button, the segmented track and a checkbox land on one rung height`, `fantasy_ornate: a Button, the segmented track and a checkbox land on one rung height`, `scifi_hud: a Button, the segmented track and a checkbox land on one rung height` | The case asserts the Button, segmented Picker and checkbox Toggle Size offsets in four packages. TextInput, the menu trigger and the art carve deltas that main pins are live. Live: `port27-rung-heights`. |
+| post-port27-022 | `toggle_presentations` | 1 | c | - | The native Toggle has no content-sized width refusal. AutomaticSize sizes every form to its label. |
+
 ## Use the data
 
 - `totals` has the class counts before and after the new tests.

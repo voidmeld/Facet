@@ -4,6 +4,7 @@ local Nav = require("./navigation_types")
 local Overlay = require("./overlay_types")
 local Inputs = require("./input_types")
 local ComposeTypes = require("../vendor/compose/core")
+local Theme = require("./theme_types")
 local parts = require("./overlay_parts")
 local reservations = require("./reservations")
 local reducedMotion = require("./motion")
@@ -128,11 +129,24 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local offered = Compose.cell(0)
 		local copyNatural = Compose.cell(0)
 		local accessoryWidth = Compose.cell(0)
+		local function panelCarve(use: ComposeTypes.Use?): { left: number, right: number, top: number, bottom: number }
+			local package = if emphasis then nil else read(ctx.config.theme, use)
+			local chrome: { [string]: Theme.SkinLayer } = if package then package.chrome or {} else {}
+			local recipe = chrome.panel
+			local inset: Theme.Insets = if recipe then recipe.contentInsets or {} else {}
+			return {
+				left = math.max(8, inset.left or 0),
+				right = math.max(8, inset.right or 0),
+				top = math.max(8, inset.top or 0),
+				bottom = math.max(8, inset.bottom or 0),
+			}
+		end
 		local beside = Compose.formula(function(use: ComposeTypes.Use): boolean
 			if link == nil and #actions == 0 then
 				return true
 			end
-			local chrome = ctx.metric("targetSizes.minimum", use) * 2 + 4 * 8
+			local carve = panelCarve(use)
+			local chrome = ctx.metric("targetSizes.minimum", use) * 2 + 4 * 8 + carve.left + carve.right - 16
 			return use(copyNatural) + use(accessoryWidth) + chrome <= use(offered)
 		end)
 		local function lettering<N>(node: N & Instance): N & Instance
@@ -334,7 +348,20 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local native = (ctx.props(spec, NOTICE_KEYS, defaults) :: unknown) :: { [unknown]: unknown }
 		local restSize, restAutomatic, restClip, restInteractable =
 			native.Size, native.AutomaticSize, native.ClipsDescendants, native.Interactable
-		local inset = ctx.padding(8, 8)
+		local inset = Host.UIPadding({
+			PaddingLeft = function(use: ComposeTypes.Use)
+				return UD.new(0, panelCarve(use).left)
+			end,
+			PaddingRight = function(use: ComposeTypes.Use)
+				return UD.new(0, panelCarve(use).right)
+			end,
+			PaddingTop = function(use: ComposeTypes.Use)
+				return UD.new(0, panelCarve(use).top)
+			end,
+			PaddingBottom = function(use: ComposeTypes.Use)
+				return UD.new(0, panelCarve(use).bottom)
+			end,
+		})
 		local bodyExtent = ctx.observe(body, "AbsoluteSize")
 		local function settled(use: ComposeTypes.Use): boolean
 			return progress(use) >= 1
