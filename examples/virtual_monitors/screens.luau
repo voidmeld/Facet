@@ -223,6 +223,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			end,
 		}
 		local presenceWords = { online = "Online", away = "Away", busy = "Busy" }
+		local menuShown = Compose.cell(false)
 		local root = UI.ZStack(name)({
 			width = "fill",
 			height = "fill",
@@ -236,14 +237,14 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					title = if name == "Chat" then "Assistant" else name,
 					titleSize = "heading",
 					Visible = function(use)
-						return not (collapsed and use(collapsed))
+						return use(menuShown) or not (collapsed and use(collapsed))
 					end,
 					trailing = UI.HStack "HeaderActions" {
 						gap = "s",
 						align = "center",
 						UI.HStack(chrome),
-						UI.Menu "ActionsMenu" {
-							trigger = UI.Button "MenuButton" {
+						UI.Menu {
+							trigger = UI.Button "ActionsMenu" {
 								icon = "more",
 								name = "Menu",
 								shape = "circle",
@@ -251,6 +252,12 @@ function screens.create(Facet: any, runtime: any, actions: any)
 							},
 							Visible = function(use)
 								return not wide(use)
+							end,
+							onOpen = function()
+								menuShown:set(true)
+							end,
+							onClose = function()
+								menuShown:set(false)
 							end,
 							items = {
 								{ id = "Presentation", label = "Switch presentation", onSelect = model.toggleMode },

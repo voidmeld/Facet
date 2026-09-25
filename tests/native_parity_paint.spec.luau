@@ -644,12 +644,11 @@ t.describe("native parity paint", function()
 		local count = #sheet:GetChildren()
 		t.expect(control:GetProperties().CornerRadius).toBe(UDim.new(0, 8))
 		t.expect(panel:GetProperties().CornerRadius).toBe(UDim.new(0, 12))
-		for _, role in
-			{ "surface", "control", "field", "button", "badge", "track", "skeleton", "avatar", "menu", "tab" }
-		do
+		for _, role in { "surface", "control", "field", "button", "badge", "track", "skeleton", "avatar", "tab" } do
 			t.expect(style(sheet, ".facet-" .. role .. "::UICorner").CornerRadius).toBe(UDim.new(0, 8))
 		end
 		t.expect(style(sheet, ".facet-sheet::UICorner").CornerRadius).toBe(UDim.new(0, 12))
+		t.expect(style(sheet, ".facet-menu::UICorner").CornerRadius).toBe(UDim.new(0, 12))
 		t.expect(style(sheet, ".facet-segmented::UICorner").CornerRadius).toBe(UDim.new(0, 10))
 		local retuned = themes.neutralPackage()
 		retuned.metrics.radii.control = 14

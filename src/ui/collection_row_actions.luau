@@ -415,13 +415,11 @@ return function(ctx: Types.Context, UI: Controls): ()
 				setOpen(nil)
 			end
 		end)
-		local contentMenu = UI.Menu "ContextActions" {
+		local contentMenu = UI.Menu {
 			trigger = content,
 			items = menuItems,
 			isPresented = menuOpen,
 			triggers = {},
-			Size = D2.fromScale(1, 1),
-			AutomaticSize = E.AutomaticSize.None,
 			onOpen = function()
 				setOpen(nil)
 			end,

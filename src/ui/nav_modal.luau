@@ -110,10 +110,12 @@ return function(ctx: Types.Context): Nav.Surfaces
 	local function popover(
 		panel: GuiObject,
 		amount: Nav.Appearance,
-		place: (ComposeTypes.Use) -> (Vector2, Vector2)
+		place: (ComposeTypes.Use) -> (Vector2, Vector2),
+		from: number?
 	): ()
+		local rest = from or 0.9
 		local function scale(use: ComposeTypes.Use): number
-			return 0.9 + 0.1 * amount(use)
+			return rest + (1 - rest) * amount(use)
 		end
 		runtime.decorate(panel, {
 			Position = function(use: ComposeTypes.Use)

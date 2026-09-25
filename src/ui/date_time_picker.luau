@@ -1054,7 +1054,7 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 			options: (Use) -> { { value: number, label: string, enabled: (Use) -> boolean } },
 			get: (CivilDate) -> number,
 			set: (number) -> ()
-		): Frame
+		): GuiObject
 			local pick = Compose.cell(get(peekMonth()))
 			Compose.watch(function(use: Use)
 				pick:set(get(use(viewMonth)))
@@ -1094,7 +1094,6 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 				end,
 			})
 			return UI.Menu({
-				Name = menuName .. "Menu",
 				items = items,
 				trigger = trigger :: GuiObject,
 				presentation = "menu" :: "menu",
@@ -1149,7 +1148,7 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 			end, function(v: number)
 				landIn({ year = v, month = peekMonth().month, day = 1 })
 			end)
-			upTarget:set(assert(monthMenu:FindFirstChild("Month", true)) :: GuiObject)
+			upTarget:set(monthMenu)
 			local function arrow(name: string, icon: string, words_: string, delta: number): TextButton
 				return UI.Button({
 					Name = name,

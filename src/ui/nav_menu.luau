@@ -5,9 +5,10 @@ local Nav = require("./navigation_types")
 local Inputs = require("./input_types")
 local Media = require("./media_types")
 local fieldChrome = require("./field_chrome")
+local reducedMotion = require("./motion")
 local ComposeTypes = require("../vendor/compose/core")
 
-type MenuEntry<V> = { key: string, heading: string?, item: Nav.MenuItem<V>? }
+type MenuEntry<V> = { key: string, heading: string?, item: Nav.MenuItem<V>?, ruled: boolean? }
 
 return function(
 	ctx: Types.Context,
@@ -25,6 +26,8 @@ return function(
 ): ()
 	local Host, Compose, runtime, read = ctx.Host, ctx.Compose, ctx.runtime, ctx.read
 	local POPOVER: Nav.MotionTiming = { enter = 0.15, exit = 0.1 }
+	local SLIDE = 32
+	local MATERIALIZE = 0.96
 	local E, D2, V2, D = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2, ctx.types.UDim
 	local function derive<T>(compute: (ComposeTypes.Use?) -> T, ...: unknown): Types.Value<T>
 		for index = 1, select("#", ...) do
@@ -46,6 +49,105 @@ return function(
 	end
 	local function writable(cell: { set: unknown }, name: string)
 		assert(type(cell) == "table" and type(cell.set) == "function", name .. " requires a writable Compose cell")
+	end
+	local MENU_KEYS = {
+		"items",
+		"query",
+		"label",
+		"disclosure",
+		"trigger",
+		"triggers",
+		"presentation",
+		"backLabel",
+		"onOpen",
+		"onClose",
+		"enabled",
+		"isPresented",
+		"edge",
+		"align",
+		"width",
+		"maxHeight",
+	}
+	local DIM_FIELDS: { [string]: { [string]: boolean } } = {
+		fixed = { px = true },
+		fill = { weight = true, min = true, max = true },
+		hug = { min = true, max = true },
+		percent = { fraction = true, offset = true, min = true, max = true },
+		content = {},
+		minMax = { min = true, preferred = true, max = true },
+	}
+	local function finite(value: unknown): boolean
+		return type(value) == "number" and value == value and math.abs(value) < math.huge
+	end
+	local function checkWidth(width: unknown)
+		if width == nil then
+			return
+		end
+		if type(width) == "number" then
+			assert(
+				finite(width) and width > 0,
+				"Facet UI.Menu: width must be a finite number of pixels above 0, a UDim, a UDim2 or a dimension table"
+			)
+			return
+		end
+		if typeof(width) == "UDim" or typeof(width) == "UDim2" then
+			return
+		end
+		assert(
+			type(width) == "table",
+			"Facet UI.Menu: width must be a number of pixels, a UDim, a UDim2 or a dimension table"
+		)
+		local dim = width :: { [string]: unknown }
+		local fields = DIM_FIELDS[tostring(dim.type)]
+		if fields == nil then
+			error(
+				`Facet UI.Menu: width.type must be fixed, fill, hug, percent, content or minMax (got {tostring(dim.type)})`,
+				0
+			)
+		end
+		for key, value in dim do
+			if key ~= "type" then
+				if not fields[key] then
+					error(`Facet UI.Menu: a {tostring(dim.type)} width does not take '{tostring(key)}'`, 0)
+				end
+				if not (finite(value) or (type(value) == "string" and key ~= "fraction" and key ~= "weight")) then
+					error(`Facet UI.Menu: width.{tostring(key)} must be a finite number or a theme metric name`, 0)
+				end
+			end
+		end
+		if dim.type == "fixed" then
+			assert(dim.px ~= nil, "Facet UI.Menu: a fixed width requires px")
+		elseif dim.type == "percent" then
+			assert(dim.fraction ~= nil, "Facet UI.Menu: a percent width requires fraction")
+		end
+	end
+	local function length(value: Nav.MenuDimLength?, use: ComposeTypes.Use?): number?
+		if value == nil then
+			return nil
+		end
+		return if type(value) == "string" then ctx.metric(value, use) else value
+	end
+	local function resolveWidth(width: Nav.MenuWidth, natural: number, room: number, use: ComposeTypes.Use?): number
+		if type(width) == "number" then
+			return width
+		end
+		if typeof(width) == "UDim" then
+			local udim = width :: UDim
+			return udim.Scale * room + udim.Offset
+		end
+		if typeof(width) == "UDim2" then
+			local udim = (width :: UDim2).X
+			return udim.Scale * room + udim.Offset
+		end
+		local dim = width :: Nav.MenuDim
+		local lower, upper = length(dim.min, use) or 0, length(dim.max, use) or math.huge
+		local value = if dim.type == "fixed"
+			then assert(length(dim.px, use))
+			elseif dim.type == "fill" then room
+			elseif dim.type == "percent" then (dim.fraction or 0) * room + (dim.offset or 0)
+			elseif dim.type == "minMax" then length(dim.preferred, use) or natural
+			else natural
+		return math.max(0, math.clamp(value, lower, math.max(lower, upper)))
 	end
 	local function actionItem<V>(item: Nav.MenuItem<V>): Nav.MenuAction<V>
 		assert(item.divider ~= true, "Menu action cannot be a divider")
@@ -117,10 +219,34 @@ return function(
 		nonmodal: boolean?,
 		phase: Nav.PresencePhase?
 	): Frame
-		local shown = if phase then surfaces.appearance(phase, POPOVER) else nil
+		local appearance = if phase then surfaces.appearance(phase, POPOVER) else nil
 		local hitFloor = ctx.hitFloor()
 		local path = Compose.cell({} :: { string })
 		local pendingFocus: string?
+		local sheeted = Compose.cell(false)
+		local reduce = reducedMotion(ctx)
+		local levelClock = runtime.timeline({ duration = POPOVER.enter, autoplay = false })
+		local levelDirection = Compose.cell(0)
+		local depthSeen = 0
+		Compose.watch(function(use: ComposeTypes.Use)
+			local depth = #use(path)
+			if depth ~= depthSeen then
+				levelDirection:set(if depth > depthSeen then 1 else -1)
+				depthSeen = depth
+				levelClock:restart()
+			end
+		end)
+		local function level(use: ComposeTypes.Use?): number
+			if read(levelDirection, use) == 0 or reduce(use) then
+				return 1
+			end
+			return Compose.easing.outCubic(read(levelClock.progress, use))
+		end
+		local shown: Nav.Appearance? = if appearance
+			then function(use: ComposeTypes.Use?): number
+				return appearance(use) * (if read(sheeted, use) then 1 else level(use))
+			end
+			else nil
 		local rootItems = Compose.formula(function(use: ComposeTypes.Use)
 			return menuItems(read(spec.items, use), use)
 		end)
@@ -188,15 +314,18 @@ return function(
 		end
 		local entries = Compose.formula(function(use: ComposeTypes.Use): { MenuEntry<V> }
 			local out: { MenuEntry<V> } = {}
+			local afterRow = false
 			for index, item in use(current) do
 				local key = tostring(item.id or index)
 				if item.divider ~= true then
 					local heading = read(actionItem(item).sectionTitle, use)
 					if heading ~= nil and heading ~= "" then
 						table.insert(out, { key = "Section:" .. key, heading = heading })
+						afterRow = false
 					end
 				end
-				table.insert(out, { key = key, item = item })
+				table.insert(out, { key = key, item = item, ruled = afterRow and item.divider ~= true })
+				afterRow = item.divider ~= true
 			end
 			return out
 		end)
@@ -209,7 +338,9 @@ return function(
 			Host.UIListLayout({
 				FillDirection = E.FillDirection.Vertical,
 				SortOrder = E.SortOrder.LayoutOrder,
-				Padding = D.new(0, 8),
+				Padding = function(use: ComposeTypes.Use)
+					return D.new(0, if use(sheeted) then 8 else 0)
+				end,
 			}) :: Types.Child,
 			Compose.show(function()
 				return spec.query ~= nil
@@ -320,6 +451,19 @@ return function(
 						end,
 					})
 					row:AddTag("facet-menu-item")
+					surfaces.attach(row, {
+						ctx.styled(
+							Host.Frame({
+								Name = "Hairline",
+								Size = D2.new(1, 0, 0, 1),
+								ZIndex = 3,
+								Visible = function(use: ComposeTypes.Use)
+									return use(entrySource).ruled == true and not use(sheeted)
+								end,
+							}),
+							"menu-hairline"
+						) :: Types.Child,
+					})
 					Compose.watch(function(use: ComposeTypes.Use)
 						if hitFloor(use) < ctx.metric("targetSizes.minimum", use) then
 							row:AddTag("facet-menu-dense")
@@ -440,21 +584,46 @@ return function(
 					return row
 				end,
 			}),
-			ctx.padding(8, 8) :: Types.Child,
-			ctx.corner() :: Types.Child,
+			Host.UIPadding({
+				PaddingTop = function(use: ComposeTypes.Use)
+					return D.new(0, if use(sheeted) then 8 else 0)
+				end,
+				PaddingBottom = function(use: ComposeTypes.Use)
+					return D.new(0, if use(sheeted) then 8 else 0)
+				end,
+				PaddingLeft = function(use: ComposeTypes.Use)
+					return D.new(0, if use(sheeted) then 8 else 0)
+				end,
+				PaddingRight = function(use: ComposeTypes.Use)
+					return D.new(0, if use(sheeted) then 8 else 0)
+				end,
+			}) :: Types.Child,
 		})
 		local rowSize = ctx.observe(rows, "AbsoluteSize")
+		local room = Compose.cell(0)
 		local function panelWidth(use: ComposeTypes.Use): number
-			local authored = read(spec.width, use)
-			if authored ~= nil then
-				return authored
-			end
 			local widest = 0
 			for _, width in use(widths) do
 				widest = math.max(widest, width)
 			end
-			return math.clamp(widest + 48, 220, 400)
+			local natural = math.clamp(widest + 48, 220, 400)
+			local authored = read(spec.width, use)
+			if authored == nil then
+				return natural
+			end
+			local space = use(room)
+			local resolved = resolveWidth(authored, natural, space, use)
+			return if space > 0 then math.min(resolved, space) else resolved
 		end
+		runtime.decorate(rows, {
+			Position = function(use: ComposeTypes.Use)
+				local direction = use(levelDirection)
+				if not use(sheeted) or direction == 0 or reduce(use) then
+					return D2.fromOffset(0, 0)
+				end
+				return D2.fromOffset(direction * SLIDE * (1 - level(use)), 0)
+			end,
+		})
 		local panel = Host.ScrollingFrame "MenuPanel" {
 			Selectable = false,
 			Size = D2.fromOffset(280, 0),
@@ -463,16 +632,23 @@ return function(
 			CanvasSize = D2.fromOffset(0, 0),
 			ScrollingDirection = E.ScrollingDirection.Y,
 			ScrollBarThickness = 4,
+			Host.UICorner({}),
+			Host.UIStroke({ ApplyStrokeMode = E.ApplyStrokeMode.Border }),
+			Host.UIShadow "Raised" {},
 			if shown
-				then Host.CanvasGroup "MenuGroup" {
-					BackgroundTransparency = 1,
-					Size = D2.new(1, 0, 0, 0),
-					AutomaticSize = E.AutomaticSize.Y,
-					GroupTransparency = function(use: ComposeTypes.Use)
-						return 1 - shown(use)
-					end,
-					rows,
-				}
+				then ctx.styled(
+					Host.CanvasGroup "MenuGroup" {
+						BackgroundTransparency = 1,
+						Size = D2.new(1, 0, 0, 0),
+						AutomaticSize = E.AutomaticSize.Y,
+						GroupTransparency = function(use: ComposeTypes.Use)
+							return 1 - shown(use)
+						end,
+						Host.UICorner({}),
+						rows,
+					},
+					"menu-group"
+				)
 				else rows,
 		}
 		if shown then
@@ -524,74 +700,119 @@ return function(
 			return (use(extent).X > 0 and use(extent).X < math.max(600, (#use(path) + 1) * 288 + 16))
 				or use(preferred) == E.PreferredInput.Touch
 		end)
+		Compose.watch(function(use: ComposeTypes.Use)
+			sheeted:set(use(asSheet))
+		end)
+		local guiService = surfaces.service("GuiService")
+		local layerOf = ctx.observe(modal, "Parent")
+		local function insets(use: ComposeTypes.Use): (number, number, number, number)
+			use(layerOf)
+			use(extent)
+			local layer = modal:FindFirstAncestorWhichIsA("ScreenGui")
+			if guiService == nil or layer == nil then
+				return 0, 0, 0, 0
+			end
+			local screen = layer :: ScreenGui
+			if not (screen.IgnoreGuiInset == true or screen.ScreenInsets == E.ScreenInsets.None) then
+				return 0, 0, 0, 0
+			end
+			local ok, topLeft, bottomRight = pcall(function(): (Vector2, Vector2)
+				return (guiService :: GuiService):GetGuiInset()
+			end)
+			if ok and typeof(topLeft) == "Vector2" and typeof(bottomRight) == "Vector2" then
+				return topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y
+			end
+			return 0, 0, 0, 0
+		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			local left, _, right = insets(use)
+			room:set(math.max(0, use(extent).X - left - right - 16))
+		end)
 		local function place(use: ComposeTypes.Use): (Vector2, Vector2)
 			local at, bounds, offer, panelSize, offset =
 				use(position), use(size), use(extent), use(measured), use(origin)
+			local insetLeft, insetTop, insetRight, insetBottom = insets(use)
+			local low, high =
+				V2.new(insetLeft + 8, insetTop + 8), V2.new(offer.X - insetRight - 8, offer.Y - insetBottom - 8)
 			if use(asSheet) then
-				return V2.new(12, math.max(12, offer.Y - panelSize.Y - 12)), V2.new(panelSize.X / 2, panelSize.Y)
+				return V2.new(12 + insetLeft, math.max(12 + insetTop, offer.Y - insetBottom - panelSize.Y - 12)),
+					V2.new(panelSize.X / 2, panelSize.Y)
 			end
-			local left, top = at.X - offset.X + #use(path) * 288, at.Y - offset.Y + bounds.Y + 4
-			local above = false
+			local x, y = at.X - offset.X, at.Y - offset.Y
+			local depth = #use(path)
+			local left, top = x + depth * 288, y + bounds.Y + 4
+			local above, after = false, true
 			local edge, align = spec.edge or "bottom", spec.align or "start"
-			if #use(path) > 0 or (edge == "bottom" and align == "start") then
-				if offer.Y > 0 and top + panelSize.Y > offer.Y - 8 then
-					top = at.Y - offset.Y - panelSize.Y - 4
+			local function along(start: number, extentAcross: number, extentAlong: number): number
+				return if align == "center"
+					then start + (extentAcross - extentAlong) / 2
+					elseif align == "end" then start + extentAcross - extentAlong
+					else start
+			end
+			local vertical = depth > 0 or edge == "top" or edge == "bottom"
+			if depth > 0 or (edge == "bottom" and align == "start") then
+				if offer.Y > 0 and top + panelSize.Y > high.Y then
+					top = y - panelSize.Y - 4
 					above = true
 				end
-			else
-				local x, y = at.X - offset.X, at.Y - offset.Y
-				local function along(start: number, length: number, extentAlong: number): number
-					return if align == "center"
-						then start + (length - extentAlong) / 2
-						elseif align == "end" then start + length - extentAlong
-						else start
+			elseif vertical then
+				left = along(x, bounds.X, panelSize.X)
+				local below, over = y + bounds.Y + 4, y - panelSize.Y - 4
+				above = edge == "top"
+				if edge == "bottom" and offer.Y > 0 and below + panelSize.Y > high.Y and over >= low.Y then
+					above = true
+				elseif edge == "top" and over < low.Y and (offer.Y <= 0 or below + panelSize.Y <= high.Y) then
+					above = false
 				end
-				if edge == "top" or edge == "bottom" then
-					left = along(x, bounds.X, panelSize.X)
-					local below, over = y + bounds.Y + 4, y - panelSize.Y - 4
-					above = edge == "top"
-					if edge == "bottom" and offer.Y > 0 and below + panelSize.Y > offer.Y - 8 and over >= 8 then
-						above = true
-					elseif edge == "top" and over < 8 and (offer.Y <= 0 or below + panelSize.Y <= offer.Y - 8) then
-						above = false
-					end
-					top = if above then over else below
-				else
-					top = along(y, bounds.Y, panelSize.Y)
-					local after, before = x + bounds.X + 4, x - panelSize.X - 4
-					left = if edge == "trailing" then after else before
-					if edge == "trailing" and offer.X > 0 and after + panelSize.X > offer.X - 8 and before >= 8 then
-						left = before
-					elseif
-						edge == "leading"
-						and before < 8
-						and (offer.X <= 0 or after + panelSize.X <= offer.X - 8)
-					then
-						left = after
-					end
-					if offer.Y > 0 then
-						top = math.clamp(top, 8, math.max(8, offer.Y - panelSize.Y - 8))
-					end
+				top = if above then over else below
+			else
+				top = along(y, bounds.Y, panelSize.Y)
+				local beyond, before = x + bounds.X + 4, x - panelSize.X - 4
+				after = edge == "trailing"
+				if edge == "trailing" and offer.X > 0 and beyond + panelSize.X > high.X and before >= low.X then
+					after = false
+				elseif edge == "leading" and before < low.X and (offer.X <= 0 or beyond + panelSize.X <= high.X) then
+					after = true
+				end
+				left = if after then beyond else before
+				if offer.Y > 0 then
+					top = math.clamp(top, low.Y, math.max(low.Y, high.Y - panelSize.Y))
 				end
 			end
 			if offer.X > 0 then
-				left = math.clamp(left, 8, math.max(8, offer.X - panelSize.X - 8))
+				left = math.clamp(left, low.X, math.max(low.X, high.X - panelSize.X))
 			end
-			local center = math.clamp(at.X - offset.X + bounds.X / 2 - left, 0, panelSize.X)
-			return V2.new(left, math.max(8, top)), V2.new(center, if above then panelSize.Y else 0)
+			top = math.max(low.Y, top)
+			local pivot: Vector2
+			if vertical then
+				local reach = if depth > 0 or align == "start"
+					then x + depth * 288
+					elseif align == "end" then x + bounds.X
+					else x + bounds.X / 2
+				pivot = V2.new(math.clamp(reach - left, 0, panelSize.X), if above then panelSize.Y else 0)
+			else
+				local reach = if align == "start" then y elseif align == "end" then y + bounds.Y else y + bounds.Y / 2
+				pivot = V2.new(if after then 0 else panelSize.X, math.clamp(reach - top, 0, panelSize.Y))
+			end
+			return V2.new(left, top), pivot
 		end
 		runtime.decorate(panel, {
 			Size = function(use: ComposeTypes.Use)
+				local _, insetTop, _, insetBottom = insets(use)
 				local height = math.min(
 					use(rowSize).Y,
-					math.max(44, use(extent).Y - 24),
+					math.max(44, use(extent).Y - 24 - insetTop - insetBottom),
 					if spec.maxHeight then math.max(60, spec.maxHeight) else math.huge
 				)
-				return if use(asSheet) then D2.new(1, -24, 0, height) else D2.fromOffset(panelWidth(use), height)
+				if use(asSheet) then
+					local insetLeft, _, insetRight = insets(use)
+					return D2.new(1, -24 - insetLeft - insetRight, 0, height)
+				end
+				return D2.fromOffset(panelWidth(use), height)
 			end,
 		})
 		if shown then
-			surfaces.popover(panel, shown, place)
+			surfaces.popover(panel, shown, place, MATERIALIZE)
 		else
 			runtime.decorate(panel, {
 				Position = function(use: ComposeTypes.Use)
@@ -793,7 +1014,27 @@ return function(
 					source: ComposeTypes.Readable<{ id: string, items: { Nav.MenuItem<V> }, prefix: { string }, depth: number }>
 				)
 					return ctx.styled(
-						ctx.column({
+						Host.Frame({
+							Name = "AncestorMenu",
+							ZIndex = 103,
+							BorderSizePixel = 0,
+							Size = D2.fromOffset(280, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+							Position = function(use: ComposeTypes.Use)
+								local at, bounds, offset = use(position), use(size), use(origin)
+								local insetLeft, insetTop = insets(use)
+								return D2.fromOffset(
+									math.max(insetLeft + 8, at.X - offset.X + (use(source).depth - 1) * 288),
+									math.max(insetTop + 8, at.Y - offset.Y + bounds.Y + 4)
+								)
+							end,
+							Host.UIListLayout({
+								FillDirection = E.FillDirection.Vertical,
+								SortOrder = E.SortOrder.LayoutOrder,
+							}) :: Types.Child,
+							Host.UICorner({}) :: Types.Child,
+							Host.UIStroke({ ApplyStrokeMode = E.ApplyStrokeMode.Border }) :: Types.Child,
+							Host.UIShadow "Raised" {} :: Types.Child,
 							Compose.keyed({
 								from = function(use: ComposeTypes.Use)
 									return use(source).items
@@ -812,14 +1053,20 @@ return function(
 											"divider"
 										)
 									end
-									return UI.Button({
+									local button = UI.Button({
 										Name = item.id,
 										label = item.label,
 										enabled = item.enabled,
 										icon = item.icon,
 										subtitle = item.description,
 										LayoutOrder = index,
-										Size = D2.new(1, 0, 0, 44),
+										Size = function(use: ComposeTypes.Use)
+											return D2.new(1, 0, 0, hitFloor(use))
+										end,
+										selected = function(use: ComposeTypes.Use)
+											return use(path)[use(source).depth] == item.id
+										end,
+										trailingIcon = if item.children then "chevron.trailing" else nil,
 										onActivate = function()
 											if item.children then
 												local next = table.clone(source:peek().prefix)
@@ -840,22 +1087,24 @@ return function(
 											end
 										end,
 									})
+									button:AddTag("facet-menu-item")
+									surfaces.attach(button, {
+										ctx.styled(
+											Host.Frame({
+												Name = "Hairline",
+												Size = D2.new(1, 0, 0, 1),
+												ZIndex = 3,
+												Visible = function(use: ComposeTypes.Use)
+													local before = use(source).items[use(index) - 1]
+													return before ~= nil and before.divider ~= true
+												end,
+											}),
+											"menu-hairline"
+										) :: Types.Child,
+									})
+									return button
 								end,
 							}),
-							ctx.padding(8, 8),
-							ctx.corner(),
-						}, {
-							Name = "AncestorMenu",
-							ZIndex = 103,
-							Size = D2.fromOffset(280, 0),
-							AutomaticSize = E.AutomaticSize.Y,
-							Position = function(use: ComposeTypes.Use)
-								local at, bounds, offset = use(position), use(size), use(origin)
-								return D2.fromOffset(
-									math.max(8, at.X - offset.X + (use(source).depth - 1) * 288),
-									math.max(8, at.Y - offset.Y + bounds.Y + 4)
-								)
-							end,
 						}),
 						"menu"
 					)
@@ -865,10 +1114,9 @@ return function(
 		return modal
 	end
 
-	UI.Menu = ctx.construct("Menu", function<V>(spec: Nav.MenuSpec<V>): Frame
+	local function buildMenu<V>(spec: Nav.MenuSpec<V>, wrap: boolean): GuiObject
 		assert(spec.items ~= nil, "Menu requires items")
 		menuItems(read(spec.items))
-
 		assert(
 			spec.edge == nil or table.find({ "top", "bottom", "leading", "trailing" }, spec.edge),
 			"Facet UI.Menu: edge must be top, bottom, leading or trailing"
@@ -882,33 +1130,60 @@ return function(
 				or (type(spec.maxHeight) == "number" and spec.maxHeight > 0 and spec.maxHeight < math.huge),
 			"Facet UI.Menu: maxHeight must be a finite number of pixels above 0"
 		)
-		local width = read(spec.width)
-		assert(
-			width == nil or (type(width) == "number" and width > 0 and width < math.huge),
-			"Facet UI.Menu: width must be a finite number of pixels above 0, or a readable of one"
-		)
+		checkWidth(read(spec.width))
+		if spec.label ~= nil and spec.trigger ~= nil then
+			error("Facet UI.Menu: give label or trigger, not both", 0)
+		end
 		local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(false)
+		local announced = false
+		local function announce(state: boolean)
+			if state == announced then
+				return
+			end
+			announced = state
+			if state and spec.onOpen then
+				spec.onOpen()
+			elseif not state and spec.onClose then
+				spec.onClose()
+			end
+		end
 		local function close()
 			if opened:peek() then
 				opened:set(false)
-				if spec.onClose then
-					spec.onClose()
-				end
 			end
+			announce(false)
 		end
 		local function open()
 			if read(spec.enabled) == false or opened:peek() then
 				return
 			end
 			opened:set(true)
-			if spec.onOpen then
-				spec.onOpen()
-			end
+			announce(true)
 		end
+		Compose.watch(function(use: ComposeTypes.Use)
+			announce(use(opened))
+		end)
+		Compose.cleanup(function()
+			announce(false)
+		end)
 		local allowed = spec.triggers or { "activate", "secondary", "longPress", "keyboard", "gamepad" }
-		local trigger = if type(spec.trigger) == "function" then spec.trigger() else spec.trigger
+		local authored = if type(spec.trigger) == "function" then spec.trigger() else spec.trigger
+		local root: GuiObject
+		local trigger: GuiObject
 		local automatic = spec.AutomaticSize or (if spec.Size ~= nil then E.AutomaticSize.None else E.AutomaticSize.XY)
-		if trigger == nil then
+		if authored ~= nil and wrap then
+			trigger = authored
+			root = Host.Frame(ctx.props(spec, MENU_KEYS, {
+				Name = "Menu",
+				BackgroundTransparency = 1,
+				Size = D2.fromOffset(0, 0),
+				AutomaticSize = automatic,
+				trigger,
+			}))
+			if table.find(allowed, "activate") then
+				runtime.connect(trigger, "Activated", open)
+			end
+		elseif authored == nil then
 			local triggerProps: Inputs.ButtonProps = {
 				Name = "Trigger",
 				label = spec.label or "Menu",
@@ -955,35 +1230,36 @@ return function(
 				button:AddTag("facet-disclosure")
 			end
 			trigger = button
+			root = Host.Frame(ctx.props(spec, MENU_KEYS, {
+				Name = "Menu",
+				BackgroundTransparency = 1,
+				Size = D2.fromOffset(0, 0),
+				AutomaticSize = automatic,
+				trigger,
+			}))
 		else
+			trigger = authored
+			root = authored
+			local native = ctx.props(spec, MENU_KEYS, {})
+			local properties: { [string]: unknown } = {}
+			local children: { Types.Child } = {}
+			for key, value in (native :: unknown) :: { [unknown]: unknown } do
+				if type(key) == "number" then
+					table.insert(children, value :: Types.Child)
+				elseif type(key) == "string" then
+					properties[key] = value
+				end
+			end
+			if next(properties) ~= nil then
+				runtime.decorate(trigger, properties)
+			end
+			if #children > 0 then
+				surfaces.attach(trigger, children)
+			end
 			if table.find(allowed, "activate") then
 				runtime.connect(trigger, "Activated", open)
 			end
 		end
-		local root = Host.Frame(ctx.props(spec, {
-			"items",
-			"query",
-			"label",
-			"disclosure",
-			"trigger",
-			"triggers",
-			"presentation",
-			"backLabel",
-			"onOpen",
-			"onClose",
-			"enabled",
-			"isPresented",
-			"edge",
-			"align",
-			"width",
-			"maxHeight",
-		}, {
-			Name = "Menu",
-			BackgroundTransparency = 1,
-			Size = D2.fromOffset(0, 0),
-			AutomaticSize = automatic,
-			trigger,
-		}))
 		local available = surfaces.available(root)
 		local mounted = false
 		Compose.watch(function(use: ComposeTypes.Use)
@@ -1027,10 +1303,13 @@ return function(
 		end
 		surfaces.attach(root, {
 			surfaces.overlay(root, opened, function(phase: Nav.PresencePhase?)
-				return menuPanel(spec, close, assert(trigger), nil, phase)
+				return menuPanel(spec, close, trigger, nil, phase)
 			end, { motion = POPOVER }),
 		})
 		return root
+	end
+	UI.Menu = ctx.construct("Menu", function<V>(spec: Nav.MenuSpec<V>): GuiObject
+		return buildMenu(spec, false)
 	end)
 
 	local pickerKeys = {
@@ -1585,7 +1864,7 @@ return function(
 				return items
 			end
 			if spec.label == nil then
-				return UI.Menu(menuSpec)
+				return buildMenu(menuSpec, true)
 			end
 			menuSpec.Name = "Value"
 			menuSpec.Size = nil
@@ -1608,7 +1887,7 @@ return function(
 					return read(spec.sizing, use) == "hug"
 				end
 				local row = ctx.row(
-					{ label, UI.Menu(menuSpec) },
+					{ label, buildMenu(menuSpec, true) },
 					ctx.props(spec, pickerKeys, {
 						Name = spec.Name or "Picker",
 						BackgroundTransparency = 1,
@@ -1627,7 +1906,7 @@ return function(
 				return row
 			end
 			local column = ctx.column(
-				{ label, UI.Menu(menuSpec) },
+				{ label, buildMenu(menuSpec, true) },
 				ctx.props(spec, pickerKeys, {
 					Name = spec.Name or "Picker",
 					BackgroundTransparency = 1,
@@ -2318,7 +2597,8 @@ return function(
 							end
 						end,
 					}
-					return UI.Menu "TouchAlternatives" {
+					return buildMenu({
+						Name = "TouchAlternatives",
 						Size = if spec.Size then D2.fromScale(1, 1) else nil,
 						AutomaticSize = if spec.Size then E.AutomaticSize.None else nil,
 						trigger = function(): GuiObject
@@ -2334,7 +2614,7 @@ return function(
 						onClose = function()
 							suppressEcho = false
 						end,
-					}
+					}, true)
 				end, function()
 					return ctx.row({
 						primary(),

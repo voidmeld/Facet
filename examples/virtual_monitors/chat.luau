@@ -397,15 +397,14 @@ return function(ctx)
 						return #use(chat.messages) > 0
 					end,
 				}),
-				UI.Menu "Conversation" {
+				UI.Menu {
 					trigger = button("ConversationMenu", "Conversation", function() end, {
 						compactLabel = "Thread",
 						Size = D2.fromOffset(146, 40),
 						AutomaticSize = E.AutomaticSize.None,
 					}),
 					items = conversationItems,
-					Size = D2.fromOffset(146, 40),
-					AutomaticSize = E.AutomaticSize.None,
+					width = { type = "hug", min = 220, max = 320 },
 				},
 			},
 			UI.ZStack "Thread" {
