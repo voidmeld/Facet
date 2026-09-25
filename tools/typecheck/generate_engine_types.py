@@ -125,7 +125,9 @@ def generate(definitions, schema):
             continue
         result.append(f'\t{name}: Constructor<{name}NativeProps, {name}>,')
     result += ['}', '', 'return {}', '']
-    formatted = subprocess.run(['stylua', '-'], input='\n'.join(result), text=True, capture_output=True, check=True).stdout
+    formatted = '\n'.join(result)
+    for _ in range(2):
+        formatted = subprocess.run(['stylua', '-'], input=formatted, text=True, capture_output=True, check=True).stdout
     return formatted, ordered
 
 

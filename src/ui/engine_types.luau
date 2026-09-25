@@ -3398,12 +3398,10 @@ export type Observe =
 	& ((TextBox | TextButton | TextLabel, "TextYAlignment") -> Compose.Cell<Enum.TextYAlignment>)
 	& ((TextBox | TextButton | TextLabel, "FontFace") -> Compose.Cell<Font>)
 	& ((TextBox | TextButton | TextLabel, "TextBounds") -> Compose.Cell<Vector2>)
-	& (
-		(
-			TextBox | TextButton | TextLabel,
-			"RichText" | "TextFits" | "TextScaled" | "TextWrapped"
-		) -> Compose.Cell<boolean>
-	)
+	& ((
+		TextBox | TextButton | TextLabel,
+		"RichText" | "TextFits" | "TextScaled" | "TextWrapped"
+	) -> Compose.Cell<boolean>)
 	& ((TextBox | TextButton | TextLabel, "LineHeight" | "TextSize") -> Compose.Cell<number>)
 	& ((TextBox | TextButton | TextLabel, "Text") -> Compose.Cell<string>)
 	& ((UIGridStyleLayout, "AbsoluteContentSize") -> Compose.Cell<Vector2>)
