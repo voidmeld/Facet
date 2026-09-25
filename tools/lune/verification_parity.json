@@ -386,7 +386,7 @@
     "row-actions": {
       "mainCases": 264,
       "a": 162,
-      "aWeaker": 23,
+      "aWeaker": 13,
       "b": 0,
       "c": 99,
       "d": 3,
@@ -494,7 +494,7 @@
     ],
     "contracts": 2824,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 418
+    "coveredButWeaker": 408
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -8442,9 +8442,10 @@
         "native_stress::native stress invariants::returns all instances and connections to baseline through 200 modal cycles twice",
         "native_stress::native stress invariants::reclaims detached and pooled rows through 100 structural cycles twice",
         "native_stress::native stress invariants::detects detached instance and service connection leaks in the census",
-        "native_parity_strength_lifetime::lifetime parity strength::returns the performance lab to its floor through repeated mount ramp laps"
+        "native_parity_strength_lifetime::lifetime parity strength::returns the performance lab to its floor through repeated mount ramp laps",
+        "native_parity_weak3_rows::native parity weak3 rows: declared mount ramp ceiling::returns the performance lab to its floor after every rung of a second ramp lap to 40000 rows"
       ],
-      "weaker": "The ramp laps use a short ladder of 40, 80 and 120 rows. The declared ceiling rungs (10000 and 40000 rows) take more than a minute headless, so the suite does not run them."
+      "weaker": "The ramp to the declared 10000 and 40000 row ceiling runs only at the release tier (the maintainer tier), so tools/verify.sh full stays tractable; the working and full tiers run the short 40, 80 and 120 row ladder."
     },
     {
       "id": "apps-132",
@@ -14597,12 +14598,12 @@
         "native_parity_restore::native parity restore: RowActions outside tap::closes the open row when another row is pressed and keeps it open for a press inside it",
         "native_parity_restore::native parity restore: RowActions outside tap::adds the top bar inset when the screen ignores it",
         "native_parity_restore::native parity restore: RowActions outside tap::releases its input listener with the row",
-        "native_parity_weak3_h2::native parity weak3 h2: RowActions own-row tap::closes the open tray on a press on its own row content and the content still activates",
+        "native_parity_weak3_h2::native parity weak3 h2: RowActions own-row tap::closes the open tray on a tap on its own row content and the content does not activate",
         "native_parity_weak3_h2::native parity weak3 h2: RowActions own-row tap::keeps the tray open for a press on the open tray, and the tray action still runs once",
         "native_parity_weak3_h2::native parity weak3 h2: RowActions own-row tap::still closes the open row when another row is pressed, and that row still activates"
       ],
-      "weaker": "A press on the open row content now closes its tray, but the pressed content also activates; main closed the tray and did not activate the row. There is no shared list overlay.",
-      "restoredBy": "parity/restore"
+      "restoredBy": "parity/restore",
+      "closeNote": "A tap on the open row content closes its tray and does not activate the row, as on main; a press on another row closes the open row and activates that row. The observer replaces the shared list overlay."
     },
     {
       "id": "collections-286",
@@ -16106,7 +16107,10 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "InputContext Priority/Sink arbitration.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_weak3_radial::value repeat under gameplay arbitration::a higher priority gameplay binding cancels value repeat and receives the next press"
+      ]
     },
     {
       "id": "inputs-83",

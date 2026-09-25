@@ -18,7 +18,7 @@ where.
   884 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 3 cases remain. Only a live check with a
   real drag can close them. See [Gap list](#gap-list).
-- 418 of the 3,908 covered cases have a weaker
+- 408 of the 3,908 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -107,7 +107,7 @@ last column names the candidate specs that the group cites most.
 | Presented surfaces | 333 | 169 | 16 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 224 | 169 | 1 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 0 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
-| Row actions | 264 | 162 | 23 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
+| Row actions | 264 | 162 | 13 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 170 | 50 | 0 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
 | Adaptive environment | 427 | 39 | 5 | 51 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 373 | 93 | 0 | 0 | 280 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
