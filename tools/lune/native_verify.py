@@ -208,11 +208,26 @@ def mapped_cases(replacement):
 
 
 
-def validate_suite(suite, selected):
+TIER_ORDER = ("affected", "fast", "full", "release")
+
+
+def gated_below(case, tier):
+    gate = case.get("tier")
+    return gate in TIER_ORDER and tier in TIER_ORDER and TIER_ORDER.index(gate) > TIER_ORDER.index(tier)
+
+
+def deferred_cases(suite, tier):
+    return {case.get("id") for case in suite.get("cases", []) if case.get("status") == "skip" and gated_below(case, tier)}
+
+
+def validate_suite(suite, selected, tier):
     failures = []
     cases = suite.get("cases", [])
     identifiers = [case.get("id") for case in cases]
     reported = {case.get("spec") for case in cases}
+    skipped = [case for case in cases if case.get("status") == "skip"]
+    if suite.get("tier") != tier:
+        failures.append(f"suite ran at tier {suite.get('tier')!r}, expected {tier!r}")
     if not cases:
         failures.append("suite reported no test cases")
     if len(identifiers) != len(set(identifiers)) or any(not isinstance(value, str) or not value for value in identifiers):
@@ -221,7 +236,11 @@ def validate_suite(suite, selected):
         failures.append(f"suite spec census differs: missing={sorted(set(selected) - reported)} unexpected={sorted(reported - set(selected))}")
     if suite.get("registeredSpecs") != len(selected) or suite.get("reportedSpecs") != len(selected):
         failures.append("suite spec totals do not match selected inventory")
-    if suite.get("passed") != len(cases) or suite.get("failed") != 0 or any(case.get("status") != "pass" for case in cases):
+    if any(not gated_below(case, tier) for case in skipped):
+        failures.append("suite skipped a case that its tier must run")
+    if suite.get("skipped", 0) != len(skipped):
+        failures.append("suite skipped totals do not match its cases")
+    if suite.get("passed") != len(cases) - len(skipped) or suite.get("failed") != 0 or any(case.get("status") not in ("pass", "skip") for case in cases):
         failures.append("suite did not pass every registered case")
     return failures
 
@@ -403,8 +422,8 @@ def run():
         passed_cases = set()
         if suite_path.exists():
             suite = json.loads(suite_path.read_text())
-            case_failures.extend(validate_suite(suite, selected))
-            passed_cases = {case["id"] for case in suite["cases"] if case["status"] == "pass"}
+            case_failures.extend(validate_suite(suite, selected, args.tier))
+            passed_cases = {case["id"] for case in suite["cases"] if case["status"] == "pass"} | deferred_cases(suite, args.tier)
         else:
             case_failures.append("suite produced no current-run result file")
         for record in records:

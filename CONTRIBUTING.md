@@ -39,6 +39,15 @@ only a clean, passing `artifacts/verify/latest-release.json` for the same source
 The [producer comparison](docs/guide/20-verification-parity.md#producers) lists
 each main producer and its native status.
 
+A spec case can require a higher tier. Give `t.it` the option
+`{ tier = "full" }` (or `"release"`) when the case is too slow for the working
+tiers, for example a mount ramp to the declared ceiling of 40000 rows. The
+`affected` and `fast` tiers record the case as `skip` with its tier, and the
+suite check accepts it there. The `full` tier runs a `full` case, and only the `release` tier runs a
+`release` case. The mount ramp to 40000 rows is a `release` case. A case that
+the run's own tier must run cannot be skipped. `lune run tests/run_one <spec>`
+also skips it. Use `lune run tests/run_one <spec> release` to run it.
+
 The [verification scope audit](docs/guide/18-verification-scope.md) records the
 substantial reduction from main and the unresolved coverage work. At this time,
 a native `full` run is a complete run of the candidate's checks. It is not

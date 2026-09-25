@@ -370,7 +370,24 @@ return function(ctx: Types.Context, UI: Controls): ()
 					local gutter = if read(spec.editing, use) then use(editWidth) else 0
 					return D2.fromOffset(gutter + paintedOffset(use), 0)
 				end,
-				contentMenu,
+				contentMenu :: ComposeTypes.Child,
+				Host.TextButton "DismissTray" {
+					Size = D2.fromScale(1, 1),
+					BackgroundTransparency = 1,
+					Text = "",
+					Active = true,
+					AutoButtonColor = false,
+					Selectable = false,
+					ZIndex = 5,
+					Visible = function(use: ComposeTypes.Use)
+						return read(open, use) ~= nil and use(committing) == nil
+					end,
+					Activated = function()
+						if read(open) ~= nil and committing:peek() == nil then
+							setOpen(nil)
+						end
+					end,
+				},
 			},
 			Host.UIDragDetector({
 				Enabled = function(use: ComposeTypes.Use)
@@ -446,15 +463,7 @@ return function(ctx: Types.Context, UI: Controls): ()
 					point += guiService:GetGuiInset()
 				end
 				local at, size = root.AbsolutePosition, root.AbsoluteSize
-				if point.X < at.X or point.Y < at.Y or point.X > at.X + size.X or point.Y > at.Y + size.Y then
-					return true
-				end
-				local edge = read(open) :: RowEdge?
-				if edge == nil then
-					return false
-				end
-				local band = bandWidth(edge)
-				return if edge == "leading" then point.X > at.X + band else point.X < at.X + size.X - band
+				return point.X < at.X or point.Y < at.Y or point.X > at.X + size.X or point.Y > at.Y + size.Y
 			end
 			local listening: RBXScriptConnection? = nil
 			local function release(): ()
