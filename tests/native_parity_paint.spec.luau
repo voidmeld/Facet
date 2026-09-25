@@ -1530,6 +1530,7 @@ t.describe("native parity paint", function()
 			["facet-disclosure-plain"] = true,
 			["facet-disclosure-contained"] = true,
 			["facet-disclosure-divided"] = true,
+			["facet-disclosure-group"] = true,
 		}
 		for hook in hooks do
 			t.expect(literals[hook]).toBe(true)

@@ -1826,6 +1826,7 @@ return function(ctx: Shared.Context, UI: Deps, surfaces: Nav.Surfaces): ()
 							panel :: Shared.Child,
 						})
 						ctx.styled(surface, "panel")
+						ctx.styled(surface, "floating")
 						surfaces.skin(surface)
 						return surface
 					end, function()

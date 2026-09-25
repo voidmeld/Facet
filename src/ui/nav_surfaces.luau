@@ -1067,6 +1067,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				)
 				ctx.modalPortal(panel, spec.anchor)
 				ctx.styled(panel, "panel")
+				ctx.styled(panel, "floating")
 				surfaces.skin(panel)
 				local layer: GuiBase2d = ctx.config.overlayParent :: GuiBase2d?
 					or assert(spec.anchor:FindFirstAncestorWhichIsA("LayerCollector"))

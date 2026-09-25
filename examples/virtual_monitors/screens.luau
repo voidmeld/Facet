@@ -800,7 +800,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 				hint = function(use)
 					local session = use(model.sessions)[selected.id]
 					return if session
-						then `Friends see {civil.format(civil.dateOf(session))} at {civil.formatTime(session, 12)}.`
+						then `Friends see {civil.format(session)} at {civil.formatTime(session, 12)}.`
 						else "Pick a time to play with friends."
 				end,
 			},
@@ -834,6 +834,8 @@ function screens.create(Facet: any, runtime: any, actions: any)
 					end,
 					style = "segmented",
 					sizing = "hug",
+					Size = D2.fromOffset(0, 44),
+					AutomaticSize = E.AutomaticSize.X,
 					options = {
 						{ value = "about", label = "About" },
 						{ value = "similar", label = "Similar games" },
@@ -1035,8 +1037,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 			end),
 			UI.Text "Count" {
 				text = function(use)
-					local count = #use(model.visibleGames)
-					return `{count} {if count == 1 then "game" else "games"}`
+					return `{#use(model.visibleGames)} games`
 				end,
 				textRole = "caption",
 				role = "secondary",
@@ -1300,7 +1301,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 						{
 							id = "session",
 							label = "Session",
-							width = 176,
+							width = 120,
 							value = function(item)
 								local session = model.sessions:peek()[item.id]
 								return if session then civil.format(session) else "—"
@@ -1327,9 +1328,7 @@ function screens.create(Facet: any, runtime: any, actions: any)
 									Name = "Note_" .. id,
 									value = draft,
 									placeholder = "Add a note",
-									AnchorPoint = V2.new(0, 0.5),
-									Position = D2.fromScale(0, 0.5),
-									Size = D2.new(1, -8, 1, -16),
+									Size = D2.new(1, 0, 1, -12),
 									AutomaticSize = E.AutomaticSize.None,
 									onCommit = function(value)
 										model.setNote(id, value)

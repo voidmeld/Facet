@@ -797,6 +797,53 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("draws the ancestor column of a cascade as menu rows in item order", function()
+		local presented, follow = Compose.cell(true), Compose.cell(true)
+		local world = setup(function(UI)
+			return UI.Menu({
+				isPresented = presented,
+				items = {
+					{
+						id = "Parent",
+						label = "Parent",
+						children = { { id = "Leaf", label = "Leaf", onSelect = function() end } },
+					},
+					{ id = "Follow", label = "Follow", checked = follow, onSelect = function() end },
+					{ divider = true },
+					{ id = "Clear", label = "Clear", role = "destructive", onSelect = function() end },
+				},
+			})
+		end)
+		local modal = find(world.screen, "Modal")
+		modal.AbsoluteSize = world.engine.types.Vector2.new(1000, 720)
+		find(world.screen, "Parent").Activated.fire()
+		local ancestor = find(world.screen, "AncestorMenu")
+		t.expect(ancestor ~= nil).toBe(true)
+		local order = {}
+		for _, child in ancestor:GetChildren() do
+			if child:IsA("GuiObject") then
+				table.insert(order, child)
+			end
+		end
+		table.sort(order, function(a: any, b: any)
+			return a.LayoutOrder < b.LayoutOrder
+		end)
+		local names = {}
+		for _, child in order do
+			table.insert(names, if child:IsA("GuiButton") then child.Name else "-")
+		end
+		t.expect(table.concat(names, ",")).toBe("Parent,Follow,-,Clear")
+		for _, name in { "Parent", "Follow", "Clear" } do
+			t.expect(ancestor:FindFirstChild(name):HasTag("facet-menu-item")).toBe(true)
+		end
+		t.expect(ancestor:FindFirstChild("Clear"):HasTag("facet-menu-destructive")).toBe(true)
+		t.expect(find(ancestor:FindFirstChild("Parent"), "TrailingIcon") ~= nil).toBe(true)
+		t.expect(find(ancestor:FindFirstChild("Follow"), "TrailingIcon").Visible).toBe(true)
+		follow:set(false)
+		t.expect(find(ancestor:FindFirstChild("Follow"), "TrailingIcon").Visible).toBe(false)
+		world.stop()
+	end)
+
 	t.it("adapts an open menu to a compact sheet without losing its branch", function()
 		local presented = Compose.cell(true)
 		local world = setup(function(UI)

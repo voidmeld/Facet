@@ -793,7 +793,23 @@ return function(
 					source: ComposeTypes.Readable<{ id: string, items: { Nav.MenuItem<V> }, prefix: { string }, depth: number }>
 				)
 					return ctx.styled(
-						ctx.column({
+						Host.Frame({
+							Name = "AncestorMenu",
+							ZIndex = 103,
+							Size = D2.fromOffset(280, 0),
+							AutomaticSize = E.AutomaticSize.Y,
+							Position = function(use: ComposeTypes.Use)
+								local at, bounds, offset = use(position), use(size), use(origin)
+								return D2.fromOffset(
+									math.max(8, at.X - offset.X + (use(source).depth - 1) * 288),
+									math.max(8, at.Y - offset.Y + bounds.Y + 4)
+								)
+							end,
+							Host.UIListLayout({
+								FillDirection = E.FillDirection.Vertical,
+								SortOrder = E.SortOrder.LayoutOrder,
+								Padding = D.new(0, 8),
+							}) :: Types.Child,
 							Compose.keyed({
 								from = function(use: ComposeTypes.Use)
 									return use(source).items
@@ -812,12 +828,24 @@ return function(
 											"divider"
 										)
 									end
-									return UI.Button({
+									local live = actionItem(item)
+									local ancestorRow = UI.Button({
 										Name = item.id,
-										label = item.label,
-										enabled = item.enabled,
+										label = live.label,
+										enabled = live.enabled,
 										icon = item.icon,
-										subtitle = item.description,
+										role = item.role,
+										trailingIcon = if item.children
+											then "chevron.trailing"
+											elseif
+												item.checked ~= nil
+												or item.selected ~= nil
+												or item.marked ~= nil
+											then "checkmark"
+											else nil,
+										subtitle = function(use: ComposeTypes.Use)
+											return read(live.description, use) or ""
+										end,
 										LayoutOrder = index,
 										Size = D2.new(1, 0, 0, 44),
 										onActivate = function()
@@ -840,22 +868,31 @@ return function(
 											end
 										end,
 									})
+									ancestorRow:AddTag("facet-menu-item")
+									if item.role == "destructive" then
+										ancestorRow:AddTag("facet-menu-destructive")
+									end
+									local rowContent = ancestorRow:FindFirstChild("Content")
+									local rowLayout = rowContent and rowContent:FindFirstChildWhichIsA("UIListLayout")
+									if rowLayout then
+										rowLayout.HorizontalAlignment = E.HorizontalAlignment.Left
+									end
+									local mark = if item.children
+										then nil
+										else ancestorRow:FindFirstChild("TrailingIcon", true)
+									if mark and mark:IsA("GuiObject") then
+										Compose.watch(function(use: ComposeTypes.Use)
+											mark.Visible = if live.checked
+												then use(live.checked) == true
+												elseif live.selected then use(live.selected) == live.value
+												else read(live.marked, use) == true
+										end)
+									end
+									return ancestorRow
 								end,
 							}),
 							ctx.padding(8, 8),
 							ctx.corner(),
-						}, {
-							Name = "AncestorMenu",
-							ZIndex = 103,
-							Size = D2.fromOffset(280, 0),
-							AutomaticSize = E.AutomaticSize.Y,
-							Position = function(use: ComposeTypes.Use)
-								local at, bounds, offset = use(position), use(size), use(origin)
-								return D2.fromOffset(
-									math.max(8, at.X - offset.X + (use(source).depth - 1) * 288),
-									math.max(8, at.Y - offset.Y + bounds.Y + 4)
-								)
-							end,
 						}),
 						"menu"
 					)

@@ -631,6 +631,7 @@ t.describe("native Callout: layering", function()
 		end)
 		local high = lifted.find("CalloutPanel")
 		t.expect(high ~= nil).toBe(true)
+		t.expect(high:HasTag("facet-floating")).toBe(true)
 		t.expect(high.ZIndex > 100).toBe(true)
 		local arrow = lifted.find("Arrow")
 		if arrow then

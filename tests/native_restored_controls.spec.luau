@@ -626,3 +626,27 @@ t.describe("native restored controls: Spacer", function()
 		end
 	end)
 end)
+
+t.describe("native restored controls: floating plates", function()
+	t.it("outlines floating plates the way a menu plate is outlined in every shipped package", function()
+		for _, entry in packages() do
+			local sheet, stop = sheetOf(entry.package)
+			local menu = style(sheet, ".facet-menu::UIStroke")
+			local plate = style(sheet, ".facet-floating::UIStroke")
+			t.expect(plate.Color).toBe(menu.Color)
+			t.expect(plate.Thickness).toBe(menu.Thickness)
+			t.expect(plate.Transparency).toBe(menu.Transparency)
+			stop()
+		end
+	end)
+
+	t.it("keeps a checked menu row in the content colour on the clear menu plate", function()
+		for _, entry in packages() do
+			local sheet, stop = sheetOf(entry.package)
+			local plain = style(sheet, ".facet-text").TextColor3
+			t.expect(style(sheet, ".facet-menu-item.facet-selected").TextColor3).toBe(plain)
+			t.expect(style(sheet, ".facet-menu-item.facet-selected >> .facet-text").TextColor3).toBe(plain)
+			stop()
+		end
+	end)
+end)
