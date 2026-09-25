@@ -67,7 +67,7 @@ local UI = Facet.controls(ComposeRoblox.createRuntime())
 Your cells drive Facet controls directly, and control disposal belongs to your
 Compose owners. A runtime or readable from a different Compose copy stops with
 an error that names the control. See
-[`Facet.bind`](docs/reference/api.md) for the details.
+[`Facet.bind`](docs/reference/api.md#your-own-compose) for the details.
 
 ## What it runs on
 
