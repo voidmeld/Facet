@@ -1148,14 +1148,17 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end
 		end
 		if #bindings > 0 then
-			local priority = 2000
+			local modified = spec.shortcut ~= nil
+				and spec.shortcut.modifiers ~= nil
+				and spec.shortcut.modifiers.shift == true
+			local priority = if modified then 2001 else 2000
 			if spec.dialogAction then
 				dialogOrder += 1
 				priority -= dialogOrder
 			end
 			ctx.action(node, "Shortcut", bindings, shortcutActive, activate, {
 				priority = priority,
-				sink = spec.dialogAction ~= nil,
+				sink = spec.dialogAction ~= nil or modified,
 			})
 		end
 

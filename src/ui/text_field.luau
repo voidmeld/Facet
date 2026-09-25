@@ -797,6 +797,20 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				releaseFocus()
 			end
 		end)
+		local inputService = ctx.config.services.UserInputService
+		if inputService then
+			local touchLive = ctx.observe(inputService, "TouchEnabled")
+			local keyboardLive = ctx.observe(inputService, "KeyboardEnabled")
+			local hadTouch = touchLive:peek() == true
+			Compose.watch(function(use: ComposeTypes.Use)
+				local touchNow = use(touchLive) == true
+				local keyboardNow = use(keyboardLive) == true
+				if hadTouch and not touchNow and not keyboardNow and editing:peek() then
+					releaseFocus()
+				end
+				hadTouch = touchNow
+			end)
+		end
 		runtime.connect(node, "ReturnPressedFromOnScreenKeyboard", function()
 			if spec.multiline ~= true then
 				commit("submit")

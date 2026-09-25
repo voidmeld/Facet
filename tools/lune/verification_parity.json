@@ -2497,7 +2497,22 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "Native TextBox focus (CaptureFocus on activation) and GuiService selection/Return/ButtonA",
-      "nativeEvidence": "Control level: native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection; native_inputs::native input controls::limits UTF-8 characters, rejects validati..."
+      "nativeEvidence": "Control level: native_inputs::native input controls::retains native keyboard activation after first focus and gates it on live selection; native_inputs::native input controls::limits UTF-8 characters, rejects validati...",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json"
+        ],
+        "cases": [
+          "in47/temperature-pointer-enters-edit",
+          "in47/temperature-touch-enters-edit",
+          "in47/temperature-return-enters-edit",
+          "in47/pad-temperature-a-enters-edit"
+        ],
+        "observed": "The Fahrenheit TextBox of example 01 enters editing from a mouse click, from an iPhone touch tap (the input arrived as Touch), from Return on the selected field, and from Gamepad1 ButtonA on the selected field. Typing updates the value and the live preview. Nothing commits while editing. Return commits 212 F as 100 C. Focus loss commits 32 F as 0 C."
+      },
+      "weaker": "Gamepad B cancelling the edit back to the snapshot is not driven live. While the TextBox has focus, the Controller Emulator's keys go to the TextBox and not to the pad, and VirtualInput refuses ButtonB and Escape."
     },
     {
       "id": "apps2-31",
@@ -2771,7 +2786,21 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "GuiService selection within the Alert's SelectionGroup; native AnchorPoint/Position centring",
-      "nativeEvidence": "none example-specific"
+      "nativeEvidence": "none example-specific",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json",
+          "artifacts/studio-live/classb_examples-desktop-default.json"
+        ],
+        "cases": [
+          "in47/pad-confirm-dialog-to-cancel",
+          "in47/confirm-dialog-keyboard-to-cancel",
+          "classb_examples/confirm-dialog-card-centred"
+        ],
+        "observed": "Gamepad1 ButtonA on Delete opens the alert with the selection on Cancel. DPadRight moves to Confirm and DPadLeft returns to Cancel. The stick cannot leave the dialog. ButtonA on Cancel reports cancelled, keeps the save, dismisses the dialog and returns the selection to Delete. After the dialog reopens, ButtonB dismisses it, deletes nothing and returns the selection to Delete. The keyboard route (Return, Right, Left, Up) gives the same result. The card is centred at 390x844, 1280x720 and 1920x1080."
+      }
     },
     {
       "id": "apps2-46",
@@ -2889,7 +2918,21 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "GuiButton.Activated for all input types; engine text measurement",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json",
+          "artifacts/studio-live/classb_examples-desktop-default.json"
+        ],
+        "cases": [
+          "in47/with-animation-four-inputs",
+          "in47/pad-with-animation-a",
+          "classb_examples/with-animation-pseudo-localized"
+        ],
+        "observed": "The Animate button of the withAnimation demonstration runs once for each input: a mouse click, Return on the selected button, Gamepad1 ButtonA (twice, one run each) and an iPhone touch tap. Return also reaches the reduced-motion toggle. With the copy expanded 1.4 times at 320x640 and 640x320, no text is clipped and nothing crosses a side."
+      }
     },
     {
       "id": "apps2-53",
@@ -3598,7 +3641,17 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "UI.Sheet presentation layer and native ZIndex",
-      "nativeEvidence": "parity_blockers.json G18 resolution: 'Tab chrome now has explicit native ZIndex 2 above page content' with gap-closure-live.json G18; not specific to the Settings sheet."
+      "nativeEvidence": "parity_blockers.json G18 resolution: 'Tab chrome now has explicit native ZIndex 2 above page content' with gap-closure-live.json G18; not specific to the Settings sheet.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/settings-sheet-stays-over-demo"
+        ],
+        "observed": "A mouse click on the gallery's Settings button opens the Gallery settings sheet. At the sheet's centre the topmost object is inside the sheet and the demo is beneath it. After six demo swaps (collections to ex03), the same sheet is still open, still topmost over the new demo, and there is exactly one modal layer."
+      }
     },
     {
       "id": "apps2-95",
@@ -4992,7 +5045,19 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "Native InputAction Pressed fires once per press and Direction2D StateChanged fires only on value change; the Facet presenter repeat clock (DPAD_REPEAT_*) and solver solve counts no longer exist.",
-      "nativeEvidence": "none (NRAD-1 exercises hold/aim hysteresis but not held-repeat or a held d-pad)"
+      "nativeEvidence": "none (NRAD-1 exercises hold/aim hysteresis but not held-repeat or a held d-pad)",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-gamepad-desktop-default.json"
+        ],
+        "cases": [
+          "in47/pad-radial-held-dpad-steps-once",
+          "in47/pad-radial-held-stick-rests"
+        ],
+        "observed": "On an open compass RadialMenu, a Gamepad1 stick held up from South aims one stop (Center). During 60 further frames of hold, the selection does not move, no ring geometry (AbsolutePosition or AbsoluteSize) changes, no item fires and the menu stays open. After release, the d-pad steps again. With DPadDown held from North, the first step lands on Center and no ring geometry changes during 60 frames of hold."
+      },
+      "weaker": "Live finding: the engine's native d-pad repeat moves a held DPadDown on from Center to South during the hold. Main held the ring on one step. The repeat stays on the ring's own stops and causes no layout work."
     },
     {
       "id": "apps2-184",
@@ -5284,7 +5349,19 @@
       "mainCases": 6,
       "class": "b",
       "nativeMechanism": "Native AnchorPoint centering, UIAspectRatioConstraint/UICorner circles, ImageLabel ScaleType and GuiService selection highlight replace solver-placed Disc/Glyph/Compact nodes and Facet focus paint.",
-      "nativeEvidence": "native_radial_controls::native radial interaction policies::NRAD-16 keeps round button swatches circular (UICorner scale 1, square >=44); no evidence for icon squares, ten-foot sizing or selection-highlight target"
+      "nativeEvidence": "native_radial_controls::native radial interaction policies::NRAD-16 keeps round button swatches circular (UICorner scale 1, square >=44); no evidence for icon squares, ten-foot sizing or selection-highlight target",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json"
+        ],
+        "cases": [
+          "in47/radial-icons-centred-on-paint",
+          "in47/pad-radial-selection-on-paint"
+        ],
+        "observed": "In all nine themes, at normal and ten-foot (1.5 UIScale) viewing distance, with labels and icon-only, each compass button has an image icon. The icon is square, is drawn at the theme icon size times the scale, and is centred in its button (within 1.5 px). The icon and label content is centred and the label fits. Each button lies on its painted wedge (1332 checks). The Gamepad1 d-pad and stick walk E, S, W and N. Each selected object is the ring button itself, with the engine selection ring, on its painted surface."
+      }
     },
     {
       "id": "apps2-199",
@@ -5494,7 +5571,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Engine PreferredInput changes no longer route through a Facet interaction-class state machine; nothing in nav_radial reacts to preferred input.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-radial-hot-switch-keeps-open-desktop-default.json"
+        ],
+        "cases": [
+          "in47/radial-hot-switch-keeps-open"
+        ],
+        "observed": "On the desktop, a mouse click on the launcher opens the ring with KeyboardAndMouse preferred. Enabling the Controller Emulator connects a pad, and a pad press makes Gamepad preferred. The ring stays open, and DPadRight steers it to E. Disabling the emulator unplugs the pad and the engine goes back to KeyboardAndMouse. The ring is still open and no item fired."
+      }
     },
     {
       "id": "apps2-212",
@@ -6587,7 +6674,22 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "Engine selection-ring visibility (GuiService selection image shown only for gamepad/keyboard navigation) and UserInputService.PreferredInput",
-      "nativeEvidence": "Facet reads PreferredInput via ctx.observe(input,'PreferredInput') in src/ui/nav_pages.luau:150, nav_surfaces.luau:149, collection_table.luau:85; headless tests grep PreferredInput in native_inputs/native_navigation/n..."
+      "nativeEvidence": "Facet reads PreferredInput via ctx.observe(input,'PreferredInput') in src/ui/nav_pages.luau:150, nav_surfaces.luau:149, collection_table.luau:85; headless tests grep PreferredInput in native_inputs/native_navigation/n...",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json",
+          "artifacts/studio-live/in47-input-fact-follows-device-desktop-default.json"
+        ],
+        "cases": [
+          "in47/touch-vm-tap-leaves-no-ring",
+          "in47/pad-vm-navigation-selects",
+          "in47/input-fact-follows-device"
+        ],
+        "observed": "In Virtual Monitors Discover on the iPhone, a touch tap on a feed card leaves GuiService.SelectedObject nil, so the engine draws no selection ring. At 1280x720 with nothing selected, one Gamepad1 DPadDown selects a Discover control, and the next moves it. The resolved PreferredInput follows the device (desktop KeyboardAndMouse, pad Gamepad, console Gamepad, phone Touch), and the Table adapts its header and resize grip to it."
+      },
+      "weaker": "Hiding the ring with a mouse click after pad navigation is not driven: VirtualInput pointer input changes neither the engine's input mode nor the selection."
     },
     {
       "id": "apps2-281",
@@ -9078,7 +9180,19 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "Native GuiButton.Activated on the selected object",
-      "nativeEvidence": "native_inputs::native input controls::activates programmatically selected buttons through the native GuiService property"
+      "nativeEvidence": "native_inputs::native input controls::activates programmatically selected buttons through the native GuiService property",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json"
+        ],
+        "cases": [
+          "in47/chrome-press-activates-once",
+          "in47/pad-chrome-press-activates-once"
+        ],
+        "observed": "With a chrome bar above the content, Return and Gamepad1 ButtonA on the selected chrome button each run only its handler, once. Return and ButtonA on the selected content button each run only the content handler, once. One mouse click on the chrome button runs its handler once."
+      }
     },
     {
       "id": "apps-153",
@@ -9388,7 +9502,18 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "Roblox TextBox focus/FocusLost and engine keyboard handling",
-      "nativeEvidence": "native_navigation::native navigation controls::validates combo custom commits and cancels editable text"
+      "nativeEvidence": "native_navigation::native navigation controls::validates combo custom commits and cancels editable text",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/text-input-owns-arrows"
+        ],
+        "observed": "Before editing, Down moves the selection off the field. After Return enters editing, Down, Up, Left and Right each leave the selection on the field and the edit open, and typing still reaches the field."
+      },
+      "weaker": "Tab committing and then advancing is not driven live: VirtualInput refuses Tab as a core-bound key."
     },
     {
       "id": "apps-170",
@@ -17129,7 +17254,17 @@
       "mainCases": 6,
       "class": "b",
       "nativeMechanism": "InputContext Priority/Sink/Enabled and InputAction state.",
-      "nativeEvidence": "native_inputs::native input controls::gives native dialog contexts ordered sink priority and live eligibility; native_public_surface::native public surface::gates native actions through retained ancestors and detaches..."
+      "nativeEvidence": "native_inputs::native input controls::gives native dialog contexts ordered sink priority and live eligibility; native_public_surface::native public surface::gates native actions through retained ancestors and detaches...",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/native-context-arbitration"
+        ],
+        "observed": "Two native InputContexts bind X. A real X press fires only the higher Sink context (1 and 0). Disabling it releases X to the lower context. A repeated key-down without a key-up presses once. A scripted Fire reaches the lower action under the active sink. A held X holds the high action's Bool state, and disabling that context resets the state to false. After the lower context is destroyed, X raises no error and delivers nothing."
+      }
     },
     {
       "id": "inputs-98",
@@ -17177,7 +17312,17 @@
       "mainCases": 5,
       "class": "b",
       "nativeMechanism": "InputBinding PrimaryModifier/SecondaryModifier evaluation by the engine.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/modifier-shortcuts-and-key-up"
+        ],
+        "observed": "There are two Buttons, one with shortcut K and one with Shift+K. Plain K fires only the plain shortcut. Shift+K fires only the shifted shortcut. Plain K works again afterwards. The right Shift sibling fires the shifted shortcut. Tapping Shift while plain K is held does not steal the key-up of K. After a chord whose Shift was released first, the next chord fires. After a Shift press and release on its own, plain K fires. The live run found that Shift+K also fired the plain shortcut. Button now gives a shifted shortcut context a higher priority and Sink (native_inputs::native input controls::lets a shifted shortcut preempt an unmodified shortcut on the same key, written to fail first)."
+      }
     },
     {
       "id": "inputs-101",
@@ -17761,7 +17906,20 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "TextBox Focused/FocusLost across devices.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-text-edit-carries-gamepad-connect-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json"
+        ],
+        "cases": [
+          "in47/text-edit-carries-gamepad-connect",
+          "in47/pad-text-edit-commits-on-dock"
+        ],
+        "observed": "On the iPhone emulator, a touch tap starts an edit and hi is typed. Enabling the Controller Emulator connects Gamepad1 mid-edit; the edit carries, the text is intact and nothing commits. When the device changes from the iPhone to the Xbox (touch and keyboard both gone), the edit ends through exactly one commit with reason focusLost, and the value keeps seedhi. Afterwards DPadDown moves the selection off the field. The live run found the edit wedged open after the dock. text_field now releases focus when touch leaves and no keyboard remains (native_inputs::native input controls::commits a touch edit when touch leaves with no keyboard and carries it otherwise, written to fail first)."
+      },
+      "weaker": "The case where touch leaves and a hardware keyboard remains, and the keep-visible offset reset on dock, are covered headlessly only."
     },
     {
       "id": "inputs-138",
@@ -17809,7 +17967,18 @@
       "mainCases": 10,
       "class": "b",
       "nativeMechanism": "UserInputService.PreferredInput.",
-      "nativeEvidence": "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics; native_navigation::native navigation controls::shows button help after a pointer rests on..."
+      "nativeEvidence": "native_inputs::native input controls::cancels slider pointer ownership on native gamepad handoff and reports bounded semantics; native_navigation::native navigation controls::shows button help after a pointer rests on...",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-input-fact-follows-device-desktop-default.json"
+        ],
+        "cases": [
+          "in47/input-fact-follows-device"
+        ],
+        "observed": "A desktop with no pad prefers KeyboardAndMouse, and clicks keep it there. After the Controller Emulator connects a pad, a pad press makes Gamepad primary, and ten mouse moves do not take that primacy. On the Xbox (no mouse, no touch) the pad stays primary after a click. The iPhone prefers Touch. The Table reads the fact: the header is 40 px on the desktop and 44 px with a pad, on the console and on the phone. The resize grip is 44 px only on the phone."
+      },
+      "weaker": "A mouse click taking primacy back from a pad, and sub-deadzone stick drift, are not driven live. VirtualInput pointer input does not move the engine's PreferredInput, and the emulator's stick keys give only full deflection."
     },
     {
       "id": "inputs-142",
@@ -17866,7 +18035,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "InputContext.Sink.",
-      "nativeEvidence": "native_inputs::native input controls::gives native dialog contexts ordered sink priority and live eligibility; native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit"
+      "nativeEvidence": "native_inputs::native input controls::gives native dialog contexts ordered sink priority and live eligibility; native_inputs::native input controls::honors every clear-button mode and ends disabled edits without a commit",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/editing-sinks-lower-navigation"
+        ],
+        "observed": "A lower-priority gameplay InputContext binds Down. With nothing editing, Down reaches it. While a TextInput edits, two Down presses never reach it, and the selection stays on the field. After Return ends the edit, Down reaches it again."
+      }
     },
     {
       "id": "inputs-146",
@@ -18423,7 +18602,18 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "TextBox focus capture by GuiService selection/engine.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/text-input-return-enters-once"
+        ],
+        "observed": "Return on the selected field enters editing, and that same press commits nothing and changes nothing. The field is still editing twenty frames later. A second Return is the native TextBox submit. It makes exactly one commit (reason submit), keeps the value and does not re-enter editing."
+      },
+      "weaker": "A second Return while editing is the engine's submit, not main's no-op: it commits once and ends the edit."
     },
     {
       "id": "inputs-182",
@@ -23223,7 +23413,17 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "Native InputContext/InputAction owned by Compose",
-      "nativeEvidence": "native_public_surface::native public surface::gates native actions through retained ancestors and detaches observations"
+      "nativeEvidence": "native_public_surface::native public surface::gates native actions through retained ancestors and detaches observations",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/actions-released-with-their-owner"
+        ],
+        "observed": "A Button with a shortcut, a cancel dialog Button and a TextInput add native InputContexts to PlayerGui, and the shortcut fires while they are mounted. When the Compose owner is unmounted, the InputContext count returns to its baseline. A later K press raises no error and delivers nothing."
+      }
     },
     {
       "id": "mech3-37",
@@ -23275,7 +23475,21 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Native InputAction with multiple InputBinding children",
-      "nativeEvidence": "partial: native_inputs::native input controls::deduplicates shortcut/default bindings and yields shortcuts during native text editing"
+      "nativeEvidence": "partial: native_inputs::native input controls::deduplicates shortcut/default bindings and yields shortcuts during native text editing",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-gamepad-desktop-default.json"
+        ],
+        "cases": [
+          "in47/one-action-many-devices",
+          "in47/pad-one-action-many-devices",
+          "in47/touch-one-action-many-devices"
+        ],
+        "observed": "A cancel Button with shortcut K owns one Shortcut InputAction with both a K binding and a ButtonB binding. A real K press fires it, Gamepad1 ButtonB fires it, and a mouse click and an iPhone touch tap each fire the same control once."
+      },
+      "weaker": "Touch reaches the control through its own GuiButton activation, not through an InputBinding.UIButton on the same action."
     },
     {
       "id": "mech3-41",
