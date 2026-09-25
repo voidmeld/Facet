@@ -61,7 +61,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 	end
 	local function construction(spec: Spec)
 		for _, key in { "axis", "range", "minGap", "thumb", "tapToPosition" } do
-			local source = (spec :: { [string]: unknown })[key]
+			local source = (spec :: { [unknown]: unknown })[key]
 			if dynamic(source) then
 				error(`Facet UI.Slider: {key} is decided at construction; pass a plain value`, 0)
 			end

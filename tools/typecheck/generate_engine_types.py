@@ -9,6 +9,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 CLASSES = sorted(set('Camera CanvasGroup Folder Frame GuiObject GuiButton ImageButton ImageLabel InputAction InputBinding InputContext Path2D ScrollingFrame ScreenGui BillboardGui SurfaceGui StyleRule StyleSheet TextBox TextButton TextLabel UIAspectRatioConstraint UICorner UIDragDetector UIFlexItem UIGradient UIGridLayout UIListLayout UIPadding UIPageLayout UIScale UIShadow UISizeConstraint UIStroke UITextSizeConstraint ViewportFrame WorldModel'.split()))
 
+CLASSES_SET = set(CLASSES)
+
 
 def records(source):
     return {
@@ -72,6 +74,7 @@ def generate(definitions, schema):
                 return True
             name = entries[name]['parent']
         return False
+    own = {}
     for name in ordered:
         parent = entries[name]['parent']
         fields = ['\tAttributes: Attributes?,'] if name == 'Instance' else []
@@ -89,22 +92,32 @@ def generate(definitions, schema):
                 if any(is_instance(word) for word in re.findall(r'\b\w+\b', native)):
                     value = '(' + value + ' | StaticValue)'
                 fields.append(f'\t{key}: {value}?,')
-        base = parent + 'Properties & ' if parent else ''
-        result += [f'export type {name}Properties = {base}{{', *fields, '}', f'export type {name}NativeProps = {name}Properties & {{ [number]: Compose.Child }}', f'export type {name}Props = {name}NativeProps & {{ ref: (({name}) -> ())? }}', '']
+        own[name] = (own[parent] if parent else []) + fields
+        if name not in CLASSES_SET:
+            continue
+        result += [f'export type {name}NativeProps = {{', *own[name], '\t[number]: Compose.Child,', '}', f'export type {name}Props = {{', *own[name], '\t[number]: Compose.Child,', f'\tref: (({name}) -> ())?,', '}', '']
     shared_lines = [f'export type {alias} = Value<{native}>' for native, alias in sorted(aliases.items(), key=lambda item: item[1])]
     insert_at = result.index('export type Attributes = { [string]: Value<AttributeValue?> }') + 1
     result[insert_at:insert_at] = shared_lines
     datatypes = 'UDim UDim2 Vector2 Vector3 Color3 CFrame Enum Font Rect ColorSequence ColorSequenceKeypoint NumberSequence NumberSequenceKeypoint NumberRange Path2DControlPoint FloatCurveKey TweenInfo'.split()
     result += ['export type RobloxTypes = {', *[f'\t{name}: typeof({name}),' for name in datatypes], '\tBrickColor: typeof(BrickColor)?,', '}', '']
     observed = set('AbsoluteContentSize AbsolutePosition AbsoluteSize AbsoluteWindowSize CanvasPosition CurrentPage DisplayImage DisplayName Enabled FontFace GamepadEnabled GuiState Interactable KeyCode KeyboardEnabled MouseEnabled Parent Position PreferredBinding PreferredInput PreferredTransparency PrimaryModifier ReducedMotionEnabled SecondaryModifier SelectedObject Size Text TextBounds TextFits TextSize TextColor3 TextXAlignment TextYAlignment TextWrapped RichText TextScaled TextTruncate LineHeight TouchEnabled Visible OnScreenKeyboardVisible OnScreenKeyboardSize AbsoluteCanvasSize'.split())
-    observations = []
+    groups = {}
     observed_classes = set('GuiBase2d GuiObject GuiService UserInputService LayerCollector Instance InputAction InputBinding InputContext TextLabel TextBox TextButton ScrollingFrame UIGridStyleLayout UIPageLayout'.split())
     for name, entry in sorted(entries.items()):
         if name not in observed_classes:
             continue
         for key, native in entry['fields'].items():
             if key in observed and not native.startswith('RBXScriptSignal'):
-                observations.append(f'(({name}, \"{key}\") -> Compose.Cell<{native_type(native)}>)')
+                groups.setdefault((native_type(native), name), []).append(key)
+    merged = {}
+    for (native, name), keys in groups.items():
+        merged.setdefault((native, tuple(sorted(keys))), []).append(name)
+    observations = []
+    for (native, keys), names in sorted(merged.items(), key=lambda item: (sorted(item[1])[0], item[0][0])):
+        owner = ' | '.join(sorted(names))
+        members = ' | '.join(f'\"{key}\"' for key in keys)
+        observations.append(f'(({owner}, {members}) -> Compose.Cell<{native}>)')
     result += ['export type Observe = ' + '\n\t& '.join(observations), '']
     result += ['export type Host = {']
     for name in CLASSES:

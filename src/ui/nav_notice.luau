@@ -472,7 +472,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			error(`Facet {where}: trailing is one GuiObject; put a cluster in a frame`, 0)
 		end
 		for _, key in { "leading", "center" } do
-			local slot = (spec :: { [string]: unknown })[key]
+			local slot = (spec :: { [unknown]: unknown })[key]
 			if slot ~= nil and not parts.instance(slot) then
 				error(`Facet {where}: {key} must be a GuiObject`, 0)
 			end

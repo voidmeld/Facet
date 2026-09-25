@@ -141,7 +141,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		assert(type(read(spec.readOnly) or false) == "boolean", `Facet.{control}: readOnly must be a boolean`)
 		for _, key in NUMBER_KEYS do
 			assert(
-				numeric or (spec :: { [string]: unknown })[key] == nil,
+				numeric or (spec :: { [unknown]: unknown })[key] == nil,
 				`Facet.{control}: {key} belongs to the number presentation`
 			)
 		end
@@ -155,7 +155,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			`Facet.{control}: precision must be a whole number from 0 to 10`
 		)
 		for _, key in { "prefix", "suffix" } do
-			local unit = read((spec :: { [string]: Shared.Value<unknown> })[key])
+			local unit = read((spec :: { [unknown]: Shared.Value<unknown> })[key])
 			assert(unit == nil or type(unit) == "string", `Facet.{control}: {key} must be a string`)
 		end
 		assert(
@@ -467,7 +467,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		})
 		local rootProps: Shared.FrameNativeProps = {}
 		if framed then
-			local source = nativeProps :: { [string]: unknown }
+			local source = nativeProps :: { [unknown]: unknown }
 			local target = (rootProps :: unknown) :: { [string]: unknown }
 			for _, key in ROOT_KEYS do
 				target[key], source[key] = source[key], nil

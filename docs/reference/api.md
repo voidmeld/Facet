@@ -49,7 +49,9 @@ sources keep their native types.
 Run `python3 tools/check_types.py` to check the Facet runtime source and the
 positive and compile-fail public API witnesses. The checker uses pinned Roblox
 definitions and the default analyzer limits, so the full `Facet` type checks
-the same way in a consumer's editor. It reports vendor diagnostics separately. It does not accept a
+the same way in a consumer's editor. It runs the old Luau type solver and then
+the new type solver. The new solver pass must stay within the diagnostic budget
+in `tools/typecheck/solver_v2_budget.json`. It reports vendor diagnostics separately. It does not accept a
 `--!strict` directive alone as proof of a typed API.
 
 ### Mounting

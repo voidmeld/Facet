@@ -8,12 +8,15 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import resource
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / "artifacts/verify/types"
 LOCK = ROOT / "tools/typecheck/roblox.lock.json"
 WITNESS = ROOT / "tests/types/controls_witness.luau"
+BUDGET = ROOT / "tools/typecheck/solver_v2_budget.json"
+SOLVERS = {"old": [], "new": ["LuauSolverV2=true"]}
 DEFAULT_FLAGS = []
 FLAGS = list(DEFAULT_FLAGS)
 DIAGNOSTIC = re.compile(r"^(.+?\.lua(?:u)?)(?: \[[^\]]*\])?\((\d+),(\d+)\): (\w+): (.*)$", re.M)
@@ -43,8 +46,9 @@ def relative(path):
 
 def analyze(files, name, extra=()):
     command = ["luau-lsp", "analyze", "--platform", "roblox", "--definitions=" + str(definitions()), *extra, *["--flag:" + flag for flag in FLAGS], *files]
-    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=180)
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=600)
     output = result.stdout + result.stderr
+    name = name + ("-v2" if "LuauSolverV2=true" in FLAGS else "")
     log = ARTIFACTS / f"{name}.log"
     log.write_text(output)
     diagnostics = [
@@ -172,33 +176,19 @@ def selftest():
         diagnostics, log = analyze([str(path.relative_to(ROOT))], "selftest")
         own = [item for item in diagnostics if item["file"] == str(path.relative_to(ROOT))]
         ok = len(own) == 1 and own[0]["line"] == 3
-        print(f"types selftest: {'PASS' if ok else 'FAIL'}; valid native type accepted, wrong scalar rejected; {log}")
+        print(f"types selftest ({'new' if 'LuauSolverV2=true' in FLAGS else 'old'} solver): {'PASS' if ok else 'FAIL'}; valid native type accepted, wrong scalar rejected; {log}")
         return 0 if ok else 1
     finally:
         path.unlink()
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--files", nargs="+", help="Check only these owned targets; report dependency diagnostics separately")
-    parser.add_argument("--flag", action="append", default=[], help="Analyzer flag override, for example LuauSolverV2=true")
-    parser.add_argument("--selftest", action="store_true")
-    parser.add_argument("--source-only", action="store_true", help="Check owned source without public witnesses")
-    args = parser.parse_args()
-    FLAGS[:] = DEFAULT_FLAGS + args.flag
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
-    if not shutil.which("luau-lsp"):
-        raise RuntimeError("Pinned luau-lsp is missing; run rokit install")
-    version = subprocess.run(["luau-lsp", "--version"], capture_output=True, text=True, check=True).stdout.strip()
-    if version != json.loads(LOCK.read_text())["analyzerVersion"]:
-        raise RuntimeError(f"Analyzer {version} differs from the pinned toolchain; run rokit install")
-    if args.selftest:
-        return selftest()
-    if not args.files:
-        definitions()
-        generated = subprocess.run([sys.executable, "tools/typecheck/generate_engine_types.py", "--check"], cwd=ROOT, capture_output=True, text=True)
-        if generated.returncode:
-            raise RuntimeError("Native engine type generation differs: " + generated.stdout + generated.stderr)
+def cpu(started):
+    ended = resource.getrusage(resource.RUSAGE_CHILDREN)
+    return ended.ru_utime + ended.ru_stime - started.ru_utime - started.ru_stime
+
+
+def check(args, solver):
+    FLAGS[:] = DEFAULT_FLAGS + SOLVERS[solver] + args.flag
     files = args.files or [str(path.relative_to(ROOT)) for path in sorted((ROOT / "src").rglob("*.luau")) if "vendor" not in path.parts]
     files = [relative(path) for path in files]
     public = not args.files and not args.source_only
@@ -211,6 +201,7 @@ def main():
         raise RuntimeError("Missing type targets: " + ", ".join(missing))
     directives = [path for path in files if not (ROOT / path).read_text().startswith("--!strict\n")]
     name = "source" if not args.files else "focused-" + hashlib.sha256("\n".join([*FLAGS, *files]).encode()).hexdigest()[:10]
+    started = resource.getrusage(resource.RUSAGE_CHILDREN)
     diagnostics, log = analyze(files, name)
     if public:
         examples, found = consumer()
@@ -220,24 +211,58 @@ def main():
     owned = [item for item in diagnostics if item["file"] in targets or (not args.files and is_owned(item["file"]))]
     external = [item for item in diagnostics if item not in owned]
     probes = negative_probes() if public else None
-    ok = not owned and not directives and (probes is None or not probes["missed"] and not probes["unexpected"])
-    report = {"ok": ok, "mode": "focused" if args.files else "owned-source" if args.source_only else "full", "targets": files, "flags": FLAGS, "missingStrict": directives, "diagnostics": owned, "dependencyDiagnostics": external, "publicProbes": probes, "log": log, "definitions": json.loads(LOCK.read_text())}
-    path = ARTIFACTS / (name + ".json")
+    budget = json.loads(BUDGET.read_text()) if solver == "new" and not args.files else None
+    allowed = budget["ownedDiagnostics"][("full" if public else "owned-source")] if budget else 0
+    allowed_misses = set(budget["missedProbes"]) if budget else set()
+    ok = len(owned) <= allowed and not directives and (probes is None or set(probes["missed"]) <= allowed_misses and not probes["unexpected"])
+    report = {"ok": ok, "solver": solver, "mode": "focused" if args.files else "owned-source" if args.source_only else "full", "targets": files, "flags": FLAGS, "budget": allowed, "missingStrict": directives, "diagnostics": owned, "dependencyDiagnostics": external, "publicProbes": probes, "log": log, "definitions": json.loads(LOCK.read_text())}
+    path = ARTIFACTS / (name + ("-v2" if solver == "new" else "") + ".json")
     path.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"types: {'PASS' if ok else 'FAIL'}; {len(files)} targets, {len(owned)} owned diagnostics, {len(external)} dependency diagnostics reported separately")
-    for item in owned[:35]:
+    limit = f", budget {allowed}" if budget else ""
+    print(f"types ({solver} solver): {'PASS' if ok else 'FAIL'}; {len(files)} targets, {len(owned)} owned diagnostics{limit}, {len(external)} dependency diagnostics reported separately; {cpu(started):.1f}s analyzer CPU")
+    for item in (owned if not budget or len(owned) > allowed else [])[:35]:
         print(f"{item['file']}:{item['line']}:{item['column']}: {item['message'][:320]}")
     for missing in directives:
         print(f"missing strict directive: {missing}")
     if probes:
         print(f"public negative probes: {probes['count'] - len(probes['missed'])}/{probes['count']} rejected")
         for label in probes["missed"]:
-            print(f"missed: {label}")
+            if label not in allowed_misses:
+                print(f"missed: {label}")
         for item in probes["unexpected"]:
             print(f"probe setup error: {item['message'][:320]}")
     print(f"report: {path.relative_to(ROOT)}; raw analyzer log: {log}")
-    return 0 if ok else 1
+    return ok
 
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--files", nargs="+", help="Check only these owned targets; report dependency diagnostics separately")
+    parser.add_argument("--flag", action="append", default=[], help="Analyzer flag override, for example LuauSolverV2=true")
+    parser.add_argument("--solver", choices=["old", "new", "both"], default="both", help="Luau type solver; both runs the old solver, then the new solver")
+    parser.add_argument("--selftest", action="store_true")
+    parser.add_argument("--source-only", action="store_true", help="Check owned source without public witnesses")
+    args = parser.parse_args()
+    ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    if not shutil.which("luau-lsp"):
+        raise RuntimeError("Pinned luau-lsp is missing; run rokit install")
+    version = subprocess.run(["luau-lsp", "--version"], capture_output=True, text=True, check=True).stdout.strip()
+    if version != json.loads(LOCK.read_text())["analyzerVersion"]:
+        raise RuntimeError(f"Analyzer {version} differs from the pinned toolchain; run rokit install")
+    solvers = ["old", "new"] if args.solver == "both" else [args.solver]
+    if args.selftest:
+        results = []
+        for solver in solvers:
+            FLAGS[:] = DEFAULT_FLAGS + SOLVERS[solver] + args.flag
+            results.append(selftest())
+        return max(results)
+    if not args.files:
+        definitions()
+        generated = subprocess.run([sys.executable, "tools/typecheck/generate_engine_types.py", "--check"], cwd=ROOT, capture_output=True, text=True)
+        if generated.returncode:
+            raise RuntimeError("Native engine type generation differs: " + generated.stdout + generated.stderr)
+    results = [check(args, solver) for solver in solvers]
+    return 0 if all(results) else 1
 
 if __name__ == "__main__":
     try:

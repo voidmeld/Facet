@@ -44,12 +44,12 @@ return function(
 		)
 		for _, key in { "hasNext", "hasPrevious", "enabled" } do
 			assert(
-				isFlag(read((spec :: { [string]: unknown })[key])),
+				isFlag(read((spec :: { [unknown]: unknown })[key])),
 				`Facet UI.Pagination: {key} is a boolean or a readable boolean`
 			)
 		end
 		for _, key in { "siblingCount", "boundaryCount" } do
-			local value = (spec :: { [string]: unknown })[key]
+			local value = (spec :: { [unknown]: unknown })[key]
 			assert(
 				value == nil or (isPage(value) and (value :: number) >= 0 and (value :: number) <= MAX_WINDOW),
 				`Facet UI.Pagination: {key} is a whole number from 0 to {MAX_WINDOW}`

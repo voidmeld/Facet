@@ -46,7 +46,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			error(`Facet {where}: isPresented is required; it is the caller's boolean fact`, 0)
 		end
 		for _, key in { "onPresentedChange", "onDismiss" } do
-			local value = (spec :: { [string]: unknown })[key]
+			local value = (spec :: { [unknown]: unknown })[key]
 			if value ~= nil and type(value) ~= "function" then
 				error(`Facet {where}: {key} must be a function`, 0)
 			end
@@ -91,7 +91,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		placement.assertAlign(spec.align, where)
 		placement.assertCrossOffset(spec.crossOffset, where)
 		for _, key in { "maxWidth", "maxHeight" } do
-			local value = (spec :: { [string]: unknown })[key]
+			local value = (spec :: { [unknown]: unknown })[key]
 			if value ~= nil and not (finite(value) and (value :: number) > 0) then
 				error(`Facet {where}: {key} must be a positive finite number of pixels`, 0)
 			end

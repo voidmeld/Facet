@@ -55,7 +55,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			error(`Facet {where}: isPresented is required; it is the caller's boolean fact`, 0)
 		end
 		for _, key in { "onPresentedChange", "onDismiss" } do
-			local value = (spec :: { [string]: unknown })[key]
+			local value = (spec :: { [unknown]: unknown })[key]
 			if value ~= nil and type(value) ~= "function" then
 				error(`Facet {where}: {key} must be a function`, 0)
 			end
@@ -89,7 +89,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			error(`Facet {where}: content must be a factory that returns the body`, 0)
 		end
 		for _, key in { "title", "actionLabel" } do
-			local value = (spec :: { [string]: unknown })[key]
+			local value = (spec :: { [unknown]: unknown })[key]
 			if value ~= nil and not parts.bound(ctx, value, "string") then
 				error(`Facet {where}: {key} must be a string or a bound string`, 0)
 			end

@@ -396,7 +396,7 @@ return function(
 		for _, side in
 			{ "SelectionBehaviorUp", "SelectionBehaviorDown", "SelectionBehaviorLeft", "SelectionBehaviorRight" }
 		do
-			(rowProps :: { [string]: unknown })[side] = function(use: ComposeTypes.Use): Enum.SelectionBehavior
+			(rowProps :: { [unknown]: unknown })[side] = function(use: ComposeTypes.Use): Enum.SelectionBehavior
 				return if use(entered) then E.SelectionBehavior.Stop else E.SelectionBehavior.Escape
 			end
 		end
@@ -471,7 +471,7 @@ return function(
 		}))
 		root = card
 		local extent = ctx.observe(card, "AbsoluteSize")
-		if (spec :: { [string]: unknown }).Position == nil then
+		if (spec :: { [unknown]: unknown }).Position == nil then
 			runtime.decorate(card, {
 				Position = function(use: ComposeTypes.Use): UDim2
 					local factor = math.max(use(scale), 0.001)

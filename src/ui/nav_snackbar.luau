@@ -79,7 +79,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end
 		end
 		for _, key in { "onPresentedChange", "onDismiss" } do
-			local value = (spec :: { [string]: unknown })[key]
+			local value = (spec :: { [unknown]: unknown })[key]
 			if value ~= nil and type(value) ~= "function" then
 				error(`Facet {where}: {key} must be a function`, 0)
 			end

@@ -44,6 +44,14 @@ substantial reduction from main and the unresolved coverage work. At this time,
 a native `full` run is a complete run of the candidate's checks. It is not
 equivalent to the historical coverage.
 
+The `types` producer runs `python3 tools/check_types.py`. The check runs the
+old Luau type solver and then the new type solver (`LuauSolverV2`). Both use the
+default analyzer limits. The old solver must report no owned diagnostics and
+must reject all negative probes. The new solver must not exceed the diagnostic
+budget in `tools/typecheck/solver_v2_budget.json`. When a change removes new
+solver diagnostics, lower the budget in the same change. Do not raise it. Use
+`--solver old` or `--solver new` to run one solver.
+
 Run `tools/bench.sh` when no other verification load runs. Keep the workload
 intent and the checked-in baselines. Report changed measurement boundaries and
 preexisting threshold failures explicitly. For real layout and input evidence,
