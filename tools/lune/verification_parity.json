@@ -1,8 +1,8 @@
 {
   "groups": {
     "menus-pickers": {
-      "mainCases": 226,
-      "a": 187,
+      "mainCases": 230,
+      "a": 191,
       "aWeaker": 44,
       "b": 0,
       "c": 39,
@@ -16,9 +16,9 @@
     },
     "motion": {
       "mainCases": 596,
-      "a": 159,
+      "a": 174,
       "aWeaker": 6,
-      "b": 33,
+      "b": 18,
       "c": 404,
       "d": 0,
       "candidateSpecs": {
@@ -44,10 +44,10 @@
       }
     },
     "controls-actions": {
-      "mainCases": 411,
-      "a": 113,
+      "mainCases": 414,
+      "a": 117,
       "aWeaker": 16,
-      "b": 1,
+      "b": 0,
       "c": 297,
       "d": 0,
       "candidateSpecs": {
@@ -86,8 +86,8 @@
       }
     },
     "presented-surfaces": {
-      "mainCases": 332,
-      "a": 168,
+      "mainCases": 333,
+      "a": 169,
       "aWeaker": 18,
       "b": 5,
       "c": 159,
@@ -129,9 +129,9 @@
     },
     "layout-geometry": {
       "mainCases": 1395,
-      "a": 341,
+      "a": 358,
       "aWeaker": 239,
-      "b": 221,
+      "b": 204,
       "c": 833,
       "d": 0,
       "candidateSpecs": {
@@ -157,9 +157,9 @@
     },
     "pointer-touch-drag": {
       "mainCases": 393,
-      "a": 87,
+      "a": 94,
       "aWeaker": 2,
-      "b": 98,
+      "b": 91,
       "c": 208,
       "d": 0,
       "candidateSpecs": {
@@ -198,8 +198,8 @@
       }
     },
     "controls-values": {
-      "mainCases": 287,
-      "a": 259,
+      "mainCases": 289,
+      "a": 261,
       "aWeaker": 13,
       "b": 0,
       "c": 28,
@@ -213,10 +213,10 @@
       }
     },
     "adaptive-environment": {
-      "mainCases": 424,
-      "a": 36,
+      "mainCases": 427,
+      "a": 41,
       "aWeaker": 6,
-      "b": 51,
+      "b": 49,
       "c": 337,
       "d": 0,
       "candidateSpecs": {
@@ -256,9 +256,9 @@
     },
     "focus-selection": {
       "mainCases": 547,
-      "a": 156,
+      "a": 169,
       "aWeaker": 42,
-      "b": 242,
+      "b": 229,
       "c": 149,
       "d": 0,
       "candidateSpecs": {
@@ -286,9 +286,9 @@
     },
     "scrolling": {
       "mainCases": 332,
-      "a": 95,
+      "a": 105,
       "aWeaker": 7,
-      "b": 100,
+      "b": 90,
       "c": 137,
       "d": 0,
       "candidateSpecs": {
@@ -299,11 +299,11 @@
       }
     },
     "theme-packages": {
-      "mainCases": 382,
-      "a": 152,
+      "mainCases": 394,
+      "a": 163,
       "aWeaker": 3,
       "b": 0,
-      "c": 230,
+      "c": 231,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 61,
@@ -328,9 +328,9 @@
     },
     "hud-world": {
       "mainCases": 170,
-      "a": 50,
+      "a": 52,
       "aWeaker": 2,
-      "b": 50,
+      "b": 48,
       "c": 70,
       "d": 0,
       "candidateSpecs": {
@@ -355,11 +355,11 @@
       }
     },
     "paint-theming": {
-      "mainCases": 715,
-      "a": 205,
+      "mainCases": 726,
+      "a": 247,
       "aWeaker": 6,
-      "b": 70,
-      "c": 440,
+      "b": 34,
+      "c": 445,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 54,
@@ -370,8 +370,8 @@
       }
     },
     "navigation-containers": {
-      "mainCases": 88,
-      "a": 85,
+      "mainCases": 90,
+      "a": 87,
       "aWeaker": 7,
       "b": 1,
       "c": 2,
@@ -415,9 +415,9 @@
     },
     "input-actions": {
       "mainCases": 344,
-      "a": 115,
+      "a": 132,
       "aWeaker": 6,
-      "b": 107,
+      "b": 90,
       "c": 122,
       "d": 0,
       "candidateSpecs": {
@@ -461,9 +461,9 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3943,
-      "c": 5998,
-      "b": 1432,
+      "a": 4095,
+      "c": 6004,
+      "b": 1312,
       "d": 3
     },
     "auditByClass": {
@@ -473,9 +473,9 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1670,
+      "a": 1717,
       "c": 837,
-      "b": 307,
+      "b": 260,
       "d": 1
     },
     "mainCases": 10848,
@@ -601,7 +601,7 @@
     "review_cards: ledger calls it an obsolete scanner, but the card-shelf task is covered by native_gallery_collections racing shelves (G11)",
     "adaptive_presentation: the ledger says 'Image Button behavior is separately covered by native_inputs', but native_inputs has only the vertical-layout card case. The main focus lift/hover/handler-census behavior is deleted, not covered, and the caption checks lost the theme/viewport sweep.",
     "adaptive_presentation: the ledger claims 'retained page owners survive' placement changes, but no cited case counts page builds or checks Tabs/page identity across sidebar<->topBar<->bottomBar. The Gamepad->topBar rule that replaces ten-foot is untested.",
-    "adaptive_presentation: the cited cases 'keeps split primary activation\u2026' and 'adapts automatic pickers\u2026' are not TabView/adaptive-presentation contracts of this spec.",
+    "adaptive_presentation: the cited cases 'keeps split primary activation…' and 'adapts automatic pickers…' are not TabView/adaptive-presentation contracts of this spec.",
     "alert: the ledger claims validation-free coverage is complete ('remaining: []'), but unknown-key refusal, duplicate action ids, two cancel roles, the default OK action, transition key validation, the no-scroll-when-room case and the measured label-width stacking rung have no candidate test.",
     "anchored_surface: the ledger says Callout/Menu cover anchored placement, but Callout align leading/trailing, the automatic below->above flip and tail=false are untested. The cited menu cases do not assert placement.",
     "callout: the ledger lists 'eligibility' as covered, but sessions/afterSessions and a callout built with seen=true or featureUsed=true are never exercised. onRetire/closed-spec refusals and the dispose-frees-queue-slot rule are untested. The main 'use tips sparingly' doc warning was dropped without a note.",
@@ -2058,7 +2058,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "GuiService.PreferredTextSize applied to TextLabel with AutomaticSize.Y",
-      "nativeEvidence": "native_text_preference has one case for the controls' preferred text; nothing for the consumer."
+      "nativeEvidence": "native_text_preference has one case for the controls' preferred text; nothing for the consumer.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_examples-desktop-default.json"
+        ],
+        "cases": [
+          "classb_examples/consumer-blurb-grows-with-text-size"
+        ],
+        "observed": "At 390x844 the Blurb declares no TextSize (8, the engine default). Its styled size is 12. At +4, +10 and +14 the Blurb becomes taller at each step, its text fits, it stays inside the screen width, and Count moves below it. Scripts cannot set GuiService.PreferredTextSize, so the case adds the main ladder of preferred-text offsets (+0, +4, +10, +14 px) to the styled TextSize of every text node. This is the same additive model that main used."
+      }
     },
     {
       "id": "apps2-06",
@@ -2232,11 +2242,11 @@
       "mainCases": 44,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/06 crossword \u2014 the rules are pure::the bag is the 98-tile familiar multiset, with no blanks",
-        "native_games::examples/06 crossword \u2014 axis, run and connection::connection is ORTHOGONAL: touching diagonally is not touching",
-        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::6 \u2014 a crossing word is unknown, and the sentence names it AND its direction",
-        "native_games::examples/06 crossword \u2014 commit, refill, undo, budget::A REFUSED SUBMIT CHANGES NOTHING \u2014 every tile stays where the player put it",
-        "native_games::examples/06 crossword \u2014 determinism::a fixed script on a fixed seed lands on the same board, score and dump",
+        "native_games::examples/06 crossword — the rules are pure::the bag is the 98-tile familiar multiset, with no blanks",
+        "native_games::examples/06 crossword — axis, run and connection::connection is ORTHOGONAL: touching diagonally is not touching",
+        "native_games::examples/06 crossword — nine refusals, nine sentences, on screen::6 — a crossing word is unknown, and the sentence names it AND its direction",
+        "native_games::examples/06 crossword — commit, refill, undo, budget::A REFUSED SUBMIT CHANGES NOTHING — every tile stays where the player put it",
+        "native_games::examples/06 crossword — determinism::a fixed script on a fixed seed lands on the same board, score and dump",
         "(44 identically named cases in native_games)",
         "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-17 crossword play then dispose returns instances, connections and reactive roots to baseline"
@@ -2291,7 +2301,7 @@
       "gap": {
         "description": "The enabled formula exists but no candidate test places a tile and checks the spent slot is non-interactable.",
         "headlessTestable": true,
-        "proposedTest": "Mount 06_tile_game; activate rt1 then cell4_4/tap; expect(find(node,'rt1').Interactable).toBe(false) and its Text to be '\u00b7'; undo and expect Interactable true."
+        "proposedTest": "Mount 06_tile_game; activate rt1 then cell4_4/tap; expect(find(node,'rt1').Interactable).toBe(false) and its Text to be '·'; undo and expect Interactable true."
       },
       "closedBy": "native_parity_apps::Gallery examples::disables a spent rack slot instead of leaving a live blank button"
     },
@@ -2305,10 +2315,10 @@
       "mainCases": 22,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the pure scoring rules::scores a plain guess with no repeated letters",
-        "native_games::examples/05 word game \u2014 validation and the two generated sets::refuses a five-letter non-word",
-        "native_games::examples/05 word game \u2014 the key ladder is monotonic::never downgrades on later, weaker evidence",
-        "native_games::examples/05 word game \u2014 the deterministic seed::the same seed always yields the same word",
+        "native_games::examples/05 word game — the pure scoring rules::scores a plain guess with no repeated letters",
+        "native_games::examples/05 word game — validation and the two generated sets::refuses a five-letter non-word",
+        "native_games::examples/05 word game — the key ladder is monotonic::never downgrades on later, weaker evidence",
+        "native_games::examples/05 word game — the deterministic seed::the same seed always yields the same word",
         "(all 22 identically named cases in native_games)"
       ]
     },
@@ -2322,11 +2332,11 @@
       "mainCases": 19,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the state machine::starts on a visible six-by-five board with a caret in the first cell",
-        "native_games::examples/05 word game \u2014 the state machine::wins when the solution is submitted, and opens the results card",
-        "native_games::examples/05 word game \u2014 the state machine::loses after SIX accepted wrong guesses and reveals the word",
-        "native_games::examples/05 word game \u2014 the state machine::input is dead after the game ends, except restart",
-        "native_games::examples/05 word game \u2014 the state machine::every tile paints a REAL tint \u2014 the plate is never invisible",
+        "native_games::examples/05 word game — the state machine::starts on a visible six-by-five board with a caret in the first cell",
+        "native_games::examples/05 word game — the state machine::wins when the solution is submitted, and opens the results card",
+        "native_games::examples/05 word game — the state machine::loses after SIX accepted wrong guesses and reveals the word",
+        "native_games::examples/05 word game — the state machine::input is dead after the game ends, except restart",
+        "native_games::examples/05 word game — the state machine::every tile paints a REAL tint — the plate is never invisible",
         "(19 identically named state-machine cases in native_games)",
         "native_gallery::native gallery::types, submits and restarts the retained word game through native input"
       ]
@@ -2341,7 +2351,7 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the state machine::tears down to a registry baseline after dispose",
+        "native_games::examples/05 word game — the state machine::tears down to a registry baseline after dispose",
         "native_parity_strength_lifetime::lifetime parity strength::returns every game to its instance connection and owner baseline after play"
       ]
     },
@@ -2413,7 +2423,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Engine text measurement and GuiService.PreferredTextSize scaling on UI.Label",
-      "nativeEvidence": "None for the board. artifacts/compose-simplification/gap-closure-live.json mainLargest/largestText screenshots cover Virtual Monitors only."
+      "nativeEvidence": "None for the board. artifacts/compose-simplification/gap-closure-live.json mainLargest/largestText screenshots cover Virtual Monitors only.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_examples-desktop-default.json"
+        ],
+        "cases": [
+          "classb_examples/word-board-holds-glyphs-at-every-text-size"
+        ],
+        "observed": "Board at 390x844, 3 theme packages (Neutral, classic_desktop, compact_pointer), offsets +0/+4/+10/+14: every drawn letter and mark box is inside its tile, TextFits is true, and the letter and mark boxes do not overlap. The board fits the phone width. Scripts cannot set GuiService.PreferredTextSize, so the case adds the main ladder of preferred-text offsets (+0, +4, +10, +14 px) to the styled TextSize of every text node. This is the same additive model that main used."
+      }
     },
     {
       "id": "apps2-28",
@@ -2446,7 +2466,7 @@
       "gap": {
         "description": "Control-level TextInput commit/validation is tested in native_inputs, but no test drives the tutorial: typing updates Preview without Result, Enter/FocusLost commits Result, a letter is rejected.",
         "headlessTestable": true,
-        "proposedTest": "mountExample('01_temperature_converter'); editor=find TextBox; CaptureFocus; Text='212': expect Preview text contains '100' and Result 'Result: \u2014'; FocusLost.fire(true): expect Result 'Result: 100 \u00b0C'; Text='21a': expect Text reverted and Preview unchanged; FocusLost(false) commits; Clear resets all three; assert no Stepper/Convert button exists."
+        "proposedTest": "mountExample('01_temperature_converter'); editor=find TextBox; CaptureFocus; Text='212': expect Preview text contains '100' and Result 'Result: —'; FocusLost.fire(true): expect Result 'Result: 100 °C'; Text='21a': expect Text reverted and Preview unchanged; FocusLost(false) commits; Clear resets all three; assert no Stepper/Convert button exists."
       },
       "closedBy": "native_parity_apps::Gallery examples::converts only numeric Fahrenheit, previews live and commits on Enter or focus loss"
     },
@@ -2482,7 +2502,7 @@
     {
       "id": "apps2-32",
       "group": "focus-selection",
-      "title": "Playlist gamepad/keyboard routes: activate filter field, selection follows focus, d-pad past rating into tray, Left selects edit \u2296",
+      "title": "Playlist gamepad/keyboard routes: activate filter field, selection follows focus, d-pad past rating into tray, Left selects edit ⊖",
       "mainSpecs": [
         "examples_gallery"
       ],
@@ -2575,14 +2595,14 @@
       "gap": {
         "description": "The Table has no double-click distinction: collection_table.luau:465 calls selectRow and onActivate on every activation, so a single click both selects and plays, contradicting the example's hint. Nothing tests activa...",
         "headlessTestable": true,
-        "proposedTest": "Mount the playlist; fire one RowHit.Activated with a MouseButton1 input: expect selection set and nowPlaying nil; fire two within the double-click window: expect NowPlaying text 'Now playing \u2014 <track>'; built.restore(): expect 'Nothing playing'."
+        "proposedTest": "Mount the playlist; fire one RowHit.Activated with a MouseButton1 input: expect selection set and nowPlaying nil; fire two within the double-click window: expect NowPlaying text 'Now playing — <track>'; built.restore(): expect 'Nothing playing'."
       },
       "closedBy": "native_parity_apps::Playlist example::plays on a double click Return or touch tap while a single or slow click only selects"
     },
     {
       "id": "apps2-38",
       "group": "row-actions",
-      "title": "Edit mode on touch/phone: Edit toggle, \u2261 gutter handle reorder, \u2296 removes, additive multi-select",
+      "title": "Edit mode on touch/phone: Edit toggle, ≡ gutter handle reorder, ⊖ removes, additive multi-select",
       "mainSpecs": [
         "examples_gallery"
       ],
@@ -3070,8 +3090,8 @@
         "native_gallery::native gallery::types, submits and restarts the retained word game through native input",
         "native_gallery::native gallery::places and undoes a crossword rack tile without losing the rack",
         "native_gallery_workflows::native gallery workflows::fits every word keyboard key and crossword rack slot in a narrow row",
-        "native_games::examples/05 word game \u2014 the state machine::wins when the solution is submitted, and opens the results card",
-        "native_games::examples/06 crossword \u2014 nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too",
+        "native_games::examples/05 word game — the state machine::wins when the solution is submitted, and opens the results card",
+        "native_games::examples/06 crossword — nine refusals, nine sentences, on screen::...and tapping an empty square with nothing held explains itself too",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 word game types, deletes and wins through pointer and touch key activations",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 crossword selects then places, undoes and explains an empty submit through touch",
         "native_parity_weaker_gallery::native parity weaker gallery::apps2-66 match-3 touch taps on two adjacent tiles land on the same board as the swap API"
@@ -3087,8 +3107,8 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_games::examples/05 word game \u2014 the state machine::tears down to a registry baseline after dispose",
-        "native_games::examples/06 crossword \u2014 robustness::tears down to a registry baseline after dispose",
+        "native_games::examples/05 word game — the state machine::tears down to a registry baseline after dispose",
+        "native_games::examples/06 crossword — robustness::tears down to a registry baseline after dispose",
         "native_games::examples/07 native Match3 parity::keeps tile identity while a valid swap travels between endpoints",
         "native_parity_strength_lifetime::lifetime parity strength::returns every game to its instance connection and owner baseline after play",
         "native_parity_strength_lifetime::lifetime parity strength::resets the match-three machine mid-cascade without a retiring tile or frame hook"
@@ -4086,7 +4106,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "SurfaceGui fixed CanvasSize with engine text measurement under PreferredTextSize",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_examples-desktop-default.json"
+        ],
+        "cases": [
+          "classb_examples/outpost-terminal-holds-canvas-every-text-size"
+        ],
+        "observed": "In the 640x480 canvas, in the busiest over-budget state, at offsets +0/+4/+10/+14: no clipped text, nothing leaves the canvas, no two text lines overlap, and every line has TextFits. Scripts cannot set GuiService.PreferredTextSize, so the case adds the main ladder of preferred-text offsets (+0, +4, +10, +14 px) to the styled TextSize of every text node. This is the same additive model that main used. This does not confirm that the engine applies PreferredTextSize on a SurfaceGui."
+      }
     },
     {
       "id": "apps2-132",
@@ -4504,11 +4534,11 @@
       "mainCases": 6,
       "class": "a",
       "candidateCases": [
-        "native_perf_runner::perf runner \u2014 record schema (\u00a714.3)::produces a schema-complete record for a tiny scene",
-        "native_perf_runner::perf runner \u2014 budget enforcement (\u00a716.1)::flags an over-budget reference-device scene",
-        "native_perf_runner::perf runner \u2014 budget enforcement (\u00a716.1)::passes an in-budget scene (and ignores non-reference devices)",
-        "native_perf_runner::perf runner \u2014 shape determinism (\u00a715.2)::records the same field set and phase set across two runs",
-        "native_perf_runner::perf runner \u2014 shape determinism (\u00a715.2)::run() covers the full scene\u00d7profile matrix with a stable key set",
+        "native_perf_runner::perf runner — record schema (§14.3)::produces a schema-complete record for a tiny scene",
+        "native_perf_runner::perf runner — budget enforcement (§16.1)::flags an over-budget reference-device scene",
+        "native_perf_runner::perf runner — budget enforcement (§16.1)::passes an in-budget scene (and ignores non-reference devices)",
+        "native_perf_runner::perf runner — shape determinism (§15.2)::records the same field set and phase set across two runs",
+        "native_perf_runner::perf runner — shape determinism (§15.2)::run() covers the full scene×profile matrix with a stable key set",
         "native_perf_runner::perf runner settle boundary::settles after each warmup and sample before the next event",
         "native_parity_strength_textperf::performance lab evidence::the perf runner counts live native connections for an engine scene"
       ],
@@ -4571,7 +4601,17 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "UIListLayout with UIFlexItem fill for unsized columns",
-      "nativeEvidence": "none (headless fake engine has no layout; native_collections checks cell identity and widths only)"
+      "nativeEvidence": "none (headless fake engine has no layout; native_collections checks cell identity and widths only)",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_examples-desktop-default.json"
+        ],
+        "cases": [
+          "classb_examples/playlist-header-titles-and-pinned-column"
+        ],
+        "observed": "At 900x640 the name, artist and rating titles have area and fit, and the first row is below the header band. Widths before: name 343, artist 325, rating 144 (header 812). After pinning name to 200: name 200, artist 468, rating 144, and rating reaches the band edge."
+      }
     },
     {
       "id": "apps2-167",
@@ -4816,7 +4856,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "UIListLayout/UIFlexItem cell widths",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_examples-desktop-default.json"
+        ],
+        "cases": [
+          "classb_examples/playlist-320x640-edit-mode-cells"
+        ],
+        "observed": "At 320x640 with editing on (the Table spec gets editing = true through a UI proxy, like main's proxy approach): only name shows. Artist and rating collapse by the documented minWidth rule and are offered through the row's More control (at least 44 px). The name cell is 98 px, under its header, the same width as the header, and has 98 px of visible text (truncated, disclosed through More). Nothing crosses a lateral edge. The numbers differ from main (name 132/66, artist 88/66) because the candidate collapse rule differs."
+      }
     },
     {
       "id": "apps2-181",
@@ -5012,7 +5062,7 @@
       "gap": {
         "description": "radial_geometry only checks corner arc angles; no mounted test places a corner preset in a short viewport and checks button bounds, >=44 size, non-overlap, or activation.",
         "headlessTestable": true,
-        "proposedTest": "For each corner preset and Modal.AbsoluteSize 469x209 and 800x650, appearance=\"buttons\", 3 items: expect Presentation==\"radial\"; for each item button expect Size.X.Offset>=44 and Position\u00b1Size/2 within Modal.AbsoluteSize, no pair overlapping; Activated on first fires onSelect once."
+        "proposedTest": "For each corner preset and Modal.AbsoluteSize 469x209 and 800x650, appearance=\"buttons\", 3 items: expect Presentation==\"radial\"; for each item button expect Size.X.Offset>=44 and Position±Size/2 within Modal.AbsoluteSize, no pair overlapping; Activated on first fires onSelect once."
       },
       "closedBy": "native_parity_apps::RadialMenu::keeps corner rings of round buttons inside short and tall surfaces"
     },
@@ -5496,7 +5546,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "GuiService selection traversal and ScrollingFrame.ScrollingEnabled auto-scroll to SelectedObject",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_showcase-recipe-rail-tab-scrolls-tail-desktop-default.json"
+        ],
+        "cases": [
+          "classb_showcase/recipe-rail-tab-scrolls-tail"
+        ],
+        "observed": "Recipes page at 320x700. The Wet Weather chip had the selection with the rail canvas at X 568. One Right key selected Ghost Lap and the rail canvas moved to X 669. Ghost Lap (188,639,93x44) was fully inside the rail window (32,639,249x50). A Down walk from the first control reached CheckboxGroup/fuel, WrapChecks/fuel, a WrapChips chip and a rail chip. A second Down walk from the first empty-state action reached NoResults/Action and the Rules, Setup and Rewards accordion headers."
+      }
     },
     {
       "id": "apps2-223",
@@ -5607,7 +5667,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Engine ScrollingFrame scroll-to-SelectedObject within nested ScrollingFrames (ClipsDescendants)",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_showcase-showcase-rail-tail-inside-clips-desktop-default.json"
+        ],
+        "cases": [
+          "classb_showcase/showcase-rail-tail-inside-clips"
+        ],
+        "observed": "All controls at 390x700. Return on the Actions category opened Actions; Return on the Recipes tab opened Recipes. With Ghost Lap selected, one Right selected Custom Rules at (234,588,117x44). It was inside every clipping ancestor: RailChips (32,588,319x50), the Recipes Content scroller (16,68,358x564), the recipes and actions pages and the 390x700 screen. It sits in 2 nested ScrollingFrames. Return then set railSelected Custom Rules to true."
+      }
     },
     {
       "id": "apps2-229",
@@ -5839,9 +5909,12 @@
         "sponsor_scenarios"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "ScrollingFrame AbsoluteWindowSize-driven windowing and GuiObject.Selectable=false for ineligible rows",
-      "nativeEvidence": "none specific; native_gallery_workflows 'honors locked selection pinned movement and protected deletion in RunSheet' covers row capability policy, not navigation skipping."
+      "nativeEvidence": "none specific; native_gallery_workflows 'honors locked selection pinned movement and protected deletion in RunSheet' covers row capability policy, not navigation skipping.",
+      "candidateCases": [
+        "native_parity_classb_showcase::native parity classb showcase::apps2-244 collection navigation skips ineligible rows and never lands on one"
+      ]
     },
     {
       "id": "apps2-245",
@@ -6324,7 +6397,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Native selection over Selectable GuiObjects; layout via UIListLayout/AutomaticSize",
-      "nativeEvidence": "artifacts/compose-simplification/gap-closure-live.json spatialTouch/phoneTouch and mainLargest (iPhone17Pro portrait Avatar/Chat inline screenshots). No headless assertion."
+      "nativeEvidence": "artifacts/compose-simplification/gap-closure-live.json spatialTouch/phoneTouch and mainLargest (iPhone17Pro portrait Avatar/Chat inline screenshots). No headless assertion.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_showcase-desktop-default.json"
+        ],
+        "cases": [
+          "classb_showcase/vm-phone-avatar-and-assistant"
+        ],
+        "observed": "Virtual Monitors Avatar and Assistant mounted at 393x740. Avatar has 14 visible selectable stops and Palette, Hat, MotionRow and Reset are selectable. Assistant has 8 and Draft and Send are selectable. No node crosses a lateral edge and no text is cut (TextBounds larger than the box) in either app."
+      }
     },
     {
       "id": "apps2-280",
@@ -6360,7 +6443,17 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "Native AutomaticSize.Y detail column inside the AlertModal panel/ScrollingFrame",
-      "nativeEvidence": "None headless (fake engine does no layout). Ledger liveRequirements lists 'detail scroll clipping' as root-owned Studio screenshots still required; artifacts/compose-simplification/gap-closure-live.json mainLargest in..."
+      "nativeEvidence": "None headless (fake engine does no layout). Ledger liveRequirements lists 'detail scroll clipping' as root-owned Studio screenshots still required; artifacts/compose-simplification/gap-closure-live.json mainLargest in...",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_showcase-desktop-default.json"
+        ],
+        "cases": [
+          "classb_showcase/vm-detail-information-scrolls"
+        ],
+        "observed": "Discover detail (full-screen Alert) opened for the first game. With the device simulator at 919x640 the panel was 919x553, the scroll window 875x457 and the canvas 875x737. At 392x852 the panel was 392x765, window 348x669, canvas 348x778. At the natural 1519x754 viewport the panel was 1519x667, window 1475x571, canvas 1475x738. At each size the scroller is inside the panel, the canvas holds the whole detail, and at the scroll end Sparkline and DetailsTabs are inside the scroll window; nothing crosses the panel sides."
+      }
     },
     {
       "id": "apps2-283",
@@ -6500,7 +6593,7 @@
     {
       "id": "apps-07",
       "group": "reference-apps",
-      "title": "Provision purchase command phases (pending 'Confirming\u2026', confirm counts up, scripted declined, price string from service)",
+      "title": "Provision purchase command phases (pending 'Confirming…', confirm counts up, scripted declined, price string from service)",
       "mainSpecs": [
         "reference/glade_spec"
       ],
@@ -6514,7 +6607,7 @@
       "gap": {
         "description": "commerce.buyPack pending/confirmed/declined phases and satchel increment are never exercised by a candidate case.",
         "headlessTestable": true,
-        "proposedTest": "world(glade); steps.buy(packId); assert commerce.status(packId)=='pending' and Buy button label 'Confirming\u2026' and disabled; advance(COMMAND_SECONDS) -> 'confirmed', satchelOf(nectar) += quantity; second buy -> 'rejected' with reason 'declined'; Buy label equals commerce.priceOf(packId)."
+        "proposedTest": "world(glade); steps.buy(packId); assert commerce.status(packId)=='pending' and Buy button label 'Confirming…' and disabled; advance(COMMAND_SECONDS) -> 'confirmed', satchelOf(nectar) += quantity; second buy -> 'rejected' with reason 'declined'; Buy label equals commerce.priceOf(packId)."
       },
       "closedBy": "native_parity_apps::Glade::runs a provision purchase through pending, confirmed and the scripted decline on its Buy button"
     },
@@ -6682,7 +6775,7 @@
       ],
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'care for a glade ... watch the supply'",
       "gap": {
-        "description": "Overview keyed list, 'Dew x \u00b7 Nectar y' text and case-insensitive search formula are untested (the 'nothing matches' message was deleted).",
+        "description": "Overview keyed list, 'Dew x · Nectar y' text and case-insensitive search formula are untested (the 'nothing matches' message was deleted).",
         "headlessTestable": true,
         "proposedTest": "world(glade); assert Glades column children order == seed.GLADES ids; states text shows full/low/empty seeds; model search 'MOSS' -> only mossholm entry remains; 'zzz' -> zero entries."
       },
@@ -7118,7 +7211,7 @@
       ],
       "mainCases": 1,
       "class": "c",
-      "removal": "CAND BrewDetail shows ' \u00b7 N s'; M:SS formatter view deleted."
+      "removal": "CAND BrewDetail shows ' · N s'; M:SS formatter view deleted."
     },
     {
       "id": "apps-46",
@@ -7669,7 +7762,7 @@
       ],
       "mainCases": 2,
       "class": "c",
-      "removal": "Rewards view deleted; CAND caption is a fixed English 'N stamps \u00b7 ...'."
+      "removal": "Rewards view deleted; CAND caption is a fixed English 'N stamps · ...'."
     },
     {
       "id": "apps-81",
@@ -8715,9 +8808,22 @@
         "focus_chrome"
       ],
       "mainCases": 5,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*)",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::walks Tab through a top strip, the content and a bottom strip in layout order and wraps"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-chrome-strips-dpad-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/chrome-strips-dpad"
+        ],
+        "observed": "Real arrow keys in Studio moved the engine selection: Up from content A selected the top strip chip Left; Right selected Right; Left selected Left; Down from the first chip selected A (it left the strip); Down selected B; Down off the end of the content selected the bottom strip chip FootLeft; Right selected FootRight. 8 of 8 checks passed."
+      }
     },
     {
       "id": "apps-152",
@@ -8860,9 +8966,22 @@
         "keyboard_navigation"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Engine ScrollingFrame scroll-into-view of GuiService.SelectedObject",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::tabs down a scroll view one row per press without control wiring"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/tab-scrolls-host-to-selection"
+        ],
+        "observed": "A 300x160 ScrollView with twelve 40 px Buttons. Eight presses of the FacetTraversal Tab action (InputAction:Fire) selected Btn2 to Btn9 in order. After each press the selected row was fully inside the scroll window. The canvas moved from 0 to 200 px with no control wiring. Note: Studio input tools cannot send the Tab key (it is bound to a CoreGui action), so the case fires the same InputAction that the Tab binding fires."
+      }
     },
     {
       "id": "apps-162",
@@ -8948,9 +9067,22 @@
         "keyboard_navigation"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Engine selection highlight (SelectionImageObject) on the selected track",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::makes the slider track its one selection stop and leaves the engine selection ring in place"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/slider-selection-ring-on-track"
+        ],
+        "observed": "The slider Track (44 px tall) is the only selectable part. No SelectionImageObject is set on the track, its ancestors or the Button beside it, so the engine draws the same selection ring on both. With the selection on the track, the 24 px thumb lies inside the track rectangle vertically and stays visible; the selection then moves back to the Button. 10 of 10 checks passed."
+      }
     },
     {
       "id": "apps-167",
@@ -9134,9 +9266,12 @@
         "traversal_order"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "GuiService.SelectedObject + engine keyboard/gamepad GUI selection navigation (spatial, SelectionGroup/SelectionBehavior*/NextSelection*)",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::places a row mounted after the first press at its layout position on the next Tab"
+      ]
     },
     {
       "id": "apps-181",
@@ -9617,9 +9752,22 @@
         "hud_chrome_sequence"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "GuiService selection over native buttons",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::restores the HUD selection stops and input bindings of a fresh mount after the rotation sequence"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/hud-sequence-equals-fresh-mount"
+        ],
+        "observed": "HUD scenario: landscape 844x390, URL bar on, portrait 390x844 (the portrait stops differ), URL bar off, landscape again. The selection stops with their rectangles, the Tab ring (HudActionsTrigger, Report, Overflow, UrlBar, Tick, TasksCompact, ClockCompact, RailCompact, ActionsCompact) and the input binding census (10 enabled actions, the same key list, 3 traversal contexts) equal a fresh landscape mount. 9 of 9 checks passed."
+      }
     },
     {
       "id": "apps-212",
@@ -9812,7 +9960,19 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "Engine gamepad selection",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-hud-dpad-reaches-actions-390-desktop-default.json",
+          "artifacts/studio-live/classb_keyboard-hud-dpad-reaches-actions-1920-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/hud-dpad-reaches-actions-390",
+          "classb_keyboard/hud-dpad-reaches-actions-1920"
+        ],
+        "observed": "At 390x844, from Advance clock: Up selected Report, Left selected HudActionsTrigger. At 1920x1080: Up selected Overflow, Left, Left reached HudActionsTrigger. At both widths Return opened the menu with the selection on the damage row, Return on it lowered health from 0.84 to 0.59, and the selection returned to the trigger."
+      }
     },
     {
       "id": "apps-223",
@@ -10183,7 +10343,18 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "ScrollingFrame AutomaticCanvasSize + AutomaticSize/TextWrapped",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/form-reflows-then-scrolls",
+          "classb_keyboard/form-geometry-identical-under-reduced-motion"
+        ],
+        "observed": "A form in a ScrollView (heading, text fields, slider, notes, toggle, wrapping action pair) at 390x844 and 667x375, Neutral and Fantasy Parchment, text offsets +0, +4, +10, +14 px. No text was clipped, nothing crossed a side edge, both actions showed their whole labels, the form viewport height stayed the same, AbsoluteCanvasSize.Y never decreased and grew, and at least one row scrolled. With reducedMotion false and true every descendant rectangle was identical (4 rows)."
+      }
     },
     {
       "id": "apps-250",
@@ -10266,7 +10437,19 @@
       "mainCases": 5,
       "class": "b",
       "nativeMechanism": "Engine TextWrapped/AutomaticSize and text shaping",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/action-label-wraps-before-truncating",
+          "classb_keyboard/fixed-px-action-draws-compact-form",
+          "classb_keyboard/mixed-script-lines-grow-monotonically"
+        ],
+        "observed": "A 150 px wrapping Button with the pseudo action label kept 150 px width, showed its whole label (TextFits) and grew in height at +0 to +14 under Neutral and Fantasy Parchment, and it wrapped at the larger offsets. An 88 px Button with compactLabel OK drew OK at every offset and never clipped it under Fantasy Parchment (main clipped at Large and above). CJK, emoji and mixed lines fit, did not overlap, did not cross an edge and never shrank as the offset rose; the mixed line at 300 px was strictly taller at +14 than at +0 in both themes."
+      }
     },
     {
       "id": "apps-256",
@@ -10786,9 +10969,22 @@
         "collection_self_measure"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "The row Size cross dimension is set from Compose crossSize, derived from AbsoluteWindowSize (collections.luau layout().crossSize)",
-      "nativeEvidence": "none (no test asserts the row width)"
+      "nativeEvidence": "none (no test asserts the row width)",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-29 the cross axis of each row fills the collection window by default"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/cross-axis-fills-the-window"
+        ],
+        "observed": "A horizontal list in a 600x200 pane has a window of 600x194. Its item r2 is 194 px tall, which is the window height, and 120 px wide. A vertical list in a 320x400 pane has a window of 314x400. Its row r2 is 314 px wide, which is the window width, and 48 px tall."
+      }
     },
     {
       "id": "collections-30",
@@ -10961,9 +11157,12 @@
         "paradigm_table"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "ScrollingFrame.CanvasPosition is engine state that an input class change does not touch",
-      "nativeEvidence": "none (TP asserts that CanvasPosition survives text/theme changes, not a class flip)"
+      "nativeEvidence": "none (TP asserts that CanvasPosition survives text/theme changes, not a class flip)",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-42 a table keeps its engine scroll position when the input class flips"
+      ]
     },
     {
       "id": "collections-43",
@@ -11132,9 +11331,22 @@
         "row_actions"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "StyleSheet rules keyed by the Button role (ctx.styled)",
-      "nativeEvidence": "none specific to RowActions"
+      "nativeEvidence": "none specific to RowActions",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-54 a destructive tray action and a default tray action resolve different paint"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/tray-actions-meet-the-touch-floor"
+        ],
+        "observed": "Live GetStyled BackgroundColor3: the delete plate (tags facet-button, facet-role-destructive) is 0.690,0.165,0.165. The flag plate (facet-button, facet-role-default) is 0.161,0.176,0.227."
+      }
     },
     {
       "id": "collections-55",
@@ -11210,9 +11422,22 @@
         "row_actions"
       ],
       "mainCases": 4,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native selection/hover and StyleSheet interaction states",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-60 a revealed tray action keeps the button idioms of pointer, touch, keyboard and gamepad"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/tray-actions-meet-the-touch-floor"
+        ],
+        "observed": "Both tray plates are selectable GuiButtons that are 88x44 px, so they meet the 44 px touch floor, and their labels fit."
+      }
     },
     {
       "id": "collections-61",
@@ -11386,9 +11611,12 @@
         "row_actions_input"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Compose runtime.spring retargets from the live drag value; UIDragDetector starts a new drag",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-73 a re-grab mid snap-open flight starts from the painted offset and never drifts"
+      ]
     },
     {
       "id": "collections-74",
@@ -11771,9 +11999,23 @@
         "row_actions_motion"
       ],
       "mainCases": 13,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "ClipsDescendants=true on the RowActions root and on each tray frame",
-      "nativeEvidence": "none (no themed or packaged departure test)"
+      "nativeEvidence": "none (no themed or packaged departure test)",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-98 a destructive departure leaves the clipped row box before the row starts to collapse"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/departure-clears-before-reflow",
+          "classb_collections/plate-decoration-stays-inside-the-band"
+        ],
+        "observed": "Eight departures ran: Neutral and fantasy_ornate, leading and trailing, in a padded ScrollingFrame and in a plain Frame. Each one collapsed over 4 frames and took 15 frames in all. No descendant of the departing row had a visible clipped area while the next row rose, and the action ran once. In the plate flights, 108 and 110 plate samples went down to a plate width of 0.5 px. The raw decoration overhang was up to 23 px (Neutral) and 41.5 px (ornate), but the painted part stayed inside the band (worst 0 px)."
+      }
     },
     {
       "id": "collections-99",
@@ -12450,9 +12692,22 @@
         "table"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "UISizeConstraint.MinSize plus UIFlexItem Fill on column frames; native sibling draw order",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-140 fill columns keep a native floor and row hits stay beneath cell content"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/fill-column-floors-and-hit-order"
+        ],
+        "observed": "At 300 px the widths are name 120, artist 100 and laps 96, so the floors hold. With one floored fill (min 200) and one unfloored fill, the widths are 50 and 202 in a 252 px header: both fills grow by the same amount from their floors (48 and 200). At 900 px the widths are 412 and 392 (floors 120 and 100). After name is resized to 220, GetGuiObjectsAtPosition gives the Value label before RowHit on r1 to r3."
+      }
     },
     {
       "id": "collections-141",
@@ -12622,9 +12877,12 @@
         "table"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "StyleSheet TableCell/TableHeader rules",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-153 table cell text is inset like the header title and both use the content color"
+      ]
     },
     {
       "id": "collections-154",
@@ -12634,9 +12892,12 @@
         "table"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "UIDragDetector single active drag",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-154 a second pointer on another row cannot take over a live row drag"
+      ]
     },
     {
       "id": "collections-155",
@@ -12662,9 +12923,12 @@
         "table"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "ScrollingFrame touch pan. The row body has no UIDragDetector.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-156 the row body of a reorderable table leaves touch pans to the native scroll"
+      ]
     },
     {
       "id": "collections-157",
@@ -12900,9 +13164,12 @@
         "table_input"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "GuiService spatial navigation across the Sort Buttons; native Return/ButtonA activation",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-174 header sort buttons are native selection stops and Return cycles the sort"
+      ]
     },
     {
       "id": "collections-175",
@@ -13010,9 +13277,22 @@
         "table_input"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Body.AbsolutePosition reflects the page scroll natively (collection_reorder.luau movePointer)",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-182 a drop after a page scroll reads the body's current screen position"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/page-scroll-moves-the-table-body"
+        ],
+        "observed": "A page scroll of 120 moves the table Body AbsolutePosition.Y and the r1 Move handle up by exactly 120.00, and the body CanvasPosition stays 0."
+      }
     },
     {
       "id": "collections-183",
@@ -13114,9 +13394,12 @@
         "table_input"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native GuiService spatial navigation",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-189 each editing row carries its own minus at its leading edge and it deletes that row"
+      ]
     },
     {
       "id": "collections-190",
@@ -13151,9 +13434,12 @@
         "table_input"
       ],
       "mainCases": 2,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Visible=false removes descendants from native selection; native activation",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-192 a collapsed column is invisible to native selection and the More button opens the plate"
+      ]
     },
     {
       "id": "collections-193",
@@ -13220,9 +13506,12 @@
         "table_input"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native activation of RowHit",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-197 Return on a focused row toggles it in a multi-selection table, also while editing"
+      ]
     },
     {
       "id": "collections-198",
@@ -13767,9 +14056,22 @@
         "virtual_grid_input"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "ScrollingFrame clipping and CanvasPosition clamping, native touch pan",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-233 a virtual grid clips partial lines, slides on engine scroll without activating and clamps a negative offset"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/partial-lines-crop-and-offsets-clamp"
+        ],
+        "observed": "Vertical grid, window 394x250, 100 px lines: the partial third line shows exactly 50 px and stays inside the window. CanvasPosition -300 reads back 0 and line 1 sits at the window top. A huge offset clamps to the canvas end, and r200 mounts."
+      }
     },
     {
       "id": "collections-234",
@@ -13914,9 +14216,22 @@
         "virtual_hgrid"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Engine CanvasPosition clamp",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-243 a horizontal virtual grid clamps a negative engine offset to its leading line"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/partial-lines-crop-and-offsets-clamp"
+        ],
+        "observed": "Horizontal grid, window 450x394: the partial line shows exactly 50 px. CanvasPosition.X -300 reads back 0 with line 1 at the leading edge. A huge X clamps to the canvas end."
+      }
     },
     {
       "id": "collections-244",
@@ -14095,9 +14410,12 @@
         "virtual_list_axis"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native ScrollingFrame pan and GuiButton activation",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-254 a horizontal list slides on a sideways engine scroll without activating, and Return or ButtonA activate"
+      ]
     },
     {
       "id": "collections-255",
@@ -14266,9 +14584,22 @@
         "virtual_list_input"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "ScrollingFrame clipping, touch pan, CanvasPosition clamp",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-264 a vertical list clips partial rows, slides on engine scroll and clamps a negative offset"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_collections-desktop-default.json"
+        ],
+        "cases": [
+          "classb_collections/partial-lines-crop-and-offsets-clamp"
+        ],
+        "observed": "Vertical list, window 294x190, 40 px rows: row r5 shows exactly 30 px. CanvasPosition -300 reads back 0. A huge offset clamps to the canvas end, and r200 mounts. The horizontal list gave the same result (window 470x294)."
+      }
     },
     {
       "id": "collections-265",
@@ -14673,9 +15004,12 @@
         "virtual_list_row_actions"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native ScrollingFrame pan does not raise GuiButton.Activated",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_collections::native parity classb collections::collections-291 a vertical drag on a row with swipe actions opens nothing and does not activate the row"
+      ]
     },
     {
       "id": "collections-292",
@@ -15340,9 +15674,22 @@
         "button_complete"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "StyleSheet StyleRule selectors (.facet-role-*, :Hover, :Press) and rule priority.",
-      "nativeEvidence": "none: no test asserts rule order or role hover/press rules (src/ui/themes.luau defines .facet-role-destructive:Hover/:Press)."
+      "nativeEvidence": "none: no test asserts rule order or role hover/press rules (src/ui/themes.luau defines .facet-role-destructive:Hover/:Press).",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::orders the role rules after the base fills and gives them their own hover and press rules"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/role-fills-win-at-rest"
+        ],
+        "observed": "In Neutral and the eight shipped packages a destructive Button's GetStyled BackgroundColor3 equals the .facet-role-destructive rule colour, a plain Button does not take it, the role :Hover and :Press rules paint the same danger colour, and their Priority is above .facet-button:Hover. The cancel role has its own caption rule. 63 of 63 checks passed."
+      }
     },
     {
       "id": "inputs-32",
@@ -15539,9 +15886,22 @@
         "button_shape"
       ],
       "mainCases": 11,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "StyleSheet rules + native UICorner/UIStroke; engine applies styles.",
-      "nativeEvidence": "none: CIRCLE asserts the UICorner instance; facet-shape-circle tag and rim stroke are not asserted."
+      "nativeEvidence": "none: CIRCLE asserts the UICorner instance; facet-shape-circle tag and rim stroke are not asserted.",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::rounds a circle Button with one real corner in every state and tags it for the sheet"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/circle-corner-wins-in-every-package"
+        ],
+        "observed": "In Neutral and the eight shipped packages, circle Buttons (plain, destructive, selected, soft, emphasis, icon) each had the facet-shape-circle tag, exactly one UICorner whose GetStyled CornerRadius stayed {1,0} (no package rule overrides it), and a 1:1 box. A rect Button had no circle tag. 225 of 225 checks passed."
+      }
     },
     {
       "id": "inputs-47",
@@ -15877,7 +16237,17 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "Native TextBounds measurement per font.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/compact-label-ladder-every-package"
+        ],
+        "observed": "A Button 'Edit item' with compactLabel 'Ed' drew 'Edit item' at 400 px and 'Ed' at 44 px in Neutral and all eight shipped packages; the drawn label fit on one line and the button height was equal at both widths. 45 of 45 checks passed."
+      }
     },
     {
       "id": "inputs-70",
@@ -16151,9 +16521,12 @@
         "haptics"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Engine plays PressHapticEffect only for interactable GuiButtons (Interactable=false for disabled Buttons).",
-      "nativeEvidence": "none (pending live risk: haptic motor output on devices, parity_blockers.json)"
+      "nativeEvidence": "none (pending live risk: haptic motor output on devices, parity_blockers.json)",
+      "candidateCases": [
+        "native_parity_classb_input::native parity classb input::leaves every disabled haptic control not interactable and plays no detent for it"
+      ]
     },
     {
       "id": "inputs-89",
@@ -16563,9 +16936,22 @@
         "level_picker"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native Size (height max(44, mark)).",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::declares a 44 pixel strip for bar, glyph and star level pickers"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/level-picker-strip-target"
+        ],
+        "observed": "In Neutral and eight packages the bar LevelPicker (10), glyph LevelPicker (5) and Rating strips were at least 44 px tall, every mark had area and every mark lay inside its strip. 414 of 414 checks passed."
+      }
     },
     {
       "id": "inputs-117",
@@ -16630,7 +17016,17 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "Native layout.",
-      "nativeEvidence": "native_gallery mount-only cases"
+      "nativeEvidence": "native_gallery mount-only cases",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/level-picker-showcase-marks-have-area"
+        ],
+        "observed": "The shipped level_picker scenario at 390x844, 844x390, 768x1024, 1280x720 and 1920x1080: every Level mark was visible with area, and BalancedBars 10, FidelityBars 3, TintedBars 10, DifficultyGlyphs 5 and TrophyIcons 3 marks were all present. A center-aligned HStack with a LevelPicker (10) beside a Stepper painted all ten marks with area."
+      }
     },
     {
       "id": "inputs-122",
@@ -17025,7 +17421,7 @@
       "gap": {
         "description": "No test reads Rating glyph text.",
         "headlessTestable": true,
-        "proposedTest": "v=Compose.cell(2); world(UI.Rating{value=v}); expect Level2.Text '\u2605' and Level3.Text '\u2606'; v:set(4) -> Level3 '\u2605' same instance."
+        "proposedTest": "v=Compose.cell(2); world(UI.Rating{value=v}); expect Level2.Text '★' and Level3.Text '☆'; v:set(4) -> Level3 '★' same instance."
       },
       "closedBy": "native_parity_controls::native parity controls::publishes level values inside the declared run and paints glyphs in place"
     },
@@ -17152,7 +17548,17 @@
       "mainCases": 4,
       "class": "b",
       "nativeMechanism": "Native UIListLayout with 2px padding and centred Marks frame.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/rating-fits-a-table-cell"
+        ],
+        "observed": "In a 132x48 cell, in Neutral and eight packages, a filling Rating kept all five stars inside the cell with equal leftover on both sides (within 2 px), star pitch minus glyph under 25 percent of the glyph, and a hugging Rating was at most 132 px wide. 45 of 45 checks passed."
+      }
     },
     {
       "id": "inputs-160",
@@ -17223,9 +17629,13 @@
         "review_native_input"
       ],
       "mainCases": 2,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "InputAction held state.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_input::native parity classb input::ignores the held arrow that landed selection and steps on the next press of it",
+        "native_parity_classb_input::native parity classb input::holds an analog stick direction until it recenters and arms again after that"
+      ]
     },
     {
       "id": "inputs-165",
@@ -17362,9 +17772,22 @@
         "shortcut_hint"
       ],
       "mainCases": 9,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "StyleSheet .facet-shortcut-hint rules and native text sizing.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::paints the key cap strong on a strong surface and lets it grow as a square"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/shortcut-hint-key-cap-anatomy"
+        ],
+        "observed": "Before the fix the live case failed 17 checks: single-key caps were narrower than tall (22x28), at +14 px the key did not fit its fixed-height cap (TextBounds 25 in a 22 or 24 px cap), and Fantasy Parchment Daylight text contrast was 3.68. After the fix, in Neutral and eight packages at +0 and +14 px, every cap shows its key, is under 44 px tall, is not selectable, is not narrower than tall, stays within 1.6x of the Neutral cap, grows with the text, and has text contrast of at least 4.5. 107 of 107 checks passed."
+      }
     },
     {
       "id": "inputs-176",
@@ -17543,7 +17966,17 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "Native AnchorPoint/Position on the Clear button.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/clear-button-trailing-and-centred"
+        ],
+        "observed": "For a bare 300x44 TextInput and a field with label chrome, the Clear button shows, sits inside the trailing edge of the field or plate with an inset from 0 to 12 px, is in the trailing half, has its centre within 1 px of the field centre vertically and is 44x44. 10 of 10 checks passed."
+      }
     },
     {
       "id": "inputs-188",
@@ -18034,9 +18467,22 @@
         "value_controls"
       ],
       "mainCases": 6,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native scale-based Position/Size and UIListLayout.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_keyboard::native parity classb keyboard::reserves label clearance for the thumb and centres the stepper readout"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_keyboard-desktop-default.json"
+        ],
+        "cases": [
+          "classb_keyboard/slider-rest-idle-resize-clearance"
+        ],
+        "observed": "At rest (value 50 of 0 to 100) the fill was half the track and the thumb centre sat at half the track. An idle slider wrote no property on track, fill or thumb in 30 frames. A resize from 360 to 560 px widened the track, kept the value at 50 and kept fill and thumb at half. Before the fix the thumb at value 0 overlapped the label glyphs by 4 px (gap -4); after it the gap is 16 px. The Stepper readout is centred, keeps its width from 9 to 10, the Increase button does not move, and both buttons are 44x44."
+      }
     },
     {
       "id": "inputs-221",
@@ -21613,9 +22059,22 @@
         "render_target_contract"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native BillboardGui mounted through Compose Roblox constructors (api.md 596)",
-      "nativeEvidence": "none: no candidate test or example mounts a BillboardGui (grep BillboardGui in CAND/tests and CAND/examples finds nothing); parity_blockers has no billboard live evidence"
+      "nativeEvidence": "none: no candidate test or example mounts a BillboardGui (grep BillboardGui in CAND/tests and CAND/examples finds nothing); parity_blockers has no billboard live evidence",
+      "candidateCases": [
+        "native_parity_classb_navigation::native parity classb navigation::mounts a nameplate in a BillboardGui and updates its health text in place"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/billboard-nameplate"
+        ],
+        "observed": "A BillboardGui of 300x96 px on a Part holds a VStack with padding 8 and gap 4. The name label is at 8,8 from the canvas origin and is 95x18 px, so it fits in 284 px. The health label is 4 px below it. A change of the health cell from 100 to 87 writes the same TextLabel, adds 0 instances (285 descendants before and after), and the name keeps x = 8."
+      }
     },
     {
       "id": "mech3-09",
@@ -22002,9 +22461,25 @@
         "selection_shape_container"
       ],
       "mainCases": 5,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native UICorner via StyleSheet rules from metrics.radii (themes.luau:667,681)",
-      "nativeEvidence": "none: no candidate test asserts TabView selection indicator corner per theme"
+      "nativeEvidence": "none: no candidate test asserts TabView selection indicator corner per theme",
+      "candidateCases": [
+        "native_parity_classb_navigation::native parity classb navigation::insets the segment corner by the 3 pixel inset of the track for square, rounded and round themes",
+        "native_parity_classb_navigation::native parity classb navigation::gives the segments of a pill strip a capsule corner and of a square strip a square corner"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json",
+          "artifacts/studio-live/classb_navigation-segment-fill-follows-track-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/segment-corner-concentric",
+          "classb_navigation/segment-fill-follows-track"
+        ],
+        "observed": "For radii.control 0, 8 and 999 the compiled track corner is control + 2 (2, 10, 1001) and the segment corner is that value less 3 (0, 7, 998); the current segment floats 3 px inside the 44 px track; the 999 fill radius is more than half of its 38 px height. With corners = pill the strip has the facet-segmented-pill tag and the segment rule resolves UDim(1,0); a screen capture shows a capsule fill in the capsule track (before the fix the capture showed a rounded rectangle fill inside the capsule track). With corners = square the segment rule resolves 0."
+      }
     },
     {
       "id": "mech3-36",
@@ -23157,7 +23632,7 @@
       ],
       "mainCases": 1,
       "class": "c",
-      "removal": "env viewingDistance and alert.resolveStacked(\u2026, 'ten-foot', \u2026) are deleted. The CAND stacked rule is #actions>2, offer<480 or measured label width (nav_surfaces.luau). No ten-foot promise in api.md."
+      "removal": "env viewingDistance and alert.resolveStacked(…, 'ten-foot', …) are deleted. The CAND stacked rule is #actions>2, offer<480 or measured label width (nav_surfaces.luau). No ten-foot promise in api.md."
     },
     {
       "id": "navigation-1-16",
@@ -23172,7 +23647,7 @@
       "candidateCases": [
         "native_parity_navigation::native parity navigation::lays out alert actions in a row with the cancel action first and stacks them for long labels"
       ],
-      "apiPromise": "nav_surfaces.luau binds FillDirection/Size/LayoutOrder to the 'stacked' formula, so actions persist. api.md Alert: 'The control owns the initial selection\u2026'.",
+      "apiPromise": "nav_surfaces.luau binds FillDirection/Size/LayoutOrder to the 'stacked' formula, so actions persist. api.md Alert: 'The control owns the initial selection…'.",
       "gap": {
         "description": "No test changes the AlertModal size while the alert is open and asserts the same action instances and selection survive the row<->stack flip.",
         "headlessTestable": true,
@@ -23940,7 +24415,7 @@
         "native_parity_navigation::native parity navigation::keeps device names out of the control sources",
         "native_parity_weaker_pointer::adaptive environment strength::keeps device names and platform branches out of the framework and example sources"
       ],
-      "apiPromise": "AGENTS.md \u00a76 forbids branching on a device name; CAND nav_surfaces.luau Callout.",
+      "apiPromise": "AGENTS.md §6 forbids branching on a device name; CAND nav_surfaces.luau Callout.",
       "gap": {
         "description": "No candidate test scans src/ui for platform names.",
         "headlessTestable": true,
@@ -23996,7 +24471,7 @@
       "candidateCases": [
         "native_parity_navigation::native parity navigation::keeps the callout scenario reset chip on screen at the 44 pixel floor and resets the session"
       ],
-      "apiPromise": "examples/gallery/scenarios/callout.luau pick('Reset', \u2026) chip.",
+      "apiPromise": "examples/gallery/scenarios/callout.luau pick('Reset', …) chip.",
       "gap": {
         "description": "Not asserted by candidate.",
         "headlessTestable": true,
@@ -24162,7 +24637,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Native centered layout: AnchorPoint 0.5/Position 0.5 with Size (1,-32) and UISizeConstraint MaxSize 640 (surfaces.centered) inside the ScreenGui safe area",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/collapsible-safe-edges"
+        ],
+        "observed": "A full-width CollapsibleView with 450 characters of content, expanded at 320x300, 390x844 and 1280x720: ExpandedPresentation measured 16,40 288x220; 16,283 358x278; and 320,260 640x201. Each is inside the screen and inside the ScreenGui safe area (0,0 1919x993), keeps 16 px side margins (or the 640 px cap), and no descendant crosses a lateral or vertical edge."
+      }
     },
     {
       "id": "navigation-2-07",
@@ -24582,9 +25067,12 @@
         "menu"
       ],
       "mainCases": 2,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "UserInputService.PreferredInput replaces Facet's interaction-class table",
-      "nativeEvidence": "none for Menu (PreferredInput Touch -> sheet untested; see previous gap)"
+      "nativeEvidence": "none for Menu (PreferredInput Touch -> sheet untested; see previous gap)",
+      "candidateCases": [
+        "native_parity_classb_input::native parity classb input::presents an automatic menu as a sheet only while touch is the preferred input"
+      ]
     },
     {
       "id": "navigation-2-34",
@@ -25470,7 +25958,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "GuiButton hover/touch hit testing on the internal UI.Button 'Back'",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-navigation-back-pointer-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/navigation-back-pointer"
+        ],
+        "observed": "The NavigationBar Back button on a pushed page is 57x44 px (44 px floor on both axes). It starts Idle; after a real mouse move onto it GuiState is Hover; a real left click pops the path from 1 entry to 0."
+      }
     },
     {
       "id": "navigation-3-20",
@@ -25842,7 +26340,17 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "UIPageLayout re-lays pages on resize without rebuilding",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/pageview-resize-during-travel"
+        ],
+        "observed": "With UIPageLayout.Animated true, selecting page three and resizing 600x400 to 400x600 two frames into travel leaves selection three, CurrentPage three (same instance), page width 400 and page x equal to the viewport x. A second travel to page two interrupted by a resize 900x500 to 500x700 (a landscape to portrait class flip) rests on page two, width 500, on screen."
+      }
     },
     {
       "id": "navigation-3-45",
@@ -25902,7 +26410,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Native ScrollingFrame/AutomaticSize",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/pageview-fixed-in-scroller"
+        ],
+        "observed": "A PageView with Size height 360 inside a fill ScrollView at 600x400 measures 360 px; its page viewport is 600x240 (360 less the 120 px footer), the page fills 240 px, and the outer canvas is 600x400 (bounded)."
+      }
     },
     {
       "id": "navigation-3-49",
@@ -25944,9 +26462,22 @@
         "picker_segments"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "StyleSheet StyleRule .facet-segment-current (accent/onAccent)",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_navigation::native parity classb navigation::keeps the accent plate and hides the control art under the current segment of a skinned theme"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/segment-accent-plate-image-themes"
+        ],
+        "observed": "In all 9 themes (Neutral and 8 shipped packages) the current segment resolves BackgroundTransparency 0 and the .facet-segment-current accent colour, its label reads the onAccent rule colour, no visible ImageLabel covers it, and the neighbour paints no plate. Before the fix, compact_pointer, fantasy_ornate, fantasy_parchment, glossy_touch and pixel_quest resolved transparency 1 with the control art over the chosen segment; a Fantasy Ornate screen capture showed the chosen label dark on dark art (unreadable)."
+      }
     },
     {
       "id": "navigation-3-52",
@@ -26899,9 +27430,22 @@
         "selection_indicator"
       ],
       "mainCases": 2,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native Instance parenting: the indicator is a child of the selected option button, so it moves with its parent",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_navigation::native parity classb navigation::parents the underline to the chosen option in whichever home the strip mounts"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/underline-follows-rehomed-strip"
+        ],
+        "observed": "One underline shows. In the top home and after re-homing below a 100 px body, it is inside option a, starts at the option content edge (x + 12 px padding), spans the content box (576 of 600 px) and sits on the option's bottom edge; it moved down by more than 99 px. After selecting b in the new home it is inside b with the same geometry."
+      }
     },
     {
       "id": "navigation-4-27",
@@ -27379,9 +27923,22 @@
         "tab_customization"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native UIListLayout reflow of the Tabs ScrollingFrame",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_navigation::native parity classb navigation::reorders customized tabs by moving the same buttons without rebuilding the page"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/tab-reorder-keeps-page-geometry"
+        ],
+        "observed": "A bottom-bar TabView at 390x700 with customization.order changed from home,feed,me to me,feed,home keeps the same three buttons; Me takes Home's former x and Home takes Me's former x; the page was built once; every GuiObject in the page, the page body and the Content region keep their exact rectangles."
+      }
     },
     {
       "id": "navigation-4-59",
@@ -27484,9 +28041,12 @@
         "tab_customization"
       ],
       "mainCases": 3,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "InputContext Priority/Sink arbitration (value controls bind ButtonL1/R1 at priority 100 vs TabView 50+depth; Increase stays enabled when saturated)",
-      "nativeEvidence": "none (no test asserts the relative InputContext priorities)"
+      "nativeEvidence": "none (no test asserts the relative InputContext priorities)",
+      "candidateCases": [
+        "native_parity_classb_input::native parity classb input::lets a saturated value control consume the shoulders without paging its tab view"
+      ]
     },
     {
       "id": "navigation-4-65",
@@ -27731,9 +28291,12 @@
         "tab_view"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "GuiService.SelectedObject with native directional selection; tab panels are SelectionGroup=true, strips are not modal scopes.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_navigation::native parity classb navigation::lets Tab walk both nested tab strips and the page in one open order without a trap"
+      ]
     },
     {
       "id": "navigation-5-10",
@@ -27901,7 +28464,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Native Size: Content frame sized per placement, each page layer Size=fromScale(1,1) with ClipsDescendants on Content.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/tab-content-stretches-page"
+        ],
+        "observed": "At 390x844 (bottom bar) the page layer is 390x792, equal to Content, and the strip is at y 800 below it. At 1280x720 (sidebar) the layer is 1024x720 at x 256, equal to Content, and the 240 px rail is beside it. A body wider than the phone is clipped by Content (ClipsDescendants true) to 0..390."
+      }
     },
     {
       "id": "navigation-5-21",
@@ -29048,7 +29621,17 @@
       "mainCases": 2,
       "class": "b",
       "nativeMechanism": "UIListLayout VerticalAlignment/HorizontalAlignment and TextXAlignment",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/progress-track-centring"
+        ],
+        "observed": "A labelled ProgressView at 400 px: the track spans 0..400 (centred in the row), lies on whole pixels (y 24, height 6), and the value readout centre equals the label centre (8 px). A Label title's glyphs sit centred in its box (hugging box, 0 px spare)."
+      }
     },
     {
       "id": "paint-36",
@@ -29179,7 +29762,17 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "UIListLayout row with UIFlexItem Fill on the label and AutomaticSize readout",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/progress-track-beside-trailing-copy"
+        ],
+        "observed": "Under Fantasy Ornate at 280 and 200 px: segmented (5 segments, 2 of 5), ordinary and busy bars with a long end label keep a visible track at least 4 px wide and a visible fill; the busy fill is visible at all 10 samples across a reduced-motion cycle; the end copy shows all its words on screen and unclipped. A labelled bar at 280 px also fits; at 200 px the labelled header row overflows by 11 px (not asserted; observation for the lead)."
+      }
     },
     {
       "id": "paint-44",
@@ -29769,7 +30362,17 @@
       "mainCases": 4,
       "class": "b",
       "nativeMechanism": "Engine clipping (ClipsDescendants/ScrollingFrame) of Path2D",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_navigation-path-clipped-in-scroll-desktop-default.json"
+        ],
+        "cases": [
+          "classb_navigation/path-clipped-in-scroll"
+        ],
+        "observed": "Six 60 px rows with a 56 px circular ProgressView in a 300x150 ScrollView: at rest rows 1-2 are whole, row 3 crosses the edge, rows 4-6 are outside; after CanvasPosition 120 rows 1-2 are outside and 3-4 whole. Screen captures show the Path2D rings of the outside rows are not painted and the ring that crosses the viewport edge is cropped at the edge. A separate probe with raw Path2D lines in a ScrollingFrame showed the same engine crop."
+      }
     },
     {
       "id": "paint-87",
@@ -29779,9 +30382,12 @@
         "path_stroke_authority"
       ],
       "mainCases": 2,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Path2D.ZIndex (media.luau sets RingTrack 1 / RingFill 2)",
-      "nativeEvidence": "none (ZIndex unasserted)"
+      "nativeEvidence": "none (ZIndex unasserted)",
+      "candidateCases": [
+        "native_parity_classb_navigation::native parity classb navigation::paints the ring fill above its track by explicit Path2D ZIndex"
+      ]
     },
     {
       "id": "paint-88",
@@ -30401,7 +31007,7 @@
       ],
       "mainCases": 1,
       "class": "c",
-      "removal": "guide 10: 'A valid recipe with unavailable art still fails visually' \u2014 no fallback promised."
+      "removal": "guide 10: 'A valid recipe with unavailable art still fails visually' — no fallback promised."
     },
     {
       "id": "paint-134",
@@ -30677,7 +31283,7 @@
       ],
       "mainCases": 3,
       "class": "c",
-      "removal": "Runtime refusal retired; media_types TextRole is a typed singleton union checked by tools/check_types.py. (Runtime accepts 'bolder' \u2013 see gap above.)"
+      "removal": "Runtime refusal retired; media_types TextRole is a typed singleton union checked by tools/check_types.py. (Runtime accepts 'bolder' – see gap above.)"
     },
     {
       "id": "paint-152",
@@ -32074,9 +32680,22 @@
         "skeleton"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native UICorner(1,0) on the circle placeholder clips its UIGradient; UIGradient.Enabled toggles.",
-      "nativeEvidence": "none (circle UICorner not asserted)"
+      "nativeEvidence": "none (circle UICorner not asserted)",
+      "candidateCases": [
+        "native_parity_classb_themes::native parity classb themes::rounds only the circle skeleton and pauses its sweep under reduced motion without a new plate"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/skeleton-circle-round-sweep"
+        ],
+        "observed": "The circle placeholder measured 44 x 44 px. It has one UICorner with CornerRadius (1, 0). The shimmer UIGradient is a child of that rounded placeholder, it is enabled, and its Offset changed over 20 frames."
+      }
     },
     {
       "id": "themes-P1-88",
@@ -32086,9 +32705,22 @@
         "skeleton"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native UIGradient Offset paints only within its GuiObject.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_themes::native parity classb themes::keeps the moving band inside each placeholder at fractional widths through full cycles"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/skeleton-band-contained"
+        ],
+        "observed": "At root widths 390, 101, 43.5 and 0.5 px (measured AbsoluteSize.X equal within 0.01 px), over 90 frames each, the gradient Offset.X stayed in [-1, 1] with Y = 0 and covered below -0.8 and above 0.8. The placeholder had the same x and width as the root on every frame, had only the UIGradient as a child, and no GuiObject crossed the offer bounds."
+      }
     },
     {
       "id": "themes-P1-89",
@@ -32121,7 +32753,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Native UIListLayout alignment of the parent.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/skeleton-parent-alignment"
+        ],
+        "observed": "In a fill-width VStack with align center, end and start, a 120 px one-line skeleton and a 120 px three-line skeleton had the same AbsolutePosition.X, equal to the computed aligned x within 0.5 px. The paragraph first line started at the paragraph x with width 120 px, and the last line was 72 px (sixty percent) inside the paragraph."
+      }
     },
     {
       "id": "themes-P1-91",
@@ -32343,9 +32985,22 @@
         "stage"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native ViewportFrame is not Selectable by default.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_themes::native parity classb themes::keeps a stage out of selection and Tab traversal as a non-interactive leaf"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/stage-not-selectable"
+        ],
+        "observed": "The Stage is a ViewportFrame with Selectable = false and Active = false. GuiService:Select on a container that holds only the Stage left SelectedObject nil. GuiService:Select on the form selected the After button, not the Stage."
+      }
     },
     {
       "id": "themes-P1-106",
@@ -32370,9 +33025,22 @@
         "stage"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "StyleSheet rule .facet-panel on the ViewportFrame.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "candidateCases": [
+        "native_parity_classb_themes::native parity classb themes::paints a stage through the panel style rule and follows a palette swap"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/stage-panel-paint"
+        ],
+        "observed": "The Stage has the facet-panel tag. For each Neutral palette, GetStyled BackgroundColor3 equalled the palette surfaceStrong color and BackgroundTransparency was 0. The two palettes gave two different stage colors."
+      }
     },
     {
       "id": "themes-P1-108",
@@ -32519,9 +33187,22 @@
         "status_indicator"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "a",
       "nativeMechanism": "Native AutomaticSize X, UISizeConstraint MinSize and inner UIStroke.",
-      "nativeEvidence": "CLAMP asserts AutomaticSize X and MinSize 24; height override not asserted."
+      "nativeEvidence": "CLAMP asserts AutomaticSize X and MinSize 24; height override not asserted.",
+      "candidateCases": [
+        "native_parity_classb_themes::native parity classb themes::spends an authored count height and widens the count pill to at least that height"
+      ],
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/status-count-authored-height"
+        ],
+        "observed": "A count indicator with Size (40 px, 0.5 scale) in a 100 px parent measured 50 px high and 50 px wide. With Size (40, 20 px) it measured 20 px high, and with 30 px it measured 30 px. This was true with and without the cutout. The cutout is an inner 1 px UIStroke, and the text 7 fit inside the box minus the cutout on each side. Before the fix the 20 px authored height measured 24 px, and the 50 px high pill was 40 px wide."
+      }
     },
     {
       "id": "themes-P1-118",
@@ -32559,7 +33240,17 @@
       "mainCases": 4,
       "class": "b",
       "nativeMechanism": "Native UIAspectRatioConstraint FitWithinMaxSize and UICorner(1,0).",
-      "nativeEvidence": "ACCESS (dash only); no live evidence."
+      "nativeEvidence": "ACCESS (dash only); no live evidence.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/status-round-containment"
+        ],
+        "observed": "For a ring indicator filling offers of 10x16, 16x10, 16.49x10.49, 16.5x10.5, 16.99x10.99, 10.49x16.49, 10.5x16.5, 10.99x16.99, 10.49x10.99, 10.99x10.49 and 0.99x0.49 px, with and without a cutout, the mark was square within 0.01 px, its side was the shorter offered axis within 0.01 px, it stayed inside the offer, and it had UICorner (1, 0). When the parent changed 200x100, 60x200, 200x100, a half-scale dot refit to 50, 30, 50 px squares and a dash refit at three to one (100x33.3, 30x10, 100x33.3), both inside the parent."
+      }
     },
     {
       "id": "themes-P1-121",
@@ -33521,7 +34212,7 @@
       ],
       "apiPromise": "src/ui/icons.luau ART declares increment and decrement. Shipped pixel_quest and fantasy_ornate declare icons.increment and icons.decrement art. Guide 09: 'Supply real image or vector image assets. Do not use arbitrary...",
       "gap": {
-        "description": "CAND Stepper (inputs.luau:1473/1487) renders TextButtons with '\u2212' (U+2212) and '+'. A probe confirmed 'Decrease \u2212' and 'Increase +' with no ImageLabel. The package increment and decrement art is dead. The stepperPlate...",
+        "description": "CAND Stepper (inputs.luau:1473/1487) renders TextButtons with '−' (U+2212) and '+'. A probe confirmed 'Decrease −' and 'Increase +' with no ImageLabel. The package increment and decrement art is dead. The stepperPlate...",
         "headlessTestable": true,
         "proposedTest": "Mount UI.Stepper under pixel_quest. Expect the Increase and Decrease buttons to each contain an ImageLabel whose Image is resolveIcon(pkg,'increment') or resolveIcon(pkg,'decrement'), and the button Text to be empty or hidden. Under neutral, expect the ART increment and decrement ids."
       },
@@ -33536,7 +34227,7 @@
       ],
       "mainCases": 2,
       "class": "c",
-      "removal": "The glyph floor (iconGlyph, ICON_FALLBACK_GLYPHS) is removed. Note: CAND controls again render non-ASCII text (Stepper '\u2212', Rating '\u2605\u2606', table sort '\u2193\u2191')."
+      "removal": "The glyph floor (iconGlyph, ICON_FALLBACK_GLYPHS) is removed. Note: CAND controls again render non-ASCII text (Stepper '−', Rating '★☆', table sort '↓↑')."
     },
     {
       "id": "themes-P2-56",
@@ -33854,7 +34545,17 @@
       "class": "b",
       "nativeMechanism": "Roblox StyleSheet precedence: an explicitly set Instance property / explicit UIGradient child overrides StyleRule-applied values.",
       "nativeEvidence": "none specific (no candidate test sets an explicit property on a styled node and swaps the package; parity_blockers.json liveEvidence has no StyleSheet precedence item).",
-      "apiPromise": "api.md Themes: 'Explicit Instance paint still overrides stylesheet paint.'"
+      "apiPromise": "api.md Themes: 'Explicit Instance paint still overrides stylesheet paint.'",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/explicit-gradient-wins-across-swap"
+        ],
+        "observed": "A Stage (facet-panel) with an explicit UIGradient (red to blue, Rotation 45, Transparency 0.1 to 0.3) was mounted under glossy_mobile, which declares a panel chromeGradient rule. Then the theme swapped to scifi_hud (also a panel gradient) and back. At each step the card had exactly one real UIGradient child, the same instance, and GetStyled returned the view Color, Rotation 45 and Transparency. A sibling Stage had no real gradient child. A separate probe with an explicit Rotation 0 gradient also kept Rotation 0 and its default white Color under the glossy rule."
+      }
     },
     {
       "id": "themes-P3-12",
@@ -34449,7 +35150,17 @@
       "mainCases": 3,
       "class": "b",
       "nativeMechanism": "Roblox native selection (GuiService.SelectedObject with the engine selection image) on the control's own GuiObject; Facet no longer parents a ring/glow.",
-      "nativeEvidence": "none - no candidate case checks selection visuals on skinned controls; no liveEvidence entry for skins."
+      "nativeEvidence": "none - no candidate case checks selection visuals on skinned controls; no liveEvidence entry for skins.",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1919x1080 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_themes-desktop-default.json"
+        ],
+        "cases": [
+          "classb_themes/skinned-selection-hugs-art"
+        ],
+        "observed": "A fantasy_ornate Button (68 x 46 px) has a Skin with 5 visible image layers, and one of them is a full-bleed plate at the same position and size as the button within 0.5 px. With GuiService.SelectedObject set to the button, the engine selected the button itself. Selection added no descendant (no ring or glow instance), did not move or resize the button, and GetGuiObjectsAtPosition at the center returned the button."
+      }
     },
     {
       "id": "themes-P4-16",
@@ -37659,6 +38370,16 @@
           "ports_content/category-bar-fits-phone-words"
         ],
         "failed": "320 px Status shows whole; 320 px Inputs shows whole; 320 px Actions shows whole"
+      },
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, 1519x754 viewport, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/classb_showcase-inner-tabs-widen-to-engine-words-desktop-default.json"
+        ],
+        "cases": [
+          "classb_showcase/inner-tabs-widen-to-engine-words"
+        ],
+        "observed": "All controls at 1500x740. Return on Actions opened the group. Each inner tab shows its whole word and is at least its engine TextBounds width plus 24: Buttons 77 >= 53+24, Recipes 76 >= 52+24, Menus 70 >= 46+24, Sheets 69 >= 45+24, Help 68 >= 31+24."
       }
     },
     {

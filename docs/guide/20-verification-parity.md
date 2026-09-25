@@ -21,9 +21,10 @@ where.
 - 577 of the 3,943 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
-- 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
-  296 of them, no candidate test and no live Studio record show that
-  Facet uses the mechanism correctly.
+- 1,312 cases moved to a Roblox Engine or Compose mechanism. For
+  126 of them (39 contracts), no candidate test and no live Studio
+  record show that Facet uses the mechanism correctly. See
+  [Engine mechanism tests](#engine-mechanism-tests).
 - Of 130 main `full` producers, no producer is a gap and no producer is a
   weaker replacement. The five Studio producers of the performance lab have
   their evidence. See [Producers](#producers).
@@ -65,9 +66,9 @@ the current tests before you write a test.
 
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
-| a | Covered by a candidate case | 1638 | 2,294 | 3,943 |
-| b | Retired. The Roblox Engine or Compose owns the mechanism | 307 | 1,581 | 1,432 |
-| c | Retired. The feature or code was deleted and is not promised | 831 | 6,079 | 5,998 |
+| a | Covered by a candidate case | 1717 | 2,294 | 4,095 |
+| b | Retired. The Roblox Engine or Compose owns the mechanism | 260 | 1,581 | 1,312 |
+| c | Retired. The feature or code was deleted and is not promised | 837 | 6,079 | 6,004 |
 | d | Gap. A promise remains and no candidate case verifies it | 1 | 894 | 3 |
 
 The contract counts and the main-case counts with new tests are the sums over
@@ -89,27 +90,27 @@ last column names the candidate specs that the group cites most.
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 64 | 23 | 0 | 4 | 37 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 333 | 158 | 5 | 6 | 169 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,395 | 341 | 239 | 221 | 833 | 0 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Layout and geometry | 1,395 | 358 | 239 | 204 | 833 | 0 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 510 | 102 | 45 | 233 | 175 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 547 | 156 | 42 | 242 | 149 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
-| Input actions | 344 | 115 | 6 | 107 | 122 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 393 | 87 | 2 | 98 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
-| Scrolling | 332 | 95 | 7 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
-| Motion | 596 | 159 | 6 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 715 | 205 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 382 | 152 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Focus and selection | 547 | 169 | 42 | 229 | 149 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Input actions | 344 | 132 | 6 | 90 | 122 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
+| Pointer, touch and drag | 393 | 94 | 2 | 91 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Scrolling | 332 | 105 | 7 | 90 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
+| Motion | 596 | 174 | 6 | 18 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
+| Paint and theming | 726 | 247 | 6 | 34 | 445 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
+| Theme packages | 394 | 163 | 3 | 0 | 231 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 255 | 120 | 2 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 411 | 113 | 16 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
-| Value controls | 287 | 259 | 13 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
+| Action controls | 414 | 117 | 16 | 0 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Value controls | 289 | 261 | 13 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
 | Text input | 173 | 124 | 15 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 226 | 187 | 44 | 0 | 39 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
-| Navigation containers | 88 | 85 | 7 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 332 | 168 | 18 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Menus and pickers | 230 | 191 | 44 | 0 | 39 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Navigation containers | 90 | 87 | 7 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
+| Presented surfaces | 333 | 169 | 18 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 224 | 169 | 1 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 0 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
 | Row actions | 264 | 162 | 25 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
-| HUD and world targets | 170 | 50 | 2 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 424 | 36 | 6 | 51 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| HUD and world targets | 170 | 52 | 2 | 48 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
+| Adaptive environment | 427 | 41 | 6 | 49 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 373 | 93 | 0 | 0 | 280 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 513 | 51 | 0 | 0 | 462 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 442 | 257 | 47 | 113 | 72 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
@@ -136,8 +137,8 @@ results:
 motor output on a physical phone and gamepad. The `coverage` producer fails
 for this reason. Studio shows only that the controls request the effects.
 
-The live Studio harness in `tools/studio/live` records engine evidence for 224
-contracts (985 main cases) in the `liveEvidence` field of each contract. The
+The live Studio harness in `tools/studio/live` records engine evidence for 281
+contracts (1,127 main cases) in the `liveEvidence` field of each contract. The
 results are in `artifacts/studio-live`. The runs use the Xbox and iPhone 14
 device emulators, a fixed stage size for each case, and the Medium text size.
 Earlier runs used 844x369 and 388x824 at the Medium and Largest text sizes.
@@ -914,6 +915,29 @@ prove:
   the screen at 844x390 and that the D-pad reaches both tab strips.
 - apps-70: The Sheet close button label "Done" is fixed English and has no
   option. The case skips it.
+
+### Engine mechanism tests
+
+These tests close class b contracts that had no candidate test and no live
+record. A headless case moves the contract to class a. A live case adds
+`liveEvidence` and the contract stays in class b. The live suites are in
+`tools/studio/live/suites/classb_*.luau`. The results are in
+`artifacts/studio-live/classb_*.json`. Each new headless case failed first
+when its behavior was broken in `src` or in the example.
+
+| Spec and live suite | Headless (class a) | Live | Main cases |
+|---|---|---|---:|
+| `native_parity_classb_collections` and `classb_collections` | `collections-29`, `collections-42`, `collections-54`, `collections-60`, `collections-73`, `collections-98`, `collections-140`, `collections-153`, `collections-154`, `collections-156`, `collections-174`, `collections-182`, `collections-189`, `collections-192`, `collections-197`, `collections-233`, `collections-243`, `collections-254`, `collections-264`, `collections-291` | `collections-29`, `collections-54`, `collections-60`, `collections-98`, `collections-140`, `collections-182`, `collections-233`, `collections-243`, `collections-264` | 50 |
+| `classb_examples` (live only) | - | `apps2-05`, `apps2-27`, `apps2-131`, `apps2-166`, `apps2-180` | 6 |
+| `native_parity_classb_input` and `classb_input` | `inputs-88`, `inputs-164`, `navigation-2-33`, `navigation-4-64` | - | 8 |
+| `native_parity_classb_keyboard` and `classb_keyboard` | `apps-151`, `apps-161`, `apps-166`, `apps-180`, `apps-211`, `inputs-31`, `inputs-46`, `inputs-116`, `inputs-175`, `inputs-220` | `apps-151`, `apps-161`, `apps-166`, `apps-211`, `apps-222`, `apps-249`, `apps-255`, `inputs-31`, `inputs-46`, `inputs-69`, `inputs-116`, `inputs-121`, `inputs-159`, `inputs-175`, `inputs-187`, `inputs-220` | 61 |
+| `native_parity_classb_navigation` and `classb_navigation` | `mech3-08`, `mech3-35`, `navigation-3-51`, `navigation-4-26`, `navigation-4-58`, `navigation-5-09`, `paint-87` | `mech3-08`, `mech3-35`, `navigation-2-06`, `navigation-3-19`, `navigation-3-44`, `navigation-3-48`, `navigation-3-51`, `navigation-4-26`, `navigation-4-58`, `navigation-5-20`, `paint-35`, `paint-43`, `paint-86` | 28 |
+| `native_parity_classb_showcase` and `classb_showcase` | `apps2-244` | `apps2-222`, `apps2-228`, `apps2-279`, `apps2-282`, `post-showcase-04` | 10 |
+| `native_parity_classb_themes` and `classb_themes` | `themes-P1-87`, `themes-P1-88`, `themes-P1-105`, `themes-P1-107`, `themes-P1-117` | `themes-P1-87`, `themes-P1-88`, `themes-P1-90`, `themes-P1-105`, `themes-P1-107`, `themes-P1-117`, `themes-P1-120`, `themes-P3-11`, `themes-P4-15` | 14 |
+
+32 contracts (108 main cases) stay open: `apps2-43`, `apps2-45`, `apps2-48`, `apps2-52`, `apps2-10`, `apps2-68`, `apps2-94`, `apps2-142`, `apps2-169`, `apps-123`, `mech1-65`, `inputs-82`, `inputs-94`, `inputs-100`, `inputs-124`, `inputs-134`, `inputs-137`, `inputs-181`, `apps2-183`, `apps2-188`, `apps2-211`, `apps-192`, `paint-102`, `apps2-229`, `apps2-268`, `apps2-275`, `apps2-277`, `apps2-280`, `apps2-281`, `apps-24`, `apps-90`, `apps-102`. Some of them have a partial live case. The work stopped before they were complete.
+
+7 contracts (18 main cases) are candidates for retirement, because `api.md` does not make their promise: `navigation-4-43`, `post-overlays-131`, `navigation-1-37`, `paint-51`, `paint-73`, `themes-P1-121`, `themes-P5-43`. They stay in class b until the maintainer decides.
 
 ## Proposed tests for the largest gaps
 
