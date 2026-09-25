@@ -31,7 +31,7 @@
     "error-handling": {
       "mainCases": 253,
       "a": 111,
-      "aWeaker": 11,
+      "aWeaker": 10,
       "b": 2,
       "c": 140,
       "d": 0,
@@ -88,7 +88,7 @@
     "presented-surfaces": {
       "mainCases": 333,
       "a": 169,
-      "aWeaker": 19,
+      "aWeaker": 17,
       "b": 5,
       "c": 159,
       "d": 0,
@@ -130,7 +130,7 @@
     "layout-geometry": {
       "mainCases": 1395,
       "a": 279,
-      "aWeaker": 116,
+      "aWeaker": 115,
       "b": 221,
       "c": 895,
       "d": 0,
@@ -215,7 +215,7 @@
     "adaptive-environment": {
       "mainCases": 427,
       "a": 39,
-      "aWeaker": 9,
+      "aWeaker": 8,
       "b": 51,
       "c": 337,
       "d": 0,
@@ -229,7 +229,7 @@
     "lifetime-ownership": {
       "mainCases": 333,
       "a": 158,
-      "aWeaker": 5,
+      "aWeaker": 3,
       "b": 6,
       "c": 169,
       "d": 0,
@@ -243,7 +243,7 @@
     "controls-text-input": {
       "mainCases": 173,
       "a": 124,
-      "aWeaker": 15,
+      "aWeaker": 14,
       "b": 28,
       "c": 21,
       "d": 0,
@@ -329,7 +329,7 @@
     "hud-world": {
       "mainCases": 170,
       "a": 50,
-      "aWeaker": 2,
+      "aWeaker": 0,
       "b": 50,
       "c": 70,
       "d": 0,
@@ -357,7 +357,7 @@
     "paint-theming": {
       "mainCases": 726,
       "a": 211,
-      "aWeaker": 10,
+      "aWeaker": 9,
       "b": 70,
       "c": 445,
       "d": 0,
@@ -494,7 +494,7 @@
     ],
     "contracts": 2824,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 453
+    "coveredButWeaker": 442
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -36718,9 +36718,9 @@
       "candidateCases": [
         "native_vote::native Vote::refuses to become interactive without onChange"
       ],
-      "weaker": "The native Vote draws its own segment Buttons with the Picker segment tags, so no private Picker seam exists to guard.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
-      "family": "content-navigation"
+      "family": "content-navigation",
+      "closeNote": "A readOnly vote without onChange refuses to become interactive, as on main. The native Vote draws its own segment Buttons, so no private Picker seam exists to guard."
     },
     {
       "id": "post-vote-08",
@@ -36849,9 +36849,9 @@
       "candidateCases": [
         "native_card::native Card::leaves nothing behind when a callback removes its own card"
       ],
-      "weaker": "Main checked the presenter focus scope name; the native case checks that the card and its Cancel context are gone.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
-      "family": "content-navigation"
+      "family": "content-navigation",
+      "closeNote": "A callback that removes its own card leaves nothing behind: the case asserts that the card and its Cancel context are gone, which is what main asserted through the presenter scope name."
     },
     {
       "id": "post-card-07",
@@ -37922,9 +37922,9 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::fades a subtree as one group and keeps a transparent group laid out while removal closes up"
       ],
-      "weaker": "The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false; Compose.show removes the node. Guide 17 documents both.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
-      "family": "content-navigation"
+      "family": "content-navigation",
+      "closeNote": "The promise is the same: hidden keeps its layout space and UI.When removes it. The native recipe is a CanvasGroup at GroupTransparency 1 with Interactable false, and Compose.show removes the node; guide 17 documents both."
     },
     {
       "id": "post-navh-01",
@@ -39270,8 +39270,8 @@
       "candidateCases": [
         "native_snackbar::native Snackbar: admission and lifetime::owner teardown never asks and reports cancel once, like Dialog and Popover"
       ],
-      "weaker": "Application disposal and owner disposal both report cancel in the native form; there is no separate application.",
-      "family": "overlays"
+      "family": "overlays",
+      "closeNote": "The promise is the same: owner teardown never asks and reports cancel once. The native form has no separate application, so owner disposal is the only teardown."
     },
     {
       "id": "post-overlays-061",
@@ -39301,8 +39301,8 @@
       "candidateCases": [
         "native_snackbar::native Snackbar: admission and lifetime::a visible row reserves its bottom rectangle, and releases it after it has slid out"
       ],
-      "weaker": "The reservation is the FacetInsetBottom attribute on the layer, not presenter.reserveHud.",
-      "family": "overlays"
+      "family": "overlays",
+      "closeNote": "The promise is the same: the visible row reserves its bottom rectangle until it has slid out. The native form publishes the reservation as the FacetInsetBottom layer attribute, and the case asserts it through the slide."
     },
     {
       "id": "post-overlays-063",
@@ -39713,8 +39713,8 @@
       "candidateCases": [
         "native_notice_navbar::native Notice: affixed placement reserves space a real consumer avoids::content moves down by the notice's real height and returns when it goes"
       ],
-      "weaker": "The reservation is the FacetInsetTop attribute on the layer. Content reads it; there is no presenter reservation list.",
-      "family": "overlays"
+      "family": "overlays",
+      "closeNote": "The promise is the same: affixed content moves down by the notice height and returns. The native form publishes it as the FacetInsetTop layer attribute, which the content reads."
     },
     {
       "id": "post-overlays-088",
@@ -40218,8 +40218,8 @@
       "candidateCases": [
         "native_callout_help::native help: the structured form and the live plate::a bound help value repaints the live plate in place"
       ],
-      "weaker": "A bound help value repaints in place; the native form has no path identity.",
-      "family": "overlays"
+      "family": "overlays",
+      "closeNote": "The promise is the same: new help repaints the live plate. The native form binds help as a value, so a new value repaints in place without path identity."
     },
     {
       "id": "post-overlays-119",
@@ -40290,8 +40290,8 @@
       "candidateCases": [
         "native_sheet_parts::native Sheet: placement, width, title and close::explicit placements pin the panel to the bottom or the center"
       ],
-      "weaker": "There is no viewing-distance fact; automatic is the bottom edge.",
-      "family": "overlays"
+      "family": "overlays",
+      "closeNote": "Explicit placements override the default as on main. The distance default is retired by owner decision 4 in docs/guide/21-retirements.md, so automatic is the bottom edge."
     },
     {
       "id": "post-overlays-123",
@@ -40351,8 +40351,8 @@
       "candidateCases": [
         "native_sheet_parts::native Sheet: placement, width, title and close::the Size control reads player words, never a detent id"
       ],
-      "weaker": "The Size words are the grabber's AccessibleLabel.",
-      "family": "overlays"
+      "family": "overlays",
+      "closeNote": "The promise is the same: the Size control reads player words. The native form gives them to the grabber AccessibleLabel."
     },
     {
       "id": "post-overlays-127",
@@ -42687,7 +42687,7 @@
         "native_fields::native TextInput readOnly, selectOnFocus and visibleLines::enabled and readOnly compose onto TextEditable in either order and recover"
       ],
       "family": "pickers",
-      "weaker": "The composition is proven through the control, not through the retired screen_props adapter."
+      "closeNote": "The composition of enabled and editable onto TextEditable, in either order, and the recovery of a reused field are asserted through the control."
     },
     {
       "id": "post-pickers-089",
@@ -44575,7 +44575,7 @@
       "candidateCases": [
         "native_foundation_parity::native xsmall rung::xsmall is one ladder step below compact unless the theme authors it, and a partial rung is refused"
       ],
-      "weaker": "The refusal message names the four rungs; there is no separate vocabulary table to read."
+      "closeNote": "The four rungs are named in the refusal message, which is the vocabulary a game author sees."
     },
     {
       "id": "post-port26-005",
