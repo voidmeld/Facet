@@ -167,6 +167,26 @@ t.describe("native menu parity with main", function()
 		world.stop()
 	end)
 
+	t.it("dims the page behind a menu presented as a sheet and not behind a panel", function()
+		for _, case in { { "sheet", true }, { "menu", false } } do
+			local world = worlds.new(function(UI, Host)
+				return Host.Frame({
+					Name = "S",
+					Size = UDim2.fromOffset(800, 600),
+					UI.Menu {
+						trigger = UI.Button "Opener" { label = "More" },
+						presentation = case[1],
+						items = { { id = "one", label = "One", onSelect = function() end } },
+					},
+				})
+			end, { reducedMotion = true })
+			world.find("Opener").Activated.fire()
+			local catcher = world.find("DismissOutside")
+			t.expect(`{case[1]}: {catcher.BackgroundTransparency < 1}`).toBe(`{case[1]}: {case[2]}`)
+			world.stop()
+		end
+	end)
+
 	t.it("refuses label and trigger together", function()
 		local message = worlds.mountError(function(UI, Host)
 			return Host.Frame({
