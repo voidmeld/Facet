@@ -31,6 +31,7 @@
 - A full-screen Alert source transition keeps the alert content opaque at its final size and clips it with the growing panel. The source snapshot keeps the source size and fades out in the first 35 percent of the motion. Before, the stretched snapshot and the content crossfaded over each other.
 - The page under a NavigationStack push or pop keeps its full width. Before, its content was laid out up to 3.3 times wider during the motion, so its buttons stretched and shrank.
 - A theme StyleSheet leaves out its `:Hover` rules while touch is the preferred input, so a tapped control does not keep a hover tint. The `hover` option overrides this.
+- DisclosureGroup keeps the 8 pixel gap above its body inside the clipped reveal. Before, a collapse ended with an 8 pixel step when the body was removed.
 - A mouse click or a touch outside an open RowActions row closes its tray. The row does not consume the press.
 - Restored Label `truncate = "middle"`, which keeps the start and the end of a long value, and `textSize = "fit"`, which paints the largest size that fits the box between a cap and a floor.
 - A closed Menu, Sheet, Callout or Button `help` presentation releases its exit timer and its reduced-motion observer when the exit ends. Before this change, each close kept one timer until the control was removed, and an immediate exit kept one finished watch. A NavigationStack page spring reads reduced motion, so a push or a pop with reduced motion does not start a frame connection.

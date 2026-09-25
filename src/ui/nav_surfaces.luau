@@ -142,16 +142,17 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							node,
 						})
 					end
-					local inset = if indent == nil
-						then nil
-						else Host.UIPadding({
-							PaddingLeft = function(use: ComposeTypes.Use)
+					local inset = Host.UIPadding({
+						PaddingTop = ctx.types.UDim.new(0, 8),
+						PaddingLeft = if indent == nil
+							then nil
+							else function(use: ComposeTypes.Use)
 								return ctx.types.UDim.new(
 									0,
 									if type(indent) == "number" then indent else ctx.metric("space." .. indent, use)
 								)
 							end,
-						})
+					})
 					local fade = Host.CanvasGroup "RevealFade" {
 						BackgroundTransparency = 1,
 						Size = D2.new(1, 0, 0, 0),
@@ -161,9 +162,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end,
 						node,
 					}
-					if inset then
-						surfaces.attach(fade, { inset :: Types.Child })
-					end
+					surfaces.attach(fade, { inset :: Types.Child })
 					local natural = ctx.observe(fade, "AbsoluteSize")
 					local reveal = Host.Frame "Reveal" {
 						BackgroundTransparency = 1,
@@ -216,6 +215,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				"indent",
 			}, { Name = "DisclosureGroup", Size = D2.new(1, 0, 0, 0), AutomaticSize = E.AutomaticSize.Y })
 		)
+		local rhythm = root:FindFirstChildWhichIsA("UIListLayout")
+		if rhythm then
+			runtime.decorate(rhythm, { Padding = ctx.types.UDim.new(0, 0) })
+		end
 		ctx.styled(root, "disclosure")
 		if spec.appearance == "contained" then
 			ctx.styled(root, "panel")

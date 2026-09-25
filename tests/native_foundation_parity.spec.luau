@@ -643,6 +643,24 @@ t.describe("native plain Toggle", function()
 end)
 
 t.describe("native outline DisclosureGroup", function()
+	t.it("keeps the gap above the body inside the clipped reveal, so a collapse ends without a step", function()
+		local world = screen(nil, function(UI, Host)
+			return UI.DisclosureGroup("G")({
+				label = "Inputs",
+				expanded = Compose.cell(true),
+				content = function()
+					return Host.TextLabel({ Name = "Row", Text = "Button" })
+				end,
+			})
+		end)
+		local group = world.find("G")
+		t.expect(group:FindFirstChildWhichIsA("UIListLayout").Padding.Offset).toBe(0)
+		local reveal = world.find("Reveal")
+		t.expect(reveal.ClipsDescendants).toBe(true)
+		t.expect(world.find("RevealFade"):FindFirstChildWhichIsA("UIPadding").PaddingTop.Offset).toBe(8)
+		world.stop()
+	end)
+
 	t.it("an outline group has no expanded wash, a chosen role and an indented body", function()
 		local package = themes.neutralPackage()
 		local sheet, stopSheet = sheetOf(package)
@@ -664,6 +682,8 @@ t.describe("native outline DisclosureGroup", function()
 		t.expect(resolve(sheet, header:FindFirstChild("Title", true), "TextSize")).toBe(14)
 		local inset = world.find("RevealFade"):FindFirstChildWhichIsA("UIPadding")
 		t.expect(inset.PaddingLeft.Offset).toBe(16)
+		t.expect(inset.PaddingTop.Offset).toBe(8)
+		t.expect(world.find("G"):FindFirstChildWhichIsA("UIListLayout").Padding.Offset).toBe(0)
 		world.stop()
 		stopSheet()
 		t.expect(function()
