@@ -1,6 +1,6 @@
 # Facet
 
-Facet is a library of Roblox UI controls: buttons, toggles, text fields,
+Facet is a UI library for Roblox. It has buttons, toggles, text fields,
 pickers, menus, sheets, dialogs, tabs, lists, tables and more. Every control
 works with pointer, touch, keyboard and gamepad, adapts to the screen it is on,
 and takes its look from a theme you can replace without touching a screen.
