@@ -694,7 +694,8 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end
 			local label = row.title or spec.label or (if leading then nil else spec.name) or ""
 			local description = row.description or spec.subtitle or spec.hint
-			if not (spec.shape == "circle" and spec.icon) then
+			local wordless = leading ~= nil and description == nil and not dynamic(label) and label == ""
+			if not (spec.shape == "circle" and spec.icon) and not wordless then
 				local function caption(name: string, text: Shared.Value<string>): TextLabel
 					local live = dynamic(text)
 					local function words(use: ComposeTypes.Use?): string
