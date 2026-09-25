@@ -757,16 +757,48 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			})
 		end
 
-		if spec.multiline == true and not messageNode then
+		local drawnHeight: ComposeTypes.Readable<number>
+		if spec.multiline == true then
+			local shown = ctx.observe(node, "Text")
+			local measure = ctx.text({
+				Name = "Measure",
+				Text = function(use: ComposeTypes.Use): string
+					local text = use(shown)
+					return if string.sub(text, -1) == "\n" then text .. " " else text
+				end,
+				Size = D2.new(1, 0, 0, 100000),
+				AutomaticSize = E.AutomaticSize.None,
+				Visible = false,
+				TextWrapped = true,
+				TextTransparency = 1,
+				TextXAlignment = E.TextXAlignment.Left,
+				TextYAlignment = E.TextYAlignment.Top,
+				FontFace = ctx.observeStyled(node, "FontFace"),
+				TextSize = ctx.observeStyled(node, "TextSize"),
+				LineHeight = ctx.observeStyled(node, "LineHeight"),
+			})
+			runtime.mount(function()
+				return measure
+			end, node)
+			local measured = ctx.observe(measure, "TextBounds")
+			drawnHeight = Compose.formula(function(use: ComposeTypes.Use): number
+				return use(measured).Y
+			end)
+		else
 			local bounds = ctx.observe(node, "TextBounds")
+			drawnHeight = Compose.formula(function(use: ComposeTypes.Use): number
+				return use(bounds).Y
+			end)
+		end
+		if spec.multiline == true and not messageNode then
 			Compose.watch(function(use: ComposeTypes.Use)
-				textHeight:set(use(bounds).Y)
+				textHeight:set(use(drawnHeight))
 			end)
 		end
 		if messageNode then
-			local bounds, messageBounds = ctx.observe(node, "TextBounds"), ctx.observe(messageNode, "TextBounds")
+			local messageBounds = ctx.observe(messageNode, "TextBounds")
 			Compose.watch(function(use: ComposeTypes.Use)
-				textHeight:set(use(bounds).Y)
+				textHeight:set(use(drawnHeight))
 				messageHeight:set(use(messageBounds).Y)
 			end)
 		end

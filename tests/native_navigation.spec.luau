@@ -409,6 +409,32 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("pages by direction from a control inside the showing page", function()
+		local selection = Compose.cell("one")
+		local world = setup(function(UI, Host)
+			return UI.PageView({
+				selection = selection,
+				pages = {
+					{ id = "one", title = "One", content = Host.Frame({ UI.Button "PlayOne" { label = "One" } }) },
+					{ id = "two", title = "Two", content = Host.Frame({ UI.Button "PlayTwo" { label = "Two" } }) },
+				},
+			})
+		end)
+		local Enum = world.engine.types.Enum
+		local play = find(world.screen, "PlayOne")
+		world.gui.SelectedObject = play
+		t.expect(play.NextSelectionRight).toBe(play)
+		world.input.InputBegan.fire({ KeyCode = Enum.KeyCode.DPadRight, UserInputType = Enum.UserInputType.Gamepad1 })
+		t.expect(selection:peek()).toBe("two")
+		t.expect(world.gui.SelectedObject).toBe(find(world.screen, "PlayTwo"))
+		world.input.InputBegan.fire({ KeyCode = Enum.KeyCode.Left, UserInputType = Enum.UserInputType.Keyboard })
+		t.expect(selection:peek()).toBe("one")
+		world.gui.SelectedObject = find(world.screen, "Next")
+		world.input.InputBegan.fire({ KeyCode = Enum.KeyCode.Right, UserInputType = Enum.UserInputType.Keyboard })
+		t.expect(selection:peek()).toBe("one")
+		world.stop()
+	end)
+
 	t.it("validates combo custom commits and cancels editable text", function()
 		local value, text, changes = Compose.cell("a"), Compose.cell("Alpha"), 0
 		local world = setup(function(UI)

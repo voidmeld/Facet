@@ -1374,6 +1374,18 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			local at = math.clamp(indexById[spec.selection:peek()] + amount, 1, #spec.pages)
 			spec.selection:set(spec.pages[at].id)
 		end
+		if gui and ctx.action then
+			local selectedObject = ctx.observe(gui, "SelectedObject")
+			local function inside(use: ComposeTypes.Use): boolean
+				return surfaces.within(use(selectedObject), pages)
+			end
+			ctx.action(pages, "PageForward", { E.KeyCode.Right, E.KeyCode.DPadRight }, inside, function()
+				step(1)
+			end, { priority = 1500, capture = true })
+			ctx.action(pages, "PageBack", { E.KeyCode.Left, E.KeyCode.DPadLeft }, inside, function()
+				step(-1)
+			end, { priority = 1500, capture = true })
+		end
 		local footer: { Types.Child } = {}
 		if spec.summary ~= false then
 			table.insert(

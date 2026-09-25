@@ -652,7 +652,8 @@ The other options are `placeholder`, `multiline`, `invalid`, `enabled`,
 - `visibleLines`: a whole number of at least 1, for a multiline field only. The
   field shows that number of body lines in a native ScrollingFrame named
   `Viewport`. Longer text scrolls in the viewport, and the viewport keeps its
-  size.
+  size. Without `visibleLines`, a multiline field grows to hold all its lines,
+  including a final empty line.
 
 #### Field chrome
 
@@ -1469,6 +1470,10 @@ PageView requires a writable `selection` and `pages` with unique ids and
 content factories. It supplies page navigation, indicators, and previous and
 next actions. Use it for a sequential set of peer pages. TabView is for named
 destinations. NavigationStack is for a drill-down path.
+
+While the selection is on a control in a page, Left and Right (and the D-pad
+Left and Right) page back and forward. The selection then moves into the new
+page. Up and Down leave the pages.
 
 ### Pagination
 

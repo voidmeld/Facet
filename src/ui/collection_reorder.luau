@@ -30,6 +30,7 @@ return function<V, K>(
 	local read = ctx.read
 	local D2, V2, E = ctx.types.UDim2, ctx.types.Vector2, ctx.types.Enum
 	local moving: ComposeTypes.Cell<Move<V, K>?> = Compose.cell(nil :: Move<V, K>?)
+	local TAP = 3
 	local horizontal = spec.direction == "horizontal"
 	local function axis(position: Vector2): number
 		return if horizontal then position.X else position.Y
@@ -179,13 +180,28 @@ return function<V, K>(
 		end
 	end)
 	local function wrap(row: GuiObject, current: ComposeTypes.Readable<V>, key: K): Frame
-		local function activate()
+		local function toggle()
 			if moving:peek() then
 				commit()
 			else
 				begin(key)
 			end
 		end
+		local function activate(activation: InputObject?)
+			if
+				activation
+				and (
+					activation.UserInputType == E.UserInputType.MouseButton1
+					or activation.UserInputType == E.UserInputType.Touch
+				)
+			then
+				return
+			end
+			toggle()
+		end
+		local origin: Vector2? = nil
+		local travel = 0
+		local armed = false
 		local handleProps: InputTypes.ButtonProps = {
 			Name = "Move",
 			Size = D2.new(0, 56, 1, 0),
@@ -212,11 +228,33 @@ return function<V, K>(
 					return movable(use(current)) and read(sort, use) == nil
 				end,
 				DragStart = function(position)
-					begin(key, position)
+					local current = moving:peek()
+					origin, travel = position, 0
+					armed = current ~= nil and current.keyboard
+					if not armed then
+						begin(key, position)
+					end
 				end,
-				DragContinue = movePointer,
+				DragContinue = function(position)
+					if origin then
+						travel = math.max(travel, (position - origin).Magnitude)
+					end
+					if not armed or travel >= TAP then
+						movePointer(position)
+					end
+				end,
 				DragEnd = function()
-					if captured == nil then
+					local tapped = origin ~= nil and travel < TAP
+					origin = nil
+					if armed then
+						armed = false
+						commit()
+						return
+					end
+					if tapped then
+						cancel()
+						toggle()
+					elseif captured == nil then
 						commit()
 					end
 				end,

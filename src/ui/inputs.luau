@@ -770,6 +770,25 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 					end
 				end
 			end
+			local glyph = if leading
+					and not imageCard
+					and not spec.row
+					and not description
+				then contentFrame:FindFirstChild("LeadingIcon")
+				else nil
+			if glyph and spec.AutomaticSize == E.AutomaticSize.None and label == "" then
+				contentFrame.AutomaticSize = E.AutomaticSize.None
+				local box = ctx.observe(contentFrame, "AbsoluteSize")
+				runtime.mount(function()
+					return Host.UISizeConstraint({
+						MaxSize = function(use: ComposeTypes.Use): Vector2
+							local room = use(box)
+							local side = math.max(1, math.min(room.X, room.Y))
+							return V2.new(side, side)
+						end,
+					})
+				end, glyph)
+			end
 			table.insert(p, contentFrame)
 		end
 		local keyboardAttached = false

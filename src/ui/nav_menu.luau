@@ -237,7 +237,8 @@ return function(
 			end
 		end)
 		local function level(use: ComposeTypes.Use?): number
-			if read(levelDirection, use) == 0 or reduce(use) then
+			local direction: number = if use then use(levelDirection) else levelDirection:peek()
+			if direction == 0 or reduce(use) then
 				return 1
 			end
 			return Compose.easing.outCubic(read(levelClock.progress, use))
