@@ -161,7 +161,9 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			return pointer
 		end
 	end
-	local shiftRoutes: { [Instance]: () -> () } = setmetatable({}, { __mode = "k" }) :: any
+	local shiftRoutes = (
+		setmetatable({} :: { [Instance]: () -> () }, { __mode = "k" }) :: unknown
+	) :: { [Instance]: () -> () }
 	function ctx.shiftRoute(root: Instance, handler: () -> ()): ()
 		shiftRoutes[root] = handler
 		Compose.cleanup(function()
@@ -625,15 +627,35 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 			local steerable = Compose.formula(function(use: ComposeTypes.Use): boolean
 				return enabled(use) and use(selection) ~= nil
 			end)
+			local function nextSelection(target: GuiObject, direction: string): GuiObject?
+				if direction == "Up" then
+					return target.NextSelectionUp
+				elseif direction == "Down" then
+					return target.NextSelectionDown
+				elseif direction == "Left" then
+					return target.NextSelectionLeft
+				end
+				return target.NextSelectionRight
+			end
+			local function setNextSelection(target: GuiObject, direction: string, value: GuiObject?): ()
+				if direction == "Up" then
+					target.NextSelectionUp = value :: GuiObject
+				elseif direction == "Down" then
+					target.NextSelectionDown = value :: GuiObject
+				elseif direction == "Left" then
+					target.NextSelectionLeft = value :: GuiObject
+				else
+					target.NextSelectionRight = value :: GuiObject
+				end
+			end
 			local pinned: GuiObject? = nil
 			local previous: { [string]: GuiObject? } = {}
 			local function release(): ()
 				local target = pinned
 				if target then
 					for _, direction in directions do
-						local property = "NextSelection" .. direction
-						if (target :: any)[property] == target then
-							(target :: any)[property] = previous[direction]
+						if nextSelection(target, direction) == target then
+							setNextSelection(target, direction, previous[direction])
 						end
 					end
 				end
@@ -649,9 +671,8 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 				if target then
 					pinned = target
 					for _, direction in directions do
-						local property = "NextSelection" .. direction
-						previous[direction] = (target :: any)[property];
-						(target :: any)[property] = target
+						previous[direction] = nextSelection(target, direction)
+						setNextSelection(target, direction, target)
 					end
 				end
 			end)

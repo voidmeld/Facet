@@ -1221,15 +1221,16 @@ local function createStyleSheet(
 		timing: TweenInfo?,
 	}
 	local mounted: { [string]: MountedRule } = {}
-	local transitionTables: { [ThemeTypes.RuleProperties]: { [TweenInfo]: { [string]: TweenInfo } } } = setmetatable(
-		{},
-		{ __mode = "k" }
-	) :: any
+	type ByTiming = { [TweenInfo]: { [string]: TweenInfo } }
+	local transitionTables = (
+		setmetatable({} :: { [ThemeTypes.RuleProperties]: ByTiming }, { __mode = "k" }) :: unknown
+	) :: { [ThemeTypes.RuleProperties]: ByTiming }
 	local function transitionsFor(properties: ThemeTypes.RuleProperties, timing: TweenInfo): { [string]: TweenInfo }
 		local byTiming = transitionTables[properties]
 		if byTiming == nil then
-			byTiming = setmetatable({}, { __mode = "k" }) :: any
-			transitionTables[properties] = byTiming
+			local fresh = (setmetatable({} :: ByTiming, { __mode = "k" }) :: unknown) :: ByTiming
+			byTiming = fresh
+			transitionTables[properties] = fresh
 		end
 		local transitions = byTiming[timing]
 		if transitions == nil then
@@ -1244,14 +1245,14 @@ local function createStyleSheet(
 		end
 		return transitions :: { [string]: TweenInfo }
 	end
-	local comparisons: { [ThemeTypes.RuleProperties]: { [ThemeTypes.RuleProperties]: boolean } } = setmetatable(
-		{},
-		{ __mode = "k" }
-	) :: any
+	type Known = { [ThemeTypes.RuleProperties]: boolean }
+	local comparisons = (
+		setmetatable({} :: { [ThemeTypes.RuleProperties]: Known }, { __mode = "k" }) :: unknown
+	) :: { [ThemeTypes.RuleProperties]: Known }
 	local function sameRuleProperties(left: ThemeTypes.RuleProperties, right: ThemeTypes.RuleProperties): boolean
 		local known = comparisons[left]
 		if known == nil then
-			known = setmetatable({}, { __mode = "k" }) :: any
+			known = (setmetatable({} :: Known, { __mode = "k" }) :: unknown) :: Known
 			comparisons[left] = known
 		end
 		local same = known[right]
@@ -1273,8 +1274,8 @@ local function createStyleSheet(
 			return
 		end
 		local transitions = transitionsFor(properties, timing)
-		local timingChanged = record.transitions ~= transitions
-			and (record.transitions == nil or not sameProperties(record.transitions :: any, transitions))
+		local previous = record.transitions
+		local timingChanged = previous ~= transitions and (previous == nil or not sameProperties(previous, transitions))
 		if timingChanged then
 			record.node:SetPropertyTransitions(transitions)
 			record.transitions = transitions

@@ -5,14 +5,15 @@ local Shared = require("./types")
 type Level = { child: Instance, parent: Instance, siblings: { Instance } }
 type Snapshot = { node: GuiObject, levels: { Level }, modal: boolean }
 
-local DIRECTIONS = { "DPadUp", "DPadDown", "DPadLeft", "DPadRight" }
-
 return function(ctx: Shared.Context): (Instance) -> ()
 	local Compose, runtime, config = ctx.Compose, ctx.runtime, ctx.config
 	local E = ctx.types.Enum
 	local gui = config.guiService
 	local input = config.userInputService
-	local registry: { [Instance]: boolean } = setmetatable({}, { __mode = "k" }) :: any
+	local registry = (
+		setmetatable({} :: { [Instance]: boolean }, { __mode = "k" }) :: unknown
+	) :: { [Instance]: boolean }
+	local directionKeys = { E.KeyCode.DPadUp, E.KeyCode.DPadDown, E.KeyCode.DPadLeft, E.KeyCode.DPadRight }
 
 	local function ordered(parent: Instance): { Instance }
 		local children = parent:GetChildren()
@@ -374,11 +375,8 @@ return function(ctx: Shared.Context): (Instance) -> ()
 			end
 		end)
 		runtime.connect(input, "InputBegan", function(event: InputObject)
-			for _, name in DIRECTIONS do
-				if event.KeyCode == (E.KeyCode :: any)[name] then
-					enter()
-					return
-				end
+			if table.find(directionKeys, event.KeyCode) then
+				enter()
 			end
 		end)
 		local parent = config.inputParent
