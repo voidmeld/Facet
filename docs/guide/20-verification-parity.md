@@ -67,8 +67,8 @@ the current tests before you write a test.
 | Class | Meaning | Contracts | Main cases (audit) | Main cases (with new tests) |
 |---|---|---:|---:|---:|
 | a | Covered by a candidate case | 1717 | 2,294 | 4,095 |
-| b | Retired. The Roblox Engine or Compose owns the mechanism | 260 | 1,581 | 1,312 |
-| c | Retired. The feature or code was deleted and is not promised | 837 | 6,079 | 6,004 |
+| b | Retired. The Roblox Engine or Compose owns the mechanism | 255 | 1,581 | 1,301 |
+| c | Retired. The feature or code was deleted and is not promised | 842 | 6,079 | 6,015 |
 | d | Gap. A promise remains and no candidate case verifies it | 1 | 894 | 3 |
 
 The contract counts and the main-case counts with new tests are the sums over
@@ -92,12 +92,12 @@ last column names the candidate specs that the group cites most.
 | Lifetime and ownership | 333 | 158 | 5 | 6 | 169 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
 | Layout and geometry | 1,395 | 358 | 239 | 204 | 833 | 0 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
 | Text measurement and fit | 510 | 102 | 45 | 233 | 175 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 547 | 169 | 42 | 229 | 149 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Focus and selection | 547 | 169 | 42 | 222 | 156 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 344 | 132 | 6 | 90 | 122 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
-| Pointer, touch and drag | 393 | 94 | 2 | 91 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
+| Pointer, touch and drag | 393 | 94 | 2 | 88 | 211 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 332 | 105 | 7 | 90 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
 | Motion | 596 | 174 | 6 | 18 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 726 | 247 | 6 | 34 | 445 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
+| Paint and theming | 726 | 247 | 6 | 33 | 446 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
 | Theme packages | 394 | 163 | 3 | 0 | 231 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 255 | 120 | 2 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
 | Action controls | 414 | 117 | 16 | 0 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
@@ -935,9 +935,9 @@ when its behavior was broken in `src` or in the example.
 | `native_parity_classb_showcase` and `classb_showcase` | `apps2-244` | `apps2-222`, `apps2-228`, `apps2-279`, `apps2-282`, `post-showcase-04` | 10 |
 | `native_parity_classb_themes` and `classb_themes` | `themes-P1-87`, `themes-P1-88`, `themes-P1-105`, `themes-P1-107`, `themes-P1-117` | `themes-P1-87`, `themes-P1-88`, `themes-P1-90`, `themes-P1-105`, `themes-P1-107`, `themes-P1-117`, `themes-P1-120`, `themes-P3-11`, `themes-P4-15` | 14 |
 
-32 contracts (108 main cases) stay open: `apps2-43`, `apps2-45`, `apps2-48`, `apps2-52`, `apps2-10`, `apps2-68`, `apps2-94`, `apps2-142`, `apps2-169`, `apps-123`, `mech1-65`, `inputs-82`, `inputs-94`, `inputs-100`, `inputs-124`, `inputs-134`, `inputs-137`, `inputs-181`, `apps2-183`, `apps2-188`, `apps2-211`, `apps-192`, `paint-102`, `apps2-229`, `apps2-268`, `apps2-275`, `apps2-277`, `apps2-280`, `apps2-281`, `apps-24`, `apps-90`, `apps-102`. Some of them have a partial live case. The work stopped before they were complete.
+34 contracts (115 main cases) stay open: `apps2-43`, `apps2-45`, `apps2-48`, `apps2-52`, `apps2-10`, `apps2-68`, `apps2-94`, `apps2-142`, `apps2-169`, `apps-123`, `mech1-65`, `inputs-82`, `inputs-94`, `inputs-100`, `inputs-124`, `inputs-134`, `inputs-137`, `inputs-181`, `apps2-183`, `apps2-188`, `apps2-211`, `apps-192`, `paint-102`, `apps2-229`, `apps2-268`, `apps2-275`, `apps2-277`, `apps2-280`, `apps2-281`, `apps-24`, `apps-90`, `apps-102`, `navigation-1-37`, `paint-51`. Some of them have a partial live case. The work stopped before they were complete.
 
-7 contracts (18 main cases) are candidates for retirement, because `api.md` does not make their promise: `navigation-4-43`, `post-overlays-131`, `navigation-1-37`, `paint-51`, `paint-73`, `themes-P1-121`, `themes-P5-43`. They stay in class b until the maintainer decides.
+The owner retired 5 contracts that were candidates for retirement (class c, `retiredBy` is `parity/classb`): `navigation-4-43`, `post-overlays-131`, `paint-73`, `themes-P1-121`, `themes-P5-43`. [Retired promises](21-retirements.md) gives the reasons. The owner asked for `navigation-1-37` (a centred Alert title) and `paint-51` (a smaller icon in a small button) to be implemented. They stay open in class b.
 
 ## Proposed tests for the largest gaps
 

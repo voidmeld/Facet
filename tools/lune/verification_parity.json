@@ -159,8 +159,8 @@
       "mainCases": 393,
       "a": 94,
       "aWeaker": 2,
-      "b": 91,
-      "c": 208,
+      "b": 88,
+      "c": 211,
       "d": 0,
       "candidateSpecs": {
         "native_collections": 18,
@@ -258,8 +258,8 @@
       "mainCases": 547,
       "a": 169,
       "aWeaker": 42,
-      "b": 229,
-      "c": 149,
+      "b": 222,
+      "c": 156,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 21,
@@ -358,8 +358,8 @@
       "mainCases": 726,
       "a": 247,
       "aWeaker": 6,
-      "b": 34,
-      "c": 445,
+      "b": 33,
+      "c": 446,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 54,
@@ -462,8 +462,8 @@
   "totals": {
     "afterNewTestsByClass": {
       "a": 4095,
-      "c": 6004,
-      "b": 1312,
+      "c": 6015,
+      "b": 1301,
       "d": 3
     },
     "auditByClass": {
@@ -474,8 +474,8 @@
     },
     "contractsByClass": {
       "a": 1717,
-      "c": 837,
-      "b": 260,
+      "c": 842,
+      "b": 255,
       "d": 1
     },
     "mainCases": 10848,
@@ -27715,9 +27715,11 @@
         "sheet"
       ],
       "mainCases": 2,
-      "class": "b",
+      "class": "c",
       "nativeMechanism": "UIDragDetector owns gesture lifecycle/cancellation",
-      "nativeEvidence": "none. Behaviour change: a stationary DragEnd during detent motion snaps to the nearest detent of the painted height instead of resuming the target."
+      "nativeEvidence": "none. Behaviour change: a stationary DragEnd during detent motion snaps to the nearest detent of the painted height instead of resuming the target.",
+      "retiredBy": "parity/classb",
+      "retirement": "api.md Sheet promises only the release rule: the sheet goes to the detent nearest to the released height plus 0.15 s of velocity, and a detent change from outside ends the drag. It does not promise a cancel when the input class changes, or a resume of an interrupted detent motion. The engine UIDragDetector owns the gesture, and Facet treats DragEnd as a release."
     },
     {
       "id": "navigation-4-44",
@@ -30171,9 +30173,11 @@
         "native_style_scenario"
       ],
       "mainCases": 5,
-      "class": "b",
+      "class": "c",
       "nativeMechanism": "Engine default selection image (GuiService.SelectedObject; SelectionImageObject unset)",
-      "nativeEvidence": "none (no theme focus treatment exists)"
+      "nativeEvidence": "none (no theme focus treatment exists)",
+      "retiredBy": "parity/classb",
+      "retirement": "Facet has no theme focus ring or glow. api.md Selection says that the controls use GuiService.SelectedObject. The engine selection highlight is the focus indicator, and a game sets SelectionImageObject for its own. See owner decision 5."
     },
     {
       "id": "paint-74",
@@ -33260,9 +33264,11 @@
         "status_indicator"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "c",
       "nativeMechanism": "Native UIStroke Thickness 1.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "retiredBy": "parity/classb",
+      "retirement": "api.md does not document the StatusIndicator cutout or a theme hairline gutter. The cutout is a fixed 1 px inner UIStroke, and no file in src reads metrics.strokes. The live case classb_themes/status-cutout-hairline measures the 1 px cutout."
     },
     {
       "id": "themes-P1-122",
@@ -36441,9 +36447,11 @@
         "review_theme_corners"
       ],
       "mainCases": 2,
-      "class": "b",
+      "class": "c",
       "nativeMechanism": "Native GuiService selection highlight, which follows the selected object's UICorner.",
-      "nativeEvidence": "none; theme radii.selection (e.g. fantasy_ornate selection = 0) is no longer applied to the highlight."
+      "nativeEvidence": "none; theme radii.selection (e.g. fantasy_ornate selection = 0) is no longer applied to the highlight.",
+      "retiredBy": "parity/classb",
+      "retirement": "Facet has no focus ring. The engine draws the selection highlight, and no file in src reads radii.selection. api.md Selection says only that the controls use GuiService.SelectedObject. See owner decision 5."
     },
     {
       "id": "themes-P5-44",
@@ -41042,7 +41050,7 @@
         "sheet_gesture"
       ],
       "mainCases": 1,
-      "class": "b",
+      "class": "c",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "nativeMechanism": "The engine UIDragDetector ends a drag when its input goes away; the sheet then releases the session through DragEnd.",
       "nativeEvidence": "No headless case: the fake engine has no input class loss. The live check covers it.",
@@ -41056,7 +41064,9 @@
           "ports_overlays/sheet-scroll-policy-and-detectors"
         ],
         "failed": "at the tallest detent the long wrapped copy grows to its text and is not cut"
-      }
+      },
+      "retiredBy": "parity/classb",
+      "retirement": "api.md Sheet does not promise a cancel when the sheet loses the active input class. The engine UIDragDetector ends the drag when its input goes away, and Facet treats DragEnd as a release to the nearest detent."
     },
     {
       "id": "post-overlays-132",
