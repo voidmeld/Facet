@@ -14,8 +14,8 @@ The baseline is `main` at `a8c88956`. The branch is `codex/compose-ui-simplifica
 |---|---:|---:|
 | Class b: the Roblox Engine or Compose owns the mechanism | 301 | 1425 |
 | Class b with no candidate test and no live record | 164 | 689 |
-| Class c: the feature or the code is deleted | 809 | 5955 |
-| Restored before the merge: moved from class b or c to class a | 11 | 92 |
+| Class c: the feature or the code is deleted | 805 | 5886 |
+| Restored before the merge: moved from class b or c to class a | 15 | 161 |
 | Parts of covered contracts that the strengthening work retired | 117 | - |
 | Owner decisions (next section) | 21 | - |
 
@@ -90,7 +90,7 @@ Each item below removed a behavior that a player or a game author uses. The owne
 - Strengthening notes that retire part of a covered contract: `mech1-121`.
 - PR status: Controls read `UserInputService.PreferredInput` and native `AbsoluteSize` directly. A screen that must choose between two arrangements observes `AbsoluteSize` itself (`docs/guide/15-adaptive-recipes.md`). AGENTS.md on main still tells authors to read `app.environment`.
 - Current main `bc9a56a6` still ships this.
-- Decision: Accepted. Native layout replaces the environment facts, the `ViewThatFits` choice and the environment preview and reset: `AbsoluteSize`, `AutomaticSize`, `UIListLayout.Wraps` and `UserInputService.PreferredInput`.
+- Decision: Partly restored. `UI.environment` and `Facet.adaptive` publish the viewport classes, orientation, interaction classes, display size, safe insets, preferred text size and reduced motion again (`mech1-02`, `mech3-11`). [Restored before the merge](#restored-before-the-merge) names the tests. The preview profiles, `selectBy` and the distance profile stay retired. Native layout replaces the `ViewThatFits` choice: `AbsoluteSize`, `AutomaticSize` and `UIListLayout.Wraps`.
 
 ### 8. Presenter toasts
 
@@ -192,7 +192,7 @@ Each item below removed a behavior that a player or a game author uses. The owne
 - Strengthening notes that retire part of a covered contract: `mech1-42`.
 - PR status: VirtualList keeps `indexOfKey`, `placementOf` and `offsetOf`. Reorder autoscroll starts at once and scrolls only its own body.
 - Current main `bc9a56a6` still ships this.
-- Decision: Accepted. A game sets the native `ScrollingFrame.CanvasPosition`.
+- Decision: Partly restored. `UI.scrollTo` and `UI.scrollToVisible` move native `ScrollingFrame` ancestors (`apps-228`). [Restored before the merge](#restored-before-the-merge) names the tests. The autoscroll dwell, bands and nested chain stay retired.
 
 ### 20. World anchor projection
 
@@ -200,7 +200,7 @@ Each item below removed a behavior that a player or a game author uses. The owne
 - Main evidence: 1 contracts, 6 main cases: `apps-223` (6, class c, `world_anchor`).
 - PR status: `docs/guide/14-choosing-controls.md` tells the game to project with the camera. AGENTS.md on main still names `client.world_anchor`.
 - Current main `bc9a56a6` still ships this.
-- Decision: Accepted. A game puts the interface in a `BillboardGui` or a `SurfaceGui` target.
+- Decision: Restored. `UI.worldAnchor` projects a world object to a screen anchor again (`apps-223`). [Restored before the merge](#restored-before-the-merge) names the tests.
 
 ### 21. Engine-owned mechanisms with no proof
 
@@ -232,6 +232,15 @@ The focus rules change moved three more contracts to class a. The cases are in `
 | `collections-306` | 1 | The same nearest-survivor rule for a virtualized list. | The same | - |
 
 Facet Neutral's `Light` palette (main `b1a08042`) is newer than the baseline. Its contract `post-lab-02` moves from class d to class a. Facet Neutral declares `Dark` and `Light` again. Both palettes pass the contrast gate, and the theme strength specs check both palettes where they checked one before.
+
+The environment, world anchor and scrolling change moved four more contracts to class a. The cases are in `tests/native_environment.spec.luau`. Each contract has `restoredBy` set to `parity/restore3`.
+
+| Contract | Main cases | Restored behavior | Native implementation | Still weaker |
+|---|---:|---|---|---|
+| `mech1-02` | 36 | `Facet.adaptive` classes, axis and columns. `UI.environment` size class, height class, orientation and boolean tests that follow the viewport. | `AbsoluteSize` or `Camera.ViewportSize`, Compose formulas | The ten-foot cap, `navPlacement` and the four navigation homes stay retired. Controls do not read the environment. |
+| `mech3-11` | 7 | Interaction classes, display size, safe insets, preferred text size and reduced motion as separate readables. | `UserInputService.PreferredInput`, `GuiService:GetGuiInset()`, `PreferredTextSize`, `ReducedMotionEnabled` | Keyboard occlusion, overscan and distance facts stay retired. |
+| `apps-223` | 6 | `UI.worldAnchor` projection, padding, offscreen directions, occlusion, tracking and near-plane rejection. | `Camera:WorldToViewportPoint`, `Workspace:Raycast`, `RunService.Heartbeat` | - |
+| `apps-228` | 20 | `UI.scrollTo` and `UI.scrollToVisible` with the minimum keep-visible distance, inner-to-outer ancestors and clamping. | `ScrollingFrame.CanvasPosition`, `TweenService` | There is no path controller, `observeScroll` or scroll-bar inset. |
 
 ## Retired contracts by area
 
@@ -688,7 +697,6 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `navigation-3-37` (1 main case; `page_view`). Main promised: Paging without a horizontal scrollbar. Engine or Compose owns it: UIPageLayout in a clipped Frame. Replacement test: yes: native_navigation::native navigation controls::uses native page layout for model navigation and engine swipes (PagesLayout present, CurrentPage).
 - `navigation-5-04` (3 main cases; `tab_view`). Main promised: An overflowing strip scrolls inside its band. Engine or Compose owns it: Native ScrollingFrame 'Tabs' with AutomaticCanvasSize X/Y and ScrollingDirection per placement; wheel/drag scrolling and hover are engine behavior.. Replacement test: yes: native_navigation 'fades native tab layers...' sets a tab beyond the bar's AbsoluteSize and asserts CanvasPosition.X=140 (Facet writes the canvas); ScrollingDirection/AutomaticCanvasSize values themselves are not asse....
 - `paint-86` (4 main cases; `path`). Main promised: Path culled outside a clipping scroll viewport. Engine or Compose owns it: Engine clipping (ClipsDescendants/ScrollingFrame) of Path2D. Replacement test: no test.
-- `apps-228` (20 main cases; `native_scroll`). Main promised: controller.scrollTo, scrollToVisible, keep-visible clamp, adapter fallbacks, fake/screen target scroll seams. Deleted: ScrollView controller, scrollToVisible, shared keep-visible clamp and render-target scroll seam deleted; api.md VirtualList 'controls' exposes only indexOfKey/placementOf/offsetOf.. Replacement test: none; the feature is deleted.
 - `apps-229` (12 main cases; `scroll_indicators`). Main promised: Input-derived scroll indicator policy, reserve seam, indicators='none', live reserve writes. Deleted: Scroll indicator policy and reserve seam deleted; CAND collections.luau sets ScrollBarThickness = 6 statically.. Replacement test: none; the feature is deleted.
 - `apps-232` (20 main cases; `scroll_navigation`). Main promised: Named scroll navigation, visibility crossings, progress, arrival focus handoff and interruptions. Deleted: Named scroll destination API deleted; not in api.md.. Replacement test: none; the feature is deleted.
 - `apps2-34` (3 main cases; `examples_gallery`). Main promised: Bootstrap auto-bind of bindNativeScroll (both spellings); edit mode diagnostic-clean at narrowest viewport. Deleted: Table api.bindNativeScroll and the gallery bootstrap auto-bind were removed (native ScrollingFrame is the scroller); solver diagnostics no longer exist.. Replacement test: none; the feature is deleted.
@@ -1147,7 +1155,6 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `apps-213` (1 main case; `hud_chrome_sequence`). Main promised: Process-global width store restored. Deleted: Width store deleted with the solver/measure cache.. Replacement test: none; the feature is deleted.
 - `apps-217` (22 main cases; `hud_composition`). Main promised: Nine-anchor partition, holdsLane, topbar span, collision reports/findings, expand roles, strip riding, pseudo-locale, deviceSafeContent rung. Deleted: Framework HUD preset (nine-anchor partition, holdsLane, topbar span, rank ladder, app-chrome reservations, collision reports, deviceSafeContent) deleted with the solver; HUD is now the gallery example examples/gallery.... Replacement test: none; the feature is deleted.
 - `apps-220` (5 main cases; `hud_reservations`). Main promised: HUD reservation API (surface coordination, toast reservations, insets, disposed owner, invalid toast). Deleted: HUD reservation API deleted; not in api.md.. Replacement test: none; the feature is deleted.
-- `apps-223` (6 main cases; `world_anchor`). Main promised: client.world_anchor projection, padding, target tracking, near-plane rejection, validation. Deleted: world_anchor client module deleted (CAND src has only ui/ and vendor/); docs/guide/14-choosing-controls.md now says 'project the object with the engine camera. Then bind the resulting screen anchor to the control'.. Replacement test: none; the feature is deleted.
 - `apps2-250` (5 main cases; `sponsor_scenarios`). Main promised: Sponsor markers track u,v without remount, burst arrange-only, keyed enter/exit, corner centring, exempt hue. Deleted: sponsor_markers fixture deleted. The different world_markers scenario is tested by native_gallery_workflows 'moves and hides native map markers without remounting their controls'.. Replacement test: a candidate test covers the surviving part (see reason).
 - `apps2-251` (5 main cases; `sponsor_scenarios`). Main promised: Sponsor billboard: engine-seam degrade, depleting ring timer, reduced motion, record-vs-render, scope remount. Deleted: sponsor_billboard fixture deleted; BillboardGui target remains in api.md ('a BillboardGui into an applicable world target') but its timer/omen behaviors were fixture-specific.. Replacement test: none; the feature is deleted.
 - `apps2-284` (4 main cases; `world_markers`). Main promised: worldMarkers layout: edge clamp, priority, HUD exclusions, reasons. Deleted: Facet.layout.worldMarkers and src/rect are deleted (no Facet.layout in CAND src or api.md). The gallery world_markers scenario now owns clamping/crowding/HUD band as game code, covered by the cited gallery parity case.... Replacement test: none; the feature is deleted.
@@ -1174,14 +1181,12 @@ Each line gives the contract id, the main case count and the main specs, the pro
 - `apps2-90` (8 main cases; `gallery_chrome`). Main promised: Two targets forever, stepping to icon-only; chip strip keeps a left gutter at phone width. Deleted: The chip strip was replaced by UI.TabView style='sidebarAdaptable' (screen.luau), which switches to a scrolling bar at 390px (asserted in native_gallery 'switches the entire gallery catalogue'); the icon-only stepping.... Replacement test: a candidate test covers the surviving part (see reason).
 - `inputs-140` (3 main cases; `platform_env_binding`). Main promised: Platform adapter binds OSK/camera connections. Deleted: Synthetic environment binding removed (ledger retiredMechanisms).. Replacement test: none; the feature is deleted.
 - `inputs-160` (4 main cases; `rating`). Main promised: Star spacing per input paradigm. Deleted: Input-class spacing classifier removed.. Replacement test: none; the feature is deleted.
-- `mech1-02` (36 main cases; `adaptive`). Main promised: Facet.adaptive size/height/orientation classes, conditions readables, nav-bar policy, effectiveDisplaySize. Deleted: adaptive module / app.environment deleted (no sizeClass, conditions, navPlacement, effectiveDisplaySize in CAND src or docs). Guide 15-adaptive-recipes now tells authors to read native AbsoluteSize; TabView sidebarAda.... Replacement test: none; the feature is deleted.
 - `mech1-06` (9 main cases; `adaptive`). Main promised: Hidden ViewThatFits candidate requests no hit geometry / expander retraction. Deleted: Hit expanders and minimum-target expander adapter deleted; native GuiObject hit testing.. Replacement test: none; the feature is deleted.
 - `mech1-109` (12 main cases; `edge_floor`). Main promised: edgeFloor inset knob. Deleted: Root inset policies deleted.. Replacement test: none; the feature is deleted.
 - `mech1-43` (12 main cases; `band_policy`). Main promised: bandSafeContent root policy and topbar-region band inset. Deleted: Root inset policies and composition topbar region deleted; ScreenInsets on caller targets.. Replacement test: none; the feature is deleted.
 - `mech2-38` (31 main cases; `layout_defaults`). Main promised: Default Grid lanes, AdaptiveStack refusal, overflow findings, ten-foot measure cap. Deleted: environment/adaptive module and Grid/AdaptiveStack/Composition deleted; guide 15-adaptive-recipes tells authors to read native bounds. Replacement test: none; the feature is deleted.
 - `mech2-93` (25 main cases; `paradigm_tenfoot`). Main promised: Ten-foot typography, focus strengthening, overscan, table rung, handheld classing. Deleted: environment distance classes deleted; api.md/guides make no ten-foot promise. Replacement test: none; the feature is deleted.
 - `mech3-05` (79 main cases; `region_expand`). Main promised: Region form ladders, expand affordance and expand plate. Deleted: UI.Region/ViewThatFits form ladders, expand/recover declarations and the expand plate are deleted; api.md/guide list no region or expand API. Nearest surviving concept is Table priority collapse to a shared Collapsibl.... Replacement test: none; the feature is deleted.
-- `mech3-11` (7 main cases; `renderer`). Main promised: Environment per-key isolation and derived facts. Deleted: Facet environment (sizeClass, interactionClasses, displaySize, distanceProfile, overscanInsets) deleted; api.md exposes no environment; controls read native PreferredInput/AbsoluteSize directly. Replacement test: none; the feature is deleted.
 - `mech3-62` (48 main cases; `ten_foot_metrics`). Main promised: Ten-foot metric ladder, hit floor, paint family and overscan. Deleted: distance profile, ten-foot metric transform, 66px focus floor and overscan margins deleted; api.md/guides contain no ten-foot/distance promise. Gallery keeps a UIScale 1.5 'Distant TV' preview only (native_gallery_she.... Replacement test: none; the feature is deleted.
 - `navigation-1-15` (1 main case; `alert`). Main promised: Ten-foot distance stacks two actions full width. Deleted: env viewingDistance and alert.resolveStacked(…, 'ten-foot', …) are deleted. The CAND stacked rule is #actions>2, offer<480 or measured label width (nav_surfaces.luau). No ten-foot promise in api.md.. Replacement test: none; the feature is deleted.
 - `navigation-2-10` (1 main case; `combo_box`). Main promised: ComboBox forwards an explicit environment with multiple surfaces. Deleted: Facet.newEnvironment / env option deleted; ComboBoxSpec has no env and api.md documents no environment object.. Replacement test: none; the feature is deleted.

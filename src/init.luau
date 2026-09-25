@@ -19,6 +19,8 @@ local CivilTypes = require("@self/ui/civil_date_types")
 local DateTimePickerTypes = require("@self/ui/date_time_picker_types")
 local ColorPickerTypes = require("@self/ui/color_picker_types")
 local arithmetic = require("@self/ui/arithmetic")
+local adaptive = require("@self/ui/adaptive")
+local EnvironmentTypes = require("@self/ui/environment_types")
 export type ButtonProps = InputTypes.ButtonProps
 export type ToggleProps = InputTypes.ToggleProps
 export type TextInputProps = InputTypes.TextInputProps
@@ -96,6 +98,13 @@ export type SnackbarSpec = OverlayTypes.SnackbarSpec
 export type DateTimePickerProps = DateTimePickerTypes.DateTimePickerProps
 export type ColorPickerProps = ColorPickerTypes.ColorPickerProps
 export type Controls = ControlTypes.Controls
+export type Environment = EnvironmentTypes.Environment
+export type InteractionClasses = EnvironmentTypes.InteractionClasses
+export type SafeInsets = EnvironmentTypes.SafeInsets
+export type WorldAnchorOptions = EnvironmentTypes.WorldAnchorOptions
+export type WorldAnchor = EnvironmentTypes.WorldAnchor
+export type ScrollOptions = EnvironmentTypes.ScrollOptions
+export type Adaptive = adaptive.Adaptive
 export type App = createApp.App
 export type AppOptions = createApp.AppOptions
 export type Component = createApp.Component
@@ -121,6 +130,7 @@ export type Facet = {
 	app: (AppOptions?) -> App,
 	themes: ThemeTypes.Themes,
 	civilDate: CivilTypes.Module,
+	adaptive: adaptive.Adaptive,
 	recipes: { arithmetic: { parse: (unknown) -> number? } },
 	bind: (ComposeModule, ComposeRobloxModule) -> Facet,
 }
@@ -181,6 +191,7 @@ local function bind(core: ComposeModule, roblox: ComposeRobloxModule): Facet
 		end,
 		themes = themes,
 		civilDate = civilDate,
+		adaptive = adaptive,
 		recipes = recipes,
 		bind = bind,
 	})

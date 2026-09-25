@@ -41,6 +41,8 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		services.RunService = services.RunService or game:GetService("RunService")
 		services.TextService = services.TextService or game:GetService("TextService")
 		services.ContentProvider = services.ContentProvider or game:GetService("ContentProvider")
+		services.Workspace = services.Workspace or game:GetService("Workspace")
+		services.TweenService = services.TweenService or game:GetService("TweenService")
 	end
 	config.services = services
 	config.guiService = config.guiService or services.GuiService

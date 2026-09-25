@@ -346,14 +346,12 @@ local lifetime = Compose.createRootOwner(function()
 	Compose.cleanup(app.dispose)
 	app.mount(function()
 		local views = screens.create(Facet, runtime, sceneActions(false, desktopPackage))
-		return desktop.create(
-			Facet,
-			runtime,
-			views,
-			model,
-			modeProgress,
-			{ theme = desktopPackage, reducedMotion = reducedMotion, pressHaptic = pressHaptic }
-		)()
+		return desktop.create(Facet, runtime, views, model, modeProgress, {
+			theme = desktopPackage,
+			reducedMotion = reducedMotion,
+			pressHaptic = pressHaptic,
+			player = players.LocalPlayer,
+		})()
 	end)
 	local viewport = Facet.Roblox.createViewport(camera)
 	Compose.watch(function(use)

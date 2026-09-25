@@ -214,16 +214,17 @@
     },
     "adaptive-environment": {
       "mainCases": 424,
-      "a": 36,
+      "a": 79,
       "aWeaker": 6,
       "b": 51,
-      "c": 337,
+      "c": 294,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 4,
         "native_parity_navigation": 4,
         "native_radial_controls": 2,
-        "native_gallery_shell": 1
+        "native_gallery_shell": 1,
+        "native_environment": 12
       }
     },
     "lifetime-ownership": {
@@ -286,16 +287,17 @@
     },
     "scrolling": {
       "mainCases": 332,
-      "a": 95,
+      "a": 115,
       "aWeaker": 7,
       "b": 100,
-      "c": 137,
+      "c": 117,
       "d": 0,
       "candidateSpecs": {
         "native_collections": 29,
         "native_gallery_collections": 10,
         "native_parity_apps": 6,
-        "native_virtual_monitors": 3
+        "native_virtual_monitors": 3,
+        "native_environment": 7
       }
     },
     "theme-packages": {
@@ -328,16 +330,17 @@
     },
     "hud-world": {
       "mainCases": 170,
-      "a": 50,
+      "a": 56,
       "aWeaker": 2,
       "b": 50,
-      "c": 70,
+      "c": 64,
       "d": 0,
       "candidateSpecs": {
         "native_hud": 11,
         "native_themes_media": 8,
         "native_outpost_terminal": 3,
-        "native_parity_apps": 2
+        "native_parity_apps": 2,
+        "native_environment": 7
       }
     },
     "tables-rows": {
@@ -461,8 +464,8 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3943,
-      "c": 5998,
+      "a": 4012,
+      "c": 5929,
       "b": 1432,
       "d": 3
     },
@@ -473,8 +476,8 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1670,
-      "c": 837,
+      "a": 1674,
+      "c": 833,
       "b": 307,
       "d": 1
     },
@@ -9822,8 +9825,18 @@
         "world_anchor"
       ],
       "mainCases": 6,
-      "class": "c",
-      "removal": "world_anchor client module deleted (CAND src has only ui/ and vendor/); docs/guide/14-choosing-controls.md now says 'project the object with the engine camera. Then bind the resulting screen anchor to the control'."
+      "class": "a",
+      "candidateCases": [
+        "native_environment::worldAnchor: proximity anchors around world objects::retains offscreen directions for markers and can suppress occluded targets",
+        "native_environment::worldAnchor: proximity anchors around world objects::encloses projected corners with padding and updates on the frame",
+        "native_environment::worldAnchor: proximity anchors around world objects::uses relative padding at every distance and defaults to fifteen percent",
+        "native_environment::worldAnchor: proximity anchors around world objects::tracks models, avatar respawns, camera replacement and unavailable targets",
+        "native_environment::worldAnchor: proximity anchors around world objects::rejects near-plane intersections and offscreen or removed objects",
+        "native_environment::worldAnchor: proximity anchors around world objects::validates options before allocating a frame hook",
+        "native_environment::worldAnchor: proximity anchors around world objects::feeds a RadialMenu anchor and releases with its owner"
+      ],
+      "restoredBy": "parity/restore3",
+      "stillWeaker": "The frame hook is RunService.Heartbeat, not the retired presenter tick."
     },
     {
       "id": "apps-224",
@@ -9883,8 +9896,18 @@
         "native_scroll"
       ],
       "mainCases": 20,
-      "class": "c",
-      "removal": "ScrollView controller, scrollToVisible, shared keep-visible clamp and render-target scroll seam deleted; api.md VirtualList 'controls' exposes only indexOfKey/placementOf/offsetOf."
+      "class": "a",
+      "candidateCases": [
+        "native_environment::scrollTo and scrollToVisible over native ScrollingFrame::writes a programmatic position and the canvas limits clamp it",
+        "native_environment::scrollTo and scrollToVisible over native ScrollingFrame::animates through TweenService and moves at once under reduced motion",
+        "native_environment::scrollTo and scrollToVisible over native ScrollingFrame::scrolls the minimum distance to bring a node below or above the viewport into view",
+        "native_environment::scrollTo and scrollToVisible over native ScrollingFrame::aligns a span taller than the band to its top and clamps to the extent",
+        "native_environment::scrollTo and scrollToVisible over native ScrollingFrame::walks every scroll ancestor inner to outer, not just a direct parent",
+        "native_environment::scrollTo and scrollToVisible over native ScrollingFrame::works on the horizontal axis and leaves a locked axis alone",
+        "native_environment::scrollTo and scrollToVisible over native ScrollingFrame::scrolls a mounted ScrollView and animates with the view"
+      ],
+      "restoredBy": "parity/restore3",
+      "stillWeaker": "There is no path-addressed controller, observeScroll or scroll-bar inset. Focus keep-visible is the engine's."
     },
     {
       "id": "apps-229",
@@ -18161,8 +18184,19 @@
         "adaptive"
       ],
       "mainCases": 36,
-      "class": "c",
-      "removal": "adaptive module / app.environment deleted (no sizeClass, conditions, navPlacement, effectiveDisplaySize in CAND src or docs). Guide 15-adaptive-recipes now tells authors to read native AbsoluteSize; TabView sidebarAda..."
+      "class": "a",
+      "candidateCases": [
+        "native_environment::adaptive: pure decisions with no device names::classifies width into compact, regular and wide at the documented breakpoints",
+        "native_environment::adaptive: pure decisions with no device names::classifies height and orientation as shape facts",
+        "native_environment::adaptive: pure decisions with no device names::chooses a stack axis from available width, not a platform name",
+        "native_environment::adaptive: pure decisions with no device names::derives a column count from a minimum cell width and gap",
+        "native_environment::adaptive: pure decisions with no device names::tolerates a nonsense width instead of producing a nonsense class",
+        "native_environment::adaptive: pure decisions with no device names::ranks compact < regular < wide",
+        "native_environment::environment: reactive facts from engine sources::exposes the size class and its boolean tests as readables that follow the viewport",
+        "native_environment::environment: reactive facts from engine sources::refuses the engine's placeholder viewport and keeps the last real fact"
+      ],
+      "restoredBy": "parity/restore3",
+      "stillWeaker": "The ten-foot cap, navPlacement and the four nav homes stay retired with the distance profile (owner decision 4). Controls do not read the environment; TabView keeps its own placement rule."
     },
     {
       "id": "mech1-03",
@@ -21647,8 +21681,15 @@
         "renderer"
       ],
       "mainCases": 7,
-      "class": "c",
-      "removal": "Facet environment (sizeClass, interactionClasses, displaySize, distanceProfile, overscanInsets) deleted; api.md exposes no environment; controls read native PreferredInput/AbsoluteSize directly"
+      "class": "a",
+      "candidateCases": [
+        "native_environment::environment: reactive facts from engine sources::reads the workspace camera when no source is given",
+        "native_environment::environment: reactive facts from engine sources::derives interaction classes from preferred input and live capabilities",
+        "native_environment::environment: reactive facts from engine sources::publishes safe insets, display size, preferred text size and reduced motion",
+        "native_environment::environment: reactive facts from engine sources::requires an owner and stops observing when the owner ends"
+      ],
+      "restoredBy": "parity/restore3",
+      "stillWeaker": "The keyboard-occlusion, overscan and distance facts stay retired. Per-key isolation is the Compose formula graph."
     },
     {
       "id": "mech3-12",

@@ -64,6 +64,15 @@ type Options = {
 	seed: number?,
 }
 
+local helpers: { [string]: boolean } = {
+	fill = true,
+	badged = true,
+	environment = true,
+	worldAnchor = true,
+	scrollTo = true,
+	scrollToVisible = true,
+}
+
 local function world(module: any, options: Options?): World
 	local settings: Options = options or {}
 	local engine: any = engineLib.new()
@@ -3956,7 +3965,7 @@ t.describe("native parity reference applications", function()
 			local runtime = Facet.Roblox.createRuntime(engine)
 			local names = {}
 			for name in Facet.controls(runtime, { types = engine.types } :: any) do
-				if name ~= "fill" and name ~= "badged" then
+				if not helpers[name] then
 					table.insert(names, name :: string)
 				end
 			end

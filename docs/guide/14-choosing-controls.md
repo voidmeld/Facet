@@ -87,8 +87,8 @@ policy:
 
 Keep a clear Back path and a cancellation gesture.
 
-For a world object, project the object with the engine camera. Then bind the
-resulting screen anchor to the control. One primary proximity command is
+For a world object, use `UI.worldAnchor` to project the object. Then bind its
+`anchor` to the control. One primary proximity command is
 usually a direct prompt. Two or more contextual operations can justify a menu. Do not
 add a second input or focus system around it.
 

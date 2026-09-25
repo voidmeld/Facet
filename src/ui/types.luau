@@ -124,6 +124,8 @@ export type Services = {
 	RunService: RunService?,
 	TextService: TextService?,
 	ContentProvider: ContentProvider?,
+	Workspace: Workspace?,
+	TweenService: TweenService?,
 }
 export type Config = {
 	types: RobloxTypes?,

@@ -16,6 +16,7 @@ and styling. This reference describes the `0.12.0` surface.
 | `themes` | Theme package definitions, native StyleSheet compilation, icons and skins. |
 | `COMPOSE_COMMIT` | The full Compose commit of the pinned copy. The Facet tests use this commit. |
 | `civilDate` | Calendar arithmetic, words and fixed-offset instants for civil dates. See [Civil dates](#civil-dates). |
+| `adaptive` | Pure size, height, orientation, axis and column decisions. See [Adaptive environment](#adaptive-environment). |
 | `recipes` | Opt-in helpers. `recipes.arithmetic.parse` is a bounded arithmetic parser for a number field. See [Recipes](#recipes). |
 | `bind(Compose, Roblox)` | Returns a Facet table whose `controls` and `themes` use the Compose core module and the Compose Roblox module that you give. See [Your own Compose](#your-own-compose). |
 
@@ -423,6 +424,28 @@ and `ScrollingDirection` for its axis. Thus the content fits the scroll window
 beside the scroll bar. `axis` is `"y"` (the default), `"x"` or `"xy"`. The
 `"x"` axis stacks the children horizontally. Options: `axis`, `gap`, `padding`,
 `align`, `distribute`, `width` and `height`.
+
+### scrollTo and scrollToVisible
+
+`UI.scrollTo(frame, position, options?) -> boolean` moves a native
+`ScrollingFrame` to a position. `position` is `"top"`, `"bottom"`, a `Vector2`
+or `{ x?, y? }`. An omitted axis keeps its value. The canvas limits clamp the
+position: from 0 to `AbsoluteCanvasSize - AbsoluteWindowSize`. The result is
+`false` when the frame does not move.
+
+`UI.scrollToVisible(node, rect?, options?) -> boolean` brings a `GuiObject`
+into view. It walks every `ScrollingFrame` ancestor from the inside out. Each
+one moves the minimum distance that shows the node, or the `{ x, y, w, h }`
+rectangle relative to the node. A node taller or wider than the window aligns
+to its start. A frame moves only on the axes that its `ScrollingDirection`
+permits. The result is `false` when no frame moves or the node has no scroll
+ancestor.
+
+Both calls tween `CanvasPosition` with `TweenService` for 0.25 seconds. A new
+call cancels the tween that runs on the same frame. The move is instant when
+`options.animated` is `false`, when the factory `reducedMotion` is `true` or
+when `GuiService.ReducedMotionEnabled` is `true`. Call them from an event, for
+example a button that goes back to the top of a page.
 
 ### Grid
 
@@ -2288,6 +2311,108 @@ print(civil.format(civil.addDays(start, 3))) -- "03/02/2026"
 local date, why = civil.parse("02/30/2026")
 if date == nil then
     print(why)
+end
+```
+
+## Adaptive environment
+
+### adaptive
+
+`Facet.adaptive` holds pure decisions. They take numbers and never a device
+name.
+
+| Call | Result |
+|---|---|
+| `sizeClass(width)` | `"compact"` below 600, `"regular"` below 1000, else `"wide"`. A nil, NaN or negative width gives `"compact"`. |
+| `heightClass(height)` | `"short"` below 600, `"medium"` below 1000, else `"tall"`. |
+| `orientationFor(width, height)` | `"landscape"`, `"portrait"` or `"square"`. This is a shape fact. |
+| `axisFor(width, { stackAbove? })` | `"x"` at or above `stackAbove` (default 600), else `"y"`. |
+| `columnsFor(available, minColumnWidth, gap?)` | The number of columns of at least `minColumnWidth` that fit, at least 1. |
+| `sizeClassAtLeast(value, target)` | `true` when `value` ranks at or above `target` in `compact < regular < wide`. |
+| `BREAKPOINTS`, `HEIGHT_BREAKPOINTS` | The same table: `{ regular = 600, wide = 1000 }`. |
+| `DEFAULT_STACK_ABOVE` | 600. |
+
+### environment
+
+`UI.environment(source?) -> Environment` returns readables of the engine facts
+that a screen adapts to. Call it inside a component or a Compose owner. The
+readables stop when the owner ends. `source` is a `GuiBase2d`, whose
+`AbsoluteSize` is the viewport, or a `Camera`, whose `ViewportSize` is the
+viewport. Without a source it reads the `ViewportSize` of the workspace camera.
+A viewport smaller than 2 by 2 pixels is an engine placeholder. The
+environment keeps the last real size.
+
+| Field | Source and value |
+|---|---|
+| `viewportSize`, `viewportWidth`, `viewportHeight` | The viewport, in pixels. |
+| `sizeClass`, `heightClass`, `orientation`, `axis` | `adaptive` applied to the viewport. |
+| `isCompact`, `isRegular`, `isWide`, `isRegularOrWider`, `isShort`, `isTall`, `isLandscape` | Booleans. `isRegular` is the middle class only. Use `isRegularOrWider` for "not compact". |
+| `atLeast(target)` | A new boolean readable for `sizeClassAtLeast(sizeClass, target)`. |
+| `interactionClasses` | `{ primary, pointer, touch, gamepad, keyboard }` from `UserInputService.PreferredInput` and the `MouseEnabled`, `TouchEnabled`, `GamepadEnabled` and `KeyboardEnabled` capabilities. `primary` is `"pointer"`, `"touch"` or `"gamepad"`. Before a player uses touch or a gamepad, a device with touch and no mouse is `"touch"`. The primary class is always in the set. |
+| `effectiveInput` | `primary` as `"KeyboardAndMouse"`, `"Touch"` or `"Gamepad"`. |
+| `displaySize` | The name of `GuiService.ViewportDisplaySize`: `"Small"`, `"Medium"` or `"Large"`. |
+| `safeInsets` | `{ top, left, bottom, right }` from `GuiService:GetGuiInset()`. It updates when the viewport or `GuiService.TopbarInset` changes. |
+| `preferredTextSize` | The name of `GuiService.PreferredTextSize`, for example `"Medium"` or `"Largest"`. The engine applies the text size. |
+| `reducedMotion` | The factory `reducedMotion` option or `GuiService.ReducedMotionEnabled`. |
+
+```luau
+local function Apps(tabs, selection)
+	local env = UI.environment()
+	return UI.TabView "Apps" {
+		tabs = tabs,
+		selection = selection,
+		railWidth = function(use)
+			return if Facet.adaptive.sizeClassAtLeast(use(env.sizeClass), "wide") then 176 else 148
+		end,
+	}
+end
+```
+
+For a choice that depends on the space of one container, observe the
+`AbsoluteSize` of that container. The environment describes the viewport.
+
+### worldAnchor
+
+`UI.worldAnchor(options) -> { anchor, dispose }` projects a world object to a
+screen anchor for a `RadialMenu` `anchor` or a marker. It reads the camera on
+each `RunService.Heartbeat`. It creates no Instances.
+
+| Option | Meaning and default |
+|---|---|
+| `target` | Required. A `BasePart`, a `Model` or a `Player`, or a readable of one. A `Player` resolves its current `Character`. A nil value makes the anchor invisible until the target comes back. |
+| `padding` | A fraction from 0 to 1 of the measured radius. The default is 0.15. |
+| `offscreen` | `"hide"` (the default) or `"retain"`. `"retain"` projects the center for a marker, also in a direction past the viewport for a target behind the camera. A retained anchor has `onscreen` and `clearance = 0`. |
+| `occlusion` | `false` by default. When `true`, one `Workspace:Raycast` from the camera to the target center hides a target behind another object. |
+| `camera` | A `Camera` or a readable of one. The default is the workspace camera. |
+
+`anchor` is a readable `{ x, y, clearance, visible, onscreen?, occluded? }` in
+viewport pixels. `x` and `y` are the center of the projected bounding box.
+`clearance` encloses the eight projected corners, times `1 + padding`. A
+missing, removed, empty, offscreen or near-plane target has `visible = false`,
+and an open `RadialMenu` closes. An unknown option, a padding out of range and
+a missing target are errors before the frame hook starts. `dispose()` sets
+`visible = false` and disconnects the hook. The owner that creates the binding
+also disposes it.
+
+The game owns the `ProximityPrompt`, the proximity rules and the server checks.
+Open the menu from the prompt:
+
+```luau
+local function CrateActions(crate, prompt, actions)
+	local binding = UI.worldAnchor({ target = crate })
+	local open = Compose.cell(false)
+	local triggered = prompt.Triggered:Connect(function()
+		open:set(true)
+	end)
+	Compose.cleanup(function()
+		triggered:Disconnect()
+	end)
+	return UI.RadialMenu "CrateActions" {
+		items = actions,
+		anchor = binding.anchor,
+		isPresented = open,
+		launcher = false,
+	}
 end
 ```
 

@@ -38,6 +38,9 @@ to select a control. Then read the exact contract of that control in the
 | A runtime, controls and a themed ScreenGui mount in one call | `Facet.app(options?)`; `app.mount(Component)`; `app.dispose()` |
 | Screen roots, stacks and layers | `UI.Screen`, `UI.VStack`, `UI.HStack`, `UI.ZStack` |
 | Scrolling content and grids | `UI.ScrollView`, `UI.Grid` |
+| Programmatic scrolling to a position or a node | `UI.scrollTo`, `UI.scrollToVisible` |
+| Viewport classes, input classes, safe insets, text size and reduced motion | `UI.environment`, `Facet.adaptive` |
+| Screen anchors for world objects | `UI.worldAnchor` |
 | Main-axis fill | `UI.fill` |
 | Failure containment with fallback content | `UI.ErrorBoundary` |
 | One reactive graph with the game's own Compose | `Facet.bind(Compose, Roblox)`; `Facet.COMPOSE_COMMIT` |

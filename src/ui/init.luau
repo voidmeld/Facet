@@ -27,6 +27,8 @@ return function(Compose: Types.ComposeModule, runtime: Types.Runtime, options: T
 	require("@self/badge_seal")(ctx, UI)
 	require("@self/date_time_picker")(ctx, UI, surfaces)
 	require("@self/color_picker")(ctx, UI, surfaces)
+	require("@self/environment")(ctx, UI)
+	require("@self/scrolling")(ctx, UI)
 	table.freeze(UI)
 	return UI
 end

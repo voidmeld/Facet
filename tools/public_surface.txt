@@ -68,6 +68,16 @@ Roblox : table
   Roblox.preferredInputSpec : function
   Roblox.usableViewportSize : function
 VERSION : string
+adaptive : table(frozen)
+  adaptive.BREAKPOINTS : table(frozen)
+  adaptive.DEFAULT_STACK_ABOVE : number
+  adaptive.HEIGHT_BREAKPOINTS : table(frozen)
+  adaptive.axisFor : function
+  adaptive.columnsFor : function
+  adaptive.heightClass : function
+  adaptive.orientationFor : function
+  adaptive.sizeClass : function
+  adaptive.sizeClassAtLeast : function
 app : function
 bind : function
 civilDate : table(frozen)
@@ -160,7 +170,12 @@ controls(runtime).VirtualList : function
 controls(runtime).Vote : function
 controls(runtime).ZStack : function
 controls(runtime).badged : function
+controls(runtime).environment : function
 controls(runtime).fill : function
+controls(runtime).scrollTo : function
+controls(runtime).scrollToVisible : function
+controls(runtime).worldAnchor : function
+type Adaptive
 type AlertAction
 type AlertSpec
 type App
@@ -193,6 +208,7 @@ type Controls
 type DateTimePickerProps
 type DialogSpec
 type DisclosureGroupSpec
+type Environment
 type ErrorBoundaryProps
 type Extent
 type Facet
@@ -200,6 +216,7 @@ type GridProps
 type IdentityCollectionSpec
 type IdentityTableSpec
 type ImageResource
+type InteractionClasses
 type KeyedCollectionSpec
 type KeyedTableSpec
 type LabelProps
@@ -230,7 +247,9 @@ type Readable
 type RowAction
 type RowActionsSpec
 type Runtime
+type SafeInsets
 type ScreenProps
+type ScrollOptions
 type ScrollViewProps
 type SheetSpec
 type ShortcutHintProps
@@ -254,4 +273,6 @@ type ThemePackage
 type ToggleProps
 type Use
 type VoteSpec
+type WorldAnchor
+type WorldAnchorOptions
 type ZStackProps

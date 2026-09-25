@@ -5,8 +5,12 @@ function desktop.create(Facet: any, runtime: any, views: any, model: any, progre
 	options = options or {}
 	local types = options.types or getfenv(0)
 	local UDim2 = types.UDim2
+	local Vector2, Enum = types.Vector2, types.Enum
 	local UI = Facet.controls(runtime, options)
+	local adaptive = Facet.adaptive
 	return function()
+		local env = UI.environment()
+		local you = UI.worldAnchor({ target = Compose.cell(options.player), offscreen = "retain" })
 		local tabs = {}
 		local icons = { Discover = "facet:search", Avatar = "person", Chat = "edit" }
 		for _, name in { "Discover", "Avatar", "Chat" } do
@@ -36,11 +40,28 @@ function desktop.create(Facet: any, runtime: any, views: any, model: any, progre
 				tabs = tabs,
 				style = "sidebarAdaptable",
 				sidebarPreference = "sidebar",
-				railWidth = 176,
+				railWidth = function(use)
+					return if adaptive.sizeClassAtLeast(use(env.sizeClass), "wide") then 176 else 148
+				end,
 				restoreScroll = false,
 				transition = { seconds = 0.18 },
 				retention = "top",
 				Size = UDim2.fromScale(1, 1),
+			},
+			Host.TextLabel "YouMarker" {
+				Text = "You",
+				AutomaticSize = Enum.AutomaticSize.XY,
+				AnchorPoint = Vector2.new(0.5, 1),
+				BackgroundTransparency = 1,
+				ZIndex = 5,
+				Visible = function(use)
+					local point = use(you.anchor)
+					return point.visible and point.onscreen == true and use(progress) < 1
+				end,
+				Position = function(use)
+					local point, insets = use(you.anchor), use(env.safeInsets)
+					return UDim2.fromOffset((point.x or 0) - insets.left, (point.y or 0) - insets.top)
+				end,
 			},
 		}
 		root:AddTag("facet-surface")

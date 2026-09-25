@@ -16,6 +16,15 @@ type World = {
 	stop: () -> (),
 }
 
+local helpers: { [string]: boolean } = {
+	fill = true,
+	badged = true,
+	environment = true,
+	worldAnchor = true,
+	scrollTo = true,
+	scrollToVisible = true,
+}
+
 local function world(build: (any, any, any) -> any, options: { [string]: any }?): World
 	local engine: any = engineLib.new()
 	local runtime = Facet.Roblox.createRuntime(engine)
@@ -332,14 +341,14 @@ t.describe("native parity gaps", function()
 		local probe: any = engineLib.new()
 		local names: { string } = {}
 		for name in Facet.controls(Facet.Roblox.createRuntime(probe), { types = probe.types } :: any) do
-			if name ~= "fill" and name ~= "badged" then
+			if not helpers[name] then
 				table.insert(names, name :: string)
 			end
 		end
 		table.sort(names)
 		local published: { string } = {}
 		for name in string.gmatch(fs.readFile("tools/public_surface.txt"), "controls%(runtime%)%.([%w_]+) : function") do
-			if name ~= "fill" and name ~= "badged" then
+			if not helpers[name] then
 				table.insert(published, name)
 			end
 		end

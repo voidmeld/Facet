@@ -5,6 +5,7 @@ return function(ctx)
 	local types, D2, V2, C3, CF, E = ctx.types, ctx.D2, ctx.V2, ctx.C3, ctx.CF, ctx.E
 	local words, quiet, button = ctx.words, ctx.quiet, ctx.button
 	local arithmetic = ctx.Facet.recipes.arithmetic
+	local scrollTo, scrollToVisible = UI.scrollTo, UI.scrollToVisible
 	local accents, accentOptions, accentItems = {}, {}, {}
 	for _, entry in theme.ACCENTS do
 		accents[entry.id] = entry.label
@@ -191,7 +192,8 @@ return function(ctx)
 			root = {
 				title = "Explorer",
 				content = function()
-					return page(
+					local settingsPage
+					settingsPage = page(
 						"SettingsPage",
 						quiet("Subtitle", "Choose an accent and accessories.", "label"),
 						UI.DisclosureGroup "SettingsDisclosure" {
@@ -270,7 +272,8 @@ return function(ctx)
 								Size = D2.new(0.5, -4, 0, 44),
 								AutomaticSize = E.AutomaticSize.None,
 								content = function()
-									return UI.VStack "PreviewTips" {
+									local tips
+									tips = UI.VStack "PreviewTips" {
 										width = "fill",
 										gap = "s",
 										quiet(
@@ -284,13 +287,24 @@ return function(ctx)
 											"label"
 										),
 									}
+									local grown = tips:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+										scrollToVisible(tips)
+									end)
+									Compose.cleanup(function()
+										grown:Disconnect()
+									end)
+									return tips
 								end,
 							},
 						},
 						button("Reset", "Reset look", function()
 							model.resetAvatarPresented:set(true)
+						end, { Size = D2.new(1, 0, 0, 44), AutomaticSize = E.AutomaticSize.None }),
+						button("SettingsTop", "Back to top", function()
+							scrollTo(settingsPage, "top")
 						end, { Size = D2.new(1, 0, 0, 44), AutomaticSize = E.AutomaticSize.None })
 					)
+					return settingsPage
 				end,
 			},
 			destinations = {
