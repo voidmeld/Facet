@@ -3,7 +3,7 @@
     "menus-pickers": {
       "mainCases": 230,
       "a": 191,
-      "aWeaker": 46,
+      "aWeaker": 36,
       "b": 0,
       "c": 39,
       "d": 0,
@@ -46,7 +46,7 @@
     "controls-actions": {
       "mainCases": 414,
       "a": 116,
-      "aWeaker": 10,
+      "aWeaker": 9,
       "b": 1,
       "c": 297,
       "d": 0,
@@ -88,7 +88,7 @@
     "presented-surfaces": {
       "mainCases": 333,
       "a": 169,
-      "aWeaker": 17,
+      "aWeaker": 16,
       "b": 5,
       "c": 159,
       "d": 0,
@@ -130,7 +130,7 @@
     "layout-geometry": {
       "mainCases": 1395,
       "a": 279,
-      "aWeaker": 115,
+      "aWeaker": 114,
       "b": 221,
       "c": 895,
       "d": 0,
@@ -200,7 +200,7 @@
     "controls-values": {
       "mainCases": 289,
       "a": 261,
-      "aWeaker": 14,
+      "aWeaker": 9,
       "b": 0,
       "c": 28,
       "d": 0,
@@ -215,7 +215,7 @@
     "adaptive-environment": {
       "mainCases": 427,
       "a": 39,
-      "aWeaker": 8,
+      "aWeaker": 5,
       "b": 51,
       "c": 337,
       "d": 0,
@@ -357,7 +357,7 @@
     "paint-theming": {
       "mainCases": 726,
       "a": 211,
-      "aWeaker": 9,
+      "aWeaker": 8,
       "b": 70,
       "c": 445,
       "d": 0,
@@ -372,7 +372,7 @@
     "navigation-containers": {
       "mainCases": 90,
       "a": 87,
-      "aWeaker": 7,
+      "aWeaker": 5,
       "b": 1,
       "c": 2,
       "d": 0,
@@ -494,7 +494,7 @@
     ],
     "contracts": 2824,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 442
+    "coveredButWeaker": 418
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -20720,8 +20720,19 @@
         "native_parity_restore::native parity restore: Label text fit and middle truncation::re-derives the cut when the painted size changes and cuts an icon label beside its icon",
         "native_parity_restore::native parity restore: Label text fit and middle truncation::stays on one line and refuses rich text, wrapping and an unknown truncation"
       ],
-      "weaker": "The headless engine measures with a fixed glyph width. There is no disclosure plate for the full value.",
-      "restoredBy": "parity/restore"
+      "weaker": "The real engine TextBounds cut is asserted live, including a re-cut on a theme text change. There is no disclosure plate for the full value.",
+      "restoredBy": "parity/restore",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, viewport 749x368, Medium text; each fixture sets an 800x400 stage; a larger text size is raised through a grown theme package (+14), not PreferredTextSize",
+        "artifacts": [
+          "artifacts/studio-live/weak3_geometry-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_geometry/label-middle-truncation-real-bounds",
+          "weak3_geometry/label-middle-truncation-follows-a-theme-text-change"
+        ],
+        "observed": "34 engine checks passed, including: the middle-cut label mounts as a TextLabel; 60 px: the box is the offered width; 60 px: the painted line fits the width; 60 px: an ellipsis stands between head and tail."
+      }
     },
     {
       "id": "mech2-47",
@@ -22716,8 +22727,18 @@
         "native_parity_restore::native parity restore: Label text fit and middle truncation::honors an explicit cap and floor by role or pixels and follows the theme",
         "native_parity_restore::native parity restore: Label text fit and middle truncation::refuses a misspelled fit option, a cap that is not a size and a plain size"
       ],
-      "weaker": "The engine chooses the size through TextScaled and UITextSizeConstraint. The headless engine does not scale text, so the candidate checks the native configuration, not a painted size. There is no preferred-text offset term; the engine applies the player preference.",
-      "restoredBy": "parity/restore"
+      "weaker": "TextScaled breaks a long word across lines when the box has height, so the painted size of the floor cases is not recovered; the floor is asserted as UITextSizeConstraint.MinTextSize. There is no preferred-text offset term; the engine applies the player preference.",
+      "restoredBy": "parity/restore",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, viewport 749x368, Medium text; each fixture sets an 800x400 stage; a larger text size is raised through a grown theme package (+14), not PreferredTextSize",
+        "artifacts": [
+          "artifacts/studio-live/weak3_geometry-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_geometry/label-text-size-fit-real-engine"
+        ],
+        "observed": "14 engine checks passed, including: a fitting label mounts with TextScaled; a label that fits paints the cap (body); the size comes down from the cap; the painted size fits the 80x24 box."
+      }
     },
     {
       "id": "mech3-83-retired",
@@ -35120,7 +35141,6 @@
         "native_parity_strength_paint::native paint strength: skins::maps hover and press on each skinned part to that part's state art",
         "native_parity_strength_paint::native paint strength: skins::drives the control skin art from the button's own interaction state"
       ],
-      "weaker": "Press was not driven live; only Hover is recorded.",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
         "artifacts": [
@@ -35130,7 +35150,18 @@
           "needs_live_input/skinned-part-hover-state"
         ],
         "observed": "With the mouse over them, the Toggle Indicator, the Stepper root and the Slider Thumb are in GuiState Hover."
-      }
+      },
+      "liveEvidenceAdded": {
+        "host": "Roblox Studio playtest, no device simulation, KeyboardAndMouse preferred input, real mouse drag, hover and press through the Studio input tools, Medium text",
+        "artifacts": [
+          "artifacts/studio-live/weak3_pointer-skinned-part-press-state-kbm-default.json"
+        ],
+        "cases": [
+          "weak3_pointer/skinned-part-press-state"
+        ],
+        "observed": "6 engine checks passed, including: the Toggle Indicator and the Stepper Increase part were found; the held mouse puts the Toggle Indicator in GuiState Press; after release the Indicator leaves Press; the release flipped the toggle once."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "themes-P4-52",
@@ -36537,7 +36568,7 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::follows its offer both ways between the row and the summary, for fill and hug"
       ],
-      "weaker": "Live evidence does not cover this part: The Narrow copy's form at 1280 px is noted, not asserted.",
+      "weaker": "At 1000 px (a 500 px box) the Narrow copy draws the row where main showed the summary: the row width measure omits the description, the state word and the button padding.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -36573,7 +36604,7 @@
         ],
         "observed": "The live case ports_content/steps-form-fits-the-offer passed with 24 checks."
       },
-      "weaker": "Live evidence does not cover this part: The Narrow copy's form at 1280 px is noted, not asserted."
+      "weaker": "At 1000 px (a 500 px box) the Narrow copy draws the row where main showed the summary: the row width measure omits the description, the state word and the button padding."
     },
     {
       "id": "post-step-12",
@@ -38162,7 +38193,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::rounds, strokes and shadows one node with native modifiers"
       ],
-      "weaker": "Live evidence does not cover this part: the engine UICorner has one radius for all four corners, so per-corner radii cannot be drawn natively; the case checks the one radius, the stroke and the shadow.",
+      "weaker": "The case checks one UICorner radius. The Studio 0.740 probe shows UICorner has TopLeftRadius, TopRightRadius, BottomLeftRadius and BottomRightRadius, so per-corner radii can be drawn natively, but the recipe does not use them yet.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -38174,6 +38205,16 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
+      },
+      "liveEvidenceAdded": {
+        "host": "Roblox Studio playtest, viewport 749x368, Medium text; each fixture sets an 800x400 stage; a larger text size is raised through a grown theme package (+14), not PreferredTextSize",
+        "artifacts": [
+          "artifacts/studio-live/weak3_geometry-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_geometry/uicorner-per-corner-probe"
+        ],
+        "observed": "1 engine checks passed, including: the UICorner property probe ran and CornerRadius exists."
       }
     },
     {
@@ -38498,8 +38539,18 @@
       "candidateCases": [
         "native_dialog::native Dialog: composition, layout and the height budget::automatic actions stack for three; an explicit row that cannot fit falls to the safe stack"
       ],
-      "weaker": "Label widths come from TextBounds set by the test, not from measured text.",
-      "family": "overlays"
+      "family": "overlays",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/dialog-actions-stack-and-row"
+        ],
+        "observed": "17 engine checks passed, including: three automatic: the dialog, A and B were found; three automatic: B stacks below A; three automatic: the A label is measured by the engine and fits its button; three automatic: A inside the panel."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-overlays-016",
@@ -42103,7 +42154,17 @@
         "native_picker_fields::native Picker menu rows::an avatar leads its row without a second stop or press, and a disabled row is unreachable"
       ],
       "family": "pickers",
-      "weaker": "The panel width against its widest row is live."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/picker-panel-widest-row"
+        ],
+        "observed": "8 engine checks passed, including: desktop: the menu panel opened; desktop: row a is inside the panel across; desktop: avatar, icon, meta and badge of row a fit inside the panel; desktop: row b is inside the panel across."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-055",
@@ -42600,7 +42661,17 @@
         "native_picker_fields::native Picker option indicator and search rows::a navigation link keeps its title and value in one row"
       ],
       "family": "pickers",
-      "weaker": "One-line fit at a regular width is live."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/navigation-link-one-line"
+        ],
+        "observed": "5 engine checks passed, including: the title and the value were found; the title and the value share one line; the value sits after the title; the value reads Normal."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-084",
@@ -42971,7 +43042,6 @@
         "native_slider_shapes::native Slider range::both handles are touch-floor targets and the fill spans between them"
       ],
       "family": "pickers",
-      "weaker": "Live evidence does not cover this part: Dragging a handle past the other to minGap needs a pointer drag.",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
         "artifacts": [
@@ -42981,7 +43051,18 @@
           "ports_pickers/slider-range-live"
         ],
         "observed": "The live case ports_pickers/slider-range-live passed with 9 checks."
-      }
+      },
+      "liveEvidenceAdded": {
+        "host": "Roblox Studio playtest, no device simulation, KeyboardAndMouse preferred input, real mouse drag, hover and press through the Studio input tools, Medium text",
+        "artifacts": [
+          "artifacts/studio-live/weak3_pointer-range-slider-drag-kbm-default.json"
+        ],
+        "cases": [
+          "weak3_pointer/range-slider-drag"
+        ],
+        "observed": "8 engine checks passed, including: all three tracks and their handles were found; HandleLower is at least 44x44 on screen; HandleUpper is at least 44x44 on screen; a real drag of the lower thumb past the upper stops a whole minGap short: 50/60."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-105",
@@ -43007,7 +43088,17 @@
         ],
         "observed": "The live case ports_pickers/slider-range-live passed with 9 checks."
       },
-      "weaker": "Live evidence does not cover this part: Dragging a handle past the other to minGap needs a pointer drag."
+      "liveEvidenceAdded": {
+        "host": "Roblox Studio playtest, no device simulation, KeyboardAndMouse preferred input, real mouse drag, hover and press through the Studio input tools, Medium text",
+        "artifacts": [
+          "artifacts/studio-live/weak3_pointer-range-slider-drag-kbm-default.json"
+        ],
+        "cases": [
+          "weak3_pointer/range-slider-drag"
+        ],
+        "observed": "8 engine checks passed, including: all three tracks and their handles were found; HandleLower is at least 44x44 on screen; HandleUpper is at least 44x44 on screen; a real drag of the lower thumb past the upper stops a whole minGap short: 50/60."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-106",
@@ -43206,7 +43297,17 @@
         "native_slider_shapes::native Slider thumb modes and custom art::a custom knob is built once per thumb, is told its value and rides it"
       ],
       "family": "pickers",
-      "weaker": "The knob floor is a UISizeConstraint; the solved footprint is live."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/slider-custom-knob-footprint"
+        ],
+        "observed": "7 engine checks passed, including: the custom knob is built once; the Thumb and the caller's Pip were found; the handle is at least as large as the mark; the handle solves at the control's own floor, not the mark's size."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-119",
@@ -43237,7 +43338,17 @@
         "native_slider_shapes::native Slider controlSize::a named rung paints a thinner track inside the whole target"
       ],
       "family": "pickers",
-      "weaker": "The thinner rail is the paint; the reserved target is the 44 px track."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/slider-rung-thin-rail-whole-target"
+        ],
+        "observed": "7 engine checks passed, including: both rails, the compact Track and Fill were found; the compact rail paints thinner than the regular one; the compact hit track keeps a whole 44 px target; the hit track carries the drag detector."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-121",
@@ -43766,7 +43877,17 @@
       "candidateCases": [
         "native_date_time_picker::DateTimePicker: ranges, presets and drafts::draft: picks and presets propose live, only Apply commits, Cancel restores, Reset all clears"
       ],
-      "weaker": "Footer order is proven by LayoutOrder, parents and the SpaceBetween flex, and chip size by the compact controlSize, not by measured rectangles."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/dtp-draft-footer-rects"
+        ],
+        "observed": "9 engine checks passed, including: the draft calendar, its footer and a preset chip were found; Reset all, then Cancel, then Apply from the leading edge; Reset all starts at the footer's leading edge; Apply ends at the footer's trailing edge."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-151",
@@ -44224,7 +44345,17 @@
       "candidateCases": [
         "native_color_picker::native ColorPicker well and panel::a short swatch list keeps square target cells, and the default grid stays a hue per column"
       ],
-      "weaker": "Cell squareness is read from Size offsets, not solved rects."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/color-swatch-square-cells"
+        ],
+        "observed": "6 engine checks passed, including: the swatch grid was found; two swatch cells; #FFC400 solves square at 44x44; #141418 solves square at 44x44."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-175",
@@ -44321,7 +44452,17 @@
         ],
         "observed": "The live case ports_pickers/color-plane-layers-and-ring passed with 24 checks."
       },
-      "weaker": "Live evidence does not cover this part: Only the precondition is checked (the drag Surface covers the painted plane exactly); a drag cannot be sent, so 1:1 tracking is not checked."
+      "liveEvidenceAdded": {
+        "host": "Roblox Studio playtest, no device simulation, KeyboardAndMouse preferred input, real mouse drag, hover and press through the Studio input tools, Medium text",
+        "artifacts": [
+          "artifacts/studio-live/weak3_pointer-color-plane-drag-kbm-default.json"
+        ],
+        "cases": [
+          "weak3_pointer/color-plane-drag"
+        ],
+        "observed": "10 engine checks passed, including: the plane, its Surface and its Ring were found; mid-drag saturation tracks the pointer 1:1 at 75; mid-drag value tracks the pointer 1:1 at 75; the drag keeps the hue at 180."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-180",
@@ -44464,7 +44605,17 @@
       "candidateCases": [
         "native_color_picker::native ColorPicker alpha, empty, disabled and refusals::the Bricks tab names the chosen brick in a field above its grid"
       ],
-      "weaker": "'Above' is proven by LayoutOrder in the Brick column, not by solved rects."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/color-brick-field-above-grid"
+        ],
+        "observed": "4 engine checks passed, including: the brick name field and grid were found; the brick name field is above its grid; the field and the grid do not overlap; the field is visible."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-pickers-188",
@@ -44640,8 +44791,18 @@
         "native_foundation_parity::native inverse and underlined Buttons::underline hover marks the escaped label while hovered or selected, and always marks it at rest",
         "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
       ],
-      "weaker": "Hover is the native GuiState set on the fake engine; the real pointer path is live.",
-      "needsLive": "port26-underline-live"
+      "needsLive": "port26-underline-live",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, no device simulation, KeyboardAndMouse preferred input, real mouse drag, hover and press through the Studio input tools, Medium text",
+        "artifacts": [
+          "artifacts/studio-live/weak3_pointer-underline-hover-kbm-default.json"
+        ],
+        "cases": [
+          "weak3_pointer/underline-hover"
+        ],
+        "observed": "7 engine checks passed, including: at rest the hover link is not underlined; the always link is underlined at rest; the real pointer hovers the link; the hovered link is underlined."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-009",
@@ -44657,8 +44818,18 @@
       "candidateCases": [
         "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
       ],
-      "weaker": "Ported to the floating Menu rows. A plain xsmall Button row has no reserved floor in the native model, so it is 28 px on every input. Hit rectangles and overlap are live.",
-      "needsLive": "port26-dense-menu-rows"
+      "needsLive": "port26-dense-menu-rows",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/menu-dense-pointer-rows-live"
+        ],
+        "observed": "39 engine checks passed, including: the Studio window is pointer-only; the dense menu opened; pointer-only: the a row is its own hit target; pointer-only: the b row is its own hit target."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-010",
@@ -44674,8 +44845,18 @@
       "candidateCases": [
         "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
       ],
-      "weaker": "Ported to the floating Menu rows. A plain xsmall Button row stays 28 px under touch; api.md says to use xsmall only for pointer rows.",
-      "needsLive": "port26-dense-menu-rows"
+      "needsLive": "port26-dense-menu-rows",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/menu-dense-pointer-rows-live"
+        ],
+        "observed": "39 engine checks passed, including: the Studio window is pointer-only; the dense menu opened; pointer-only: the a row is its own hit target; pointer-only: the b row is its own hit target."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-011",
@@ -44691,8 +44872,18 @@
       "candidateCases": [
         "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
       ],
-      "weaker": "Ported to the floating Menu rows through UserInputService TouchEnabled and GamepadEnabled; overlap is live.",
-      "needsLive": "port26-dense-menu-rows"
+      "needsLive": "port26-dense-menu-rows",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/menu-dense-pointer-rows-live"
+        ],
+        "observed": "39 engine checks passed, including: the Studio window is pointer-only; the dense menu opened; pointer-only: the a row is its own hit target; pointer-only: the b row is its own hit target."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-012",
@@ -44737,8 +44928,18 @@
         "native_foundation_parity::native outline DisclosureGroup::an outline group has no expanded wash, a chosen role and an indented body",
         "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
       ],
-      "weaker": "The 16 px content offset is asserted as the UIPadding of RevealFade; the solved rectangle is live.",
-      "needsLive": "port26-outline-indent"
+      "needsLive": "port26-outline-indent",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/outline-disclosure-indent"
+        ],
+        "observed": "6 engine checks passed, including: the group, header, title and row were found; the body row solves 16 px (space m) in from the group; the expanded header wears no selected wash; the group is an outline."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-015",
@@ -44780,8 +44981,18 @@
       "candidateCases": [
         "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
       ],
-      "weaker": "Row heights are native Size offsets; hit rectangles and overlap are live. The rows are 44 px under the gamepad, not 46: the native row is fixed at the floor.",
-      "needsLive": "port26-dense-menu-rows"
+      "needsLive": "port26-dense-menu-rows",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/menu-dense-pointer-rows-live"
+        ],
+        "observed": "39 engine checks passed, including: the Studio window is pointer-only; the dense menu opened; pointer-only: the a row is its own hit target; pointer-only: the b row is its own hit target."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-018",
@@ -44797,8 +45008,18 @@
       "candidateCases": [
         "native_foundation_parity::native start-aligned Picker menu::a start-aligned title sits on one line beside its value, and hug sizing hugs the pair"
       ],
-      "weaker": "The one-line row, its wrap and its hug are native UIListLayout and AutomaticSize properties. The centred midlines, the 32 px gap, the 400 px width and the wrap at a large text size are live.",
-      "needsLive": "port26-picker-start-inline"
+      "needsLive": "port26-picker-start-inline",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/picker-start-inline-hug"
+        ],
+        "observed": "5 engine checks passed, including: the picker row, label and trigger were found; the title and trigger midlines meet; the trigger follows the title within 32 px; the hugging pair is narrower than 400 px."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-019",
@@ -44814,8 +45035,18 @@
       "candidateCases": [
         "native_foundation_parity::native start-aligned Picker menu::under touch the one-line trigger hugs its value, and end keeps the title above the trigger"
       ],
-      "weaker": "The trigger hugs its value through AutomaticSize; the 48 px width is live.",
-      "needsLive": "port26-picker-touch-row"
+      "needsLive": "port26-picker-touch-row",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/picker-touch-inline-hug"
+        ],
+        "observed": "5 engine checks passed, including: the preferred input is touch; the row, label and trigger were found; under touch the trigger hugs its value wider than 48 px; the title keeps its line beside the trigger."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-020",
@@ -44831,8 +45062,18 @@
       "candidateCases": [
         "native_foundation_parity::native dense pointer rows::a Picker menu's rows take the pointer floor, and touch grows them back"
       ],
-      "weaker": "Row heights are native Size offsets; overlap is live.",
-      "needsLive": "port26-dense-picker-rows"
+      "needsLive": "port26-dense-picker-rows",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/picker-dense-pointer-rows-live"
+        ],
+        "observed": "19 engine checks passed, including: the dense picker menu opened; pointer-only: the slow row is its own hit target; pointer-only: the normal row is its own hit target; pointer-only: the fast row is its own hit target."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-021",
@@ -44896,8 +45137,18 @@
       "candidateCases": [
         "native_foundation_parity::native Sheet adaptive placement::a roomy pointer screen docks the sheet at the side edge; touch and compact keep the bottom"
       ],
-      "weaker": "The right edge at the room width and the slide are live; the case asserts the anchor, the position scale and FacetPlacement.",
-      "needsLive": "port26-sheet-adaptive"
+      "needsLive": "port26-sheet-adaptive",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/sheet-adaptive-side-edge"
+        ],
+        "observed": "11 engine checks passed, including: desktop: the sheet panel was found; desktop: the placement is side; desktop: the sheet's right edge is the room's right edge; desktop: the sheet is narrower than the room."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-025",
@@ -44913,8 +45164,18 @@
       "candidateCases": [
         "native_foundation_parity::native TabView controlSize::each tab paints at the rung height while the strip keeps the touch floor"
       ],
-      "weaker": "Heights are native Size offsets; the centring in the strip is live.",
-      "needsLive": "port26-tab-rung"
+      "needsLive": "port26-tab-rung",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/tabview-rung-centred"
+        ],
+        "observed": "8 engine checks passed, including: the strip and both tabs were found; the strip reserves the 44 px floor; tab a paints at the compact 36 px rung; tab a is centred in the strip."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-026",
@@ -45117,7 +45378,17 @@
         "native_foundation_parity::native plain Toggle::a plain compact checkbox paints no wash, labels at its role and still toggles",
         "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
       ],
-      "weaker": "Activation fires the native Activated event; the 36 px row is its Size offset."
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, device simulator, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "artifacts": [
+          "artifacts/studio-live/weak3_surfaces-plain-checkbox-row-tap-desktop-default.json"
+        ],
+        "cases": [
+          "weak3_surfaces/plain-checkbox-row-tap"
+        ],
+        "observed": "8 engine checks passed, including: the Box row and its label were found; the plain compact row solves at 36 px; the label draws at the label role (14 px); the label fits its row."
+      },
+      "closeNote": "The weak3 live case asserts with the real engine what the fake engine could not solve."
     },
     {
       "id": "post-port26-038",
