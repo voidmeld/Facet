@@ -782,8 +782,9 @@ These gaps close only in part. A live Studio check must show the rest:
   focused content Button has an Activate context at priority 5000 on Return.
   RowActionsToggle has priority 300.
 
-navigation-3-84 moved to class c. `api.md` no longer lists the Picker
-`valueAlignment` option, and a declared `valueAlignment` causes an error.
+navigation-3-84 moved to class c. `api.md` no longer listed the Picker
+`valueAlignment` option. The foundation parity port restored the option with
+`start` and `end` for a labelled menu. See [Foundation parity](#foundation-parity).
 
 ### Reference app, example and media parity tests
 
@@ -943,7 +944,7 @@ crosses a lateral edge at 390, 768, 1280 and 1920 px).
 
 ## Main cases after the baseline
 
-Some cases were added on `main` after the baseline. Each family records them here and in `postBaseline` of the data file.
+Some cases were added on `main` after the baseline. Each family records them here and in `postBaseline` of the data file. `totals.contracts` and `totals.contractsByClass` count every contract, the post-baseline families included.
 
 ### Content and navigation
 
@@ -1271,6 +1272,51 @@ Some cases were added on `main` after the baseline. Each family records them her
 | post-pickers-188 | `color_picker` | 1 | a | `the plane is two exact layers, the strips show what they select, and the thumbs are two-tone rings` | Live evidence does not cover this part: The ring structure (black 1 px, white 3 px, black 1 px) is checked on every ring; legibility on white, black and hues needs a screen capture. Proven live in `ports_pickers/color-plane-layers-and-ring`. |
 | post-pickers-189 | `color_picker` | 1 | a | `empty shows the placeholder and the crossed plate; disabled keeps its colour and does not open` |  |
 | post-pickers-190 | `color_picker` | 1 | a | `refuses a malformed contract at construction and quarantines a late bad value` |  |
+
+### Foundation parity
+
+`main` added these cases after `bc9a56a6`, up to `7c364ca0`. They cover the optional theme roles and metrics (`selection`, `onSelection`, `scrim`, `inverseSurface`, `onInverse`, `dimDisabledPlates`, `strongHairlineOpacity`, `controlSizes.xsmall`, `targetSizes.pointer` and `strokes.utility`), the pane and strong divider tags, and the control options Button `appearance = "inverse"`, `underline` and `textSize`, Toggle `appearance = "plain"` and `textSize`, DisclosureGroup `appearance = "outline"`, `textSize` and `indent`, TabView `controlSize`, Sheet `placement = "adaptive"` and Picker `valueAlignment = "start"`. The family has 38 contracts and 38 main cases (a: 32, c: 6). A case in `needsLive` also needs a live Studio check. The candidate spec is `native_foundation_parity`.
+
+| Contract | Main spec | Main cases | Class | Candidate cases | Note |
+|---|---|---:|---|---|---|
+| post-port26-001 | `authoring` | 1 | c | - | The `surface` option and the blueprint schema are deleted. Paint is a StyleSheet tag; `facet-pane` is the pane. |
+| post-port26-002 | `authoring` | 1 | c | - | The `surface` option and the blueprint schema are deleted. Paint is a StyleSheet tag; `facet-pane` is the pane. |
+| post-port26-003 | `authoring` | 1 | c | - | The `surface` option and core.lastError are deleted. Paint is a StyleSheet tag. |
+| post-port26-004 | `control_vocabulary` | 1 | a | `xsmall is one ladder step below compact unless the theme authors it, and a partial rung is refused` | The refusal message names the four rungs; there is no separate vocabulary table to read. |
+| post-port26-005 | `control_vocabulary` | 1 | a | `xsmall is one ladder step below compact unless the theme authors it, and a partial rung is refused` |  |
+| post-port26-006 | `control_vocabulary` | 1 | a | `xsmall is one ladder step below compact unless the theme authors it, and a partial rung is refused`, `the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline` | The native Button is its own hit area, so the 44 px footprint is not reserved; api.md says an xsmall button is a 28 px target. The controlSize attribute replaces the facet-size-xsmall tag. Live: `port26-xsmall-rung`. |
+| post-port26-007 | `control_vocabulary` | 1 | a | `textSize reaches the label beside an icon and the plain label, as a role or a number` |  |
+| post-port26-008 | `control_vocabulary` | 1 | a | `underline hover marks the escaped label while hovered or selected, and always marks it at rest`, `the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline` | Hover is the native GuiState set on the fake engine; the real pointer path is live. Live: `port26-underline-live`. |
+| post-port26-009 | `control_vocabulary` | 1 | a | `floating menu rows take the pointer floor while the input is pointer-only, live both ways` | Ported to the floating Menu rows. A plain xsmall Button row has no reserved floor in the native model, so it is 28 px on every input. Hit rectangles and overlap are live. Live: `port26-dense-menu-rows`. |
+| post-port26-010 | `control_vocabulary` | 1 | a | `floating menu rows take the pointer floor while the input is pointer-only, live both ways` | Ported to the floating Menu rows. A plain xsmall Button row stays 28 px under touch; api.md says to use xsmall only for pointer rows. Live: `port26-dense-menu-rows`. |
+| post-port26-011 | `control_vocabulary` | 1 | a | `floating menu rows take the pointer floor while the input is pointer-only, live both ways` | Ported to the floating Menu rows through UserInputService TouchEnabled and GamepadEnabled; overlap is live. Live: `port26-dense-menu-rows`. |
+| post-port26-012 | `control_vocabulary` | 1 | a | `targetSizes.pointer is refused below 24 and above the minimum` |  |
+| post-port26-013 | `theme_chrome` | 1 | c | - | The metric-mapped rule census is deleted. The native sheet recompiles every rule from the package on a change, and xsmall has no separate corner rule. |
+| post-port26-014 | `disclosure_group` | 1 | a | `an outline group has no expanded wash, a chosen role and an indented body`, `the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline` | The 16 px content offset is asserted as the UIPadding of RevealFade; the solved rectangle is live. Live: `port26-outline-indent`. |
+| post-port26-015 | `foreign` | 1 | c | - | UI.Foreign and the surface option are deleted. |
+| post-port26-016 | `stage` | 1 | c | - | The Stage surface option is deleted; the native Stage wears the facet-panel tag. |
+| post-port26-017 | `menu` | 1 | a | `floating menu rows take the pointer floor while the input is pointer-only, live both ways` | Row heights are native Size offsets; hit rectangles and overlap are live. The rows are 44 px under the gamepad, not 46: the native row is fixed at the floor. Live: `port26-dense-menu-rows`. |
+| post-port26-018 | `picker_style` | 1 | a | `a start-aligned title sits on one line beside its value, and hug sizing hugs the pair` | The one-line row, its wrap and its hug are native UIListLayout and AutomaticSize properties. The centred midlines, the 32 px gap, the 400 px width and the wrap at a large text size are live. Live: `port26-picker-start-inline`. |
+| post-port26-019 | `picker_style` | 1 | a | `under touch the one-line trigger hugs its value, and end keeps the title above the trigger` | The trigger hugs its value through AutomaticSize; the 48 px width is live. Live: `port26-picker-touch-row`. |
+| post-port26-020 | `picker_style` | 1 | a | `a Picker menu's rows take the pointer floor, and touch grows them back` | Row heights are native Size offsets; overlap is live. Live: `port26-dense-picker-rows`. |
+| post-port26-021 | `preferred_transparency` | 1 | a | `a strong divider is three times the hairline unless the theme authors its opacity` | The native sheet scales only the scrim by the preference; the case shows that the strong divider keeps its transparency. |
+| post-port26-022 | `preferred_transparency` | 1 | a | `a strong divider is three times the hairline unless the theme authors its opacity` | The census of partial backgrounds is replaced by the strong-divider and scrim values under a preference. |
+| post-port26-023 | `preferred_transparency` | 1 | a | `a strong divider is three times the hairline unless the theme authors its opacity` | Only the scrim value changes with preferredTransparency in the native sheet. |
+| post-port26-024 | `sheet_parts` | 1 | a | `a roomy pointer screen docks the sheet at the side edge; touch and compact keep the bottom` | The right edge at the room width and the slide are live; the case asserts the anchor, the position scale and FacetPlacement. Live: `port26-sheet-adaptive`. |
+| post-port26-025 | `tab_view` | 1 | a | `each tab paints at the rung height while the strip keeps the touch floor` | Heights are native Size offsets; the centring in the strip is live. Live: `port26-tab-rung`. |
+| post-port26-026 | `theme_optional_roles` | 1 | a | `Neutral keeps its accent pair, its black scrim and no mark, plate or outline rule` | The native unset scrim stays black (the candidate paint), not surface. The selection ink is the accent pair as on main. |
+| post-port26-027 | `theme_optional_roles` | 1 | a | `authored selection, onSelection and scrim reach the switch, slider, underline, tick and backdrop`, `a mounted Slider fill, tab underline and switch track resolve the authored ink` | There is no tint role vocabulary or StyleSheet token table in the native theme; the rule colours carry the authored roles. |
+| post-port26-028 | `theme_optional_roles` | 1 | a | `a mounted Slider fill, tab underline and switch track resolve the authored ink` | Resolved from the compiled rules against the mounted tags; engine paint is live. Live: `port26-selection-marks`. |
+| post-port26-029 | `theme_optional_roles` | 1 | a | `Neutral keeps its accent pair, its black scrim and no mark, plate or outline rule`, `a chosen Chip, a checked box and a selected link row wear the authored ink, also under hover`, `without an authored selection a chosen Chip keeps the selected-row wash` | The native sheet always emits a base mark rule that paints the selected wash; hover, press and link rules appear only when selection is authored. |
+| post-port26-030 | `theme_optional_roles` | 1 | a | `a chosen Chip, a checked box and a selected link row wear the authored ink, also under hover` | The checked box is the facet-toggle-on indicator, which reads the selection ink. Live: `port26-selection-marks`. |
+| post-port26-031 | `theme_optional_roles` | 1 | a | `a chosen Chip, a checked box and a selected link row wear the authored ink, also under hover` | The tag is added when the Chip is built; there is no separate adapter classification pass. |
+| post-port26-032 | `theme_optional_roles` | 1 | a | `dimDisabledPlates fades each plate toward the page, after every interaction rule` | Live: `port26-dim-disabled-plates`. |
+| post-port26-033 | `theme_optional_roles` | 1 | a | `a strong divider is three times the hairline unless the theme authors its opacity`, `the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline` | UI.Divider is deleted; the facet-divider-strong tag on a native Frame replaces appearance = strong. Live: `port26-strong-divider-pane`. |
+| post-port26-034 | `theme_optional_roles` | 1 | a | `strokes.utility draws the utility outline at its width, and 0 or unset draws none` | The native utility Button has no outline unless strokes.utility is more than 0. Live: `port26-utility-stroke`. |
+| post-port26-035 | `theme_optional_roles` | 1 | a | `a pane is the raised fill with no corner and no edge` | The facet-pane tag replaces the surface word; there is one sheet builder. Live: `port26-strong-divider-pane`. |
+| post-port26-036 | `theme_optional_roles` | 1 | a | `an inverse Button wears contentStrong lettered in surface, or the authored pair`, `the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline` | Live: `port26-inverse-paint`. |
+| post-port26-037 | `toggle_presentations` | 1 | a | `a plain compact checkbox paints no wash, labels at its role and still toggles`, `the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline` | Activation fires the native Activated event; the 36 px row is its Size offset. |
+| post-port26-038 | `toggle_presentations` | 1 | a | `a plain compact checkbox paints no wash, labels at its role and still toggles` |  |
 
 ## Use the data
 

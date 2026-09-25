@@ -3,7 +3,7 @@ local ComposeTypes = require("../vendor/compose/core")
 local Types = require("./types")
 local Engine = require("./engine_types")
 
-export type ControlSize = "compact" | "regular" | "large"
+export type ControlSize = "xsmall" | "compact" | "regular" | "large"
 export type Status = "neutral" | "info" | "success" | "warning" | "error" | "accent"
 export type TextRole = "caption" | "label" | "body" | "heading" | "title" | "control" | "strong" | "numeral"
 export type Corners = number | "pill" | "square" | "rounded"

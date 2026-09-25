@@ -20,7 +20,7 @@ export type AttributeValue = Engine.AttributeValue
 export type RobloxTypes = Engine.RobloxTypes
 export type Observe = Engine.Observe
 export type Playback = { play: (self: any) -> (), pause: (self: any) -> () }
-export type ControlSize = "compact" | "regular" | "large"
+export type ControlSize = "xsmall" | "compact" | "regular" | "large"
 export type SpaceStep = "xs" | "s" | "m" | "l" | "xl"
 export type Space = number | SpaceStep | string
 export type Sides = { top: Space?, right: Space?, bottom: Space?, left: Space? }
@@ -160,6 +160,8 @@ export type Context = {
 	read: Read,
 	metric: (string, Use?) -> number,
 	controlSize: (Value<ControlSize>?, "height" | "paddingX" | "iconSize", Use?) -> number,
+	pointerOnly: () -> (Use?) -> boolean,
+	hitFloor: () -> (Use?) -> number,
 	observe: Observe,
 	observeStyled: Observe,
 	shiftRoute: (Instance, () -> ()) -> (),

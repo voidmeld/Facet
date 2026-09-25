@@ -473,8 +473,8 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1638,
-      "c": 831,
+      "a": 1670,
+      "c": 837,
       "b": 307,
       "d": 1
     },
@@ -492,7 +492,7 @@
       "tools/check_types.py with tests/types/*_witness.luau (not a lune case)",
       "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)"
     ],
-    "contracts": 2777,
+    "contracts": 2815,
     "candidateCasesAtRecheck": 675,
     "coveredButWeaker": 577
   },
@@ -44399,6 +44399,618 @@
       "candidateCases": [
         "native_color_picker::native ColorPicker alpha, empty, disabled and refusals::refuses a malformed contract at construction and quarantines a late bad value"
       ]
+    },
+    {
+      "id": "post-port26-001",
+      "group": "paint-theming",
+      "title": "Surface refusal names the nine-surface vocabulary including pane (M0-A1 construction)",
+      "mainSpecs": [
+        "authoring"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "removal": "The `surface` option and the blueprint schema are deleted. Paint is a StyleSheet tag; `facet-pane` is the pane."
+    },
+    {
+      "id": "post-port26-002",
+      "group": "paint-theming",
+      "title": "Diagnosed Box.surface refusal names the nine-surface vocabulary including pane",
+      "mainSpecs": [
+        "authoring"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "removal": "The `surface` option and the blueprint schema are deleted. Paint is a StyleSheet tag; `facet-pane` is the pane."
+    },
+    {
+      "id": "post-port26-003",
+      "group": "paint-theming",
+      "title": "A later illegal surface is refused and the last legal paint stays, naming pane",
+      "mainSpecs": [
+        "authoring"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "removal": "The `surface` option and core.lastError are deleted. Paint is a StyleSheet tag."
+    },
+    {
+      "id": "post-port26-004",
+      "group": "paint-theming",
+      "title": "The size vocabulary names four rungs: xsmall, compact, regular, large",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native xsmall rung::xsmall is one ladder step below compact unless the theme authors it, and a partial rung is refused"
+      ],
+      "weaker": "The refusal message names the four rungs; there is no separate vocabulary table to read."
+    },
+    {
+      "id": "post-port26-005",
+      "group": "paint-theming",
+      "title": "xsmall is one ladder step below compact unless the theme authors it; a partial xsmall is refused",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native xsmall rung::xsmall is one ladder step below compact unless the theme authors it, and a partial rung is refused"
+      ]
+    },
+    {
+      "id": "post-port26-006",
+      "group": "paint-theming",
+      "title": "An xsmall Button and Chip paint 28 inside a 44 hit footprint with the size tag",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native xsmall rung::xsmall is one ladder step below compact unless the theme authors it, and a partial rung is refused",
+        "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
+      ],
+      "weaker": "The native Button is its own hit area, so the 44 px footprint is not reserved; api.md says an xsmall button is a 28 px target. The controlSize attribute replaces the facet-size-xsmall tag.",
+      "needsLive": "port26-xsmall-rung"
+    },
+    {
+      "id": "post-port26-007",
+      "group": "controls-actions",
+      "title": "A Button's textSize reaches the label it draws beside an icon",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native inverse and underlined Buttons::textSize reaches the label beside an icon and the plain label, as a role or a number"
+      ]
+    },
+    {
+      "id": "post-port26-008",
+      "group": "controls-actions",
+      "title": "underline = hover underlines the label while hovered and clears it after; always underlines at rest",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native inverse and underlined Buttons::underline hover marks the escaped label while hovered or selected, and always marks it at rest",
+        "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
+      ],
+      "weaker": "Hover is the native GuiState set on the fake engine; the real pointer path is live.",
+      "needsLive": "port26-underline-live"
+    },
+    {
+      "id": "post-port26-009",
+      "group": "adaptive-environment",
+      "title": "Pointer-only: rows stack at the theme's pointer floor and each hit is its own row",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
+      ],
+      "weaker": "Ported to the floating Menu rows. A plain xsmall Button row has no reserved floor in the native model, so it is 28 px on every input. Hit rectangles and overlap are live.",
+      "needsLive": "port26-dense-menu-rows"
+    },
+    {
+      "id": "post-port26-010",
+      "group": "adaptive-environment",
+      "title": "Neutral, and touch or a gamepad present, keep the 44 floor",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
+      ],
+      "weaker": "Ported to the floating Menu rows. A plain xsmall Button row stays 28 px under touch; api.md says to use xsmall only for pointer rows.",
+      "needsLive": "port26-dense-menu-rows"
+    },
+    {
+      "id": "post-port26-011",
+      "group": "adaptive-environment",
+      "title": "A live input switch grows the rows back to 44 and returns them to dense, both ways",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
+      ],
+      "weaker": "Ported to the floating Menu rows through UserInputService TouchEnabled and GamepadEnabled; overlap is live.",
+      "needsLive": "port26-dense-menu-rows"
+    },
+    {
+      "id": "post-port26-012",
+      "group": "theme-packages",
+      "title": "The pointer floor is validated: at least 24 and no larger than the minimum",
+      "mainSpecs": [
+        "control_vocabulary"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native dense pointer rows::targetSizes.pointer is refused below 24 and above the minimum"
+      ]
+    },
+    {
+      "id": "post-port26-013",
+      "group": "theme-packages",
+      "title": "Metric-derived rule props are mapped for live repaint (+1 for the xsmall corner)",
+      "mainSpecs": [
+        "theme_chrome"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "removal": "The metric-mapped rule census is deleted. The native sheet recompiles every rule from the package on a change, and xsmall has no separate corner rule."
+    },
+    {
+      "id": "post-port26-014",
+      "group": "navigation-containers",
+      "title": "An outline DisclosureGroup is a tree row: no header plate or wash, a chosen type role, an indented body",
+      "mainSpecs": [
+        "disclosure_group"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native outline DisclosureGroup::an outline group has no expanded wash, a chosen role and an indented body",
+        "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
+      ],
+      "weaker": "The 16 px content offset is asserted as the UIPadding of RevealFade; the solved rectangle is live.",
+      "needsLive": "port26-outline-indent"
+    },
+    {
+      "id": "post-port26-015",
+      "group": "paint-theming",
+      "title": "Foreign enforces the nine-surface vocabulary on its plate",
+      "mainSpecs": [
+        "foreign"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "removal": "UI.Foreign and the surface option are deleted."
+    },
+    {
+      "id": "post-port26-016",
+      "group": "paint-theming",
+      "title": "Stage enforces the nine-surface vocabulary",
+      "mainSpecs": [
+        "stage"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "removal": "The Stage surface option is deleted; the native Stage wears the facet-panel tag."
+    },
+    {
+      "id": "post-port26-017",
+      "group": "menus-pickers",
+      "title": "Menu rows take the pointer floor, each hit is its row, and a gamepad grows them to 44 live",
+      "mainSpecs": [
+        "menu"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native dense pointer rows::floating menu rows take the pointer floor while the input is pointer-only, live both ways"
+      ],
+      "weaker": "Row heights are native Size offsets; hit rectangles and overlap are live. The rows are 44 px under the gamepad, not 46: the native row is fixed at the floor.",
+      "needsLive": "port26-dense-menu-rows"
+    },
+    {
+      "id": "post-port26-018",
+      "group": "menus-pickers",
+      "title": "A start-aligned hugging menu picker puts title and trigger on one line and hugs the pair; accessibility sizes stack it",
+      "mainSpecs": [
+        "picker_style"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native start-aligned Picker menu::a start-aligned title sits on one line beside its value, and hug sizing hugs the pair"
+      ],
+      "weaker": "The one-line row, its wrap and its hug are native UIListLayout and AutomaticSize properties. The centred midlines, the 32 px gap, the 400 px width and the wrap at a large text size are live.",
+      "needsLive": "port26-picker-start-inline"
+    },
+    {
+      "id": "post-port26-019",
+      "group": "menus-pickers",
+      "title": "Under touch the one-line row hugs its title and value instead of collapsing them",
+      "mainSpecs": [
+        "picker_style"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native start-aligned Picker menu::under touch the one-line trigger hugs its value, and end keeps the title above the trigger"
+      ],
+      "weaker": "The trigger hugs its value through AutomaticSize; the 48 px width is live.",
+      "needsLive": "port26-picker-touch-row"
+    },
+    {
+      "id": "post-port26-020",
+      "group": "menus-pickers",
+      "title": "Picker menu rows take the pointer floor with no overlap, and touch arriving grows them back",
+      "mainSpecs": [
+        "picker_style"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native dense pointer rows::a Picker menu's rows take the pointer floor, and touch grows them back"
+      ],
+      "weaker": "Row heights are native Size offsets; overlap is live.",
+      "needsLive": "port26-dense-picker-rows"
+    },
+    {
+      "id": "post-port26-021",
+      "group": "paint-theming",
+      "title": "The see-through backgrounds are the backdrop, the hairline and the strong divider",
+      "mainSpecs": [
+        "preferred_transparency"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native strong divider, pane and utility outline::a strong divider is three times the hairline unless the theme authors its opacity"
+      ],
+      "weaker": "The native sheet scales only the scrim by the preference; the case shows that the strong divider keeps its transparency."
+    },
+    {
+      "id": "post-port26-022",
+      "group": "paint-theming",
+      "title": "A compiled package has three partial backgrounds, the strong divider last",
+      "mainSpecs": [
+        "preferred_transparency"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native strong divider, pane and utility outline::a strong divider is three times the hairline unless the theme authors its opacity"
+      ],
+      "weaker": "The census of partial backgrounds is replaced by the strong-divider and scrim values under a preference."
+    },
+    {
+      "id": "post-port26-023",
+      "group": "paint-theming",
+      "title": "The declared preference scope stays the scrim while the measured set gains the strong divider",
+      "mainSpecs": [
+        "preferred_transparency"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native strong divider, pane and utility outline::a strong divider is three times the hairline unless the theme authors its opacity"
+      ],
+      "weaker": "Only the scrim value changes with preferredTransparency in the native sheet."
+    },
+    {
+      "id": "post-port26-024",
+      "group": "presented-surfaces",
+      "title": "A roomy pointer screen puts an adaptive sheet on the side edge; touch and compact keep the bottom",
+      "mainSpecs": [
+        "sheet_parts"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native Sheet adaptive placement::a roomy pointer screen docks the sheet at the side edge; touch and compact keep the bottom"
+      ],
+      "weaker": "The right edge at the room width and the slide are live; the case asserts the anchor, the position scale and FacetPlacement.",
+      "needsLive": "port26-sheet-adaptive"
+    },
+    {
+      "id": "post-port26-025",
+      "group": "navigation-containers",
+      "title": "A TabView's controlSize reaches the strip: tabs paint at the rung height inside the reserved floor",
+      "mainSpecs": [
+        "tab_view"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native TabView controlSize::each tab paints at the rung height while the strip keeps the touch floor"
+      ],
+      "weaker": "Heights are native Size offsets; the centring in the strip is live.",
+      "needsLive": "port26-tab-rung"
+    },
+    {
+      "id": "post-port26-026",
+      "group": "theme-packages",
+      "title": "Neutral's selection ink is its accent pair and its scrim is its surface",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native optional palette roles::Neutral keeps its accent pair, its black scrim and no mark, plate or outline rule"
+      ],
+      "weaker": "The native unset scrim stays black (the candidate paint), not surface. The selection ink is the accent pair as on main."
+    },
+    {
+      "id": "post-port26-027",
+      "group": "theme-packages",
+      "title": "The sheet tokens, the tint vocabulary and the switch palette carry the authored colours",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native optional palette roles::authored selection, onSelection and scrim reach the switch, slider, underline, tick and backdrop",
+        "native_foundation_parity::native optional palette roles::a mounted Slider fill, tab underline and switch track resolve the authored ink"
+      ],
+      "weaker": "There is no tint role vocabulary or StyleSheet token table in the native theme; the rule colours carry the authored roles."
+    },
+    {
+      "id": "post-port26-028",
+      "group": "theme-packages",
+      "title": "A Slider's fill and a TabView's underline paint the selection ink",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native optional palette roles::a mounted Slider fill, tab underline and switch track resolve the authored ink"
+      ],
+      "weaker": "Resolved from the compiled rules against the mounted tags; engine paint is live.",
+      "needsLive": "port26-selection-marks"
+    },
+    {
+      "id": "post-port26-029",
+      "group": "theme-packages",
+      "title": "No unauthored theme gets a mark rule; an authoring one gets all mark rules, hover last",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native optional palette roles::Neutral keeps its accent pair, its black scrim and no mark, plate or outline rule",
+        "native_foundation_parity::native selection marks::a chosen Chip, a checked box and a selected link row wear the authored ink, also under hover",
+        "native_foundation_parity::native selection marks::without an authored selection a chosen Chip keeps the selected-row wash"
+      ],
+      "weaker": "The native sheet always emits a base mark rule that paints the selected wash; hover, press and link rules appear only when selection is authored."
+    },
+    {
+      "id": "post-port26-030",
+      "group": "theme-packages",
+      "title": "A Chip and a checkbox Toggle carry the mark; the checkbox fill shows only while checked",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native selection marks::a chosen Chip, a checked box and a selected link row wear the authored ink, also under hover"
+      ],
+      "weaker": "The checked box is the facet-toggle-on indicator, which reads the selection ink.",
+      "needsLive": "port26-selection-marks"
+    },
+    {
+      "id": "post-port26-031",
+      "group": "theme-packages",
+      "title": "A selection mark is classified at create",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native selection marks::a chosen Chip, a checked box and a selected link row wear the authored ink, also under hover"
+      ],
+      "weaker": "The tag is added when the Chip is built; there is no separate adapter classification pass."
+    },
+    {
+      "id": "post-port26-032",
+      "group": "theme-packages",
+      "title": "dimDisabledPlates fades every plate toward the page, last in the cascade",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native whole-control disabled dim::dimDisabledPlates fades each plate toward the page, after every interaction rule"
+      ],
+      "needsLive": "port26-dim-disabled-plates"
+    },
+    {
+      "id": "post-port26-033",
+      "group": "theme-packages",
+      "title": "A strong Divider earns a tag whose rule paints the heavier opacity",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native strong divider, pane and utility outline::a strong divider is three times the hairline unless the theme authors its opacity",
+        "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
+      ],
+      "weaker": "UI.Divider is deleted; the facet-divider-strong tag on a native Frame replaces appearance = strong.",
+      "needsLive": "port26-strong-divider-pane"
+    },
+    {
+      "id": "post-port26-034",
+      "group": "theme-packages",
+      "title": "strokes.utility retunes the utility outline alone; unset it is the hairline",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native strong divider, pane and utility outline::strokes.utility draws the utility outline at its width, and 0 or unset draws none"
+      ],
+      "weaker": "The native utility Button has no outline unless strokes.utility is more than 0.",
+      "needsLive": "port26-utility-stroke"
+    },
+    {
+      "id": "post-port26-035",
+      "group": "theme-packages",
+      "title": "surface = pane is the raised fill with no corner and no edge, in both builders",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native strong divider, pane and utility outline::a pane is the raised fill with no corner and no edge"
+      ],
+      "weaker": "The facet-pane tag replaces the surface word; there is one sheet builder.",
+      "needsLive": "port26-strong-divider-pane"
+    },
+    {
+      "id": "post-port26-036",
+      "group": "controls-actions",
+      "title": "An inverse Button wears the theme's inverse pair: authored, or contentStrong lettered in surface",
+      "mainSpecs": [
+        "theme_optional_roles"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native inverse and underlined Buttons::an inverse Button wears contentStrong lettered in surface, or the authored pair",
+        "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
+      ],
+      "needsLive": "port26-inverse-paint"
+    },
+    {
+      "id": "post-port26-037",
+      "group": "controls-values",
+      "title": "A plain compact checkbox paints no plate or wash, labels at its role and still toggles by tap",
+      "mainSpecs": [
+        "toggle_presentations"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native plain Toggle::a plain compact checkbox paints no wash, labels at its role and still toggles",
+        "native_foundation_parity::native gallery foundation options::the gallery shows the xsmall rung, the inverse and underlined links, the plain checkbox and the outline"
+      ],
+      "weaker": "Activation fires the native Activated event; the 36 px row is its Size offset."
+    },
+    {
+      "id": "post-port26-038",
+      "group": "controls-values",
+      "title": "The button presentation refuses plain",
+      "mainSpecs": [
+        "toggle_presentations"
+      ],
+      "mainCases": 1,
+      "class": "a",
+      "mainBaseline": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "family": "foundation-parity",
+      "candidateCases": [
+        "native_foundation_parity::native plain Toggle::a plain compact checkbox paints no wash, labels at its role and still toggles"
+      ]
     }
   ],
   "bugs": [
@@ -44925,6 +45537,32 @@
         "pickers-avatar-row-press",
         "slider-rotation-live",
         "slider-thumb-auto-live"
+      ]
+    },
+    "foundation-parity": {
+      "mainCommit": "7c364ca0a03b25dfd09b3fc788a4816c6050a02e",
+      "since": "bc9a56a67934c017bba202f4e8179305dc3756e6",
+      "contracts": 38,
+      "mainCases": 38,
+      "mainCasesByClass": {
+        "a": 32,
+        "c": 6
+      },
+      "needsLive": [
+        "port26-dense-menu-rows",
+        "port26-dense-picker-rows",
+        "port26-dim-disabled-plates",
+        "port26-inverse-paint",
+        "port26-outline-indent",
+        "port26-picker-start-inline",
+        "port26-picker-touch-row",
+        "port26-selection-marks",
+        "port26-sheet-adaptive",
+        "port26-strong-divider-pane",
+        "port26-tab-rung",
+        "port26-underline-live",
+        "port26-utility-stroke",
+        "port26-xsmall-rung"
       ]
     }
   }

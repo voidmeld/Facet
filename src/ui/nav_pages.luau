@@ -183,6 +183,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			"textSize",
 			"enabled",
 			"onChange",
+			"controlSize",
 		}, { Name = "TabView", BackgroundTransparency = 1, Size = D2.fromScale(1, 1) }))
 		local dimensions = ctx.observe(root, "AbsoluteSize")
 		local function locate()
@@ -353,6 +354,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				spec.onChange(id)
 			end
 		end
+		local function tabHeight(use: ComposeTypes.Use?): number
+			return if spec.controlSize == nil then 44 else ctx.controlSize(spec.controlSize, "height", use)
+		end
 		local bar = Host.ScrollingFrame "Tabs" {
 			ZIndex = 2,
 			BackgroundTransparency = 1,
@@ -381,6 +385,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					return if use(placement) == "sidebar" then E.FillDirection.Vertical else E.FillDirection.Horizontal
 				end,
 				SortOrder = E.SortOrder.LayoutOrder,
+				VerticalAlignment = function(use: ComposeTypes.Use)
+					return if use(placement) == "sidebar" then E.VerticalAlignment.Top else E.VerticalAlignment.Center
+				end,
 				Padding = D.new(0, 4),
 			}) :: Types.Child,
 			Compose.keyed({
@@ -395,6 +402,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					local tab = current:peek()
 					local button = UI.Button({
 						Name = tab.id,
+						controlSize = spec.controlSize,
 						label = function(use: ComposeTypes.Use)
 							local tab = use(current)
 							if read(spec.iconOnly, use) then
@@ -409,10 +417,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						LayoutOrder = index,
 						Size = function(use: ComposeTypes.Use)
 							local place = use(placement)
+							local height = tabHeight(use)
 							if fit and string.find(place, "bottom") ~= nil then
-								return D2.new(1 / math.max(1, #use(visibleTabs)), -4, 0, 44)
+								return D2.new(1 / math.max(1, #use(visibleTabs)), -4, 0, height)
 							end
-							return if place == "sidebar" then D2.new(1, 0, 0, 44) else D2.fromOffset(0, 44)
+							return if place == "sidebar" then D2.new(1, 0, 0, height) else D2.fromOffset(0, height)
 						end,
 						AutomaticSize = function(use: ComposeTypes.Use)
 							local place = use(placement)
@@ -511,7 +520,11 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						end
 					end)
 					surfaces.attach(button, {
-						Host.UISizeConstraint({ MinSize = V2.new(44, 44) }),
+						Host.UISizeConstraint({
+							MinSize = function(use: ComposeTypes.Use)
+								return V2.new(44, tabHeight(use))
+							end,
+						}),
 						Compose.show(function(use: ComposeTypes.Use)
 							return use(spec.selection) == tab.id
 								and read(spec.indicator, use) ~= "none"

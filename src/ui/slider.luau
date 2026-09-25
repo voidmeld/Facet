@@ -46,7 +46,7 @@ local SLIDER_KEYS = {
 	"rotation",
 	"controlSize",
 }
-local THICKNESS: { [string]: number } = { compact = 4, regular = 6, large = 8 }
+local THICKNESS: { [string]: number } = { xsmall = 3, compact = 4, regular = 6, large = 8 }
 local KNOB = 24
 
 local function finite(value: unknown): boolean

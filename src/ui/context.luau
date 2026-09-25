@@ -113,9 +113,18 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		local requested = ctx.read(source, use)
 		local rung = if requested == nil then "regular" else requested
 		assert(
-			rung == "compact" or rung == "regular" or rung == "large",
-			"Facet controlSize must be compact, regular or large"
+			rung == "xsmall" or rung == "compact" or rung == "regular" or rung == "large",
+			"Facet controlSize must be xsmall, compact, regular or large"
 		)
+		if rung == "xsmall" then
+			local package = ctx.read(config.theme, use)
+			local authored = metricAt(if package then package.metrics else nil, "controlSizes.xsmall." .. field)
+			if authored then
+				return authored
+			end
+			local compact = ctx.metric("controlSizes.compact." .. field, use)
+			return math.max(0, 2 * compact - ctx.metric("controlSizes.regular." .. field, use))
+		end
 		return ctx.metric("controlSizes." .. rung .. "." .. field, use)
 	end
 	local function observe(node: Instance, property: string): ComposeTypes.Cell<unknown>
@@ -127,6 +136,31 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		return value
 	end
 	ctx.observe = (observe :: unknown) :: Shared.Observe
+	function ctx.pointerOnly(): (ComposeTypes.Use?) -> boolean
+		local input = config.userInputService
+		if input == nil then
+			return function()
+				return false
+			end
+		end
+		local mouse, touch, gamepad =
+			observe(input, "MouseEnabled"), observe(input, "TouchEnabled"), observe(input, "GamepadEnabled")
+		return function(use: ComposeTypes.Use?): boolean
+			return ctx.read(mouse, use) == true and ctx.read(touch, use) ~= true and ctx.read(gamepad, use) ~= true
+		end
+	end
+	function ctx.hitFloor(): (ComposeTypes.Use?) -> number
+		local pointerOnly = ctx.pointerOnly()
+		return function(use: ComposeTypes.Use?): number
+			local minimum = ctx.metric("targetSizes.minimum", use)
+			local package = ctx.read(config.theme, use)
+			local pointer = metricAt(if package then package.metrics else nil, "targetSizes.pointer")
+			if pointer == nil or pointer >= minimum or not pointerOnly(use) then
+				return minimum
+			end
+			return pointer
+		end
+	end
 	local shiftRoutes: { [Instance]: () -> () } = setmetatable({}, { __mode = "k" }) :: any
 	function ctx.shiftRoute(root: Instance, handler: () -> ()): ()
 		shiftRoutes[root] = handler

@@ -41,8 +41,10 @@ Explicit native Instance properties take precedence over stylesheet values.
 This is intentional. Do not use them for default theme paint.
 
 Screen content can use the same rules. Add the tag, and do not set the painted
-property. `facet-panel` paints a rounded panel surface, `facet-divider` paints
-a hairline, and `facet-path` paints a `Path2D` line in the accent color.
+property. `facet-panel` paints a rounded panel surface, `facet-pane` paints a
+flush `surfaceStrong` pane with no corner or stroke, `facet-divider` paints a
+hairline, `facet-divider-strong` next to it paints a heavier rule, and
+`facet-path` paints a `Path2D` line in the accent color.
 `facet-icon-neutral`, `facet-icon-info`, `facet-icon-success`,
 `facet-icon-warning`, `facet-icon-error` and `facet-icon-accent` paint an image
 in the status color.

@@ -117,6 +117,7 @@ export type PickerCommon<V> = Types.GuiObjectProps & {
 	corners: ("pill" | "square")?,
 	maxHeight: number?,
 	indicatorPosition: ("leading" | "trailing")?,
+	valueAlignment: ("start" | "end")?,
 }
 export type SinglePickerSpec<V = string> = PickerCommon<V> & {
 	multiple: false?,
@@ -159,7 +160,9 @@ export type DisclosureGroupSpec = Types.FrameProps & {
 	enabled: Value<boolean>?,
 	onToggle: ((boolean) -> ())?,
 	chevronPosition: "leading" | "trailing"?,
-	appearance: "plain" | "contained" | "divided"?,
+	appearance: "plain" | "contained" | "divided" | "outline"?,
+	textSize: Value<string | number>?,
+	indent: (number | Types.SpaceStep)?,
 }
 export type CollapsibleViewSpec = Types.TextButtonProps & Inputs.ButtonVisualOptions & Inputs.ButtonInputOptions & {
 	expanded: ComposeTypes.Cell<boolean>,
@@ -209,7 +212,7 @@ export type SheetSpec = Types.FrameProps & {
 	content: Content,
 	interactiveDismissDisabled: Value<boolean>?,
 	dragIndicator: ("automatic" | "visible" | "hidden")?,
-	placement: ("automatic" | "bottom" | "side" | "center")?,
+	placement: ("automatic" | "adaptive" | "bottom" | "side" | "center")?,
 	edge: ("left" | "right")?,
 	width: Overlay.WidthPreset?,
 	closeButton: (boolean | Value<string>)?,
@@ -284,6 +287,7 @@ export type TabViewSpec = Types.FrameProps & {
 	indicator: Value<Indicator>?,
 	iconOnly: Value<boolean>?,
 	textSize: Value<number | "fit">?,
+	controlSize: Value<Types.ControlSize>?,
 	enabled: Value<boolean>?,
 	onChange: ((string) -> ())?,
 }

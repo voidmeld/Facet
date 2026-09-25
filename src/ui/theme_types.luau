@@ -49,6 +49,13 @@ export type PaletteExtra = {
 	hairlineOpacity: number?,
 	disabledContentOpacity: number?,
 	scrimOpacity: number?,
+	selection: RGB?,
+	onSelection: RGB?,
+	scrim: RGB?,
+	inverseSurface: RGB?,
+	onInverse: RGB?,
+	dimDisabledPlates: boolean?,
+	strongHairlineOpacity: number?,
 	chromeGradient: { [string]: Gradient }?,
 }
 export type Palette = { name: string, colors: { [string]: RGB }, extra: PaletteExtra? }

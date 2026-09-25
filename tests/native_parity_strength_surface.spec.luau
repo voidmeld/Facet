@@ -896,7 +896,7 @@ t.describe("declaration refusals", function()
 		},
 		{
 			name = "closed controlSize",
-			message = "Facet controlSize must be compact, regular or large",
+			message = "Facet controlSize must be xsmall, compact, regular or large",
 			build = function(UI)
 				return UI.Button({ label = "x", controlSize = "huge" })
 			end,
@@ -989,7 +989,7 @@ t.describe("declaration refusals", function()
 			end
 		end
 		controlSize:set("compact")
-		refuses(controlSize, "huge", "Facet controlSize must be compact, regular or large")
+		refuses(controlSize, "huge", "Facet controlSize must be xsmall, compact, regular or large")
 		corners:set("square")
 		refuses(corners, "round", "Facet.Button: corners must be pill or square")
 		role:set("caption")

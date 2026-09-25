@@ -66,7 +66,7 @@ return {
 				setRung = function(_value) end
 			end)
 			local ladder, looks, chips = {}, {}, {}
-			for _, step in { "compact", "regular", "large" } do
+			for _, step in { "xsmall", "compact", "regular", "large" } do
 				table.insert(
 					ladder,
 					UI.Button({
@@ -82,13 +82,14 @@ return {
 					})
 				)
 			end
-			for _, word in { "standard", "emphasis", "soft", "utility", "link" } do
+			for _, word in { "standard", "emphasis", "soft", "utility", "link", "inverse" } do
 				table.insert(
 					looks,
 					UI.Button({
 						Name = "Look" .. word:sub(1, 1):upper() .. word:sub(2),
 						label = word,
 						appearance = word,
+						underline = if word == "link" then "hover" else nil,
 						controlSize = function(use)
 							return use(rung)
 						end,

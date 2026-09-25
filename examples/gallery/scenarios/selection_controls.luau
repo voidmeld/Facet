@@ -71,6 +71,17 @@ return {
 				enabled = enabled,
 			}
 		end
+		local function plainCheckbox()
+			return UI.Toggle "PlainCheckbox" {
+				label = "Reduced motion",
+				value = checked,
+				presentation = "checkbox",
+				appearance = "plain",
+				controlSize = "compact",
+				textSize = "label",
+				enabled = enabled,
+			}
+		end
 		local function toggle()
 			return UI.Toggle "Boost" {
 				label = "Boost mode",
@@ -299,6 +310,8 @@ return {
 				heading("Check and toggle"),
 				caption("CapCheck", "Checkbox · mixed state"),
 				checkbox(),
+				caption("CapPlain", "Checkbox · plain, compact"),
+				plainCheckbox(),
 				caption("CapToggle", "Toggle · button presentation"),
 				toggle(),
 				heading("Pick a driver and a race"),

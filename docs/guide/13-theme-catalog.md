@@ -15,6 +15,12 @@ native StyleSheet and StyleLink.
 | Sci-fi HUD | High-contrast instrument styling. |
 | Custom-control, layered and ornate-gauge fixtures | Focused extension and skin tests. |
 
+No shipped theme package declares the optional roles and metrics
+(`selection`, `onSelection`, `scrim`, `inverseSurface`, `onInverse`,
+`dimDisabledPlates`, `strongHairlineOpacity`, `controlSizes.xsmall`,
+`targetSizes.pointer` or `strokes.utility`), so each one paints as before.
+[Custom themes](09-custom-themes.md) tells what each one changes.
+
 A package derived from Facet Neutral gets only its `Dark` palette. To offer a
 light variant, declare it in the package, as Classic Desktop declares Day and
 Night.

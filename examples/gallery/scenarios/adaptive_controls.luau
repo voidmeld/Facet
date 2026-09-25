@@ -6,6 +6,7 @@ return {
 			ctx.types.UDim, ctx.types.UDim2, ctx.types.Vector2, ctx.types.Color3, ctx.types.Enum
 		local volume, brightness, quality = Compose.cell(6), Compose.cell(40), Compose.cell("balanced")
 		local advanced, vsync, telemetry = Compose.cell(false), Compose.cell(true), Compose.cell(false)
+		local outlineOpen = Compose.cell(true)
 		local progress, section, saved = Compose.cell(0.35), Compose.cell("browse"), Compose.cell(false)
 		local TILT_ANGLES = { 0, 45, 90, 135, 180, 225, 270, 315 }
 		local lapWindow = Compose.cell({ lower = 4, upper = 12 })
@@ -25,6 +26,12 @@ return {
 				BackgroundTransparency = 0.6,
 				BorderSizePixel = 0,
 			}
+		end
+		local function strongDivider()
+			local edge = Host.Frame "PaneEdge" { Size = UDim2.new(1, 0, 0, 1), BorderSizePixel = 0 }
+			edge:AddTag("facet-divider")
+			edge:AddTag("facet-divider-strong")
+			return edge
 		end
 		local function label(name, text, role)
 			return UI.Label({
@@ -335,6 +342,34 @@ return {
 											hint = "Send anonymous play statistics",
 											indicatorPosition = "leading",
 										}),
+									}
+								end,
+							},
+							strongDivider(),
+							UI.DisclosureGroup "Outline" {
+								label = "Components",
+								appearance = "outline",
+								textSize = "label",
+								indent = "m",
+								expanded = outlineOpen,
+								content = function()
+									return Host.Frame "OutlineRows" {
+										Size = UDim2.new(1, 0, 0, 0),
+										AutomaticSize = Enum.AutomaticSize.Y,
+										BackgroundTransparency = 1,
+										Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder }),
+										UI.Button "OutlineButton" {
+											LayoutOrder = 1,
+											label = "Button",
+											appearance = "link",
+											underline = "hover",
+										},
+										UI.Button "OutlineChip" {
+											LayoutOrder = 2,
+											label = "Chip",
+											appearance = "link",
+											underline = "hover",
+										},
 									}
 								end,
 							},

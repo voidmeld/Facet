@@ -214,8 +214,8 @@ document their own write-then-notify behavior below.
   is true.
 - `pressHaptic`: a native `HapticEffect`. Only a control that changes a state
   or a value plays it. See [Haptics](#haptics).
-- `controlSize`: the control-size step (`compact`, `regular` or `large`) for
-  theme icons.
+- `controlSize`: the control-size step (`xsmall`, `compact`, `regular` or
+  `large`) for theme icons.
 - `onError`: receives a failure from the content of a presented Alert or
   Sheet, which then dismisses, and a failure from a Callout `onShow`. It also
   receives a failure that an `ErrorBoundary` without its own `onError`
@@ -479,8 +479,29 @@ a key code and optional modifiers. `dialogAction` is `default` or `cancel`.
 
 Presentation options:
 
-- `appearance`, `role`, `selected`, `name`, `hint` and `pop`.
-- `controlSize`: `compact`, `regular` or `large`.
+- `appearance`, `role`, `selected`, `name`, `hint` and `pop`. `appearance` is
+  `standard`, `emphasis`, `soft`, `utility`, `link` or `inverse`. `inverse` is a
+  light plate on a dark theme, and a dark plate on a light theme. It uses the
+  `inverseSurface` and `onInverse` colors of the palette. Without them it uses
+  `contentStrong` with `surface` text. The button has the
+  `facet-appearance-inverse` tag.
+- `controlSize`: `xsmall`, `compact`, `regular` or `large`. `xsmall` is one
+  step below `compact` unless the theme package declares
+  `metrics.controlSizes.xsmall`. With the neutral values it is 28 pixels high,
+  with a `paddingX` of 4 and an `iconSize` of 12. The native button is its hit
+  area, so an `xsmall` button is a 28 pixel target. Use it only for dense
+  pointer rows.
+- `textSize`: a type role (`caption`, `label`, `body`, `heading`, `title`,
+  `control`, `strong` or `numeral`) or a number of pixels, or a readable of
+  one. A role adds the `facet-type-<role>` tag to the label, and a number sets
+  `TextSize`. It reaches the label of a plain text button and the `Title` label
+  next to an icon.
+- `underline`: `always` or `hover`, for a plain text button only. The label
+  uses RichText and shows underlined always, or while the pointer is on the
+  button, while it is pressed and while it has the gamepad or keyboard
+  selection. It is the usual cue on a `link` button. The label text is escaped
+  for RichText. An icon, image, row, circle or `compactLabel` button refuses
+  `underline`.
 - `corners`: `pill` or `square`, or a readable of one.
 - `shape`: `rect` or `circle`. A circle with an authored `Size` on one axis
   only keeps that axis and matches the other axis to it.
@@ -530,6 +551,17 @@ Button, so its content lines up with Button rows in each theme. The row shows
 `icon` or `row.icon` first. A Toggle with `row` puts its switch last unless
 `indicatorPosition` is `leading`, so its label starts where the label of a
 Button row starts.
+
+The checked mark of a switch and a checkbox uses the `selection` color of the
+palette, and its knob or tick uses `onSelection`. Without them, it uses
+`accent` and `onAccent`.
+
+`appearance = "plain"` makes a switch or checkbox a bare row. The row does not
+get the `facet-selected` tag, so only the mark shows the state. The row has the
+`facet-toggle-plain` tag and no settings padding. Use it for a checkbox in a
+toolbar. The `button` presentation refuses `plain`, because its plate shows the
+state. `textSize` is a type role or a number of pixels for the label, as on
+Button. The default is the `control` role.
 
 ### TextInput
 
@@ -598,7 +630,8 @@ button.
 `facet-control` plate) or `utility` (no plate). A readable word changes the tag
 in place. A word that is not one of these causes an error, and the plate keeps
 the last correct paint. `corners` is `pill` or `square`. It adds a native
-UICorner named `Corners`. `controlSize` is `compact`, `regular` or `large`.
+UICorner named `Corners`. `controlSize` is `xsmall`, `compact`, `regular` or
+`large`.
 
 A word that the chrome does not know causes an error that names the option.
 
@@ -1007,8 +1040,8 @@ A readable value for one of them causes an error that names the option.
 - `rotation`: degrees, or a readable of them. It turns the painted track only.
   The control turns a press back by the same angle, so it reads the value that the
   upright track reads. The label and the readout stay upright.
-- `controlSize`: `compact`, `regular` or `large`. It sets the painted track
-  thickness (4, 6 or 8 pixels). The track stays 44 pixels thick as a target.
+- `controlSize`: `xsmall`, `compact`, `regular` or `large`. It sets the painted
+  track thickness (3, 4, 6 or 8 pixels). The track stays 44 pixels thick as a target.
 
 Losing the input class during a drag (a change of `PreferredInput`) restores
 the value, or the whole pair, from the start of the drag. The later move and
@@ -1079,6 +1112,10 @@ selection moves to the next removable chip, then the previous one, then
 `removeFocusFallback`. A Delete or Backspace key that is still down when
 selection arrives does not remove the next chip.
 
+A Chip has the `facet-selection-mark` tag. A chosen chip uses the `selection`
+and `onSelection` colors when a palette of the theme package declares
+`selection`. Otherwise it keeps the selected wash (`controlSelected`).
+
 ShortcutHint takes `keys = { { "Ctrl", "K" } }` or an `action` InputAction. It
 also takes an optional `separator` and `controlSize`. The default separator is
 ` / `.
@@ -1095,6 +1132,13 @@ Items have a stable `id` and a `label`. They have optional `icon`, `enabled`,
 writable state. Native input actions supply opening and Back behavior. Nested
 menus keep the control-specific navigation of the menu.
 
+- Each row of a floating panel is the hit floor high: `targetSizes.minimum`.
+  When the theme package declares `targetSizes.pointer` and the input is
+  pointer-only (`MouseEnabled`, and neither `TouchEnabled` nor
+  `GamepadEnabled`), the rows use that smaller height and get the
+  `facet-menu-dense` tag, which removes their vertical padding. The rows grow
+  back when touch or a gamepad becomes available, and become dense again when
+  the input is pointer-only. A Picker menu uses the same rows.
 - `triggers` limits the routes that open the menu. The routes are `activate`,
   `secondary`, `longPress`, `keyboard` and `gamepad`. The default is all five.
 - `presentation` is `automatic`, `menu` or `sheet`. `backLabel` sets the text
@@ -1178,12 +1222,20 @@ Picker is a field. These options apply:
 - `corners`: `pill` or `square`, on the menu trigger or the segmented strip.
 - `maxHeight`: for `menu`, `navigationLink` and `automatic`, a finite number of
   pixels above zero. It caps the open panel. The panel always shows one row.
+- `valueAlignment`: `end` (the default) or `start`, for a labelled `menu`.
+  `end` shows the title above the trigger. `start` shows the title and the
+  trigger on one row, with the trigger right after the title. The row is a
+  horizontal UIListLayout with `Wraps`, so the trigger moves below the title
+  only when the pair does not fit, for example at a large player text size.
+  With `sizing = "hug"` the row hugs the pair, which suits a toolbar setting.
+  The trigger hugs its value on each input, touch included.
 - `indicatorPosition`: for `radioGroup` only, `leading` (the default) or
   `trailing`. It puts the radio mark in its own slot on that edge of the
   content row of each option. The label is next to the mark and does not go
   under it.
 
 A labelled `menu` picker shows its title above a trigger at the leading edge.
+With `valueAlignment = "start"`, it shows the title and the trigger on one row.
 A labelled `navigationLink` shows the title and the chosen value in one row
 button. A searchable list marks the chosen row with a check and paints no
 selection plate. Opening a menu puts the selection on the chosen row.
@@ -1241,6 +1293,11 @@ the width, and its words shrink from the `control` type size toward the
 `caption` size to fit that share before the engine truncates them. The control
 measures the words at the control size. A number or a readable number sets a
 fixed size.
+
+`controlSize` (`xsmall`, `compact`, `regular` or `large`, or a readable) is the
+size step of the tabs. Each tab is `controlSizes.<step>.height` high and has the
+`controlSize` attribute. The strip stays 44 pixels high and centres the tabs
+in it. Without `controlSize`, each tab is 44 pixels high.
 
 A TabView that is built inside the page of another TabView is nested, also
 when a branch of that page builds it later. A nested TabView uses a top band.
@@ -1441,9 +1498,13 @@ stays fixed.
 
 Layout options:
 
-- `placement`: `automatic` (the default, the bottom edge), `bottom`, `center`
-  or `side`. A side sheet docks to `edge` (`left` or `right`, default
-  `right`). Its detents stay vertical. It slides in from its edge and leaves
+- `placement`: `automatic` (the default, the bottom edge), `adaptive`,
+  `bottom`, `center` or `side`. `adaptive` docks the sheet at the side edge
+  when the room is 600 pixels wide or more, a mouse is available and touch is
+  not. Otherwise it uses the bottom edge. It changes live with the room and
+  the input. The `FacetPlacement` attribute of `SheetPanel` holds the result.
+  A side sheet docks to `edge` (`left` or `right`, default `right`). `edge`
+  also applies to `adaptive`. Its detents stay vertical. It slides in from its edge and leaves
   toward it. Under reduced motion it arrives and leaves at once.
 - `width`: `automatic`, `narrow` or `wide`. These are the Dialog widths:
   `controls.alert.maxWidth`, `controls.popup.panelWidth` and
@@ -1498,6 +1559,14 @@ between them. CollapsibleView opens its content as a larger presented surface
 in a CanvasGroup named `ExpandedPresentation`, with the Dialog motion. For
 outer layout, use the native properties on their returned roots. See
 [Motion](#motion).
+
+DisclosureGroup `appearance` is `plain` (the default), `contained`, `divided`
+or `outline`. The root has the `facet-disclosure-<appearance>` tag. `outline`
+is a tree row: the header does not get the `facet-selected` tag while the group
+is expanded, and it keeps focus and activation. `textSize` is a type role or a
+number of pixels for the header label, as on Button. `indent` is a spacing step
+(`xs`, `s`, `m`, `l` or `xl`) or a number of pixels. It adds a left UIPadding to
+`RevealFade`, so nested groups read as an outline.
 
 ### Callout
 
@@ -2137,6 +2206,45 @@ A theme package contains `identity`, `style = { defaultTheme, themes }`,
 `contentStrong`, `accent`, `onAccent`, `danger`, `onDanger`, `success`,
 `onSuccess`, `warning` and `onWarning`. The extras include control states,
 secondary content, hairlines and opacities.
+
+These `extra` entries are optional. A palette that does not declare them paints
+as before:
+
+- `selection` and `onSelection`: the color of an on or chosen mark and the
+  color on it. The switch track and knob, the checkbox box and tick, the slider
+  fill and the tab and segment underline (`facet-selection-indicator`) use
+  them. Without them they are `accent` and `onAccent`. When a palette of the
+  package declares `selection`, a chosen Chip and a selected `link` Button also
+  use it.
+- `scrim`: the color of a modal backdrop. `scrimOpacity` sets how much it
+  dims. Without it the backdrop is black.
+- `inverseSurface` and `onInverse`: the plate and text of
+  `appearance = "inverse"`. Without them they are `contentStrong` and
+  `surface`.
+- `dimDisabledPlates = true`: a disabled Button fades its plate toward
+  `surface` by `disabledContentOpacity`, in addition to its text. This applies
+  to the standard, selected, emphasis, soft, inverse and destructive plates and
+  to the Toggle indicator. Without it only the text dims.
+- `strongHairlineOpacity`: the transparency of `facet-divider-strong`. Without
+  it, the strong divider is three times as visible as the hairline (0.76 with
+  the neutral 0.92).
+
+Two tags need no control. `facet-pane` paints the `surfaceStrong` fill with no
+corner and no stroke, for a sidebar or a split pane. Add
+`facet-divider-strong` next to `facet-divider` for a heavier rule, such as a
+pane edge.
+
+The metrics also have optional entries:
+
+- `controlSizes.xsmall = { height, paddingX, iconSize }`. Without it, each
+  field is `2 * compact - regular`, and not less than 0. `define` refuses an
+  `xsmall` entry that does not have all three numbers.
+- `targetSizes.pointer`: a row height from 24 to `targetSizes.minimum`. Floating
+  Menu and Picker menu rows use it while the input is pointer-only. `define`
+  refuses a value outside that range.
+- `strokes.utility`: a number of pixels. When it is more than 0, a
+  `utility` Button draws a hairline outline of that width. Without it, a
+  utility Button has no outline.
 
 StyleSheet rules own ordinary paint. Explicit Instance properties override
 native styling intentionally. Give the same theme package readable to

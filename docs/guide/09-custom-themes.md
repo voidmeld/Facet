@@ -46,6 +46,18 @@ Each palette has `name`, `colors` and `extra`.
 - The main color roles include surfaces, content, accent, and the semantic
   success, warning and danger pairs.
 - The extras hold the hover, pressed, selected and secondary-content values.
+- Optional extras change nothing until you declare them. `selection` and
+  `onSelection` paint an on or chosen mark: the switch, the checked box, the
+  slider fill and the underline, and a chosen Chip and a selected link Button.
+  Use them when the theme marks "on" with a neutral, for example a light ink on
+  a dark theme, and keeps `accent` for emphasis buttons. Without them the marks
+  use `accent` and `onAccent`. `scrim` is the backdrop color of a modal. Without
+  it the backdrop is black. `inverseSurface` and `onInverse` paint
+  `appearance = "inverse"`. Without them they are `contentStrong` and
+  `surface`.
+- `dimDisabledPlates = true` fades the plate of a disabled control with its
+  text, by `disabledContentOpacity`. Without it only the text dims.
+  `strongHairlineOpacity` sets how visible `facet-divider-strong` is.
 - The required type roles are caption, label, body, heading, title, control,
   strong and numeral.
 
@@ -79,7 +91,21 @@ Explicit Instance paint properties override the native stylesheet paint. Set
 them only when the screen needs that override.
 
 Keep native sizing in the layout of the screen. `controlSizes` and typography
-feed the control measurements and paint. The layout constructors read the
+feed the control measurements and paint.
+
+A fourth, smaller size step is optional. `controlSizes.xsmall` (`height`,
+`paddingX` and `iconSize`) is the step that a dense toolbar or tag row asks for
+with `controlSize = "xsmall"`. Without it, the step is one step below
+`compact`: 28, 4 and 12 with the neutral values. The native control is its own
+hit area, so use `xsmall` only for pointer rows.
+
+Dense rows for a mouse are also optional. `targetSizes.pointer` (24 up to
+`targetSizes.minimum`) is the row height of floating Menu and Picker menu rows
+while the input is pointer-only: a mouse, no touch and no gamepad. When touch
+or a gamepad becomes available, the rows grow back to `targetSizes.minimum`.
+Without it (Facet Neutral), each row keeps the 44 pixel floor.
+`strokes.utility`, when it is more than 0, draws an outline of that width on a
+`utility` Button. The layout constructors read the
 spacing steps from `metrics.space` of the theme package of the controls. A
 change to `space.m` changes each `gap` or `padding` that uses the `m` step.
 
