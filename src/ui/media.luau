@@ -221,10 +221,14 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end)
 			local textSize = ctx.observe(label, "TextSize")
 			local face = ctx.observe(label, "FontFace")
+			local styledSize = ctx.observeStyled(label, "TextSize")
+			local styledFace = ctx.observeStyled(label, "FontFace")
 			Compose.watch(function(use: ComposeTypes.Use)
 				local value = read(source, use) or ""
 				use(textSize)
 				use(face)
+				use(styledSize)
+				use(styledFace)
 				label.Text = middle(label, value, use(width))
 			end)
 		end
