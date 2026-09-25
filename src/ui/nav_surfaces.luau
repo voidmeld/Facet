@@ -518,6 +518,15 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end)
 				local actionBar = Host.Frame(actionProps)
 				local actionSize = ctx.observe(actionBar, "AbsoluteSize")
+				local function chrome(use: ComposeTypes.Use): number
+					local package = read(ctx.config.theme, use)
+					local recipe = if package and package.chrome then package.chrome.panel else nil
+					local inset = if recipe then recipe.contentInsets else nil
+					return padding * 2
+						+ 8
+						+ math.max(0, if inset then inset.top or 0 else 0)
+						+ math.max(0, if inset then inset.bottom or 0 else 0)
+				end
 				local scroll = parts.scroller(ctx, {
 					Name = "AlertMessage",
 					Selectable = false,
@@ -535,7 +544,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							0,
 							math.min(
 								use(contentSize).Y,
-								math.max(44, use(offer).Y - use(actionSize).Y - padding * 2 - 40)
+								math.max(44, use(offer).Y - use(actionSize).Y - chrome(use) - 32)
 							)
 						)
 					end,

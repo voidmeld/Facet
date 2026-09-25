@@ -1907,11 +1907,26 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			local holding = false
 			local function removalHeld(): boolean
 				local input = ctx.config.services.UserInputService
-				local probe = (input :: unknown) :: { IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)? }?
+				local probe = (input :: unknown) :: {
+					IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)?,
+					GetConnectedGamepads: ((UserInputService) -> { Enum.UserInputType })?,
+					IsGamepadButtonDown: ((UserInputService, Enum.UserInputType, Enum.KeyCode) -> boolean)?,
+				}?
 				if input == nil or probe == nil or probe.IsKeyDown == nil then
 					return false
 				end
-				return input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace)
+				if input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace) then
+					return true
+				end
+				if probe.GetConnectedGamepads == nil or probe.IsGamepadButtonDown == nil then
+					return false
+				end
+				for _, pad in input:GetConnectedGamepads() do
+					if input:IsGamepadButtonDown(pad, E.KeyCode.ButtonX) then
+						return true
+					end
+				end
+				return false
 			end
 			local focused: ComposeTypes.Readable<GuiObject?> = if gui
 				then ctx.observe(gui, "SelectedObject")

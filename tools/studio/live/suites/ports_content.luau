@@ -1124,7 +1124,7 @@ interactive(
 interactive(
 	"card-keys-enter-and-stay-inside",
 	{ "post-card-11", "post-card-23" },
-	"afterReturn: with the g1 cell selected, press Return once; afterRight: press Right once; afterRightAgain: press Right once; afterDown: press Down once",
+	"afterReturn: with the g1 cell selected, press Return or ButtonA once; afterRight: press Right once; afterRightAgain: press Right once; afterDown: press Down once; afterBack: press ButtonB; then press ButtonA and Right to reach More; afterMenuY: press ButtonY; afterMenuBack: press ButtonB",
 	function(t)
 		local value = {}
 		local _, built, games = cardsMount(t)
@@ -1161,17 +1161,28 @@ interactive(
 		afterDown = function(t, value)
 			local parts = value.parts
 			t.check("Down stays inside the card", within(GuiService.SelectedObject, parts.card), selectedName())
-			local controls = value.built.controls.g1
-			if controls and controls.leaveActions then
-				controls.leaveActions()
-				t.settle(6)
-				t.check(
-					"leaving the actions returns to the cell",
-					GuiService.SelectedObject == parts.hit,
-					selectedName()
-				)
-				t.check("the cell stays revealed", parts.card:GetAttribute("FacetRevealed") == true)
-			end
+		end,
+		afterBack = function(t, value)
+			local parts = value.parts
+			t.check("ButtonB leaves the actions for the cell", GuiService.SelectedObject == parts.hit, selectedName())
+			t.check("the cell stays revealed after Back", parts.card:GetAttribute("FacetRevealed") == true)
+			t.check("the card reports it left the actions", parts.card:GetAttribute("FacetEntered") ~= true)
+		end,
+		afterMenuY = function(t, value)
+			local parts = value.parts
+			t.check("ButtonY on More opens the card menu", parts.card:GetAttribute("FacetMenuOpen") == true)
+			t.check(
+				"the selection leaves the card for the menu",
+				not within(GuiService.SelectedObject, parts.card),
+				selectedName()
+			)
+			t.check("the card stays revealed while its menu is open", parts.card:GetAttribute("FacetRevealed") == true)
+		end,
+		afterMenuBack = function(t, value)
+			local parts = value.parts
+			t.check("ButtonB closes the card menu", parts.card:GetAttribute("FacetMenuOpen") ~= true)
+			t.check("ButtonB returns the selection to More", GuiService.SelectedObject == parts.more, selectedName())
+			t.check("the card stays revealed after the menu closes", parts.card:GetAttribute("FacetRevealed") == true)
 			GuiService.SelectedObject = nil
 		end,
 	}

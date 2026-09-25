@@ -1302,6 +1302,33 @@ t.describe("native navigation controls", function()
 		world.stop()
 	end)
 
+	t.it("keeps the alert card inside the screen when the theme chrome adds to its height", function()
+		local themes = require("../src/ui/themes")(Compose)
+		local package = themes.neutralPackage()
+		package.chrome = package.chrome or {}
+		package.chrome.panel = { kind = "flat", contentInsets = { top = 18, bottom = 18, left = 18, right = 18 } }
+		local world = setup(function(UI)
+			return UI.Alert({
+				isPresented = Compose.cell(true),
+				message = string.rep("Long message ", 100),
+				actions = {
+					{ id = "Stay", label = "Stay", role = "cancel" },
+					{ id = "Save", label = "Save and leave" },
+					{ id = "Leave", label = "Leave without saving", role = "destructive" },
+				},
+			})
+		end, { theme = assert(themes.define(package)) })
+		local V2 = world.engine.types.Vector2.new
+		find(world.screen, "AlertModal").AbsoluteSize = V2(667, 375)
+		find(world.screen, "Actions").AbsoluteSize = V2(400, 148)
+		find(world.screen, "AlertContent").AbsoluteSize = V2(400, 1000)
+		local message = find(world.screen, "AlertMessage")
+		local card = message.Size.Y.Offset + 148 + 20 * 2 + 8 + 18 * 2
+		t.expect(message.Size.Y.Offset).toBe(375 - 148 - (20 * 2 + 8 + 18 * 2) - 32)
+		t.expect(card <= 375 - 32).toBe(true)
+		world.stop()
+	end)
+
 	t.it("keeps split primary activation separate from touch long-press alternatives", function()
 		local primary, alternative = 0, 0
 		local world = setup(function(UI, _, engine)

@@ -286,6 +286,22 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end
 		end
 		local released = false
+		local landed = false
+		local owned = false
+		local function reclaimable(selected: Instance?): boolean
+			if selected == nil or selected.Parent == nil or within(selected, root) then
+				return true
+			end
+			if not owned or selected == previous then
+				return false
+			end
+			for _, scope in ctx.modalScopes:peek() do
+				if scope ~= root and within(selected, scope) then
+					return false
+				end
+			end
+			return true
+		end
 		local locked: Instance? = nil
 		local function unlock()
 			local layer = locked
@@ -328,8 +344,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 			end
 			ctx.modalScopes:set(remaining)
 			if gui then
-				local selected = gui.SelectedObject
-				if selected == nil or selected.Parent == nil or within(selected, root) then
+				if reclaimable(gui.SelectedObject) then
 					gui.SelectedObject = if previous
 							and previous.Parent ~= nil
 							and not within(previous, root)
@@ -349,6 +364,8 @@ return function(ctx: Types.Context): Nav.Surfaces
 						previous = selected
 					end
 					claim()
+					landed = false
+					owned = false
 					if gui and selected then
 						gui.SelectedObject = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
 					end
@@ -373,7 +390,7 @@ return function(ctx: Types.Context): Nav.Surfaces
 			local panelInteractive = ctx.observe(panel, "Interactable")
 			Compose.watch(function(use: ComposeTypes.Use)
 				if not use(rootInteractive) or not use(panelInteractive) then
-					if within(gui.SelectedObject, root) then
+					if reclaimable(gui.SelectedObject) then
 						gui.SelectedObject = if previous
 								and previous.Parent ~= nil
 								and not within(previous, root)
@@ -388,6 +405,38 @@ return function(ctx: Types.Context): Nav.Surfaces
 					and not within(gui.SelectedObject, root)
 				then
 					local target = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
+					pcall(function()
+						gui.SelectedObject = target
+					end)
+				end
+			end)
+			local selection = ctx.observe(gui, "SelectedObject")
+			local extent = ctx.observe(panel, "AbsoluteSize")
+			Compose.watch(function(use: ComposeTypes.Use)
+				local selected = use(selection) :: Instance?
+				use(extent)
+				local scopes = use(ctx.modalScopes)
+				if within(selected, root) then
+					landed = true
+					owned = true
+					return
+				end
+				if not released and not (exiting and exiting:peek()) and root.Interactable and panel.Interactable then
+					owned = false
+				end
+				if
+					landed
+					or scopes[#scopes] ~= root
+					or not use(mounted)
+					or (exiting and use(exiting))
+					or not use(rootInteractive)
+					or not use(panelInteractive)
+					or not focusIn(use)
+				then
+					return
+				end
+				local target = firstSelectable(panel, spec.initialFocus) or firstSelectable(panel)
+				if target and target.AbsoluteSize.X > 0 and target.AbsoluteSize.Y > 0 then
 					pcall(function()
 						gui.SelectedObject = target
 					end)

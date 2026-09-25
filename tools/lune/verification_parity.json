@@ -499,7 +499,7 @@
     ],
     "contracts": 2846,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 423
+    "coveredButWeaker": 385
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -2749,16 +2749,15 @@
         "native_navigation::native navigation controls::traps all modal selection directions and restores surviving focus on Back",
         "native_parity_weaker_surfaces::presented surface strength::traps and cancels the confirmation tutorial and restores the delete trigger"
       ],
-      "weaker": "The Studio input tools cannot send D-pad or ButtonA input; the arrow keys and Return drove the same native selection and activation live.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-confirm-dialog-left-right-desktop-default.json"
+          "artifacts/studio-live/needs_live_input-confirm-dialog-left-right-gamepad.json"
         ],
         "cases": [
           "needs_live_input/confirm-dialog-left-right"
         ],
-        "observed": "With Cancel selected, Right selects Confirm and Left selects Cancel; selection stays in the dialog."
+        "observed": "Real Gamepad1 ButtonA on Delete opens the confirmation with Cancel selected; DPadRight selects Confirm and DPadLeft Cancel; ButtonB dismisses the dialog and the selection returns to Delete."
       }
     },
     {
@@ -9213,16 +9212,15 @@
         "native_parity_weaker_focus::native parity weaker focus::groups modal selection and enters at the first selectable control in document order",
         "native_parity_weaker_focus::native parity weaker focus::keeps Tab and Escape native while an alert owns safe initial selection and Back"
       ],
-      "weaker": "The Studio input tools cannot send D-pad or ButtonA input; the arrow keys and Return drove the same native selection and activation live.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-sheet-traps-and-orders-selection-desktop-default.json"
+          "artifacts/studio-live/needs_live_input-sheet-traps-and-orders-selection-gamepad.json"
         ],
         "cases": [
           "needs_live_input/sheet-traps-and-orders-selection"
         ],
-        "observed": "Presenting a sheet takes selection to the Grabber; Down walks DragHandle, Close, First, Second and Third and stops, and the scroll containers Room and SheetContent only pass the selection on; Up, Left and Right never leave the sheet."
+        "observed": "Presenting the sheet selects Grabber; real Gamepad1 DPadDown walks DragHandle, Close, First, Second, Third in order; Left, Right, Down and stick Up never leave the sheet; ButtonB dismisses it and returns the selection to Background."
       }
     },
     {
@@ -9768,16 +9766,15 @@
         "native_gallery::native gallery::switches the entire gallery catalogue through one native root",
         "native_parity_weaker_gallery::native parity weaker gallery::apps-193 collections is the next peer tab after all controls in the one demo list"
       ],
-      "weaker": "The Studio input tools cannot send D-pad or ButtonA input; the arrow keys and Return drove the same native selection and activation live.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-sidebar-dpad-to-collections-desktop-default.json"
+          "artifacts/studio-live/needs_live_input-sidebar-dpad-to-collections-gamepad.json"
         ],
         "cases": [
           "needs_live_input/sidebar-dpad-to-collections"
         ],
-        "observed": "From the All controls sidebar tab one Down selects the Collections tab."
+        "observed": "The demo strip is horizontal at 1920x1080; one real Gamepad1 DPadRight from the All controls tab selects the Collections tab."
       }
     },
     {
@@ -14951,16 +14948,15 @@
         "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it",
         "native_parity_weaker_scrolling::native parity weaker scrolling::collections-262 list keys bind arrows and D-pad to one action that steps and reveals rows"
       ],
-      "weaker": "Studio input tools deliver the DPadDown key code as Keyboard input, and the list did not move for it. The gamepad route still needs a controller or a physical gamepad.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-list-keyboard-and-dpad-portrait-largest.json"
+          "artifacts/studio-live/needs_live_input-list-keyboard-and-dpad-gamepad.json"
         ],
         "cases": [
           "needs_live_input/list-keyboard-and-dpad"
         ],
-        "observed": "Real keyboard Down through the InputContext moves GuiService.SelectedObject from row 1 to row 2 to row 3, and past the band the canvas is row x 40 - 200."
+        "observed": "Real Gamepad1 DPadDown moves GuiService.SelectedObject from Row1 to Row2 to Row3 to Row9 through the list InputContext, and past the band the canvas is row x 40 - 200 (160 at Row9)."
       }
     },
     {
@@ -20746,16 +20742,15 @@
         "native_navigation::native navigation controls::blocks background shortcuts until the top modal leaves",
         "native_parity_weaker_surfaces::presented surface strength::keeps the top modal active when the covered surface beneath it is dismissed"
       ],
-      "weaker": "The Studio input tools cannot send D-pad or ButtonA input; the arrow keys and Return drove the same native selection and activation live.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-alert-selection-stays-inside-desktop-default.json"
+          "artifacts/studio-live/needs_live_input-alert-selection-stays-inside-gamepad.json"
         ],
         "cases": [
           "needs_live_input/alert-selection-stays-inside"
         ],
-        "observed": "After the covered sheet leaves, selection is in the alert and Up moves to the next stacked action inside it."
+        "observed": "After the covered sheet leaves, the alert stays on top and holds the selection; real Gamepad1 DPadDown and stick Up stay inside it and ButtonA on an action closes it and returns the selection to Background."
       }
     },
     {
@@ -21334,16 +21329,16 @@
         "native_gallery_parity::restored native gallery parity::retains nested color overrides and control paint while disabling focus and activation together",
         "native_parity_weaker_gallery::native parity weaker gallery::mech2-25 nested tint follows the package, disable blocks every input class and moves focus"
       ],
-      "weaker": "The Studio input tools refuse Tab, so the Tab route is not recorded; the D-pad route used the arrow keys.",
+      "weaker": "The D-pad route is recorded with real Gamepad1 DPadDown (needs_live_input-power-off-traversal-gamepad.json). Tab cannot be injected: UserInputService VirtualInput refuses Tab as a core-bound key, so the Tab walk is asserted headless only.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-power-off-traversal-desktop-default.json"
+          "artifacts/studio-live/needs_live_input-power-off-traversal-gamepad.json"
         ],
         "cases": [
           "needs_live_input/power-off-traversal"
         ],
-        "observed": "With panel power off, Down from PowerToggle visits Track and After and never Go or InnerGo."
+        "observed": "With panel power off, real Gamepad1 DPadDown from PowerToggle visits Track and After and never Go or InnerGo."
       }
     },
     {
@@ -22515,16 +22510,19 @@
         "native_inputs::native input controls::activates programmatically selected buttons through the native GuiService property",
         "native_parity_weaker_surfaces::presented surface strength::routes activation to the selected control of the top modal and survives a re-entrant dismiss"
       ],
-      "weaker": "The Studio input tools cannot send D-pad or ButtonA input; the arrow keys and Return drove the same native selection and activation live.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-alert-selection-stays-inside-desktop-default.json"
+          "artifacts/studio-live/needs_live_input-alert-selection-stays-inside-gamepad.json",
+          "artifacts/studio-live/needs_live_input-sheet-traps-and-orders-selection-gamepad.json",
+          "artifacts/studio-live/needs_live_input-confirm-dialog-left-right-gamepad.json"
         ],
         "cases": [
-          "needs_live_input/alert-selection-stays-inside"
+          "needs_live_input/alert-selection-stays-inside",
+          "needs_live_input/sheet-traps-and-orders-selection",
+          "needs_live_input/confirm-dialog-left-right"
         ],
-        "observed": "Down at the last stacked action stays there and Up walks the actions and stops at the top; selection never leaves the alert. The engine stops at the edges; it does not wrap."
+        "observed": "Real Gamepad1 DPad and stick presses never leave the alert, the sheet or the dialog; ButtonA on an alert action closes it and ButtonB dismisses the sheet and the dialog, and each time the selection returns to the control that held it (Background, Background, Delete). The sheet entry and the Back restore needed the nav_modal fix for the engine refusing an unlaid entry and moving a leaving selection aside."
       }
     },
     {
@@ -23127,16 +23125,15 @@
         "native_collections::Compose native collections::enters native focus after unfocused collection churn and reaches offscreen keys",
         "native_collections::Compose native collections::restores the keyed native focus target when virtualization remounts it"
       ],
-      "weaker": "The selection moved with the keyboard arrows. Studio input tools deliver DPad key codes as Keyboard input, so the gamepad route still needs a controller.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest with the device emulator (touch)",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-scroll-into-view-by-gamepad-portrait-largest.json"
+          "artifacts/studio-live/needs_live_input-scroll-into-view-by-gamepad-gamepad.json"
         ],
         "cases": [
           "needs_live_input/scroll-into-view-by-gamepad"
         ],
-        "observed": "Moving the native selection down past the band of a plain ScrollingFrame with 20 buttons scrolls the canvas so that the selected button is fully visible."
+        "observed": "Six real Gamepad1 DPadDown presses walk Item2 to Item7 and the engine scrolls the canvas to 156 so the selected item is fully inside the 200 px frame."
       }
     },
     {
@@ -24403,16 +24400,15 @@
         "native_navigation::native navigation controls::wraps alert actions and bounds long message scrolling to native measurements",
         "native_parity_weaker_surfaces::presented surface strength::stacks more than two alert actions with the likely action on top and cancel last"
       ],
-      "weaker": "The Studio input tools cannot send D-pad or ButtonA input; the arrow keys and Return drove the same native selection and activation live.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_input-alert-selection-stays-inside-desktop-default.json"
+          "artifacts/studio-live/needs_live_input-alert-selection-stays-inside-gamepad.json"
         ],
         "cases": [
           "needs_live_input/alert-selection-stays-inside"
         ],
-        "observed": "Up from Cancel reaches the stacked destructive action first."
+        "observed": "With three actions stacked and Stay (cancel) last, real Gamepad1 DPadDown stays on Stay and stick Up walks Leave without saving then Save and leave and stops there."
       }
     },
     {
@@ -28528,16 +28524,15 @@
         "native_navigation::native navigation controls::keeps sheet content in a native flex remainder and explicit close operable",
         "native_parity_weaker_focus::native parity weaker focus::cycles sheet detents from the selectable grabber for tap, mouse and gamepad activation"
       ],
-      "weaker": "The native activation used Return; ButtonA cannot be sent by the Studio input tools.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/needs_live_c-grabber-activation-cycles-detents-desktop-default.json"
+          "artifacts/studio-live/needs_live_c-grabber-activation-cycles-detents-gamepad.json"
         ],
         "cases": [
           "needs_live_c/grabber-activation-cycles-detents"
         ],
-        "observed": "With the Grabber selected, three native activations move the detent to large, then the height entry, then wrap to medium."
+        "observed": "Three real Gamepad1 ButtonA presses on the selected Grabber move the detent medium to large to short and wrap to medium."
       }
     },
     {
@@ -38254,18 +38249,17 @@
       "candidateCases": [
         "native_vote::native Vote::proposes from a selected side through the keyboard Activate action"
       ],
-      "weaker": "Live evidence does not cover this part: ButtonA itself: the input tools send it as a keyboard key; Return exercises the same native activation of the selected side. D-pad is proven by the Right arrow key.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_content-vote-pad-reaches-and-proposes-desktop-default.json"
+          "artifacts/studio-live/ports_content-vote-pad-reaches-and-proposes-gamepad.json"
         ],
         "cases": [
           "ports_content/vote-pad-reaches-and-proposes"
         ],
-        "observed": "The live case ports_content/vote-pad-reaches-and-proposes passed with 5 checks."
+        "observed": "Real Gamepad1 DPadRight moves from the Upvote side to the Downvote side and one ButtonA proposes down once."
       }
     },
     {
@@ -38557,18 +38551,17 @@
       "candidateCases": [
         "native_card::native Card::holds the reveal while its menu is open and releases it when the menu closes"
       ],
-      "weaker": "Live evidence does not cover this part: ButtonA, ButtonB and ButtonY cannot be sent: Return stands in for A (same native activation), leaveActions() is called directly for B, and ButtonY-on-More / B-returns-to-More for the open menu (post-card-11) is not checked.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_content-card-keys-enter-and-stay-inside-desktop-default.json"
+          "artifacts/studio-live/ports_content-card-keys-enter-and-stay-inside-gamepad.json"
         ],
         "cases": [
           "ports_content/card-keys-enter-and-stay-inside"
         ],
-        "observed": "The live case ports_content/card-keys-enter-and-stay-inside passed with 9 checks."
+        "observed": "Real Gamepad1 ButtonY on the selected More opens the card menu, the selection leaves the card and the card stays revealed; ButtonB closes the menu, returns the selection to More and the reveal holds."
       }
     },
     {
@@ -38763,18 +38756,17 @@
       "candidateCases": [
         "native_card::native Card::enters the actions at the first action, traps the selection and restores the stop on Cancel"
       ],
-      "weaker": "Live evidence does not cover this part: ButtonA, ButtonB and ButtonY cannot be sent: Return stands in for A (same native activation), leaveActions() is called directly for B, and ButtonY-on-More / B-returns-to-More for the open menu (post-card-11) is not checked.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_content-card-keys-enter-and-stay-inside-desktop-default.json"
+          "artifacts/studio-live/ports_content-card-keys-enter-and-stay-inside-gamepad.json"
         ],
         "cases": [
           "ports_content/card-keys-enter-and-stay-inside"
         ],
-        "observed": "The live case ports_content/card-keys-enter-and-stay-inside passed with 9 checks."
+        "observed": "Real Gamepad1 ButtonA on the g1 cell enters Play; DPadRight reaches More and stays there; DPadDown stays inside the card; ButtonB leaves the actions for the cell, which stays revealed."
       }
     },
     {
@@ -43402,16 +43394,15 @@
         "native_number_input::native NumberInput units and step buttons::the step buttons are square targets at the touch floor and separate stops"
       ],
       "family": "pickers",
-      "weaker": "Live evidence does not cover this part: Gamepad D-pad is proven with the arrow keys (same native selection).",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-number-step-buttons-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-number-step-buttons-gamepad.json"
         ],
         "cases": [
           "ports_pickers/number-step-buttons"
         ],
-        "observed": "The live case ports_pickers/number-step-buttons passed with 15 checks."
+        "observed": "The step buttons are 44x44, inside the plate and apart; real Gamepad1 DPadRight moves Field to Decrement to Increment without changing the lap count."
       }
     },
     {
@@ -43428,16 +43419,15 @@
         "native_number_input::native NumberInput units and step buttons::the step buttons are ordinary focus stops after the editor and its clear, and claim no arrows"
       ],
       "family": "pickers",
-      "weaker": "Live evidence does not cover this part: Gamepad D-pad is proven with the arrow keys (same native selection).",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-number-step-buttons-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-number-step-buttons-gamepad.json"
         ],
         "cases": [
           "ports_pickers/number-step-buttons"
         ],
-        "observed": "The live case ports_pickers/number-step-buttons passed with 15 checks."
+        "observed": "Real Gamepad1 DPadRight moves Field to Decrement to Increment, ordinary stops after the editor, and a press on a step button does not change the number."
       }
     },
     {
@@ -44188,16 +44178,15 @@
         "native_chip_edit::native Chip edit mode::a tag selects with no mark; editing shows the mark in its plate and activation removes, via gamepad"
       ],
       "family": "pickers",
-      "weaker": "Live evidence does not cover this part: Uses a mounted copy of the race tags with editing on; ButtonX is not driven (Delete runs the same RemoveChip action).",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-chip-edit-live-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-chip-edit-live-gamepad.json"
         ],
         "cases": [
           "ports_pickers/chip-edit-live"
         ],
-        "observed": "The live case ports_pickers/chip-edit-live passed with 17 checks."
+        "observed": "On the race tags with editing on, one real Gamepad1 ButtonX on Friends removes exactly Friends and the selection lands on No assists. Before the inputs.luau fix the held ButtonX removed every chip in turn."
       }
     },
     {
@@ -44259,16 +44248,15 @@
         "native_chip_edit::native Chip edit mode::Delete or Backspace on the last of N tags removes exactly one and lands on the new last"
       ],
       "family": "pickers",
-      "weaker": "Live evidence does not cover this part: Uses a mounted copy of the race tags with editing on; ButtonX is not driven (Delete runs the same RemoveChip action).",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-chip-edit-live-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-chip-edit-live-gamepad.json"
         ],
         "cases": [
           "ports_pickers/chip-edit-live"
         ],
-        "observed": "The live case ports_pickers/chip-edit-live passed with 17 checks."
+        "observed": "A held removal key removes exactly one chip and lands on the new last: one real Gamepad1 ButtonX on Friends leaves Rain and No assists with No assists selected."
       }
     },
     {
@@ -44652,7 +44640,7 @@
         "native_slider_shapes::native Slider axis::the arrow that lands the ring is not a value step; the next arrow is"
       ],
       "family": "pickers",
-      "weaker": "Live evidence does not cover this part: DPadUp is proven with the Up arrow key.",
+      "weaker": "DPadUp cannot be injected: the Controller Emulator maps it to the key 1, which UserInputService VirtualInput refuses as core-bound. The real stick Up from Boost selects HandleUpper, not Balance, under the engine stick geometry (ports_pickers-slider-landing-live-gamepad.json), so the landing is proven with the Up arrow key only.",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
         "artifacts": [
@@ -45382,16 +45370,15 @@
       "candidateCases": [
         "native_date_time_picker::DateTimePicker: a single date::the year and month menus open on the shown ones and honour min/max (owner: opened at 1926)"
       ],
-      "weaker": "Live evidence does not cover this part: Gamepad ButtonA is replaced by Return, which drives the same native activation.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-dtp-menu-centred-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-dtp-menu-centred-gamepad.json"
         ],
         "cases": [
           "ports_pickers/dtp-menu-centred"
         ],
-        "observed": "The live case ports_pickers/dtp-menu-centred passed with 5 checks."
+        "observed": "Real Gamepad1 ButtonA on the Year button opens the menu with the shown year 2026 selected, scrolled into view and inside the screen."
       }
     },
     {
@@ -45479,16 +45466,17 @@
       "candidateCases": [
         "native_date_time_picker::DateTimePicker: a single date::the grid is one selection group; the arrows walk days across months; grey days are no stop; paging stops at the bounds"
       ],
-      "weaker": "Live evidence does not cover this part: D-pad is proven with the arrow keys; the picker is opened with isPresented, not a gamepad press.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-dtp-native-navigation-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-dtp-native-navigation-gamepad.json",
+          "artifacts/studio-live/ports_pickers-dtp-ten-foot-pad-open-and-back-gamepad.json"
         ],
         "cases": [
-          "ports_pickers/dtp-native-navigation"
+          "ports_pickers/dtp-native-navigation",
+          "ports_pickers/dtp-ten-foot-pad-open-and-back"
         ],
-        "observed": "The live case ports_pickers/dtp-native-navigation passed with 6 checks."
+        "observed": "Real Gamepad1 ButtonA on the calendar icon opens the calendar with the selection on a day; stick Up walks Sep 9, Sep 2, then the Month menu; DPadDown walks Sep 23, Sep 30 then leaves the grid."
       }
     },
     {
@@ -45505,16 +45493,15 @@
       "candidateCases": [
         "native_date_time_picker::DateTimePicker: a single date::a draft on a TV: Down from any day leaves the months below; Up from the first row reaches the header"
       ],
-      "weaker": "Live evidence does not cover this part: D-pad is proven with the arrow keys; the picker is opened with isPresented, not a gamepad press.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-dtp-native-navigation-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-dtp-native-navigation-gamepad.json"
         ],
         "cases": [
           "ports_pickers/dtp-native-navigation"
         ],
-        "observed": "The live case ports_pickers/dtp-native-navigation passed with 6 checks."
+        "observed": "With a draft, real Gamepad1 DPadDown from the last week reaches the Hour field, and without time ResetAll; stick Up from the first row reaches the Month header."
       }
     },
     {
@@ -45782,16 +45769,15 @@
       "candidateCases": [
         "native_date_time_picker::DateTimePicker: layout, routes and refusals::the week starts where the caller says; a compact touch field opens a sheet with Done, ten feet a centred sheet"
       ],
-      "weaker": "Live evidence does not cover this part: Closing with B and the return of selection to the calendar icon: B cannot be sent. Relies on the xbox emulator reporting IsTenFootInterface() true, which is recorded in the first check.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-dtp-ten-foot-pad-open-and-back-gamepad.json"
         ],
         "cases": [
-          "ports_pickers/dtp-ten-foot"
+          "ports_pickers/dtp-ten-foot-pad-open-and-back"
         ],
-        "observed": "The live case ports_pickers/dtp-ten-foot passed with 8 checks."
+        "observed": "At ten feet, real Gamepad1 ButtonA on the calendar icon opens the calendar as a sheet with the selection inside; ButtonB closes it and the selection returns to the calendar icon."
       }
     },
     {
@@ -46015,16 +46001,15 @@
       "candidateCases": [
         "native_color_picker::native ColorPicker well and panel::an accepted swatch commits once, marks the cell, and the swatch grid lays out rows of eight"
       ],
-      "weaker": "Live evidence does not cover this part: D-pad is proven with the arrow keys.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-color-grid-wraps-two-dimensions-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-color-grid-wraps-two-dimensions-gamepad.json"
         ],
         "cases": [
           "ports_pickers/color-grid-wraps-two-dimensions"
         ],
-        "observed": "The live case ports_pickers/color-grid-wraps-two-dimensions passed with 9 checks."
+        "observed": "Real Gamepad1 DPadDown from swatch 3 selects swatch 11 and DPadRight selects swatch 12."
       }
     },
     {
@@ -46142,16 +46127,17 @@
       "candidateCases": [
         "native_color_picker::native ColorPicker well and panel::opens as a sheet with Done on a compact touch screen, and a centred sheet at ten feet with the plane"
       ],
-      "weaker": "Live evidence does not cover this part: B cannot be sent. D-pad is proven with the arrow keys. Relies on the xbox emulator reporting IsTenFootInterface() true, which is recorded in the first check.",
       "liveEvidence": {
-        "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
+        "host": "Roblox Studio 0.740.19 playtest, device simulator Xbox One (1920x1080), Controller Emulator (Virtual Controller) on; real Gamepad1 input sent through UserInputService:CreateVirtualInput() and the emulator key map by live.press (DPadDown 3, DPadLeft 2, DPadRight 4, ButtonA 9, ButtonB 0, ButtonX 8, ButtonY 7, left stick up W); each artifact records the delivered Gamepad1 InputObjects in notes.deliveredInput; Medium text",
         "artifacts": [
-          "artifacts/studio-live/ports_pickers-color-ten-foot-center-desktop-default.json"
+          "artifacts/studio-live/ports_pickers-color-ten-foot-center-gamepad.json",
+          "artifacts/studio-live/ports_pickers-color-ten-foot-pad-open-and-back-gamepad.json"
         ],
         "cases": [
-          "ports_pickers/color-ten-foot-center"
+          "ports_pickers/color-ten-foot-center",
+          "ports_pickers/color-ten-foot-pad-open-and-back"
         ],
-        "observed": "The live case ports_pickers/color-ten-foot-center passed with 10 checks."
+        "observed": "At ten feet the panel is the centred sheet; real Gamepad1 DPadDown reaches Done and stick Up reaches the plane; ButtonA on the well opens the panel with the selection inside and ButtonB closes it and returns the selection to the well."
       }
     },
     {

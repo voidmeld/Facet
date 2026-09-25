@@ -299,6 +299,11 @@ local PICKER_SIZES = {
 	Vector2.new(1920, 1080),
 }
 
+local SHORT_OPTIONS = {
+	{ value = "a", label = "Open" },
+	{ value = "b", label = "Club" },
+}
+
 add("picker-style-sweep", { "navigation-3-85" }, function(t)
 	local options = {
 		{ value = "a", label = "Arcade handling" },
@@ -322,7 +327,7 @@ add("picker-style-sweep", { "navigation-3-85" }, function(t)
 							label = "Handling",
 							style = style,
 							selected = Compose.cell("b"),
-							options = options,
+							options = if style == "segmented" then SHORT_OPTIONS else options,
 							isPresented = opened,
 							query = if style == "navigationLink" then Compose.cell("") else nil,
 							LayoutOrder = 1,
