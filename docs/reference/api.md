@@ -2076,8 +2076,11 @@ measured width.
 A mouse click or a touch outside an open row closes its tray. The row observes
 `UserInputService.InputBegan` only while its tray is open, and it does not
 consume the input. Thus the control under the pointer also receives the press.
-A press on the content of the open row also closes the tray, and the content
-receives that press. A press on the open tray does not close the tray. A
+A tap or a click on the content of the open row closes the tray, and the
+content does not activate. While the tray is open, a transparent
+`DismissTray` button covers the row content and receives that press. A press
+on another row closes the open row, and that other row activates. A press on
+the open tray does not close the tray, and its action runs once. A
 press during a destructive commit does not stop the commit. The check uses the
 row bounds on a ScreenGui, with the top bar inset when the ScreenGui ignores
 it. A row on a SurfaceGui or a BillboardGui does not close from an outside
