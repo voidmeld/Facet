@@ -119,7 +119,7 @@ return require("./actual")''')
         def execute(command, **kwargs):
             commands.append(command)
             if command == ["lune", "run", "tools/lune/native_verify_suite", "full"]:
-                (artifacts / "suite.json").write_text(json.dumps({"cases": [{"id": "native_sample::sample", "spec": "native_sample", "status": "pass"}], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}))
+                (artifacts / "suite.json").write_text(json.dumps({"tier": "full", "cases": [{"id": "native_sample::sample", "spec": "native_sample", "status": "pass"}], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}))
             if command == ["bash", "tools/perf.sh"]:
                 performance.parent.mkdir(parents=True, exist_ok=True)
                 performance.write_text("{}")
@@ -145,11 +145,27 @@ return require("./actual")''')
 
     def test_suite_census_rejects_missing_duplicate_failed_and_forged_results(self):
         case = {"id": "sample::one", "spec": "sample", "status": "pass"}
-        clean = {"cases": [case], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}
-        self.assertEqual(verify.validate_suite(clean, ["sample"]), [])
-        for change in ({"cases": []}, {"cases": [case, case], "passed": 2}, {"registeredSpecs": 0}, {"reportedSpecs": 0}, {"passed": 0}, {"failed": 1}, {"cases": [dict(case, status="fail")]}, {"cases": [dict(case, spec="other")]}):
+        clean = {"tier": "full", "cases": [case], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}
+        self.assertEqual(verify.validate_suite(clean, ["sample"], "full"), [])
+        for change in ({"tier": "fast"}, {"cases": []}, {"cases": [case, case], "passed": 2}, {"registeredSpecs": 0}, {"reportedSpecs": 0}, {"passed": 0}, {"failed": 1}, {"cases": [dict(case, status="fail")]}, {"cases": [dict(case, spec="other")]}):
             with self.subTest(change=change):
-                self.assertTrue(verify.validate_suite(dict(clean, **change), ["sample"]))
+                self.assertTrue(verify.validate_suite(dict(clean, **change), ["sample"], "full"))
+
+    def test_suite_accepts_a_tier_gated_case_only_below_its_tier(self):
+        case = {"id": "sample::one", "spec": "sample", "status": "pass"}
+        gated = {"id": "sample::ramp", "spec": "sample", "status": "skip", "tier": "full"}
+        suite = {"cases": [case, gated], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0, "skipped": 1}
+        for tier in ("affected", "fast"):
+            with self.subTest(tier=tier):
+                self.assertEqual(verify.validate_suite(dict(suite, tier=tier), ["sample"], tier), [])
+                self.assertEqual(verify.deferred_cases(dict(suite, tier=tier), tier), {"sample::ramp"})
+        for tier in ("full", "release"):
+            with self.subTest(tier=tier):
+                self.assertTrue(verify.validate_suite(dict(suite, tier=tier), ["sample"], tier))
+                self.assertEqual(verify.deferred_cases(dict(suite, tier=tier), tier), set())
+        for change in ({"cases": [case, dict(gated, tier=None)]}, {"cases": [case, dict(gated, tier="fast")]}, {"cases": [case, dict(gated, tier="unknown")]}, {"skipped": 0}, {"passed": 2}):
+            with self.subTest(change=change):
+                self.assertTrue(verify.validate_suite(dict(suite, tier="fast", **change), ["sample"], "fast"))
 
     def test_architecture_rejects_example_imports_of_private_modules_and_extra_vendors(self):
         self.write("src/ui/private.luau", "return {}")
@@ -196,7 +212,7 @@ return require("./actual")''')
             if command[:2] == ["git", "status"]:
                 return type("Result", (), {"returncode": 0, "stdout": ""})()
             if command[:3] == ["lune", "run", "tools/lune/native_verify_suite"]:
-                (artifacts / "suite.json").write_text(json.dumps({"cases": [{"id": "native_sample::sample", "spec": "native_sample", "status": "pass"}], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}))
+                (artifacts / "suite.json").write_text(json.dumps({"tier": command[3], "cases": [{"id": "native_sample::sample", "spec": "native_sample", "status": "pass"}], "registeredSpecs": 1, "reportedSpecs": 1, "passed": 1, "failed": 0}))
             code = 2 if command == ["python3", "tools/check_perf_gate_evidence.py", "studio"] else 0
             return type("Result", (), {"returncode": code, "stdout": ""})()
 

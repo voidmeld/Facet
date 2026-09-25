@@ -5,15 +5,17 @@ local serde = require("@lune/serde")
 
 local testkit = {}
 
-type Case = { name: string, fn: () -> (), id: string? }
+type Case = { name: string, fn: () -> (), id: string?, tier: string? }
 type Suite = { name: string, spec: string, cases: { Case } }
 
-export type CaseOptions = { id: string? }
+export type CaseOptions = { id: string?, tier: string? }
 export type RunOptions = {
 	jsonOut: string?,
 	tier: string?,
 	registeredSpecs: number?,
 }
+
+local TIER_RANK: { [string]: number } = { one = 0, affected = 1, fast = 2, full = 3, release = 4 }
 
 local suites: { Suite } = {}
 local currentSuite: Suite? = nil
@@ -54,7 +56,14 @@ end
 
 function testkit.it(name: string, fn: () -> (), options: CaseOptions?)
 	assert(currentSuite, "it() must be called inside describe()")
-	table.insert((currentSuite :: Suite).cases, { name = name, fn = fn, id = if options then options.id else nil })
+	local tier = if options then options.tier else nil
+	assert(tier == nil or tier == "full" or tier == "release", 'it() tier must be "full" or "release"')
+	table.insert((currentSuite :: Suite).cases, {
+		name = name,
+		fn = fn,
+		id = if options then options.id else nil,
+		tier = tier,
+	})
 end
 
 local function deepEq(a: any, b: any): boolean
@@ -162,7 +171,8 @@ end
 
 function testkit.run(options: RunOptions?): boolean
 	local opts: RunOptions = options or {}
-	local passed, failed = 0, 0
+	local passed, failed, skipped = 0, 0, 0
+	local runRank = TIER_RANK[opts.tier or "full"] or TIER_RANK.full
 	local failures: { string } = {}
 	local cases: { any } = {}
 	local specsSeen: { [string]: boolean } = {}
@@ -173,6 +183,21 @@ function testkit.run(options: RunOptions?): boolean
 		print("\27[1m" .. suite.name .. "\27[0m")
 		specsSeen[suite.spec] = true
 		for _, case in suite.cases do
+			local gate = case.tier
+			if gate ~= nil and TIER_RANK[gate] > runRank then
+				skipped += 1
+				table.insert(cases, {
+					id = case.id or `{suite.spec}::{suite.name}::{case.name}`,
+					suite = suite.name,
+					spec = suite.spec,
+					name = case.name,
+					status = "skip",
+					tier = gate,
+					ms = 0,
+				})
+				print("  \27[33m-\27[0m " .. case.name .. " (" .. gate .. " tier only)")
+				continue
+			end
 			local caseStart = os.clock()
 			local ok, err = pcall(function()
 				for _, hook in beforeEachHooks do
@@ -195,6 +220,7 @@ function testkit.run(options: RunOptions?): boolean
 				spec = suite.spec,
 				name = case.name,
 				status = if ok then "pass" else "fail",
+				tier = gate,
 				ms = ms,
 				error = if ok then nil else tostring(err),
 			}
@@ -212,10 +238,11 @@ function testkit.run(options: RunOptions?): boolean
 	end
 
 	print("")
+	local deferred = if skipped > 0 then string.format(", \27[33m%d deferred to a higher tier\27[0m", skipped) else ""
 	if failed == 0 then
-		print(string.format("\27[32m%d passed\27[0m", passed))
+		print(string.format("\27[32m%d passed\27[0m", passed) .. deferred)
 	else
-		print(string.format("\27[31m%d failed\27[0m, \27[32m%d passed\27[0m", failed, passed))
+		print(string.format("\27[31m%d failed\27[0m, \27[32m%d passed\27[0m", failed, passed) .. deferred)
 	end
 
 	if opts.jsonOut ~= nil and opts.jsonOut ~= "" then
@@ -240,6 +267,7 @@ function testkit.run(options: RunOptions?): boolean
 				cases = cases,
 				passed = passed,
 				failed = failed,
+				skipped = skipped,
 			}, false)
 		)
 	end
