@@ -652,6 +652,14 @@ return function(
 			end
 		end)
 		local centered: string? = nil
+		local settling: RBXScriptConnection? = nil
+		local function stopSettling()
+			if settling then
+				settling:Disconnect()
+				settling = nil
+			end
+		end
+		Compose.cleanup(stopSettling)
 		local rowLayout = rows:FindFirstChildWhichIsA("UIListLayout")
 		local laidOut = if rowLayout then ctx.observe(rowLayout, "AbsoluteContentSize") else Compose.cell(V2.zero)
 		Compose.watch(function(use: ComposeTypes.Use)
@@ -713,22 +721,15 @@ return function(
 			local frames = services and services.RunService
 			if frames then
 				local remaining = 2
-				local connection: RBXScriptConnection? = nil
-				connection = frames.Heartbeat:Connect(function()
+				stopSettling()
+				settling = frames.Heartbeat:Connect(function()
 					remaining -= 1
 					local fresh = target()
 					if fresh and panel.CanvasPosition.Y ~= fresh then
 						panel.CanvasPosition = V2.new(panel.CanvasPosition.X, fresh)
 					end
-					if remaining <= 0 and connection then
-						connection:Disconnect()
-						connection = nil
-					end
-				end)
-				Compose.cleanup(function()
-					if connection then
-						connection:Disconnect()
-						connection = nil
+					if remaining <= 0 then
+						stopSettling()
 					end
 				end)
 			end
