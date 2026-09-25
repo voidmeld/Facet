@@ -201,10 +201,17 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							stopRepeat()
 							apply(direction)
 							heldAction = action
+							local probe = (action :: unknown) :: { GetState: ((InputAction) -> unknown)? }
+							local state = probe.GetState
+							local engaged = state ~= nil and state(action) == true
 							if runtime.host.frames then
 								local elapsed, deadline = 0, 0.4
 								stopFrame = runtime.host.frames.onFrame(function(delta)
-									if not read(source) or not ctx.available(node) then
+									if
+										not read(source)
+										or not ctx.available(node)
+										or (engaged and state and state(action) ~= true)
+									then
 										stopRepeat()
 										return
 									end

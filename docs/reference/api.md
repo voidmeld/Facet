@@ -241,6 +241,7 @@ cannot be interacted with, and the selection never stays on it.
 | Snackbar | Slides up from below the layer and fades in, 0.2 seconds, Cubic Out. | Slides down and fades out, 0.2 seconds. |
 | DisclosureGroup | The content height opens from 0, and the content fades in, 0.25 seconds, Cubic Out. The chevron turns 90 degrees with it. | The reverse, 0.2 seconds. |
 | Notice | The height opens from 0, 0.25 seconds, Cubic Out. | After a press on its close button, the height closes to 0 in 0.2 seconds. Then `onDismiss` runs. |
+| RadialMenu slot | A slot that enters an open ring fades in and moves from 30 percent of the distance toward its origin to its position, 0.16 seconds. The origin is the parent item for a branch and the center for other slots. Reduced motion places the slot at once. | The slot keeps its position and fades out, 0.12 seconds. |
 | NavBar | No motion. | No motion. |
 
 - Reduced motion (`reducedMotion` or `GuiService.ReducedMotionEnabled`) removes
@@ -1007,6 +1008,10 @@ Button and Toggle rows.
 Slider also supports `onCommit(value)`, `tapToPosition` (default true),
 `thumbImage`, `trackImage` and `row`. Dragging uses native drag detection.
 Keyboard and gamepad adjustment use the input actions of the control.
+A held adjustment repeats after 0.4 seconds, then every 0.1 seconds. The
+repeat stops when the engine gives the held input to a higher-priority input
+context, for example a gameplay binding with `Sink`. The next change needs a
+new press.
 
 Slider shapes. `axis`, `range`, `minGap` and `thumb` are construction options.
 A readable value for one of them causes an error that names the option.

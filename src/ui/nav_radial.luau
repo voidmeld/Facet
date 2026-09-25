@@ -70,6 +70,7 @@ return function(
 		local opened: ComposeTypes.Cell<boolean> = spec.isPresented or Compose.cell(spec.launcher == false)
 		local path: ComposeTypes.Cell<{ string }> = Compose.cell({})
 		local candidate: ComposeTypes.Cell<string?> = Compose.cell(nil :: string?)
+		local branchOrigin: { path: string, x: number, y: number }? = nil
 		local interacting = Compose.cell(false)
 		local capture: InputObject?
 		local analog, held = false, false
@@ -146,6 +147,7 @@ return function(
 			if item.children then
 				local entries = table.clone(sector.path)
 				table.insert(entries, item.id)
+				branchOrigin = { path = table.concat(entries, "/"), x = sector.x, y = sector.y }
 				path:set(entries)
 				candidate:set(nil)
 				return
@@ -634,7 +636,26 @@ return function(
 									local opacity = runtime.tween(function(use: ComposeTypes.Use)
 										return if use(entered) and not use(branchPhase.exiting) then 1 else 0
 									end, { seconds = 0.12 })
+									local arrival = runtime.tween(function(use: ComposeTypes.Use)
+										return if use(entered) then 1 else 0
+									end, { seconds = 0.16 })
 									local sector = assert(currentSector())
+									local from = branchOrigin
+									local origin: { x: number, y: number }? = if from
+											and from.path == table.concat(sector.path, "/")
+										then from
+										elseif entry.completed:peek() then { x = 0, y = 0 }
+										else nil
+									local function travel(
+										use: ComposeTypes.Use,
+										live: Radial.Sector<V>
+									): (number, number)
+										if origin == nil or live.list or reduced(use) then
+											return 0, 0
+										end
+										local amount = 0.3 * (1 - use(arrival))
+										return (origin.x - live.x) * amount, (origin.y - live.y) * amount
+									end
 									local button = UI.Button({
 										Name = sector.id,
 										corners = if appearance == "buttons" then "pill" :: "pill" else nil,
@@ -678,7 +699,8 @@ return function(
 												return D2.fromOffset(0, 0)
 											end
 											local scale = if reduced(use) then 1 else 0.85 + 0.15 * use(entry.progress)
-											return D2.fromOffset(at.X + live.x * scale, at.Y + live.y * scale)
+											local dx, dy = travel(use, live)
+											return D2.fromOffset(at.X + live.x * scale + dx, at.Y + live.y * scale + dy)
 										end,
 										Size = function(use: ComposeTypes.Use)
 											local live = currentSector(use)
@@ -801,7 +823,8 @@ return function(
 											end
 										end
 										local bounds = geometry.paint(fitted)
-										shape.Position = D2.fromOffset(at.X + bounds.x, at.Y + bounds.y)
+										local dx, dy = travel(use, live)
+										shape.Position = D2.fromOffset(at.X + bounds.x + dx, at.Y + bounds.y + dy)
 										shape.Size = D2.fromOffset(bounds.w, bounds.h)
 										paint.Thickness = math.max(1, fitted.outer - fitted.inner)
 										local points: { Path2DControlPoint } = {}
