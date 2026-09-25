@@ -60,7 +60,11 @@ function world.new(build: (any, any, any, any, any) -> any, options: any?): any
 	local runtime = Roblox.createRuntime(engine)
 	local UI = controls(Compose, runtime, {
 		types = engine.types,
-		services = { GuiService = gui, UserInputService = input },
+		services = {
+			GuiService = gui,
+			UserInputService = input,
+			RunService = if o.runService then { Heartbeat = engine.heartbeat } else nil,
+		},
 		theme = o.theme,
 		reducedMotion = o.reducedMotion,
 		controlSize = o.controlSize,

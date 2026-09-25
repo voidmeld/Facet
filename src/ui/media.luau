@@ -1569,7 +1569,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				local queued = false
 				local function attempt()
 					queued = false
-					if live:peek() then
+					if not owner.isDisposed() and live:peek() then
 						build()
 					end
 				end

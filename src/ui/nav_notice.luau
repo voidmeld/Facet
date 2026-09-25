@@ -427,6 +427,14 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 					end
 					local services = ctx.config.services
 					local frames = services and services.RunService
+					local connection: RBXScriptConnection? = nil
+					local function release()
+						if connection then
+							connection:Disconnect()
+							connection = nil
+						end
+					end
+					Compose.cleanup(release)
 					Compose.watch(function(use: ComposeTypes.Use)
 						use(height)
 						use(at)
@@ -434,19 +442,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						use(extent)
 						publish()
 						if frames then
-							local connection: RBXScriptConnection? = nil
+							release()
 							connection = frames.Heartbeat:Connect(function()
-								if connection then
-									connection:Disconnect()
-									connection = nil
-									publish()
-								end
-							end)
-							Compose.cleanup(function()
-								if connection then
-									connection:Disconnect()
-									connection = nil
-								end
+								release()
+								publish()
 							end)
 						end
 					end)

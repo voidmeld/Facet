@@ -235,6 +235,29 @@ t.describe("native Notice: affixed placement reserves space a real consumer avoi
 		other.stop()
 	end)
 
+	t.it("a reservation that moves again re-reads on the next frame without an owner error", function()
+		local problems: { string } = {}
+		local message = Compose.cell("Short")
+		local w = mount(function(UI)
+			return UI.Notice "Banner" { placement = "affixed", message = message }
+		end, {
+			runService = true,
+			onError = function(problem: unknown)
+				table.insert(problems, tostring(problem))
+			end,
+		})
+		local banner = w.find("Banner")
+		banner.AbsoluteSize = Vector2.new(800, 40)
+		w.advance(1 / 60)
+		banner.AbsoluteSize = Vector2.new(800, 64)
+		w.advance(1 / 60)
+		banner.AbsoluteSize = Vector2.new(800, 96)
+		w.advance(1 / 60, 2)
+		t.expect(table.concat(problems, "\n")).toBe("")
+		t.expect(w.screen:GetAttribute("FacetInsetTop")).toBe(96)
+		w.stop()
+	end)
+
 	t.it("a taller message grows the reservation live", function()
 		local message = Compose.cell("Short")
 		local w = mount(function(UI)
