@@ -131,6 +131,50 @@ t.describe("native Stage presence", function()
 		w.stop()
 	end)
 
+	t.it("drops a queued lazy build when its stage is removed before the frame runs", function()
+		local gate = Compose.cell(true)
+		local builds = 0
+		local w = overlay.new(function(UI, Host)
+			return Host.ScrollingFrame({
+				Name = "Feed",
+				Compose.show(gate, function()
+					local stages = {}
+					for index = 1, 3 do
+						table.insert(
+							stages,
+							UI.Stage({
+								Name = "Stage" .. index,
+								lazy = true,
+								content = function()
+									builds += 1
+									return nil
+								end,
+							})
+						)
+					end
+					return Host.Frame({ Name = "Cards", table.unpack(stages) })
+				end),
+			})
+		end)
+		local V = w.Vector2
+		local feed = w.find("Feed")
+		feed.AbsolutePosition = V.new(0, 0)
+		feed.AbsoluteWindowSize = V.new(400, 300)
+		for index = 1, 3 do
+			local stage = w.find("Stage" .. index)
+			stage.AbsoluteSize = V.new(200, 100)
+			stage.AbsolutePosition = V.new(0, (index - 1) * 110)
+		end
+		gate:set(false)
+		local ok, problem = pcall(function()
+			w.advance(1 / 60, 4)
+		end)
+		t.expect(problem).toBe(nil)
+		t.expect(ok).toBe(true)
+		t.expect(builds).toBe(0)
+		w.stop()
+	end)
+
 	t.it("builds eager content at once and keeps it through scrolling", function()
 		local w = scene({ count = 2 })
 		t.expect(w.log.builds).toBe(2)
