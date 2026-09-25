@@ -1155,9 +1155,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							end,
 							Host.Frame "Page" {
 								BackgroundTransparency = 1,
-								Size = function(use: ComposeTypes.Use)
-									return D2.fromScale(1 / reveal(use), 1)
-								end,
+								Size = D2.fromScale(1, 1),
 								navigationBar,
 								destinationFrame,
 							} :: Types.Child,

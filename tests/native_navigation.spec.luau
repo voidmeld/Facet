@@ -2536,6 +2536,7 @@ t.describe("native navigation controls", function()
 			t.expect(root.Visible).toBe(true)
 			t.expect(root.ClipsDescendants).toBe(true)
 			t.expect(stack.ClipsDescendants).toBe(true)
+			t.expect(find(root, "Page").Size).toBe(world.engine.types.UDim2.fromScale(1, 1))
 			t.expect(find(root, "Dim").BackgroundTransparency).toBeCloseTo(1 - 0.1 * (1 - front), 1e-6)
 			previous = front
 		end

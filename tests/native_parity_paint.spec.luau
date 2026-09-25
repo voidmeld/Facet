@@ -1189,6 +1189,27 @@ t.describe("native parity paint", function()
 		h.dispose()
 	end)
 
+	t.it(
+		"drops hover paint while touch is the preferred input, so a tapped control does not keep a hover tint",
+		function()
+			local h = harness()
+			local hover = Compose.cell(true)
+			local sheet, stop = sheetFor(h, themes.neutralPackage(), { hover = hover })
+			t.expect(hasRule(sheet, ".facet-button:Hover")).toBe(true)
+			t.expect(hasRule(sheet, ".facet-button:Press")).toBe(true)
+			hover:set(false)
+			for _, node in sheet:GetChildren() do
+				t.expect(string.find(node.Selector, ":Hover", 1, true)).toBe(nil)
+			end
+			t.expect(hasRule(sheet, ".facet-button:Press")).toBe(true)
+			t.expect(hasRule(sheet, ".facet-button")).toBe(true)
+			hover:set(true)
+			t.expect(hasRule(sheet, ".facet-button:Hover")).toBe(true)
+			stop()
+			h.dispose()
+		end
+	)
+
 	t.it("treats a garbage transparency preference as the identity", function()
 		local h = harness()
 		local preference = Compose.cell(1 :: any)

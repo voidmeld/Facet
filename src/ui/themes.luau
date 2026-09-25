@@ -1125,6 +1125,39 @@ local function createStyleSheet(
 			end)
 		end
 	end
+	local hover = settings.hover
+	if hover == nil then
+		local globals = getfenv(0)
+		local input = globals.game and globals.game:GetService("UserInputService")
+		if input then
+			local function pointing(): boolean
+				return input.PreferredInput ~= types.Enum.PreferredInput.Touch
+			end
+			local source = Compose.cell(pointing())
+			hover = source
+			local connection = input:GetPropertyChangedSignal("PreferredInput"):Connect(function()
+				source:set(pointing())
+			end)
+			Compose.cleanup(function()
+				connection:Disconnect()
+			end)
+		end
+	end
+	local hoverless: { [{ NativeRule }]: { NativeRule } } = setmetatable({}, { __mode = "k" }) :: any
+	local function withoutHover(rules: { NativeRule }): { NativeRule }
+		local cached = hoverless[rules]
+		if cached then
+			return cached
+		end
+		local kept: { NativeRule } = {}
+		for _, definition in rules do
+			if not string.find(definition.selector, ":Hover", 1, true) then
+				table.insert(kept, definition)
+			end
+		end
+		hoverless[rules] = kept
+		return kept
+	end
 	local function preferenceFor(use: ComposeTypes.Use): number
 		local value = read(preferredTransparency, use)
 		return if type(value) == "number" and value == value then math.clamp(value, 0, 1) else 1
@@ -1312,6 +1345,9 @@ local function createStyleSheet(
 	Compose.watch(function(use: ComposeTypes.Use)
 		local package = read(packageOrReadable, use) or neutral
 		local current = compiledRules(package, read(settings.theme, use))
+		if read(hover, use) == false then
+			current = withoutHover(current)
+		end
 		local timing = timingFor(package, use)
 		currentTiming = timing
 		local preference = preferenceFor(use)

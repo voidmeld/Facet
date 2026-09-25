@@ -206,6 +206,7 @@ export type ThemeOptions = {
 	theme: Engine.Value<string>?,
 	reducedMotion: Engine.Value<boolean>?,
 	preferredTransparency: Engine.Value<number>?,
+	hover: Engine.Value<boolean>?,
 	transition: Engine.Value<TweenInfo | false>?,
 }
 export type SkinOptions = {

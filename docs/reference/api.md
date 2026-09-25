@@ -1320,7 +1320,8 @@ is an array of `{ id, value }` entries. `root` and each `destinations[id]` are
 the retained pages and their disposal.
 
 A push slides the new page in from the trailing edge. The covered page moves
-30 percent to the leading edge and dims. A pop plays the reverse. The popped
+30 percent to the leading edge and dims. The covered page keeps its full
+width, so its controls do not change size. A pop plays the reverse. The popped
 page stays until its motion completes. It cannot be interacted with, and it
 cannot hold the selection. While a page moves, both pages are opaque. Each page
 gets the background color of the nearest opaque container of the stack. A
@@ -2195,6 +2196,10 @@ weight. The derived role keeps the family, style, size and line height.
     scrim transparency. Other rules keep their authored transparency. A value
     that is not a number has no effect. If you omit it, the sheet follows
     GuiService.
+  - `hover`: a boolean or a readable. When it is `false`, the sheet leaves out
+    the `:Hover` rules, so a tapped control does not keep a hover tint. Press
+    paint stays. If you omit it, the sheet leaves out hover paint while
+    UserInputService.PreferredInput is Touch.
 - Colors and opacity use native StyleRule transitions. The default duration is
   `metrics.motion.normal` of the theme package, or 0.2 seconds if it is
   omitted. The easing is Quad Out. The same timing applies across rules. Native
