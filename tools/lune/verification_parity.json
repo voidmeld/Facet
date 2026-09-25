@@ -15845,7 +15845,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "GuiButton.Activated from GuiService selection (engine ButtonA).",
-      "nativeEvidence": "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies"
+      "nativeEvidence": "native_collections::Compose native collections::selects ranges across unmounted rows while honoring row capability policies",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-gamepad-desktop-default.json"
+        ],
+        "cases": [
+          "in47/pad-table-row-a-selects"
+        ],
+        "observed": "In a multi-selection Table, Gamepad1 ButtonA on the selected first row selects row a. DPadDown moves to the next row, ButtonA adds row b, and ButtonA again removes it."
+      }
     },
     {
       "id": "inputs-06",
@@ -17218,7 +17228,17 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "Compose owner disposal of the overlay.",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/help-leaves-with-its-surface"
+        ],
+        "observed": "A mouse resting on the Post button inside a Sheet shows the help text Posts this avatar. Dismissing the sheet (isPresented false) removes the help panel together with the button."
+      }
     },
     {
       "id": "inputs-95",
@@ -17845,7 +17865,20 @@
       "mainCases": 4,
       "class": "b",
       "nativeMechanism": "GuiObject.GuiState / StyleRule :Hover driven by the engine.",
-      "nativeEvidence": "native_navigation::native navigation controls::shows button help after a pointer rests on it and never on touch"
+      "nativeEvidence": "native_navigation::native navigation controls::shows button help after a pointer rests on it and never on touch",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json",
+          "artifacts/studio-live/in47-hover-arrives-with-a-mouse-desktop-default.json"
+        ],
+        "cases": [
+          "in47/hover-follows-the-pointer",
+          "in47/touch-never-hovers",
+          "in47/hover-arrives-with-a-mouse"
+        ],
+        "observed": "On the desktop a resting mouse puts a Button in the engine Hover state, and its styled fill differs from rest. A caption under the mouse paints nothing different. Leaving returns the button to Idle and its rest fill, and a click activates it once. On the iPhone a touch tap never passes through Hover. It still activates the button, the fill returns to rest, and no help panel shows. A Button mounted on the phone hovers and paints its hover fill once the device becomes a desktop with a mouse."
+      }
     },
     {
       "id": "inputs-134",
@@ -19271,7 +19304,18 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "UIDragDetector handles touch and mouse.",
-      "nativeEvidence": "native_inputs::native input controls::lets the native drag detector drive one bounded slider model and cancel"
+      "nativeEvidence": "native_inputs::native input controls::lets the native drag detector drive one bounded slider model and cancel",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/slider-mouse-drag",
+          "in47/touch-slider-drag"
+        ],
+        "observed": "A 0 to 100 Slider dragged from the start of its track to the middle reads about 50, both with a desktop mouse drag and with an iPhone touch drag."
+      }
     },
     {
       "id": "inputs-224",
@@ -31739,7 +31783,18 @@
       "mainCases": 1,
       "class": "b",
       "nativeMechanism": "StyleRule :Hover pseudo-class driven by engine GuiState",
-      "nativeEvidence": "none"
+      "nativeEvidence": "none",
+      "liveEvidence": {
+        "host": "Roblox Studio playtest, source stamps 4d4882ca-3502073 (keyboard, touch and gamepad passes) and f38943a2-3473544 (the device-switch sessions); desktop 1519x754 and the Xbox One emulator 1919x1080 (gui inset 87) with KeyboardAndMouse, the iPhone 14 emulator in portrait with Touch, and Studio's Controller Emulator (Virtual Controller) for real Gamepad1 input; Medium text; input sent with UserInputService:CreateVirtualInput()",
+        "artifacts": [
+          "artifacts/studio-live/in47-keyboard-touch-desktop-default.json"
+        ],
+        "cases": [
+          "in47/hover-follows-the-pointer",
+          "in47/touch-never-hovers"
+        ],
+        "observed": "The theme's :Hover StyleRule changes the Button's styled fill only under a resting mouse. An iPhone touch tap never puts the button in the Hover state, and the fill ends at rest."
+      }
     },
     {
       "id": "paint-103",
