@@ -138,6 +138,35 @@ t.describe("native menu parity with main", function()
 		named.stop()
 	end)
 
+	t.it("fills each row title so a submenu chevron or check sits at the trailing edge", function()
+		local world = worlds.new(function(UI, Host)
+			return Host.Frame({
+				Name = "S",
+				Size = UDim2.fromOffset(800, 600),
+				UI.Menu {
+					trigger = UI.Button "Opener" { label = "More" },
+					items = {
+						{ id = "plain", label = "Plain", onSelect = function() end },
+						{
+							id = "deeper",
+							label = "Deeper",
+							children = { { id = "leaf", label = "Leaf", onSelect = function() end } },
+						},
+					},
+				},
+			})
+		end, { reducedMotion = true })
+		world.find("Opener").Activated.fire()
+		local panel = panelOf(world)
+		for _, id in { "plain", "deeper" } do
+			local content = world.find(id, panel):FindFirstChild("Content")
+			local words = content:FindFirstChild("Captions") or content:FindFirstChild("Title")
+			t.expect(words ~= nil and words:FindFirstChildWhichIsA("UIFlexItem") ~= nil).toBe(true)
+			t.expect(content.Size.X.Scale).toBe(1)
+		end
+		world.stop()
+	end)
+
 	t.it("refuses label and trigger together", function()
 		local message = worlds.mountError(function(UI, Host)
 			return Host.Frame({

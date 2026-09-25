@@ -46,6 +46,30 @@ local function enabledAction(root, name)
 end
 
 t.describe("native input controls", function()
+	t.it("keeps the control height under an authored full-width Button size", function()
+		local node, stop = world(function(UI, engine, runtime)
+			return runtime.constructors.Frame({
+				UI.Button("Wide")({
+					label = "Go",
+					Size = engine.types.UDim2.new(1, 0, 0, 0),
+					AutomaticSize = engine.types.Enum.AutomaticSize.Y,
+					onActivate = function() end,
+				}),
+				UI.Button("Short")({
+					label = "Go",
+					Size = engine.types.UDim2.new(1, 0, 0, 24),
+					AutomaticSize = engine.types.Enum.AutomaticSize.Y,
+					onActivate = function() end,
+				}),
+			})
+		end)
+		local wide = find(node, "Wide")
+		t.expect(wide.Size.X.Scale).toBe(1)
+		t.expect(wide.Size.Y.Offset >= 44).toBe(true)
+		t.expect(find(node, "Short").Size.Y.Offset).toBe(24)
+		stop()
+	end)
+
 	t.it("delivers only the final native Chip and ShortcutHint roots to refs", function()
 		local chipRefs, hintRefs = {}, {}
 		local node, stop = world(function(UI, engine, runtime)
