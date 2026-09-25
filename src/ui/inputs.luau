@@ -466,7 +466,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		local function observeSelection(): Shared.Value<boolean>
 			local selected = ctx.observe(assert(guiService), "SelectedObject")
 			return function(use: ComposeTypes.Use)
-				local target = read(selected, use)
+				local target = use(selected)
 				return node and target == node or false
 			end
 		end
@@ -1148,14 +1148,17 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			end
 		end
 		if #bindings > 0 then
-			local priority = 2000
+			local modified = spec.shortcut ~= nil
+				and spec.shortcut.modifiers ~= nil
+				and spec.shortcut.modifiers.shift == true
+			local priority = if modified then 2001 else 2000
 			if spec.dialogAction then
 				dialogOrder += 1
 				priority -= dialogOrder
 			end
 			ctx.action(node, "Shortcut", bindings, shortcutActive, activate, {
 				priority = priority,
-				sink = spec.dialogAction ~= nil,
+				sink = spec.dialogAction ~= nil or modified,
 			})
 		end
 
@@ -1907,11 +1910,26 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			local holding = false
 			local function removalHeld(): boolean
 				local input = ctx.config.services.UserInputService
-				local probe = (input :: unknown) :: { IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)? }?
+				local probe = (input :: unknown) :: {
+					IsKeyDown: ((UserInputService, Enum.KeyCode) -> boolean)?,
+					GetConnectedGamepads: ((UserInputService) -> { Enum.UserInputType })?,
+					IsGamepadButtonDown: ((UserInputService, Enum.UserInputType, Enum.KeyCode) -> boolean)?,
+				}?
 				if input == nil or probe == nil or probe.IsKeyDown == nil then
 					return false
 				end
-				return input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace)
+				if input:IsKeyDown(E.KeyCode.Delete) or input:IsKeyDown(E.KeyCode.Backspace) then
+					return true
+				end
+				if probe.GetConnectedGamepads == nil or probe.IsGamepadButtonDown == nil then
+					return false
+				end
+				for _, pad in input:GetConnectedGamepads() do
+					if input:IsGamepadButtonDown(pad, E.KeyCode.ButtonX) then
+						return true
+					end
+				end
+				return false
 			end
 			local focused: ComposeTypes.Readable<GuiObject?> = if gui
 				then ctx.observe(gui, "SelectedObject")

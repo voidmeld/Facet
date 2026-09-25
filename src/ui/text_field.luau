@@ -473,6 +473,21 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			for _, key in ROOT_KEYS do
 				target[key], source[key] = source[key], nil
 			end
+			local moved: { Instance } = {}
+			for index = #source, 1, -1 do
+				local child = source[index]
+				local node = if typeof(child) == "Instance"
+						or (type(child) == "table" and (child :: { [string]: unknown }).IsA ~= nil)
+					then child :: Instance
+					else nil
+				if node and (node:IsA("UIFlexItem") or node:IsA("UISizeConstraint")) then
+					table.insert(moved, 1, node)
+					table.remove(source :: { unknown }, index)
+				end
+			end
+			for _, child in moved do
+				table.insert(rootProps :: { unknown }, child)
+			end
 			nativeProps.Name = "Field"
 			nativeProps.BackgroundTransparency = 1
 			nativeProps.Size = if spec.visibleLines
@@ -797,6 +812,20 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 				releaseFocus()
 			end
 		end)
+		local inputService = ctx.config.services.UserInputService
+		if inputService then
+			local touchLive = ctx.observe(inputService, "TouchEnabled")
+			local keyboardLive = ctx.observe(inputService, "KeyboardEnabled")
+			local hadTouch = touchLive:peek() == true
+			Compose.watch(function(use: ComposeTypes.Use)
+				local touchNow = use(touchLive) == true
+				local keyboardNow = use(keyboardLive) == true
+				if hadTouch and not touchNow and not keyboardNow and editing:peek() then
+					releaseFocus()
+				end
+				hadTouch = touchNow
+			end)
+		end
 		runtime.connect(node, "ReturnPressedFromOnScreenKeyboard", function()
 			if spec.multiline ~= true then
 				commit("submit")

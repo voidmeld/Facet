@@ -21,6 +21,7 @@ return function(
 	}
 ): ()
 	local Host, Compose, read = ctx.Host, ctx.Compose, ctx.read
+	local readSource = ctx.readSource
 	local E, D2, V2 = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2
 	local function isPage(value: unknown): boolean
 		return type(value) == "number" and value == value and value % 1 == 0 and math.abs(value) <= MAX_SAFE
@@ -164,7 +165,7 @@ return function(
 			ctx.observe(digits, "TextBounds"), ctx.observe(ellipsis, "TextBounds"), ctx.observe(widest, "TextBounds")
 		local offered = Compose.cell(0)
 		local function slotWidth(page: number, use: ComposeTypes.Use?): number
-			local digit = read(digitBounds, use).X / 10
+			local digit = readSource(digitBounds, use).X / 10
 			local chrome = 2 * ctx.controlSize("compact", "paddingX", use)
 			return math.max(floor(use), math.ceil(digit * #tostring(page) + chrome))
 		end
@@ -313,6 +314,9 @@ return function(
 							propose("page", page)
 						end,
 						Host.UISizeConstraint "SlotLimit" {
+							MinSize = function(use: ComposeTypes.Use)
+								return V2.new(ctx.controlSize("compact", "height", use), 0)
+							end,
 							MaxSize = function(use: ComposeTypes.Use)
 								return V2.new(slotWidth(page, use), math.huge)
 							end,

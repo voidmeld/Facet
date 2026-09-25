@@ -310,6 +310,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				"popover"
 			)
 			ctx.styled(panel, "panel")
+			ctx.styled(panel, "floating")
 			surfaces.skin(panel, "panel")
 			local measured = ctx.observe(panel, "AbsoluteSize")
 			local tailed = rect == nil and spec.tail ~= false

@@ -81,6 +81,10 @@ return function(
 			if props.ResetOnSpawn == nil then
 				props.ResetOnSpawn = false
 			end
+			if props.ZIndexBehavior == nil then
+				local enums = if settings.types then settings.types.Enum else Enum
+				props.ZIndexBehavior = enums.ZIndexBehavior.Sibling
+			end
 			props[1] = sheet
 			props[2] = Links.StyleLink({ StyleSheet = Compose.static(sheet) })
 			props[3] = component()

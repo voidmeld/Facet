@@ -49,6 +49,7 @@ local SETTLE_LIMIT = 20
 
 return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 	local Compose, Host, runtime, read = ctx.Compose, ctx.Host, ctx.runtime, ctx.read
+	local readSource = ctx.readSource
 	local E, D2, V2 = ctx.types.Enum, ctx.types.UDim2, ctx.types.Vector2
 	local frames = runtime.host.frames
 	local function now(): number
@@ -203,7 +204,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		local function heightOf(d: Detent, use: ComposeTypes.Use?): number
 			local room = available(use)
 			local want = if d.hug
-				then read(hugHeight, use) or minimum(use)
+				then readSource(hugHeight, use) or minimum(use)
 				elseif d.fraction then room * d.fraction
 				else assert(d.height)
 			return math.min(room, math.max(minimum(use), want))
@@ -221,7 +222,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		end
 		local lastValid = if byId[spec.detent:peek()] then spec.detent:peek() else detents[1].id
 		local function selected(use: ComposeTypes.Use?): Detent
-			local id = read(spec.detent, use)
+			local id = readSource(spec.detent, use)
 			local found = byId[id]
 			if found then
 				lastValid = id
@@ -240,7 +241,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 			end,
 		})
 		local function painted(use: ComposeTypes.Use?): number
-			local drag = read(dragHeight, use)
+			local drag = readSource(dragHeight, use)
 			if drag then
 				return drag
 			end

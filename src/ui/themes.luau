@@ -628,7 +628,9 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 			elseif role == "panel" or role == "menu" or role == "sheet" then "surfaceStrong"
 			else "control"
 		rule(".facet-" .. role, { BackgroundColor3 = c(paletteRole), BackgroundTransparency = 0, BorderSizePixel = 0 })
-		local radius = if role == "panel" or role == "sheet"
+		local radius = if role == "panel"
+				or role == "sheet"
+				or role == "menu"
 			then package.metrics.radii.panel
 			else package.metrics.radii.control
 		rule(".facet-" .. role .. "::UICorner", { CornerRadius = types.UDim.new(0, radius) })
@@ -915,7 +917,33 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-menu-destructive:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(".facet-menu-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
 	rule(".facet-menu-destructive >> .facet-icon", { ImageColor3 = c("danger") })
-	rule(".facet-menu::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
+	rule(".facet-menu::UIStroke", {
+		Color = c("hairline"),
+		Transparency = 0.3,
+		Thickness = 1,
+		ApplyStrokeMode = types.Enum.ApplyStrokeMode.Border,
+	})
+	rule(".facet-menu::UIShadow", {
+		BlurRadius = types.UDim.new(0, 14),
+		Transparency = 0.35,
+		Offset = types.UDim2.fromOffset(0, 3),
+	})
+	rule(".facet-menu-group::UICorner", { CornerRadius = types.UDim.new(0, package.metrics.radii.panel) })
+	rule(
+		".facet-menu-hairline",
+		{ BackgroundColor3 = c("hairline"), BackgroundTransparency = extra.hairlineOpacity, BorderSizePixel = 0 }
+	)
+	for _, state in { "", ":Hover", ":Press" } do
+		rule(".facet-menu-item.facet-selected" .. state, {
+			BackgroundTransparency = 0,
+			BackgroundColor3 = c("accent"),
+			TextColor3 = c("onAccent"),
+		})
+	end
+	rule(".facet-menu-item.facet-selected >> .facet-button-caption", { TextColor3 = c("onAccent") })
+	rule(".facet-menu-item.facet-selected >> .facet-text", { TextColor3 = c("onAccent") })
+	rule(".facet-menu-item.facet-selected >> .facet-icon", { ImageColor3 = c("onAccent") })
+	rule(".facet-floating::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
 	rule(".facet-step-circle::UIStroke", { Color = c("contentSecondary"), Thickness = 1 })
 	rule(".facet-invalid::UIStroke", { Color = c("danger"), Thickness = 1 })
 	rule(".facet-date-time-picker", { BackgroundTransparency = 1 })

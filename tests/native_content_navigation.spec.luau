@@ -164,17 +164,18 @@ t.describe("native content navigation deltas", function()
 		local chosen = world.find("y2026", panel)
 		t.expect(world.gui.SelectedObject).toBe(chosen)
 		local rows = panel:FindFirstChild("MenuRows", true)
+		local pitch = 44 + rows:FindFirstChildWhichIsA("UIListLayout").Padding.Offset
 		for _, row in rows:GetChildren() do
 			if row:IsA("GuiObject") then
 				row.AbsoluteSize = Vector2.new(220, 44)
 			end
 		end
-		rows.AbsoluteSize = Vector2.new(220, 201 * 52)
+		rows.AbsoluteSize = Vector2.new(220, 201 * pitch)
 		panel.AbsoluteSize = Vector2.new(220, 400)
 		local center = panel.CanvasPosition.Y + 400 / 2
 		local inset = rows:FindFirstChildWhichIsA("UIPadding")
 		local top = if inset then inset.PaddingTop.Offset else 0
-		t.expect(math.abs(center - (top + 100 * 52 + 22)) <= 1).toBe(true)
+		t.expect(math.abs(center - (top + 100 * pitch + 22)) <= 1).toBe(true)
 		world.stop()
 		local checked = Compose.cell(true)
 		local toggles = menuWorld({
@@ -200,23 +201,25 @@ t.describe("native content navigation deltas", function()
 		local chosen = world.find("y2026", panel)
 		local rows = panel:FindFirstChild("MenuRows", true)
 		local layout = rows:FindFirstChildWhichIsA("UIListLayout")
+		local gap = layout.Padding.Offset
+		local pitch = 44 + gap
 		chosen.AbsoluteSize = Vector2.new(220, 44)
-		rows.AbsoluteSize = Vector2.new(220, 201 * 52)
+		rows.AbsoluteSize = Vector2.new(220, 201 * pitch)
 		panel.AbsoluteSize = Vector2.new(220, 400)
 		local inset = rows:FindFirstChildWhichIsA("UIPadding")
 		local pad = if inset then inset.PaddingTop.Offset else 0
-		t.expect(panel.CanvasPosition.Y).toBe(pad + 100 * 8 + 22 - 200)
+		t.expect(panel.CanvasPosition.Y).toBe(math.max(0, pad + 100 * gap + 22 - 200))
 		rows.AbsolutePosition = Vector2.new(0, -panel.CanvasPosition.Y)
 		for _, row in rows:GetChildren() do
 			if row:IsA("GuiObject") then
 				row.AbsoluteSize = Vector2.new(220, 44)
 			end
 		end
-		layout.AbsoluteContentSize = Vector2.new(220, 201 * 52)
+		layout.AbsoluteContentSize = Vector2.new(220, 201 * pitch)
 		local center = panel.CanvasPosition.Y + 400 / 2
 		local inset = rows:FindFirstChildWhichIsA("UIPadding")
 		local top = if inset then inset.PaddingTop.Offset else 0
-		t.expect(math.abs(center - (top + 100 * 52 + 22)) <= 1).toBe(true)
+		t.expect(math.abs(center - (top + 100 * pitch + 22)) <= 1).toBe(true)
 		world.stop()
 	end)
 

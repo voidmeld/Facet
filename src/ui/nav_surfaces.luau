@@ -220,7 +220,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 		if rhythm then
 			runtime.decorate(rhythm, { Padding = ctx.types.UDim.new(0, 0) })
 		end
-		ctx.styled(root, "disclosure")
+		ctx.styled(root, "disclosure-group")
 		if spec.appearance == "contained" then
 			ctx.styled(root, "panel")
 			runtime.decorate(root, { BackgroundTransparency = 0 })
@@ -518,6 +518,15 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				end)
 				local actionBar = Host.Frame(actionProps)
 				local actionSize = ctx.observe(actionBar, "AbsoluteSize")
+				local function chrome(use: ComposeTypes.Use): number
+					local package = read(ctx.config.theme, use)
+					local recipe = if package and package.chrome then package.chrome.panel else nil
+					local inset = if recipe then recipe.contentInsets else nil
+					return padding * 2
+						+ 8
+						+ math.max(0, if inset then inset.top or 0 else 0)
+						+ math.max(0, if inset then inset.bottom or 0 else 0)
+				end
 				local scroll = parts.scroller(ctx, {
 					Name = "AlertMessage",
 					Selectable = false,
@@ -535,14 +544,18 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							0,
 							math.min(
 								use(contentSize).Y,
-								math.max(44, use(offer).Y - use(actionSize).Y - padding * 2 - 40)
+								math.max(44, use(offer).Y - use(actionSize).Y - chrome(use) - 32)
 							)
 						)
 					end,
 				}, { lists.list({}, true) :: Instance, contentRoot :: Instance })
 				local layout: GuiObject
 				if fullScreen then
-					runtime.decorate(actionBar, { AnchorPoint = V2.new(0, 1), Position = D2.fromScale(0, 1) })
+					local readable = V2.new(spec.maxWidth or 960, math.huge)
+					runtime.decorate(actionBar, { AnchorPoint = V2.new(0.5, 1), Position = D2.fromScale(0.5, 1) })
+					runtime.decorate(scroll, { AnchorPoint = V2.new(0.5, 0), Position = D2.fromScale(0.5, 0) })
+					surfaces.attach(actionBar, { Host.UISizeConstraint "ReadableWidth" { MaxSize = readable } })
+					surfaces.attach(scroll, { Host.UISizeConstraint "ReadableWidth" { MaxSize = readable } })
 					layout = Host.CanvasGroup "AlertLayout" {
 						BackgroundTransparency = 1,
 						Size = function(use: ComposeTypes.Use)
@@ -1063,12 +1076,25 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 				)
 				ctx.modalPortal(panel, spec.anchor)
 				ctx.styled(panel, "panel")
+				ctx.styled(panel, "floating")
 				surfaces.skin(panel)
 				local layer: GuiBase2d = ctx.config.overlayParent :: GuiBase2d?
 					or assert(spec.anchor:FindFirstAncestorWhichIsA("LayerCollector"))
 				local extent = ctx.observe(layer, "AbsoluteSize")
 				local origin = ctx.observe(layer, "AbsolutePosition")
 				local measured = ctx.observe(panel, "AbsoluteSize")
+				local function above(use: ComposeTypes.Use, floor: number): number
+					use(position)
+					local outermost = 0
+					local at: Instance? = spec.anchor
+					while at and at ~= layer do
+						if at:IsA("GuiObject") then
+							outermost = at.ZIndex
+						end
+						at = at.Parent
+					end
+					return math.max(floor, outermost + floor - 93)
+				end
 				local placement = Compose.formula(function(use: ComposeTypes.Use)
 					local at, bounds, offer, offset, box =
 						use(position), use(size), use(extent), use(origin), use(measured)
@@ -1098,7 +1124,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							0
 						)
 					end,
-					ZIndex = 95,
+					ZIndex = function(use: ComposeTypes.Use): number
+						return above(use, 95)
+					end,
 				})
 				surfaces.popover(panel, amount, function(use: ComposeTypes.Use): (Vector2, Vector2)
 					local at, anchorAt, anchorSize, offset, box =
@@ -1114,7 +1142,9 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Size = D2.fromOffset(10, 10),
 							Rotation = 45,
 							BorderSizePixel = 0,
-							ZIndex = 94,
+							ZIndex = function(use: ComposeTypes.Use): number
+								return above(use, 94)
+							end,
 							Host.UIGradient "PresentationFade" {
 								Transparency = function(use: ComposeTypes.Use)
 									return ctx.types.NumberSequence.new(1 - amount(use))

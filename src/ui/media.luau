@@ -41,8 +41,9 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		if not Compose.isReadable(source) and type(source) ~= "function" then
 			return if source == nil then fallback else source :: T
 		end
+		local live = source :: Types.Value<T>
 		return function(use: ComposeTypes.Use)
-			local value = read(source, use)
+			local value = read(live, use)
 			return if value == nil then fallback else value
 		end
 	end
@@ -69,12 +70,13 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 	end
 	local function textRole(node: TextLabel, role: Types.Value<Media.TextRole>?): TextLabel
 		if not Compose.isReadable(role) and type(role) ~= "function" then
-			node:AddTag(roleTag(read(role)))
+			node:AddTag(roleTag(role :: Media.TextRole?))
 			return node
 		end
+		local live = role :: Types.Value<Media.TextRole>
 		local previous: string?
 		Compose.watch(function(use: ComposeTypes.Use)
-			local tag = roleTag(read(role, use))
+			local tag = roleTag(read(live, use))
 			if previous then
 				node:RemoveTag(previous)
 			end

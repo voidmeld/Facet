@@ -1935,7 +1935,7 @@ end)
 interactive(
 	"chip-edit-live",
 	{ "post-pickers-075", "post-pickers-079" },
-	"afterDelete: press the Delete key once (the Friends chip holds the selection)",
+	"afterDelete: press Delete or ButtonX once (the Friends chip holds the selection)",
 	function(t)
 		local value: any = {}
 		local stage = t.mount(function(UI, Host, Compose)
@@ -2023,7 +2023,7 @@ interactive(
 		GuiService.SelectedObject = row:FindFirstChild("Friends")
 		t.settle(4)
 		t.check("the last chip Friends holds the selection", selectedName() == "Friends", selectedName())
-		t.note("gamepad", "ButtonX removal is not driven; Delete runs the same RemoveChip action")
+		t.note("removal key", "the driver presses Delete or ButtonX; live.press records the delivered input")
 		return value
 	end,
 	{
@@ -3024,6 +3024,116 @@ add("dtp-ten-foot", { "post-pickers-159" }, function(t)
 		"B cannot be sent by the input tools, so closing with B and the return of selection to the calendar icon are not checked"
 	)
 end)
+
+interactive(
+	"dtp-ten-foot-pad-open-and-back",
+	{ "post-pickers-159", "post-pickers-144", "post-pickers-145" },
+	"afterOpen: press ButtonA once (the calendar icon holds the selection); afterBack: press ButtonB once",
+	function(t)
+		local value: any = {}
+		if not tenFootCheck(t) then
+			return value
+		end
+		local stage, root, layer = datePicker(t, function(Compose)
+			return singleSpec(Compose, {})
+		end)
+		value.stage, value.root, value.layer = stage, root, layer
+		value.open = if root then visibleNamed(t, root, "Open") else nil
+		if not found(t, "the calendar icon was found", { "open" }, { open = value.open }) then
+			return value
+		end
+		GuiService.SelectedObject = value.open
+		t.settle(2)
+		t.check("the calendar icon holds the selection", GuiService.SelectedObject == value.open, selectedName())
+		return value
+	end,
+	{
+		afterOpen = function(t, value)
+			t.settle(12)
+			local surface = surfaceOf(t, value.layer)
+			t.check("ButtonA on the calendar icon opens the calendar", surface ~= nil)
+			t.check(
+				"the calendar routes to a sheet",
+				value.root:GetAttribute("route") == "sheet",
+				value.root:GetAttribute("route")
+			)
+			local selected = GuiService.SelectedObject
+			t.check(
+				"selection lands inside the calendar",
+				surface ~= nil and selected ~= nil and selected:IsDescendantOf(surface),
+				if selected then selected:GetFullName() else "nil"
+			)
+		end,
+		afterBack = function(t, value)
+			t.settle(12)
+			t.check("ButtonB closes the calendar", visibleNamed(t, value.layer, "CalendarSurface") == nil)
+			t.check(
+				"the selection returns to the calendar icon",
+				GuiService.SelectedObject == value.open,
+				selectedName()
+			)
+			GuiService.SelectedObject = nil
+		end,
+	}
+)
+
+interactive(
+	"color-ten-foot-pad-open-and-back",
+	{ "post-pickers-178" },
+	"afterOpen: press ButtonA once (the well holds the selection); afterBack: press ButtonB once",
+	function(t)
+		local value: any = {}
+		if not tenFootCheck(t) then
+			return value
+		end
+		local stage = t.mount(function(UI, Host, Compose)
+			return Host.Frame "Box" {
+				BackgroundTransparency = 1,
+				Position = UDim2.fromOffset(40, 40),
+				Size = UDim2.fromOffset(44, 44),
+				UI.ColorPicker("Well")((colorSpec(Compose, { modes = { "spectrum", "swatches" } }))),
+			}
+		end, { frames = 20 })
+		value.layer = layerOf(stage)
+		value.well = t.find(stage, "Well")
+		local target = value.well
+		if target and not (target:IsA("GuiObject") and target.Selectable) then
+			for _, node in target:GetDescendants() do
+				if node:IsA("GuiButton") and node.Selectable and t.visible(node) then
+					target = node
+					break
+				end
+			end
+		end
+		value.target = target
+		if not found(t, "the well was found", { "target" }, { target = target }) then
+			return value
+		end
+		GuiService.SelectedObject = target
+		t.settle(2)
+		t.check("the well holds the selection", GuiService.SelectedObject == target, selectedName())
+		return value
+	end,
+	{
+		afterOpen = function(t, value)
+			t.settle(12)
+			local panel = openPanel(t, value.layer)
+			t.check("ButtonA on the well opens the colour panel", panel ~= nil)
+			local selected = GuiService.SelectedObject
+			t.check(
+				"selection lands inside the panel",
+				panel ~= nil and selected ~= nil and selected:IsDescendantOf(panel),
+				if selected then selected:GetFullName() else "nil"
+			)
+		end,
+		afterBack = function(t, value)
+			t.settle(12)
+			t.check("ButtonB closes the colour panel", visibleNamed(t, value.layer, "ColorPickerModal") == nil)
+			t.check("the selection returns to the well", GuiService.SelectedObject == value.target, selectedName())
+			GuiService.SelectedObject = nil
+		end,
+	}
+)
 
 interactive(
 	"color-ten-foot-center",

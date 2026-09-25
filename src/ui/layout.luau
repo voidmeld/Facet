@@ -299,7 +299,6 @@ return function(ctx: Types.Context, controls: Layout.LayoutControls?): Layout.La
 		end
 		local native: Engine.FrameNativeProps = {
 			Name = "Divider",
-			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 		}
 		local node = ctx.styled(Host.Frame(ctx.props(spec, { "axis", "thickness", "appearance" }, native)), "divider")

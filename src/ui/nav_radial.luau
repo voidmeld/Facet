@@ -1126,7 +1126,7 @@ return function(
 							if gui and key and buttons[key] then
 								gui.SelectedObject = buttons[key]
 							end
-						end, { priority = 2200 })
+						end, { priority = 2200, capture = true })
 					end
 				end
 				local modal = surfaces.modal(function()
