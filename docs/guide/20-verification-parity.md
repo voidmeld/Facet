@@ -18,7 +18,7 @@ where.
   884 of these cases. One case moved to class c, because `api.md`
   no longer makes its promise. 3 cases remain. Only a live check with a
   real drag can close them. See [Gap list](#gap-list).
-- 577 of the 3,943 covered cases have a weaker
+- 453 of the 3,908 covered cases have a weaker
   candidate assertion. Usually one candidate case replaces several main
   edge cases.
 - 1,440 cases moved to a Roblox Engine or Compose mechanism. For about
@@ -89,34 +89,34 @@ last column names the candidate specs that the group cites most.
 |---|---:|---:|---:|---:|---:|---:|---|
 | Reactive core | 64 | 23 | 0 | 4 | 37 | 0 | `native_compose_contract`, `native_public_surface`, `native_navigation` |
 | Lifetime and ownership | 333 | 158 | 5 | 6 | 169 | 0 | `native_conformance`, `native_stress`, `native_themes_media` |
-| Layout and geometry | 1,395 | 341 | 239 | 221 | 833 | 0 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
-| Text measurement and fit | 510 | 102 | 45 | 233 | 175 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
-| Focus and selection | 547 | 156 | 42 | 242 | 149 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
+| Layout and geometry | 1,395 | 279 | 116 | 221 | 895 | 0 | `native_inputs`, `native_navigation`, `native_parity_navigation` |
+| Text measurement and fit | 510 | 100 | 43 | 233 | 177 | 0 | `native_inputs`, `native_collections`, `native_parity_navigation` |
+| Focus and selection | 547 | 155 | 38 | 242 | 150 | 0 | `native_navigation`, `native_collections`, `native_inputs` |
 | Input actions | 344 | 115 | 6 | 107 | 122 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
 | Pointer, touch and drag | 393 | 87 | 2 | 98 | 208 | 0 | `native_collections`, `native_radial_controls`, `native_virtual_monitors` |
 | Scrolling | 332 | 95 | 7 | 100 | 137 | 0 | `native_collections`, `native_gallery_collections`, `native_virtual_monitors` |
-| Motion | 596 | 159 | 6 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
-| Paint and theming | 715 | 205 | 6 | 70 | 440 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
-| Theme packages | 382 | 152 | 3 | 0 | 230 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
+| Motion | 596 | 159 | 5 | 33 | 404 | 0 | `native_themes_media`, `native_navigation`, `native_inputs` |
+| Paint and theming | 726 | 211 | 10 | 70 | 445 | 0 | `native_themes_media`, `native_inputs`, `native_navigation` |
+| Theme packages | 394 | 162 | 9 | 0 | 232 | 0 | `native_themes_media`, `native_inputs`, `native_gallery_shell` |
 | Icons and media | 255 | 120 | 2 | 37 | 98 | 0 | `native_themes_media`, `native_stress`, `native_public_surface` |
-| Action controls | 411 | 113 | 16 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
-| Value controls | 287 | 259 | 13 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
+| Action controls | 414 | 116 | 10 | 1 | 297 | 0 | `native_inputs`, `native_navigation`, `native_themes_media` |
+| Value controls | 289 | 261 | 14 | 0 | 28 | 0 | `native_inputs`, `native_parity_controls`, `native_themes_media` |
 | Text input | 173 | 124 | 15 | 28 | 21 | 0 | `native_inputs`, `native_navigation`, `native_collections` |
-| Menus and pickers | 226 | 187 | 44 | 0 | 39 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
-| Navigation containers | 88 | 85 | 7 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
-| Presented surfaces | 332 | 168 | 18 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
+| Menus and pickers | 230 | 191 | 46 | 0 | 39 | 0 | `native_navigation`, `native_parity_navigation`, `radial_geometry` |
+| Navigation containers | 90 | 87 | 7 | 1 | 2 | 0 | `native_navigation`, `native_gallery_shell`, `native_radial_controls` |
+| Presented surfaces | 333 | 169 | 19 | 5 | 159 | 0 | `native_navigation`, `native_parity_navigation`, `native_gallery_parity` |
 | Virtual collections | 224 | 169 | 1 | 3 | 52 | 0 | `native_collections`, `native_gallery_collections`, `native_perf_principles` |
 | Tables | 156 | 97 | 0 | 1 | 58 | 0 | `native_collections`, `native_gallery_workflows`, `native_gallery_collections` |
-| Row actions | 264 | 162 | 25 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
+| Row actions | 264 | 162 | 23 | 0 | 99 | 3 | `native_collections`, `native_parity_controls`, `native_gallery_workflows` |
 | HUD and world targets | 170 | 50 | 2 | 50 | 70 | 0 | `native_hud`, `native_themes_media`, `native_outpost_terminal` |
-| Adaptive environment | 424 | 36 | 6 | 51 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
+| Adaptive environment | 427 | 39 | 9 | 51 | 337 | 0 | `native_navigation`, `native_parity_navigation`, `native_radial_controls` |
 | Public surface | 373 | 93 | 0 | 0 | 280 | 0 | `native_conformance`, `native_registration`, `native_parity_gaps` |
 | Docs, examples and tooling | 513 | 51 | 0 | 0 | 462 | 0 | `native_documentation`, `native_registration`, `scenario_require_paths` |
 | Gallery and examples | 442 | 257 | 47 | 113 | 72 | 0 | `native_gallery`, `native_games`, `native_gallery_collections` |
-| Reference apps | 327 | 152 | 2 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
+| Reference apps | 327 | 152 | 0 | 22 | 153 | 0 | `native_reference_apps`, `native_outpost_rules`, `scenario_require_paths` |
 | Performance | 792 | 84 | 6 | 4 | 704 | 0 | `native_perf_principles`, `native_themes_media`, `native_perf_lab` |
 | Replication and server state | 55 | 31 | 0 | 0 | 24 | 0 | `native_outpost_terminal`, `native_stress`, `native_gallery` |
-| Error handling and refusals | 253 | 112 | 12 | 2 | 139 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
+| Error handling and refusals | 253 | 111 | 11 | 2 | 140 | 0 | `native_navigation`, `native_parity_navigation`, `native_parity_gaps` |
 
 ## Where verification is weaker
 

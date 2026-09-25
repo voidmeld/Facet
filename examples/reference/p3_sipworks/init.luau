@@ -248,14 +248,18 @@ function Sipworks.build(ctx)
 				end, function()
 					return view.column("Unlock", {
 						view.text(text("unlock.description")),
-						view.action(
-							"Buy",
-							text("detail.unlock", { price = unlock.product.price }),
-							unlock.purchase,
-							function(use)
-								return use(unlock.availability) == "available" and use(unlock.status) ~= "pending"
-							end
-						),
+						Compose.show(function(use)
+							return use(unlock.availability) == "available"
+						end, function()
+							return view.action(
+								"Buy",
+								text("detail.unlock", { price = unlock.product.price }),
+								unlock.purchase,
+								function(use)
+									return use(unlock.status) ~= "pending"
+								end
+							)
+						end),
 					})
 				end)
 			end)
@@ -309,14 +313,14 @@ function Sipworks.build(ctx)
 			view.text(text("nav.book"), 28),
 			view.text(text("unlock.description")),
 			Compose.show(function(use)
-				return not use(unlock.unlocked)
+				return not use(unlock.unlocked) and use(unlock.availability) == "available"
 			end, function()
 				return view.action(
 					"Buy",
 					text("book.unlock", { price = unlock.product.price }),
 					unlock.purchase,
 					function(use)
-						return use(unlock.availability) == "available" and use(unlock.status) ~= "pending"
+						return use(unlock.status) ~= "pending"
 					end
 				)
 			end),

@@ -1,9 +1,9 @@
 {
   "groups": {
     "menus-pickers": {
-      "mainCases": 226,
-      "a": 187,
-      "aWeaker": 44,
+      "mainCases": 230,
+      "a": 191,
+      "aWeaker": 46,
       "b": 0,
       "c": 39,
       "d": 0,
@@ -17,7 +17,7 @@
     "motion": {
       "mainCases": 596,
       "a": 159,
-      "aWeaker": 6,
+      "aWeaker": 5,
       "b": 33,
       "c": 404,
       "d": 0,
@@ -30,10 +30,10 @@
     },
     "error-handling": {
       "mainCases": 253,
-      "a": 112,
-      "aWeaker": 12,
+      "a": 111,
+      "aWeaker": 11,
       "b": 2,
-      "c": 139,
+      "c": 140,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 7,
@@ -44,9 +44,9 @@
       }
     },
     "controls-actions": {
-      "mainCases": 411,
-      "a": 113,
-      "aWeaker": 16,
+      "mainCases": 414,
+      "a": 116,
+      "aWeaker": 10,
       "b": 1,
       "c": 297,
       "d": 0,
@@ -86,9 +86,9 @@
       }
     },
     "presented-surfaces": {
-      "mainCases": 332,
-      "a": 168,
-      "aWeaker": 18,
+      "mainCases": 333,
+      "a": 169,
+      "aWeaker": 19,
       "b": 5,
       "c": 159,
       "d": 0,
@@ -116,7 +116,7 @@
     "reference-apps": {
       "mainCases": 327,
       "a": 152,
-      "aWeaker": 2,
+      "aWeaker": 0,
       "b": 22,
       "c": 153,
       "d": 0,
@@ -129,10 +129,10 @@
     },
     "layout-geometry": {
       "mainCases": 1395,
-      "a": 341,
-      "aWeaker": 239,
+      "a": 279,
+      "aWeaker": 116,
       "b": 221,
-      "c": 833,
+      "c": 895,
       "d": 0,
       "candidateSpecs": {
         "native_inputs": 11,
@@ -198,9 +198,9 @@
       }
     },
     "controls-values": {
-      "mainCases": 287,
-      "a": 259,
-      "aWeaker": 13,
+      "mainCases": 289,
+      "a": 261,
+      "aWeaker": 14,
       "b": 0,
       "c": 28,
       "d": 0,
@@ -213,9 +213,9 @@
       }
     },
     "adaptive-environment": {
-      "mainCases": 424,
-      "a": 36,
-      "aWeaker": 6,
+      "mainCases": 427,
+      "a": 39,
+      "aWeaker": 9,
       "b": 51,
       "c": 337,
       "d": 0,
@@ -256,10 +256,10 @@
     },
     "focus-selection": {
       "mainCases": 547,
-      "a": 156,
-      "aWeaker": 42,
+      "a": 155,
+      "aWeaker": 38,
       "b": 242,
-      "c": 149,
+      "c": 150,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 21,
@@ -299,11 +299,11 @@
       }
     },
     "theme-packages": {
-      "mainCases": 382,
-      "a": 152,
-      "aWeaker": 3,
+      "mainCases": 394,
+      "a": 162,
+      "aWeaker": 9,
       "b": 0,
-      "c": 230,
+      "c": 232,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 61,
@@ -355,11 +355,11 @@
       }
     },
     "paint-theming": {
-      "mainCases": 715,
-      "a": 205,
-      "aWeaker": 6,
+      "mainCases": 726,
+      "a": 211,
+      "aWeaker": 10,
       "b": 70,
-      "c": 440,
+      "c": 445,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 54,
@@ -370,8 +370,8 @@
       }
     },
     "navigation-containers": {
-      "mainCases": 88,
-      "a": 85,
+      "mainCases": 90,
+      "a": 87,
       "aWeaker": 7,
       "b": 1,
       "c": 2,
@@ -386,7 +386,7 @@
     "row-actions": {
       "mainCases": 264,
       "a": 162,
-      "aWeaker": 25,
+      "aWeaker": 23,
       "b": 0,
       "c": 99,
       "d": 3,
@@ -400,10 +400,10 @@
     },
     "text-measure-fit": {
       "mainCases": 510,
-      "a": 102,
-      "aWeaker": 45,
+      "a": 100,
+      "aWeaker": 43,
       "b": 233,
-      "c": 175,
+      "c": 177,
       "d": 0,
       "candidateSpecs": {
         "native_inputs": 7,
@@ -461,8 +461,8 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 3943,
-      "c": 5998,
+      "a": 3908,
+      "c": 6071,
       "b": 1432,
       "d": 3
     },
@@ -474,11 +474,11 @@
     },
     "contractsByClass": {
       "a": 1670,
-      "c": 837,
+      "c": 846,
       "b": 307,
       "d": 1
     },
-    "mainCases": 10848,
+    "mainCases": 11414,
     "uncitableCandidateCases": [
       "(19 identically named state-machine cases in native_games)",
       "(44 identically named cases in native_games)",
@@ -492,9 +492,9 @@
       "tools/check_types.py with tests/types/*_witness.luau (not a lune case)",
       "tools/lune/native_verify.py::architecture (examples/*.luau may not require private src modules)"
     ],
-    "contracts": 2815,
+    "contracts": 2824,
     "candidateCasesAtRecheck": 675,
-    "coveredButWeaker": 577
+    "coveredButWeaker": 453
   },
   "schema": "facet-verification-parity/1",
   "method": "Main cases were enumerated by loading tests/run.luau with registration recorded and execution suppressed. Every main spec was read and its cases were grouped into behavioral contracts. Each contract was classified against the candidate tests, api.md, the guides and src. Cited candidate case ids were checked against the candidate suite result.",
@@ -5085,9 +5085,14 @@
       "class": "a",
       "candidateCases": [
         "radial_geometry::radial geometry::content-fitted paint encloses upright icons at every compass direction",
-        "radial_geometry::radial geometry::short arc outlines close both end caps with straight tangents"
+        "radial_geometry::radial geometry::short arc outlines close both end caps with straight tangents",
+        "native_parity_weak3_h2::native parity weak3 h2: radial content fit::defaults to both axes and matches an explicit both fit",
+        "native_parity_weak3_h2::native parity weak3 h2: radial content fit::offers independent radial and angular axes and an unchanged full-ring none mode",
+        "native_parity_weak3_h2::native parity weak3 h2: radial content fit::gives every sector of a radial-fit ring one pair of radii for unequal content",
+        "native_parity_weak3_h2::native parity weak3 h2: radial content fit::encloses icon and compact icon content inside its fitted paint at every compass direction",
+        "native_parity_weak3_h2::native parity weak3 h2: radial content fit::keeps the full logical sector as the gesture target outside the fitted paint"
       ],
-      "weaker": "Only fitContent(...,\"both\") is tested on the geometry helper; default mode, \"none\"/\"radial\"/\"angular\" axes, shared radii across unequal items, image content and gesture targets outside the fitted paint are not checked..."
+      "closeNote": "Default, both, radial, angular and none modes, shared ring radii for unequal content, icon content and the full-sector gesture target are asserted. Image content is tested as icon content because compactLabel.image is retired."
     },
     {
       "id": "apps2-197",
@@ -6372,9 +6377,10 @@
       "mainCases": 3,
       "class": "a",
       "candidateCases": [
-        "native_virtual_monitors::native virtual monitors::NVM-9 pages a bounded native grid and preserves saved order and notes across shelves"
+        "native_virtual_monitors::native virtual monitors::NVM-9 pages a bounded native grid and preserves saved order and notes across shelves",
+        "native_parity_weak3_h2::native parity weak3 h2: virtual monitors saved shelf::unmounts the Catalog grid on the Saved shelf so the table owns the whole feed, and restores it"
       ],
-      "weaker": "Candidate only finds SavedGames after switching shelf (Compose.show swaps Catalog out); it does not assert Catalog is gone, nor the table height >= 0.9x the catalog height inside the Browse column."
+      "weaker": "Catalog unmounting and its return are asserted headless. The SavedGames height of at least 0.9 times the Games grid height inside DiscoverBody needs engine layout and has no live record yet."
     },
     {
       "id": "apps2-284",
@@ -7697,16 +7703,16 @@
       "class": "a",
       "candidateCases": [
         "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch",
-        "native_parity_weaker_apps::Sipworks::apps-82 refuses the Blend Book page purchase while the price loads"
+        "native_parity_weaker_apps::Sipworks::apps-82 mounts no Blend Book page Buy button until the price loads"
       ],
-      "weaker": "The Blend Book still mounts a disabled Buy button while the price loads. The main test required no Buy button. The new test shows that the button refuses the purchase and starts no attempt until the price is available. The session-local recipe checks are deleted from the app.",
       "apiPromise": "docs/guide/04-tutorial-examples.md 'Reference applications' section: 'examine measured recipes and unlock the Blend Book'",
       "gap": {
         "description": "Untested.",
         "headlessTestable": true,
         "proposedTest": "world(sipworks); before unlock.product price resolves assert no 'Buy' button; open recipe; Stepper 'Batch' to 3; assert measure text equals i18n.measureAt(locale, value*3, unit)."
       },
-      "closedBy": "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch"
+      "closedBy": "native_parity_apps::Sipworks::refuses the Blend Book while its price loads and rescales recipe measures with the batch",
+      "closeNote": "The Blend Book mounts no Buy button while the price loads, and the button appears with the price and starts one attempt, as on main. The session-local recipe checks are deleted from the app."
     },
     {
       "id": "apps-83",
@@ -9383,9 +9389,11 @@
         "native_navigation::native navigation controls::keeps plain picker segments native while retaining live description sources",
         "native_navigation::native navigation controls::keeps filtered multiple selections and reactive row descriptions through source replacement",
         "native_parity_weaker_menus::native parity weaker menus::keeps choice rows, their selection focus and missing selected values through live replacements",
-        "native_parity_weaker_menus::native parity weaker menus::keeps a focused menu row while its live description appears, changes and disappears"
+        "native_parity_weaker_menus::native parity weaker menus::keeps a focused menu row while its live description appears, changes and disappears",
+        "native_parity_weak3_h1::native parity weak3 h1::repaints a live radioGroup option icon in place and keeps the row and its focus",
+        "native_parity_weak3_h1::native parity weak3 h1::repaints a live inline option icon in place and keeps the row and its focus"
       ],
-      "weaker": "A live icon replacement is not reflected: src/ui/nav_menu.luau:1086 reads option.icon once when the row is created, so a readable option whose icon changes keeps the old glyph. Main asserted the new glyph; this is a product gap that is not fixed here."
+      "closeNote": "A live option list replacement repaints the row glyph in place and keeps the row and its focus (src/ui/nav_menu.luau liveIcon)."
     },
     {
       "id": "apps-197",
@@ -11664,10 +11672,12 @@
       "class": "a",
       "candidateCases": [
         "native_parity_restore::native parity restore: RowActions outside tap::lets a commit in flight finish once when an outside tap arrives",
-        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap"
+        "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap",
+        "native_parity_weak3_h3::weak3 RowActions outside tap::keeps a destructive commit running through a tap on another row and still activates that row",
+        "native_parity_weak3_h3::weak3 RowActions outside tap::closes a tray over a HUD on a HUD tap, activates the HUD control and engages nothing"
       ],
-      "weaker": "There is no passive HUD catcher. The row observes UserInputService.InputBegan, which cannot consume the press.",
-      "restoredBy": "parity/restore"
+      "restoredBy": "parity/restore",
+      "closeNote": "The row observes UserInputService.InputBegan in place of a passive HUD catcher. The tests show the player-visible promise of main: an outside tap does not stop a destructive commit, and a HUD tap closes the tray and still activates the HUD control."
     },
     {
       "id": "collections-91",
@@ -13231,7 +13241,7 @@
       "mainSpecs": [
         "table_input"
       ],
-      "mainCases": 4,
+      "mainCases": 3,
       "class": "a",
       "candidateCases": [
         "native_parity_restore::native parity restore: Table multi-select keys::extends the selection from the anchor with Shift and an arrow, and moves focus with it",
@@ -13240,8 +13250,19 @@
         "native_parity_restore::native parity restore: Table multi-select keys::moves focus with Ctrl and an arrow and with a plain arrow without changing the selection",
         "native_parity_restore::native parity restore: Table multi-select keys::honors held modifiers on a keyboard Return"
       ],
-      "weaker": "A plain arrow moves the focus and does not replace the selection, because focus does not select in the native model. Main replaced the selection on a plain arrow.",
       "restoredBy": "parity/restore"
+    },
+    {
+      "id": "collections-198-retired",
+      "group": "focus-selection",
+      "title": "A plain arrow replaces the table selection",
+      "mainSpecs": [
+        "table_input"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "Owner decision 14 in docs/guide/21-retirements.md (Table selection and editing model): the multi-select keys are restored, and a plain arrow does not select.",
+      "splitFrom": "collections-198"
     },
     {
       "id": "collections-199",
@@ -14194,7 +14215,7 @@
         "native_selection_parity::native selection parity with the main focus graph::moves a removed collection row's selection to the following key, then the preceding one",
         "native_selection_parity::native selection parity with the main focus graph::takes the selection back from an engine fallback when the selected row's key is removed"
       ],
-      "weaker": "The nearest-survivor rule is restored for keyed rows. The focusPolicy field and its index policy stay removed.",
+      "weaker": "The nearest-survivor rule is restored for keyed rows. The focusPolicy field and its index policy stay removed; the owner decision (2 in docs/guide/21-retirements.md) restores the survivor rule and does not decide the field.",
       "liveEvidence": "artifacts/gamepad/gamepad-parity-live.json",
       "restoredBy": "parity/gamepad"
     },
@@ -14575,9 +14596,12 @@
         "native_parity_restore::native parity restore: RowActions outside tap::closes an open tray on a tap outside the row and never swallows that tap",
         "native_parity_restore::native parity restore: RowActions outside tap::closes the open row when another row is pressed and keeps it open for a press inside it",
         "native_parity_restore::native parity restore: RowActions outside tap::adds the top bar inset when the screen ignores it",
-        "native_parity_restore::native parity restore: RowActions outside tap::releases its input listener with the row"
+        "native_parity_restore::native parity restore: RowActions outside tap::releases its input listener with the row",
+        "native_parity_weak3_h2::native parity weak3 h2: RowActions own-row tap::closes the open tray on a press on its own row content and the content still activates",
+        "native_parity_weak3_h2::native parity weak3 h2: RowActions own-row tap::keeps the tray open for a press on the open tray, and the tray action still runs once",
+        "native_parity_weak3_h2::native parity weak3 h2: RowActions own-row tap::still closes the open row when another row is pressed, and that row still activates"
       ],
-      "weaker": "There is no shared list overlay. A press on the content of the open row keeps its tray open; main closed it. The headless engine does not hit-test, so the no-swallow rule is shown by the absence of a catcher and by the tapped control still activating.",
+      "weaker": "A press on the open row content now closes its tray, but the pressed content also activates; main closed the tray and did not activate the row. There is no shared list overlay.",
       "restoredBy": "parity/restore"
     },
     {
@@ -19433,7 +19457,7 @@
         "native_layout::fill::refuses a weight that is not a positive number",
         "native_layout::VStack and HStack::sizes by fill, hug and pixels on each axis"
       ],
-      "weaker": "The content-terms height grammar (lines, rows, of, role) was not restored.",
+      "weaker": "The content-terms height grammar (lines, rows, of, role) was not restored, and its retirement is not recorded in docs/guide/21-retirements.md (related deletions: mech3-75 text.lineBox and mech1-85 UI.Composition).",
       "closedBy": "native_layout::fill::makes a native flex item that fills the main axis, by weight when given",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
@@ -19639,7 +19663,7 @@
       "mainSpecs": [
         "error_boundary"
       ],
-      "mainCases": 8,
+      "mainCases": 7,
       "class": "a",
       "candidateCases": [
         "native_parity_restore::native parity restore: ErrorBoundary::renders its view when healthy and does not mount the fallback",
@@ -19649,10 +19673,26 @@
         "native_parity_restore::native parity restore: ErrorBoundary::sends a failure to the factory onError when the boundary has no onError",
         "native_parity_restore::native parity restore: ErrorBoundary::contains a throwing keyed row factory and releases every owner on disposal",
         "native_parity_restore::native parity restore: ErrorBoundary::leaves a failure outside any boundary a hard mount error",
-        "native_parity_restore::native parity restore: ErrorBoundary::accepts both construction forms and refuses a boundary without a view or a fallback"
+        "native_parity_restore::native parity restore: ErrorBoundary::accepts both construction forms and refuses a boundary without a view or a fallback",
+        "native_parity_weak3_h2::native parity weak3 h2: keyed row factory failure outside a boundary::removes a departing row, keeps the survivor and skips the throwing row, and the writer sees the failure",
+        "native_parity_weak3_h2::native parity weak3 h2: keyed row factory failure outside a boundary::retries the row that threw on the next update",
+        "native_parity_weak3_h2::native parity weak3 h2: keyed row factory failure outside a boundary::mounts independent rows later in the same update as a throwing row",
+        "native_parity_weak3_h2::native parity weak3 h2: keyed row factory failure outside a boundary::cannot strand a retained row when an insertion precedes a throwing row"
       ],
-      "weaker": "The presenter critical fallback screen is not restored; a screen puts an ErrorBoundary at its root instead. The four ForEach cases that retry a throwing row outside any boundary are Compose keyed behavior; the candidate tests only that such a failure stays a hard mount error.",
+      "weaker": "Compose.keyed skips a throwing row, keeps and removes the other rows correctly and retries the throwing row on the next update, but it rethrows the failure to the code that wrote the cell; main returned normally and recorded the error. api.md says a failure outside every boundary stays a hard error.",
       "restoredBy": "parity/restore"
+    },
+    {
+      "id": "mech1-115-retired",
+      "group": "error-handling",
+      "title": "Presenter critical fallback screen for a throwing screen",
+      "mainSpecs": [
+        "error_boundary"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "Owner decision 16 in docs/guide/21-retirements.md (Error boundary control): the control is restored and the presenter critical screen stays retired. A screen puts an ErrorBoundary at its root.",
+      "splitFrom": "mech1-115"
     },
     {
       "id": "mech1-116",
@@ -20431,7 +20471,7 @@
       "mainSpecs": [
         "layout"
       ],
-      "mainCases": 39,
+      "mainCases": 32,
       "auditClass": "b",
       "class": "a",
       "nativeMechanism": "UIListLayout, UIFlexItem, UIPadding, UISizeConstraint, AutomaticSize, TextWrapped, ScrollingFrame.AutomaticCanvasSize, ScreenGui.ScreenInsets",
@@ -20445,7 +20485,6 @@
         "native_layout::Screen::fills its parent, pads the content by the m step and stacks vertically",
         "native_layout::fill::makes a native flex item that fills the main axis, by weight when given"
       ],
-      "weaker": "Wrapped text height diagnostics and overflow diagnostics belonged to the deleted solver and are not restored.",
       "closedBy": "native_layout::VStack and HStack::build a plain Frame with a list layout and number the children in declaration order",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
@@ -20459,6 +20498,18 @@
         ],
         "observed": "Engine rects: screen padding and gap, fill weights sharing the leftover width, fill, pixel and hug extents, and a stretched ScrollView child as wide as the window beside the bar with wrapped text. The first run found a stretched child only as wide as the widest child; align = stretch now also sets the cross-axis flex."
       }
+    },
+    {
+      "id": "mech2-36-retired",
+      "group": "layout-geometry",
+      "title": "Solver overflow and percent-in-scroll diagnostics, and the ZStack child overrun report",
+      "mainSpecs": [
+        "layout"
+      ],
+      "mainCases": 7,
+      "class": "c",
+      "removal": "The solver diagnostics are deleted: docs/guide/21-retirements.md, Layout and geometry, entries mech2-37 (solver diagnostics) and mech2-88 (overflow guard diagnostics).",
+      "splitFrom": "mech2-36"
     },
     {
       "id": "mech2-37",
@@ -20500,7 +20551,7 @@
       "mainSpecs": [
         "layout_v1"
       ],
-      "mainCases": 7,
+      "mainCases": 5,
       "auditClass": "b",
       "class": "a",
       "nativeMechanism": "ZIndex overlay, UIGridLayout, AnchorPoint/Position, UISizeConstraint, UIAspectRatioConstraint, UIPadding",
@@ -20511,7 +20562,7 @@
         "native_layout::VStack and HStack::maps align and distribute to the native list alignment and flex",
         "native_layout::Screen::fills its parent, pads the content by the m step and stacks vertically"
       ],
-      "weaker": "Anchor, minMax and margin vocabulary were not restored.",
+      "weaker": "The margin vocabulary was not restored, and its retirement is not recorded in docs/guide/21-retirements.md.",
       "closedBy": "native_layout::ZStack::aligns every child by anchor point and scale position",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
@@ -20524,6 +20575,18 @@
         ],
         "observed": "ZStack alignment and grid cells solve to the expected engine rects."
       }
+    },
+    {
+      "id": "mech2-40-retired",
+      "group": "layout-geometry",
+      "title": "Anchor and minMax dimension vocabulary",
+      "mainSpecs": [
+        "layout_v1"
+      ],
+      "mainCases": 2,
+      "class": "c",
+      "removal": "Deleted: docs/guide/21-retirements.md, entry mech1-136 (UI.Anchor) and entry mech1-84 (the frame modifier with its min/max band).",
+      "splitFrom": "mech2-40"
     },
     {
       "id": "mech2-41",
@@ -20558,7 +20621,7 @@
       "mainSpecs": [
         "layout_vocabulary"
       ],
-      "mainCases": 39,
+      "mainCases": 30,
       "auditClass": "b",
       "class": "a",
       "nativeMechanism": "UIGridLayout, UIFlexItem (Spacer), UISizeConstraint, UIPadding, UIAspectRatioConstraint, AutomaticSize, UIGridLayout.CellPadding",
@@ -20570,7 +20633,7 @@
         "native_layout::VStack and HStack::pads each side on its own and keeps literal pixel values",
         "native_layout::fill::makes a native flex item that fills the main axis, by weight when given"
       ],
-      "weaker": "Spacer, frame bands, aspect-with-fill and capped containers were not restored.",
+      "weaker": "Aspect-with-fill measurement and capped content containers were not restored, and their retirement is not recorded in docs/guide/21-retirements.md.",
       "closedBy": "native_layout::Grid::divides the width into columns with a native grid layout",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
@@ -20582,6 +20645,18 @@
         ],
         "observed": "Row gap, padding and fill cells solve to engine rects."
       }
+    },
+    {
+      "id": "mech2-42-retired",
+      "group": "layout-geometry",
+      "title": "Spacer and the frame modifier bands",
+      "mainSpecs": [
+        "layout_vocabulary"
+      ],
+      "mainCases": 9,
+      "class": "c",
+      "removal": "Deleted: docs/guide/21-retirements.md, entry mech1-44 (UI.Spacer) and entry mech1-84 (modifiers, including frame).",
+      "splitFrom": "mech2-42"
     },
     {
       "id": "mech2-43",
@@ -22153,7 +22228,7 @@
       "mainSpecs": [
         "stack_distribution"
       ],
-      "mainCases": 56,
+      "mainCases": 15,
       "auditClass": "b",
       "class": "a",
       "nativeMechanism": "Native UIListLayout HorizontalFlex/VerticalFlex (SpaceBetween/SpaceAround/SpaceEvenly), UIFlexItem FlexMode/ShrinkRatio/ItemLineAlignment, native TextTruncate for floors",
@@ -22164,7 +22239,6 @@
         "native_layout::VStack and HStack::accepts distribute only on the list containers",
         "native_layout::VStack and HStack::refuses an unknown spacing step, alignment or option and names the vocabulary"
       ],
-      "weaker": "Shrink weights, layoutPriority, lineAlign and their overflow diagnostics were not restored.",
       "closedBy": "native_layout::VStack and HStack::maps align and distribute to the native list alignment and flex",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
@@ -22176,6 +22250,18 @@
         ],
         "observed": "spaceBetween and spaceEvenly distribute the leftover width to the expected engine positions."
       }
+    },
+    {
+      "id": "mech3-47-retired",
+      "group": "layout-geometry",
+      "title": "Shrink weights, layoutPriority tiers, the floor cascade, lineAlign and their overflow diagnostics",
+      "mainSpecs": [
+        "stack_distribution"
+      ],
+      "mainCases": 41,
+      "class": "c",
+      "removal": "Deleted with the Facet layout vocabulary: docs/guide/21-retirements.md, entry apps2-56 (distribute, layout priority tiers, lineAlign and shrink tiers) and entry mech2-37 (solver diagnostics). Native UIFlexItem ShrinkRatio and ItemLineAlignment replace them.",
+      "splitFrom": "mech3-47"
     },
     {
       "id": "mech3-48",
@@ -22623,15 +22709,27 @@
       "mainSpecs": [
         "text_size_fit"
       ],
-      "mainCases": 18,
+      "mainCases": 16,
       "class": "a",
       "candidateCases": [
         "native_parity_restore::native parity restore: Label text fit and middle truncation::fits the text to its box between the role size and the caption floor",
         "native_parity_restore::native parity restore: Label text fit and middle truncation::honors an explicit cap and floor by role or pixels and follows the theme",
         "native_parity_restore::native parity restore: Label text fit and middle truncation::refuses a misspelled fit option, a cap that is not a size and a plain size"
       ],
-      "weaker": "The engine chooses the size through TextScaled and UITextSizeConstraint. The headless engine does not scale text, so the candidate checks the native configuration, not a painted size. There is no ten-foot type ladder and no preferred-text offset term; the engine applies the player preference.",
+      "weaker": "The engine chooses the size through TextScaled and UITextSizeConstraint. The headless engine does not scale text, so the candidate checks the native configuration, not a painted size. There is no preferred-text offset term; the engine applies the player preference.",
       "restoredBy": "parity/restore"
+    },
+    {
+      "id": "mech3-83-retired",
+      "group": "text-measure-fit",
+      "title": "textSize = fit re-derives on a ten-foot display and steps a ten-foot cap down",
+      "mainSpecs": [
+        "text_size_fit"
+      ],
+      "mainCases": 2,
+      "class": "c",
+      "removal": "Owner decision 4 in docs/guide/21-retirements.md (Ten-foot viewing distance profile) retires the ten-foot type ladder.",
+      "splitFrom": "mech3-83"
     },
     {
       "id": "mech3-84",
@@ -24014,9 +24112,9 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away"
+        "native_navigation::native navigation controls::keeps callouts nonmodal, fits their plate and observes nonconsuming tap away",
+        "native_parity_weak3_h1::native parity weak3 h1::keeps the coach mark inside the theme spacing step at both lateral edges and inside the safe area"
       ],
-      "weaker": "The gutter is a fixed 8 px, not the theme spacing step. A device safe inset applies only through the ScreenGui safe area that the layer reports.",
       "liveEvidence": {
         "host": "Roblox Studio playtest with the device emulator (touch)",
         "artifacts": [
@@ -24029,7 +24127,8 @@
           "layout_geometry/callout-edge-gap-shift-clamp"
         ],
         "observed": "Engine layout keeps the panel at least 8 px from both lateral edges of the layer for anchors at both edges."
-      }
+      },
+      "closeNote": "The gutter is the theme space.s step, live, at both edges. A device safe inset moves the layer, so the plate sits at the inset plus the step; this meets the lower bound of main (the larger of the two)."
     },
     {
       "id": "navigation-1-68",
@@ -28594,9 +28693,10 @@
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
         "native_inputs::native input controls::uses native properties and events and releases them with its Compose owner",
         "native_themes_media::native themes and media::accepts the Virtual Monitors package without optional art sections",
-        "native_parity_weaker_actions::native parity weaker actions::resolves live control-size rungs in place, retracts nil to regular and keeps selection"
+        "native_parity_weaker_actions::native parity weaker actions::resolves live control-size rungs in place, retracts nil to regular and keeps selection",
+        "native_parity_weak3_h1::native parity weak3 h1::pads Button and Chip by the live controlSizes paddingX of each rung and follows a theme change"
       ],
-      "weaker": "paddingX per rung is not asserted: no src consumes controlSizes.<rung>.paddingX (ctx.controlSize accepts the field, src/ui/context.luau:87, but has no caller for it; Button padding is the constant 12 or chrome insets, src/ui/themes.luau:553-563). Nil retraction, in-place rung changes and selection retention are now asserted."
+      "closeNote": "Each rung pads Button and Chip by controlSizes.<rung>.paddingX through the facet-size-<rung> rules, live across a theme change."
     },
     {
       "id": "paint-05",
@@ -28679,7 +28779,7 @@
       "candidateCases": [
         "native_inputs::native input controls::keeps Toggle native eligibility semantics and theme tags synchronized with one ref delivery",
         "native_inputs::native input controls::uses native circle constraints and updates semantic roles without paint writes",
-        "native_parity_strength_paint::native paint strength: button content::mints exactly one tag per authored appearance word and none for standard or a size"
+        "native_parity_strength_paint::native paint strength: button content::mints one tag per authored appearance word and rung, none for standard or no rung"
       ]
     },
     {
@@ -34033,7 +34133,7 @@
       "mainSpecs": [
         "theme_roles"
       ],
-      "mainCases": 5,
+      "mainCases": 2,
       "auditClass": "c",
       "class": "a",
       "removal": "MAIN renderer layout-node construction, solver measure path, spacing-step gap/padding and metric-path dimensions deleted; CAND layout is native UIListLayout/UIPadding with numeric values supplied by the caller (09-cus...",
@@ -34042,7 +34142,6 @@
         "native_layout::VStack and HStack::pads each side on its own and keeps literal pixel values",
         "native_layout::VStack and HStack::moves gap and padding when the theme package changes"
       ],
-      "weaker": "Metric-path dimensions and the solver measure path were not restored.",
       "closedBy": "native_layout::VStack and HStack::resolves gap and padding spacing steps from the theme package",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080, gamepad preferred input), Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
@@ -34054,6 +34153,18 @@
         ],
         "observed": "Spacing steps resolve to engine rects for gap and padding."
       }
+    },
+    {
+      "id": "themes-P3-24-retired",
+      "group": "layout-geometry",
+      "title": "Metric-path dimensions and the solver measure path",
+      "mainSpecs": [
+        "theme_roles"
+      ],
+      "mainCases": 3,
+      "class": "c",
+      "removal": "Deleted: docs/guide/21-retirements.md, entries paint-05 (rung-to-metric-path indirection) and themes-P2-52 (metric paths), and the Facet solver (mech2-37).",
+      "splitFrom": "themes-P3-24"
     },
     {
       "id": "themes-P3-25",
@@ -34094,7 +34205,7 @@
       "mainSpecs": [
         "theme_roles"
       ],
-      "mainCases": 3,
+      "mainCases": 2,
       "auditClass": "c",
       "class": "a",
       "removal": "Semantic spacing/metric-path prop forms removed with the solver; CAND takes native numeric properties only.",
@@ -34103,8 +34214,19 @@
         "native_layout::VStack and HStack::pads each side on its own and keeps literal pixel values",
         "native_layout::theme spacing steps::validates the spacing scale of a theme package"
       ],
-      "weaker": "Candidate refuses an unknown spacing step on gap and on each padding side, keeps literal pixel values legal, and validates the metrics.space scale of a theme package. Metric-path props do not exist on the candidate, so their validation has no counterpart.",
       "closedBy": "native_layout::VStack and HStack::refuses an unknown spacing step, alignment or option and names the vocabulary"
+    },
+    {
+      "id": "themes-P3-27-retired",
+      "group": "theme-packages",
+      "title": "Closed-set validation of metric paths",
+      "mainSpecs": [
+        "theme_roles"
+      ],
+      "mainCases": 1,
+      "class": "c",
+      "removal": "Metric-path props are deleted: docs/guide/21-retirements.md, entries paint-05 and themes-P2-52.",
+      "splitFrom": "themes-P3-27"
     },
     {
       "id": "themes-P3-28",
@@ -36250,7 +36372,6 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::moves the underline and the summary only with current, and a refused selection changes nothing"
       ],
-      "weaker": "Live evidence does not cover this part: The spring is skipped (noted) if GuiService.ReducedMotionEnabled is on in the session.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -36262,7 +36383,8 @@
           "ports_content/steps-underline-follows-and-springs"
         ],
         "observed": "The live case ports_content/steps-underline-follows-and-springs passed with 49 checks."
-      }
+      },
+      "closeNote": "The live run in artifacts/studio-live/ports_content-desktop-default.json (case ports_content/steps-underline-follows-and-springs) had GuiService.ReducedMotionEnabled false. It asserted the spring: the underline passed through 21 positions between Review and Cart, and it lands under each step after the spring."
     },
     {
       "id": "post-step-03",
@@ -36276,7 +36398,6 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::stretches the row cells to one height on one top edge"
       ],
-      "weaker": "Live evidence does not cover this part: The spring is skipped (noted) if GuiService.ReducedMotionEnabled is on in the session.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -36288,7 +36409,8 @@
           "ports_content/steps-underline-follows-and-springs"
         ],
         "observed": "The live case ports_content/steps-underline-follows-and-springs passed with 49 checks."
-      }
+      },
+      "closeNote": "The live run in artifacts/studio-live/ports_content-desktop-default.json (case ports_content/steps-underline-follows-and-springs) had GuiService.ReducedMotionEnabled false. It asserted the spring: the underline passed through 21 positions between Review and Cart, and it lands under each step after the spring."
     },
     {
       "id": "post-step-04",
@@ -36358,7 +36480,6 @@
       "candidateCases": [
         "native_step_indicator::native StepIndicator::keeps each step node across a reorder and renumbers it"
       ],
-      "weaker": "Live evidence does not cover this part: The spring is skipped (noted) if GuiService.ReducedMotionEnabled is on in the session.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -36370,7 +36491,8 @@
           "ports_content/steps-underline-follows-and-springs"
         ],
         "observed": "The live case ports_content/steps-underline-follows-and-springs passed with 49 checks."
-      }
+      },
+      "closeNote": "The live run in artifacts/studio-live/ports_content-desktop-default.json (case ports_content/steps-underline-follows-and-springs) had GuiService.ReducedMotionEnabled false. It asserted the spring: the underline passed through 21 positions between Review and Cart, and it lands under each step after the spring."
     },
     {
       "id": "post-step-08",
@@ -36972,9 +37094,9 @@
       "candidateCases": [
         "native_card::native Card::keeps only the raised shadow under reduced motion"
       ],
-      "weaker": "The ten-foot half is retired: the native architecture deleted the viewing-distance profile and its tenFootFocusScale, so no focus lift competes with the card scale.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
-      "family": "content-navigation"
+      "family": "content-navigation",
+      "closeNote": "The ten-foot half is retired by owner decision 4 in docs/guide/21-retirements.md (Ten-foot viewing distance profile). The reduced-motion half is covered at main strength."
     },
     {
       "id": "post-card-22",
@@ -37832,7 +37954,6 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::runs one activation in a styled group and disables it by inheritance"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -37844,7 +37965,8 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
-      }
+      },
+      "closeNote": "The limits of the shared live case (per-corner radii of recipe 09, the hidden-group selection of recipe 05) do not apply to this recipe. The case ports_content/containers-recipes-draw-as-described in artifacts/studio-live/ports_content-desktop-default.json asserts this recipe with the engine layout (139 checks, all passed)."
     },
     {
       "id": "post-recipes-02",
@@ -37858,7 +37980,6 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::declares fixed, quarter and fill axes as native sizes and flex"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -37870,7 +37991,8 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
-      }
+      },
+      "closeNote": "The limits of the shared live case (per-corner radii of recipe 09, the hidden-group selection of recipe 05) do not apply to this recipe. The case ports_content/containers-recipes-draw-as-described in artifacts/studio-live/ports_content-desktop-default.json asserts this recipe with the engine layout (139 checks, all passed)."
     },
     {
       "id": "post-recipes-03",
@@ -37884,7 +38006,6 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::sizes 1:1, 16:9 and 9:16 subjects inside the same 96 by 96 offer and centres them"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -37896,7 +38017,8 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
-      }
+      },
+      "closeNote": "The limits of the shared live case (per-corner radii of recipe 09, the hidden-group selection of recipe 05) do not apply to this recipe. The case ports_content/containers-recipes-draw-as-described in artifacts/studio-live/ports_content-desktop-default.json asserts this recipe with the engine layout (139 checks, all passed)."
     },
     {
       "id": "post-recipes-04",
@@ -37910,7 +38032,6 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::scales paint with a UIScale while the declared box stays"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -37922,7 +38043,8 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
-      }
+      },
+      "closeNote": "The limits of the shared live case (per-corner radii of recipe 09, the hidden-group selection of recipe 05) do not apply to this recipe. The case ports_content/containers-recipes-draw-as-described in artifacts/studio-live/ports_content-desktop-default.json asserts this recipe with the engine layout (139 checks, all passed)."
     },
     {
       "id": "post-recipes-05",
@@ -37936,7 +38058,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::fades a subtree as one group and keeps a transparent group laid out while removal closes up"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
+      "weaker": "Live evidence does not cover this part: the selection of a button inside a hidden group is recorded as a note, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -37962,7 +38084,6 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::moves a child through spare room with nine alignments"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -37974,7 +38095,8 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
-      }
+      },
+      "closeNote": "The limits of the shared live case (per-corner radii of recipe 09, the hidden-group selection of recipe 05) do not apply to this recipe. The case ports_content/containers-recipes-draw-as-described in artifacts/studio-live/ports_content-desktop-default.json asserts this recipe with the engine layout (139 checks, all passed)."
     },
     {
       "id": "post-recipes-07",
@@ -37988,7 +38110,6 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::spaces siblings with a gap and moves only the named edges with padding"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -38000,7 +38121,8 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
-      }
+      },
+      "closeNote": "The limits of the shared live case (per-corner radii of recipe 09, the hidden-group selection of recipe 05) do not apply to this recipe. The case ports_content/containers-recipes-draw-as-described in artifacts/studio-live/ports_content-desktop-default.json asserts this recipe with the engine layout (139 checks, all passed)."
     },
     {
       "id": "post-recipes-08",
@@ -38014,7 +38136,6 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::wraps a row to a second line, or keeps it on one line in a sideways scroller"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -38026,7 +38147,8 @@
           "ports_content/containers-recipes-draw-as-described"
         ],
         "observed": "The live case ports_content/containers-recipes-draw-as-described passed with 139 checks."
-      }
+      },
+      "closeNote": "The limits of the shared live case (per-corner radii of recipe 09, the hidden-group selection of recipe 05) do not apply to this recipe. The case ports_content/containers-recipes-draw-as-described in artifacts/studio-live/ports_content-desktop-default.json asserts this recipe with the engine layout (139 checks, all passed)."
     },
     {
       "id": "post-recipes-09",
@@ -38040,7 +38162,7 @@
       "candidateCases": [
         "native_content_navigation::native content navigation deltas::rounds, strokes and shadows one node with native modifiers"
       ],
-      "weaker": "Live evidence does not cover this part: Per-corner radii (09) are not native, only one UICorner radius is checked; selection of a button inside a hidden group (05) is noted, not asserted.",
+      "weaker": "Live evidence does not cover this part: the engine UICorner has one radius for all four corners, so per-corner radii cannot be drawn natively; the case checks the one radius, the stroke and the shadow.",
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation",
       "liveEvidence": {
@@ -39296,7 +39418,6 @@
       "candidateCases": [
         "native_snackbar::native Snackbar: an art theme's panel carve::an art theme's frame carve holds the icon, copy and action inside the plate"
       ],
-      "weaker": "Live evidence does not cover this part: Themes are found by module name pixel_quest / fantasy_ornate (matched ignoring case and underscores); a missing theme is noted and skipped.",
       "family": "overlays",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",
@@ -39307,7 +39428,8 @@
           "ports_overlays/snackbar-art-carve"
         ],
         "observed": "The live case ports_overlays/snackbar-art-carve passed with 24 checks."
-      }
+      },
+      "closeNote": "The live run in artifacts/studio-live/ports_overlays-desktop-default.json (case ports_overlays/snackbar-art-carve, 24 of 24 checks) found both art themes, pixel_quest (24 px panel insets) and fantasy_ornate (30 px), and asserted the icon, copy, action and close inside the frame art for each."
     },
     {
       "id": "post-overlays-071",
@@ -39322,7 +39444,7 @@
       "candidateCases": [
         "native_snackbar::native Snackbar: presentation::the strip docks bottom-centre above base screens, and modals and callouts paint above it"
       ],
-      "weaker": "Live evidence does not cover this part: Paint order is computed from the Sibling ZIndex of each surface's top GuiObject under their common parent (folders skipped). The dialog-over-callout and dialog-over-help checks only apply to surfaces still visible after the dialog opens.",
+      "weaker": "Dialog-over-help is shown by the help plate no longer being drawn once the dialog opens, not by a paint-order comparison of the two surfaces.",
       "family": "overlays",
       "liveEvidence": {
         "host": "Roblox Studio playtest, device simulator Xbox One (1920x1080) or iPhone 14 where the case sets it, Medium text; a fixed stage size is the screen through a viewport cell and overlayParent",

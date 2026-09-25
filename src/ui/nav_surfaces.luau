@@ -1083,14 +1083,18 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 						then roomAbove or not roomBelow
 						else roomAbove and not roomBelow
 					local top = if above then y - box.Y - 8 else y + bounds.Y + 8
+					local gutter = ctx.metric("space.s", use)
 					return {
-						left = math.clamp(left, 8, math.max(8, offer.X - box.X - 8)),
-						top = math.clamp(top, 8, math.max(8, offer.Y - box.Y - 8)),
+						left = math.clamp(left, gutter, math.max(gutter, offer.X - box.X - gutter)),
+						top = math.clamp(top, gutter, math.max(gutter, offer.Y - box.Y - gutter)),
 					}
 				end)
 				runtime.decorate(panel, {
 					Size = function(use: ComposeTypes.Use)
-						return D2.fromOffset(math.min(280, math.max(44, use(extent).X - 16)), 0)
+						return D2.fromOffset(
+							math.min(280, math.max(44, use(extent).X - 2 * ctx.metric("space.s", use))),
+							0
+						)
 					end,
 					ZIndex = 95,
 				})

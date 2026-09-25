@@ -665,6 +665,24 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	local buttonInsets: ThemeTypes.Insets = if ((package.chrome or {}) :: { [string]: ThemeTypes.SkinLayer }).control
 		then ((package.chrome or {}) :: { [string]: ThemeTypes.SkinLayer }).control.contentInsets or {}
 		else {}
+	local function rungPadding(rung: string): number
+		local authored = (package.metrics.controlSizes or {})[rung]
+		if authored and type(authored.paddingX) == "number" then
+			return authored.paddingX
+		end
+		local fallback = neutral.metrics.controlSizes[rung]
+		if fallback then
+			return fallback.paddingX
+		end
+		return math.max(0, 2 * rungPadding("compact") - rungPadding("regular"))
+	end
+	for _, rung in { "xsmall", "compact", "regular", "large" } do
+		local paddingX = rungPadding(rung)
+		rule(".facet-button.facet-size-" .. rung .. "::UIPadding", {
+			PaddingLeft = types.UDim.new(0, math.max(paddingX, buttonInsets.left or 0)),
+			PaddingRight = types.UDim.new(0, math.max(paddingX, buttonInsets.right or 0)),
+		})
+	end
 	rule(
 		".facet-disclosure::UIPadding",
 		{ PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0) + 20) }

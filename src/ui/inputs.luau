@@ -317,6 +317,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 		"textSize",
 		"underline",
 	}
+	local CONTROL_RUNGS = { "xsmall", "compact", "regular", "large" }
 	local typeRoles: { [string]: boolean } = {
 		caption = true,
 		label = true,
@@ -626,7 +627,17 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			local row: InputTypes.Row = spec.row or {}
 			local leading = spec.icon or row.icon
 			if leading then
-				table.insert(content, icon(leading, { Name = "LeadingIcon" }, iconState))
+				table.insert(
+					content,
+					icon(leading, {
+						Name = "LeadingIcon",
+						Visible = if dynamic(leading)
+							then function(use: ComposeTypes.Use): boolean
+								return read(leading, use) ~= ""
+							end
+							else nil,
+					}, iconState)
+				)
 			end
 			local label = row.title or spec.label or (if leading then nil else spec.name) or ""
 			local description = row.description or spec.subtitle or spec.hint
@@ -930,6 +941,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 			tag("facet-appearance-link", appearance == "link")
 			tag("facet-appearance-inverse", appearance == "inverse")
 			tag("facet-quiet-destructive", role == "destructive" and (appearance == "utility" or appearance == "link"))
+			local rung = read(spec.controlSize, use)
+			for _, name in CONTROL_RUNGS do
+				tag("facet-size-" .. name, rung == name)
+			end
 			attribute("selected", selected)
 			attribute("busy", busy)
 			attribute("appearance", appearance)

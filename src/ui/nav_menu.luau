@@ -1054,6 +1054,14 @@ return function(
 	}
 	local MENU_WORDS: { [string]: string } = { standard = "standard", contrast = "contrast", utility = "utility" }
 	local STRIP_WORDS: { [string]: string } = { filled = "filled", stroke = "stroke", utility = "utility" }
+	local function liveIcon<V>(source: ComposeTypes.Readable<Nav.PickerOption<V>>): Types.Value<string>?
+		if source:peek().icon == nil then
+			return nil
+		end
+		return function(use: ComposeTypes.Use): string
+			return read(use(source).icon, use) or ""
+		end
+	end
 	local function appearanceFor(style: Nav.PickerStyle, word: unknown): string?
 		if word == nil then
 			return nil
@@ -1768,7 +1776,7 @@ return function(
 							subtitle = function(use: ComposeTypes.Use)
 								return read(use(source).description, use) or ""
 							end,
-							icon = source:peek().icon,
+							icon = liveIcon(source),
 							controlSize = spec.controlSize,
 							appearance = function(use: ComposeTypes.Use): string
 								return if chosen(use) then "emphasis" else "standard"
@@ -1940,7 +1948,7 @@ return function(
 								return read(use(source).description, use) or ""
 							end
 							else nil,
-						icon = source:peek().icon,
+						icon = liveIcon(source),
 						TextSize = spec.textSize,
 						trailingIcon = if read(spec.indicator) == "none" and style ~= "segmented"
 							then "checkmark"

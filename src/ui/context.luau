@@ -407,6 +407,9 @@ return function(Compose: Shared.ComposeModule, runtime: ComposeTypes.Runtime, op
 		local native: Shared.ImageLabelNativeProps = {
 			Image = function(use: ComposeTypes.Use)
 				local requested = ctx.read(name, use)
+				if requested == "" then
+					return ""
+				end
 				local package: Theme.IconRegistry = ctx.read(config.theme, use) or {}
 				local overrides = ctx.read(config.icons, use)
 				if overrides then

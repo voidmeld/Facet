@@ -1469,6 +1469,7 @@ t.describe("native parity paint", function()
 			["facet-type-"] = table.clone(themes.TYPE_ROLES) :: any,
 			["facet-badge-"] = { "standard", "status", "utility" },
 			["facet-disclosure-"] = { "plain", "contained", "divided" },
+			["facet-size-"] = { "xsmall", "compact", "regular", "large" },
 		}
 		local found = {}
 		for prefix in prefixes do

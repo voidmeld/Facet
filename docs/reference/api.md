@@ -490,7 +490,10 @@ Presentation options:
   `metrics.controlSizes.xsmall`. With the neutral values it is 28 pixels high,
   with a `paddingX` of 4 and an `iconSize` of 12. The native button is its hit
   area, so an `xsmall` button is a 28 pixel target. Use it only for dense
-  pointer rows.
+  pointer rows. A named step adds the `facet-size-<step>` tag. The theme
+  StyleSheet then sets the left and right padding to
+  `controlSizes.<step>.paddingX`, or to the larger chrome inset. Without
+  `controlSize`, the button has no size tag and keeps the padding of 12.
 - `textSize`: a type role (`caption`, `label`, `body`, `heading`, `title`,
   `control`, `strong` or `numeral`) or a number of pixels, or a readable of
   one. A role adds the `facet-type-<role>` tag to the label, and a number sets
@@ -1178,6 +1181,9 @@ one clear primary action.
 Picker requires a writable `selected` and `options`. Each option has `value` and
 `label`, and an optional `id`, `icon` and `enabled`. Options can be a plain
 array or a readable.
+A row keeps its node and its focus when a replacement changes the option. The
+row shows the new icon. When the replacement removes the icon, the row hides
+it. A row that starts with no icon does not add one later.
 
 The styles are `automatic`, `segmented`, `inline`, `radioGroup`,
 `navigationLink`, `menu` and `cards`. The `automatic` style never chooses
@@ -1579,6 +1585,9 @@ teaching attached to a control. It is not a second application presenter.
 `edge = "top"` puts the callout above the anchor. If there is no room above
 and there is room below, the callout goes below the anchor. The callout
 scales and fades from the edge nearest to its anchor. See [Motion](#motion).
+The plate stays inside its layer by the `space.s` step of the theme on each
+side. The step follows a live theme change. The layer is the safe area of the
+ScreenGui, so a device safe inset adds to the step.
 A callout and a help plate paint above a snackbar and below a presented modal.
 
 The plate parts are optional, but the plate must show something:
@@ -2067,7 +2076,8 @@ measured width.
 A mouse click or a touch outside an open row closes its tray. The row observes
 `UserInputService.InputBegan` only while its tray is open, and it does not
 consume the input. Thus the control under the pointer also receives the press.
-A press inside the row, which includes its tray, does not close the tray. A
+A press on the content of the open row also closes the tray, and the content
+receives that press. A press on the open tray does not close the tray. A
 press during a destructive commit does not stop the commit. The check uses the
 row bounds on a ScreenGui, with the top bar inset when the ScreenGui ignores
 it. A row on a SurfaceGui or a BillboardGui does not close from an outside

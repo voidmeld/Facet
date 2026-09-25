@@ -521,6 +521,8 @@ return function(
 					return math.max(1 - use(entry.progress), use(fading))
 				end
 				local buttons: { [string]: TextButton } = {}
+				local ringFits: ComposeTypes.Cell<{ [string]: { ring: number, inner: number, outer: number } }> =
+					Compose.cell({})
 				local focus = Compose.createFocusScope({
 					from = sectors,
 					key = function(sector: Radial.Sector<V>)
@@ -758,13 +760,46 @@ return function(
 										local live, at = currentSector(use), use(center)
 										local text = use(measured)
 										local label = geometry.labelBounds(live, 40)
+										local iconOnly = not live.list
+											and (
+												live.item.labelStyle == "icon"
+												or (
+													live.item.compactLabel ~= nil
+													and live.item.compactLabel.prefer == true
+												)
+											)
+										local iconSize = ctx.controlSize(nil, "iconSize", use)
 										local fitted = geometry.fitContent(
 											live,
-											if text.X > 0 then text.X else label.w,
-											if text.Y > 0 then text.Y else label.h,
+											if iconOnly then iconSize elseif text.X > 0 then text.X else label.w,
+											if iconOnly then iconSize elseif text.Y > 0 then text.Y else label.h,
 											6,
 											contentFit
 										)
+										if contentFit == "radial" then
+											local own = ringFits:peek()[live.key]
+											if
+												not own
+												or own.ring ~= live.inner
+												or own.inner ~= fitted.inner
+												or own.outer ~= fitted.outer
+											then
+												local nextFits = table.clone(ringFits:peek())
+												nextFits[live.key] =
+													{ ring = live.inner, inner = fitted.inner, outer = fitted.outer }
+												ringFits:set(nextFits)
+											end
+											local shown: { [string]: boolean } = {}
+											for _, entry in use(sectors) do
+												shown[entry.key] = true
+											end
+											for key, fit in use(ringFits) do
+												if shown[key] and fit.ring == live.inner then
+													fitted.inner = math.min(fitted.inner, fit.inner)
+													fitted.outer = math.max(fitted.outer, fit.outer)
+												end
+											end
+										end
 										local bounds = geometry.paint(fitted)
 										shape.Position = D2.fromOffset(at.X + bounds.x, at.Y + bounds.y)
 										shape.Size = D2.fromOffset(bounds.w, bounds.h)

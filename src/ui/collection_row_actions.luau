@@ -446,7 +446,15 @@ return function(ctx: Types.Context, UI: Controls): ()
 					point += guiService:GetGuiInset()
 				end
 				local at, size = root.AbsolutePosition, root.AbsoluteSize
-				return point.X < at.X or point.Y < at.Y or point.X > at.X + size.X or point.Y > at.Y + size.Y
+				if point.X < at.X or point.Y < at.Y or point.X > at.X + size.X or point.Y > at.Y + size.Y then
+					return true
+				end
+				local edge = read(open) :: RowEdge?
+				if edge == nil then
+					return false
+				end
+				local band = bandWidth(edge)
+				return if edge == "leading" then point.X > at.X + band else point.X < at.X + size.X - band
 			end
 			local listening: RBXScriptConnection? = nil
 			local function release(): ()

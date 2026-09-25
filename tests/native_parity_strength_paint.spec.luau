@@ -417,7 +417,7 @@ t.describe("native paint strength: button content", function()
 		h.dispose()
 	end)
 
-	t.it("mints exactly one tag per authored appearance word and none for standard or a size", function()
+	t.it("mints one tag per authored appearance word and rung, none for standard or no rung", function()
 		local h = harness()
 		local expected: { [string]: { string } } = {
 			standard = {},
@@ -446,7 +446,7 @@ t.describe("native paint strength: button content", function()
 			for _, size in { "compact", "regular", "large" } do
 				local node = find(root, word .. "-" .. size)
 				nodes[word] = node
-				local want = { "facet-button", "facet-role-default" }
+				local want = { "facet-button", "facet-role-default", "facet-size-" .. size }
 				for _, tag in extra do
 					table.insert(want, tag)
 				end
@@ -470,7 +470,9 @@ t.describe("native paint strength: button content", function()
 		end
 		for _, candidate in root:GetDescendants() do
 			for _, tag in candidate:GetTags() do
-				t.expect(string.sub(tag, 1, 11) == "facet-size-").toBe(false)
+				local sized = string.sub(tag, 1, 11) == "facet-size-"
+				t.expect(sized and (candidate.Name == "Bare" or candidate.Name == "Bound")).toBe(false)
+				t.expect(sized and tag ~= "facet-size-" .. tostring(candidate:GetAttribute("controlSize"))).toBe(false)
 				t.expect(tag == "facet-appearance-standard" or tag == "facet-appearance-emphasis").toBe(false)
 			end
 		end
