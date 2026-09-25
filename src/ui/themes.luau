@@ -621,6 +621,10 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	local buttonInsets: ThemeTypes.Insets = if ((package.chrome or {}) :: { [string]: ThemeTypes.SkinLayer }).control
 		then ((package.chrome or {}) :: { [string]: ThemeTypes.SkinLayer }).control.contentInsets or {}
 		else {}
+	rule(".facet-tablevalue::UIPadding", {
+		PaddingLeft = types.UDim.new(0, math.max(12, buttonInsets.left or 0)),
+		PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0)),
+	})
 	rule(
 		".facet-disclosure::UIPadding",
 		{ PaddingRight = types.UDim.new(0, math.max(12, buttonInsets.right or 0) + 20) }
@@ -737,7 +741,8 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	end
 
 	rule(".facet-shortcut-hint", {
-		TextColor3 = c("contentSecondary"),
+		BackgroundColor3 = c("surfaceStrong"),
+		TextColor3 = c("contentStrong"),
 		TextSize = package.metrics.typography.caption.size,
 	})
 	rule(".facet-shortcut-hint::UICorner", { CornerRadius = types.UDim.new(0, 6) })
@@ -867,6 +872,8 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	})
 	rule(".facet-segment", { BackgroundTransparency = 1, TextColor3 = c("contentSecondary") })
 	rule(".facet-segment::UICorner", { CornerRadius = types.UDim.new(0, math.max(0, trackRadius - SEGMENT_INSET)) })
+	rule(".facet-segmented-pill >> .facet-segment::UICorner", { CornerRadius = types.UDim.new(1, 0) })
+	rule(".facet-segmented-square >> .facet-segment::UICorner", { CornerRadius = types.UDim.new(0, 0) })
 	rule(".facet-segment >> .facet-button-caption", { TextColor3 = c("contentSecondary") })
 	rule(
 		".facet-segment:Hover",
@@ -908,6 +915,8 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-skinned", { BackgroundTransparency = 1 })
 	rule(".facet-toggle-checkbox.facet-skinned::UIStroke", { Transparency = 1 })
 	rule(".facet-menu.facet-skinned::UIStroke", { Transparency = 1 })
+	rule(".facet-segment-current.facet-skinned", { BackgroundTransparency = 0 })
+	rule(".facet-segment-current > #SkinBoundary", { Visible = false })
 	for _, definition in (package.rules or {}) :: { ThemeTypes.Rule } do
 		rule(definition.selector, table.clone(definition.properties or definition.props or {}))
 	end

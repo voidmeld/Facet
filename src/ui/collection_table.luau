@@ -542,17 +542,20 @@ return function(ctx: Types.Context, UI: Controls): ()
 							local definition = column:peek()
 							local content = if definition.render
 								then definition.render(current, placement, key)
-								else ctx.text({
-									Name = "Value",
-									TextTruncate = E.TextTruncate.AtEnd,
-									Size = D2.fromScale(1, 1),
-									AutomaticSize = E.AutomaticSize.None,
-									Text = function(use: ComposeTypes.Use)
-										local item, value = use(current), use(column)
-										local result = field(item, value)
-										return if result == nil then "" else tostring(result)
-									end,
-								})
+								else ctx.styled(
+									ctx.text({
+										Name = "Value",
+										TextTruncate = E.TextTruncate.AtEnd,
+										Size = D2.fromScale(1, 1),
+										AutomaticSize = E.AutomaticSize.None,
+										Text = function(use: ComposeTypes.Use)
+											local item, value = use(current), use(column)
+											local result = field(item, value)
+											return if result == nil then "" else tostring(result)
+										end,
+									}),
+									"TableValue"
+								)
 							if not definition.render then
 								recordHeight(cellHeights, definition.id, content :: TextLabel, 16)
 								local fits = ctx.observe(content :: TextLabel, "TextFits")

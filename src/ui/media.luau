@@ -434,7 +434,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				end),
 			} :: Engine.TextLabelNativeProps
 		)
-		if spec.count ~= nil then
+		if spec.count ~= nil and spec.Size == nil then
 			table.insert(
 				native,
 				Host.UISizeConstraint({
@@ -443,7 +443,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 					end,
 				})
 			)
-		else
+		elseif spec.count == nil then
 			table.insert(
 				native,
 				Host.UIAspectRatioConstraint({
@@ -469,6 +469,16 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		end
 		local node = ctx.styled(ctx.styled(Host.TextLabel(native), "text"), "badge")
 		statusTag(node, spec.status)
+		if spec.count ~= nil and spec.Size ~= nil then
+			local absolute: ComposeTypes.Readable<Vector2> = ctx.observe(node, "AbsoluteSize")
+			runtime.mount(function()
+				return Host.UISizeConstraint({
+					MinSize = function(use: ComposeTypes.Use)
+						return V2.new(use(absolute).Y, 0)
+					end,
+				})
+			end, node)
+		end
 		Compose.watch(function(use: ComposeTypes.Use)
 			if form(use) == "ring" then
 				node:AddTag("facet-status-hollow")
@@ -642,7 +652,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 							end,
 							Position = function(use: ComposeTypes.Use)
 								local position = if indeterminate
-									then use(progress) * 1.3 - 0.3
+									then (if motionReduced(use) then use(progress) * 0.7 else use(progress) * 1.3 - 0.3)
 									else (index - 1) / count
 								if reversed(use) then
 									position = 1 - position

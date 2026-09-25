@@ -290,8 +290,41 @@ function example.build(ctx: any)
 		return node
 	end
 
+	local function measure(name: string, sample: string, size: number)
+		local probe = UI.Label(name) {
+			Visible = false,
+			text = sample,
+			TextSize = size,
+			Size = UDim2.new(),
+			AutomaticSize = Enum.AutomaticSize.XY,
+		}
+		local bounds = Compose.cell(probe.TextBounds)
+		local connection = probe:GetPropertyChangedSignal("TextBounds"):Connect(function()
+			bounds:set(probe.TextBounds)
+		end)
+		Compose.cleanup(function()
+			connection:Disconnect()
+		end)
+		return probe, bounds
+	end
+
 	local function WordGame()
-		local board: { any } = { columns = COLS, gap = "xs", cellHeight = 48, width = COLS * 52 - 4 }
+		local letterProbe, letterBounds = measure("LetterMeasure", "W", 24)
+		local markProbe, markBounds = measure("MarkMeasure", "~", 12)
+		local markHeight = Compose.formula(function(use: Use): number
+			local bounds: Vector2 = use(markBounds)
+			return math.max(14, math.ceil(bounds.Y))
+		end)
+		local board: { any } = {
+			columns = COLS,
+			gap = "xs",
+			cellHeight = function(use: Use): number
+				local bounds: Vector2 = use(letterBounds)
+				local mark: number = use(markHeight)
+				return math.max(48, math.ceil(bounds.Y) + mark + 4)
+			end,
+			width = COLS * 52 - 4,
+		}
 		for r = 1, ROWS do
 			for c = 1, COLS do
 				local rr, cc = r, c
@@ -307,7 +340,10 @@ function example.build(ctx: any)
 							return use(rowsSig)[rr].letters:sub(cc, cc)
 						end,
 						TextSize = 24,
-						Size = UDim2.new(1, 0, 1, -12),
+						AutomaticSize = Enum.AutomaticSize.None,
+						Size = function(use)
+							return UDim2.new(1, 0, 1, -use(markHeight))
+						end,
 						TextXAlignment = Enum.TextXAlignment.Center,
 					},
 					UI.Label "mark" {
@@ -315,8 +351,13 @@ function example.build(ctx: any)
 							return TILE_MARK[use(state)]
 						end,
 						TextSize = 12,
-						Position = UDim2.new(0, 0, 1, -14),
-						Size = UDim2.new(1, 0, 0, 14),
+						AutomaticSize = Enum.AutomaticSize.None,
+						Position = function(use)
+							return UDim2.new(0, 0, 1, -use(markHeight))
+						end,
+						Size = function(use)
+							return UDim2.new(1, 0, 0, use(markHeight))
+						end,
 						TextXAlignment = Enum.TextXAlignment.Center,
 					},
 				}
@@ -393,6 +434,8 @@ function example.build(ctx: any)
 				TextXAlignment = Enum.TextXAlignment.Center,
 			},
 			UI.Grid "board"(board),
+			letterProbe,
+			markProbe,
 			UI.Label "Legend" { text = "v correct   ~ present   x absent", textRole = "caption" },
 			UI.VStack "kb"(keyboard),
 			UI.Button "Restart" {

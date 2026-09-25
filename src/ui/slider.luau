@@ -747,6 +747,7 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls, h: Helpers): 
 						Text = spec.label,
 						TextTruncate = E.TextTruncate.AtEnd,
 						Host.UIFlexItem({ FlexMode = E.UIFlexMode.Shrink }) :: ComposeTypes.Child,
+						Host.UIPadding({ PaddingRight = ctx.types.UDim.new(0, KNOB / 2 + 8) }) :: ComposeTypes.Child,
 					})
 				)
 			end

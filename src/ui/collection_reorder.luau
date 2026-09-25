@@ -57,7 +57,11 @@ return function<V, K>(
 		return policy.allows(spec.movable, item) and not policy.disabled(spec.disabled, item)
 	end
 	local function begin(key: K, position: Vector2?): ()
-		if read(sort) ~= nil or not spec.onReorder then
+		if
+			read(sort) ~= nil
+			or not spec.onReorder
+			or (position ~= nil and captured ~= nil and moving:peek() ~= nil)
+		then
 			return
 		end
 		local rows, selected = read(source), read(selection)

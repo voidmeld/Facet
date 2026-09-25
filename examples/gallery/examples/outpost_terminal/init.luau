@@ -229,6 +229,7 @@ function terminal.build(ctx, options)
 			TextSize = size or 16,
 			TextWrapped = true,
 			Size = UDim2.new(1, 0, 0, height),
+			AutomaticSize = Enum.AutomaticSize.Y,
 		})
 	end
 	local function screen()
@@ -241,9 +242,11 @@ function terminal.build(ctx, options)
 					LayoutOrder = index,
 					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 64),
+					AutomaticSize = Enum.AutomaticSize.Y,
 					Host.Frame "Copy" {
 						BackgroundTransparency = 1,
-						Size = UDim2.new(1, -184, 1, 0),
+						Size = UDim2.new(1, -184, 0, 0),
+						AutomaticSize = Enum.AutomaticSize.Y,
 						Host.UIListLayout({ SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 3) }),
 						label("Title", `{consumer.label} — needs {consumer.needs}`, 24),
 						label("State", function(use)
@@ -270,8 +273,12 @@ function terminal.build(ctx, options)
 				})
 			)
 		end
-		local root = Host.Frame "OutpostTerminal" {
+		local root = Host.ScrollingFrame "OutpostTerminal" {
 			Size = UDim2.fromScale(1, 1),
+			CanvasSize = UDim2.new(),
+			AutomaticCanvasSize = Enum.AutomaticSize.Y,
+			ScrollingDirection = Enum.ScrollingDirection.Y,
+			ScrollBarThickness = 6,
 			Host.UIPadding({
 				PaddingLeft = UDim.new(0, 16),
 				PaddingRight = UDim.new(0, 16),
@@ -292,6 +299,7 @@ function terminal.build(ctx, options)
 				Name = "Consumers",
 				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 0, 200),
+				AutomaticSize = Enum.AutomaticSize.Y,
 				Host.UIListLayout({ Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }),
 				table.unpack(rows),
 			}),

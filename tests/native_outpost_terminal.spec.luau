@@ -44,7 +44,7 @@ t.describe("native outpost terminal", function()
 				table.insert(envelopes, envelope)
 			end,
 		})
-		t.expect(root.ClassName).toBe("Frame")
+		t.expect(root.ClassName).toBe("ScrollingFrame")
 		built.steps.engage(terminal.rules.START, 2)
 		built.steps.setValue("door", 2)
 		built.steps.setValue("beacon", 1)

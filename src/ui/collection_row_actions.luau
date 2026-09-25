@@ -262,7 +262,8 @@ return function(ctx: Types.Context, UI: Controls): ()
 			if committing:peek() or read(spec.enabled) == false or not ctx.available(root) then
 				return
 			end
-			start, startOffset, axis = position, offset:peek(), nil
+			start, startOffset, axis =
+				position, if drag:peek() ~= nil or reduced() then offset:peek() else animated:peek(), nil
 			previousX, previousTime, velocity = position.X, now(), 0
 		end
 		local function move(position: Vector2): ()

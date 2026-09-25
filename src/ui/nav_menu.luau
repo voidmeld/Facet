@@ -2093,6 +2093,7 @@ return function(
 				surfaces.attach(picker, {
 					Host.UICorner "Corners" { CornerRadius = D.new(if spec.corners == "pill" then 1 else 0, 0) },
 				})
+				picker:AddTag(if spec.corners == "pill" then "facet-segmented-pill" else "facet-segmented-square")
 			end
 			if spec.appearance ~= nil then
 				Compose.watch(function(use: ComposeTypes.Use)

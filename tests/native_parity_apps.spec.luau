@@ -3372,9 +3372,12 @@ t.describe("native parity reference applications", function()
 				local cells = find(row, "Row")
 				t.expect(header.Position.X.Offset).toBe(find(row, "Cells").Position.X.Offset)
 				t.expect(header.Size.X.Offset).toBe(900 - 56)
-				for id, width in { name = 220, artist = 220, rating = 144 } do
+				local E = world.engine.types.Enum
+				for id, width in { name = 0, artist = 0, rating = 144 } do
 					t.expect(header:FindFirstChild(id).Size.X.Offset).toBe(width)
 					t.expect(cells:FindFirstChild(id).Size).toBe(header:FindFirstChild(id).Size)
+					t.expect(header:FindFirstChild(id):FindFirstChildWhichIsA("UIFlexItem").FlexMode)
+						.toBe(if width == 0 then E.UIFlexMode.Fill else E.UIFlexMode.None)
 				end
 				world.built.columnWidths:set({ name = 290 })
 				t.expect(header:FindFirstChild("name").Size.X.Offset).toBe(290)

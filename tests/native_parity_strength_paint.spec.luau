@@ -966,7 +966,9 @@ t.describe("native paint strength: skins", function()
 				for _, state in { "Idle", "Hover", "Press" } do
 					setState(h, node, state)
 					local transparency = resolve(sheet, node, "BackgroundTransparency")
-					if expectSkinned then
+					if expectSkinned and node:HasTag("facet-segment-current") then
+						t.expect(transparency).toBe(0)
+					elseif expectSkinned then
 						t.expect(transparency).toBe(1)
 					else
 						t.expect(transparency ~= 1 or node == find(root, "Utility")).toBe(true)

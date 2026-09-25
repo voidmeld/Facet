@@ -6,7 +6,7 @@ local serde = require("@lune/serde")
 local process = require("@lune/process")
 local studio_tree = require("./lib/studio_tree")
 
-local PORT = 8642
+local PORT = tonumber(process.env.FACET_STUDIO_PORT) or 8642
 
 type FileEntry = studio_tree.FileEntry
 

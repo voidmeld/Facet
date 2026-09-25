@@ -4,7 +4,7 @@ type Use = (any) -> any
 type Column = {
 	id: string,
 	label: string,
-	width: number,
+	width: number?,
 	minWidth: number?,
 	resizable: boolean,
 	sortable: boolean,
@@ -171,7 +171,6 @@ function example.build(ctx: any)
 				{
 					id = "name",
 					label = "Name",
-					width = 220,
 					minWidth = 90,
 					resizable = true,
 					sortable = true,
@@ -182,7 +181,6 @@ function example.build(ctx: any)
 				{
 					id = "artist",
 					label = "Artist",
-					width = 220,
 					minWidth = 72,
 					resizable = true,
 					sortable = true,

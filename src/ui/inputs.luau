@@ -1773,9 +1773,10 @@ return function(ctx: Shared.Context, UI: InputTypes.InputControls): ()
 							return table.concat(parts, separator)
 						end,
 						Size = function(use: ComposeTypes.Use)
-							return D2.fromOffset(0, ctx.controlSize(spec.controlSize, "iconSize", use) + 8)
+							local side = ctx.controlSize(spec.controlSize, "iconSize", use) + 8
+							return D2.fromOffset(side, side)
 						end,
-						AutomaticSize = E.AutomaticSize.X,
+						AutomaticSize = E.AutomaticSize.XY,
 						BackgroundTransparency = 0,
 						TextXAlignment = E.TextXAlignment.Center,
 					})),
