@@ -352,7 +352,7 @@ return function(
 				}
 			end),
 			Compose.show(function(use: ComposeTypes.Use)
-				return #use(path) > 0
+				return #use(path) > 0 and use(sheeted)
 			end, function()
 				return UI.Button "Back" {
 					label = spec.backLabel or "Back",
@@ -632,9 +632,6 @@ return function(
 			CanvasSize = D2.fromOffset(0, 0),
 			ScrollingDirection = E.ScrollingDirection.Y,
 			ScrollBarThickness = 4,
-			Host.UICorner({}),
-			Host.UIStroke({ ApplyStrokeMode = E.ApplyStrokeMode.Border }),
-			Host.UIShadow "Raised" {},
 			if shown
 				then ctx.styled(
 					Host.CanvasGroup "MenuGroup" {
@@ -644,7 +641,6 @@ return function(
 						GroupTransparency = function(use: ComposeTypes.Use)
 							return 1 - shown(use)
 						end,
-						Host.UICorner({}),
 						rows,
 					},
 					"menu-group"
@@ -705,6 +701,13 @@ return function(
 		end)
 		local guiService = surfaces.service("GuiService")
 		local layerOf = ctx.observe(modal, "Parent")
+		local function originOf(use: ComposeTypes.Use): Vector2
+			use(origin)
+			use(layerOf)
+			use(extent)
+			use(position)
+			return modal.AbsolutePosition
+		end
 		local function insets(use: ComposeTypes.Use): (number, number, number, number)
 			use(layerOf)
 			use(extent)
@@ -730,7 +733,7 @@ return function(
 		end)
 		local function place(use: ComposeTypes.Use): (Vector2, Vector2)
 			local at, bounds, offer, panelSize, offset =
-				use(position), use(size), use(extent), use(measured), use(origin)
+				use(position), use(size), use(extent), use(measured), originOf(use)
 			local insetLeft, insetTop, insetRight, insetBottom = insets(use)
 			local low, high =
 				V2.new(insetLeft + 8, insetTop + 8), V2.new(offer.X - insetRight - 8, offer.Y - insetBottom - 8)
@@ -1021,7 +1024,7 @@ return function(
 							Size = D2.fromOffset(280, 0),
 							AutomaticSize = E.AutomaticSize.Y,
 							Position = function(use: ComposeTypes.Use)
-								local at, bounds, offset = use(position), use(size), use(origin)
+								local at, bounds, offset = use(position), use(size), originOf(use)
 								local insetLeft, insetTop = insets(use)
 								return D2.fromOffset(
 									math.max(insetLeft + 8, at.X - offset.X + (use(source).depth - 1) * 288),
@@ -1032,9 +1035,6 @@ return function(
 								FillDirection = E.FillDirection.Vertical,
 								SortOrder = E.SortOrder.LayoutOrder,
 							}) :: Types.Child,
-							Host.UICorner({}) :: Types.Child,
-							Host.UIStroke({ ApplyStrokeMode = E.ApplyStrokeMode.Border }) :: Types.Child,
-							Host.UIShadow "Raised" {} :: Types.Child,
 							Compose.keyed({
 								from = function(use: ComposeTypes.Use)
 									return use(source).items
@@ -1058,15 +1058,31 @@ return function(
 										label = item.label,
 										enabled = item.enabled,
 										icon = item.icon,
-										subtitle = item.description,
+										subtitle = function(use: ComposeTypes.Use)
+											return read(item.description, use) or ""
+										end,
 										LayoutOrder = index,
 										Size = function(use: ComposeTypes.Use)
 											return D2.new(1, 0, 0, hitFloor(use))
 										end,
 										selected = function(use: ComposeTypes.Use)
-											return use(path)[use(source).depth] == item.id
+											if use(path)[use(source).depth] == item.id then
+												return true
+											end
+											local live = actionItem(item)
+											return if live.checked
+												then use(live.checked)
+												elseif live.selected then use(live.selected) == live.value
+												else read(live.marked, use) == true
 										end,
-										trailingIcon = if item.children then "chevron.trailing" else nil,
+										trailingIcon = if item.children
+											then "chevron.trailing"
+											elseif
+												item.checked ~= nil
+												or item.selected ~= nil
+												or item.marked ~= nil
+											then "checkmark"
+											else nil,
 										onActivate = function()
 											if item.children then
 												local next = table.clone(source:peek().prefix)
@@ -1088,6 +1104,28 @@ return function(
 										end,
 									})
 									button:AddTag("facet-menu-item")
+									if item.role == "destructive" then
+										button:AddTag("facet-menu-destructive")
+									end
+									local mark = if item.children
+										then nil
+										else button:FindFirstChild("TrailingIcon", true)
+									if mark and mark:IsA("GuiObject") then
+										Compose.watch(function(use: ComposeTypes.Use)
+											local live = actionItem(item)
+											mark.Visible = if live.checked
+												then use(live.checked) == true
+												elseif live.selected then use(live.selected) == live.value
+												else read(live.marked, use) == true
+										end)
+									end
+									local content = button:FindFirstChild("Content")
+									local layout = if content
+										then content:FindFirstChildWhichIsA("UIListLayout")
+										else nil
+									if layout then
+										layout.HorizontalAlignment = E.HorizontalAlignment.Left
+									end
 									surfaces.attach(button, {
 										ctx.styled(
 											Host.Frame({

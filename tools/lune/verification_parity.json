@@ -1,31 +1,33 @@
 {
   "groups": {
     "menus-pickers": {
-      "mainCases": 230,
-      "a": 191,
-      "aWeaker": 36,
+      "mainCases": 231,
+      "a": 193,
+      "aWeaker": 37,
       "b": 0,
-      "c": 39,
+      "c": 38,
       "d": 0,
       "candidateSpecs": {
         "native_navigation": 49,
         "native_parity_navigation": 11,
         "radial_geometry": 3,
-        "native_collections": 3
+        "native_collections": 3,
+        "native_menu_parity": 3
       }
     },
     "motion": {
       "mainCases": 596,
-      "a": 174,
+      "a": 177,
       "aWeaker": 5,
       "b": 18,
-      "c": 404,
+      "c": 401,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 27,
         "native_navigation": 18,
         "native_inputs": 13,
-        "native_radial_controls": 8
+        "native_radial_controls": 8,
+        "native_menu_parity": 5
       }
     },
     "error-handling": {
@@ -359,11 +361,11 @@
       }
     },
     "paint-theming": {
-      "mainCases": 726,
-      "a": 216,
-      "aWeaker": 8,
-      "b": 33,
-      "c": 440,
+      "mainCases": 739,
+      "a": 271,
+      "aWeaker": 26,
+      "b": 27,
+      "c": 441,
       "d": 0,
       "candidateSpecs": {
         "native_themes_media": 54,
@@ -371,7 +373,8 @@
         "native_inputs": 14,
         "native_navigation": 10,
         "native_parity_media": 3,
-        "native_restored_controls": 3
+        "native_restored_controls": 3,
+        "native_menu_parity": 3
       }
     },
     "navigation-containers": {
@@ -466,9 +469,9 @@
   "baselineCommit": "a8c8895673c0745506908b66dc89f8cead6b66f3",
   "totals": {
     "afterNewTestsByClass": {
-      "a": 4126,
-      "c": 6014,
-      "b": 1301,
+      "a": 4136,
+      "c": 6010,
+      "b": 1295,
       "d": 3
     },
     "auditByClass": {
@@ -478,9 +481,9 @@
       "b": 1581
     },
     "contractsByClass": {
-      "a": 1737,
-      "c": 853,
-      "b": 255,
+      "a": 1740,
+      "c": 851,
+      "b": 254,
       "d": 1
     },
     "mainCases": 11414,
@@ -26127,20 +26130,25 @@
         "menu"
       ],
       "mainCases": 6,
-      "class": "b",
-      "nativeMechanism": "Native StyleSheet/StyleRule paint on facet-menu/facet-menu-item/facet-selected tags, UICorner on MenuRows",
-      "nativeEvidence": "native_themes_media::native themes and media::shares selected contrast across rich disclosure titles and chevrons proves the '.facet-selected >> .facet-text/.facet-icon' rule for DisclosureGroup, not for menu rows; no...",
+      "class": "a",
       "liveEvidence": {
-        "host": "Roblox Studio 0.740 playtest, desktop 1919x1080 (gui inset 87) with KeyboardAndMouse, and the iPhone 14 emulator in portrait with Touch; Medium text; nine shipped themes; source stamp c943b14d-3367818",
+        "host": "Roblox Studio 0.740 playtest of the Facet Showcase built from parity/menu, own place file, virtual mouse input",
         "artifacts": [
-          "artifacts/studio-live/sweep_b-desktop-default.json"
+          "artifacts/captures/menu/card-open-desktop.png",
+          "artifacts/captures/menu/menu-live.json"
         ],
         "cases": [
-          "sweep_b/theme-sweep"
+          "menu-live/one-card"
         ],
-        "observed": "In nine shipped themes the controls and collections demos draw nothing past the screen sides and cut no text."
+        "observed": "The anchored panel is one card with a radius 12 corner, a hairline stroke, flat rows and hairlines between adjacent rows; checked and selected rows fill with accent under a white label."
       },
-      "weaker": "Paint colours and corner radii are not compared with main's values."
+      "previousClass": "b",
+      "candidateCases": [
+        "native_menu_parity::native menu parity with main::draws the anchored panel as one card with one hairline between each pair of rows",
+        "native_menu_parity::native menu parity with main::keeps the sheet rows spaced and unruled, since the card is a presentation branch",
+        "native_menu_parity::native menu parity with main::paints a selected row with the accent under an onAccent label at 4.5:1 or better"
+      ],
+      "restoredBy": "parity/menu"
     },
     {
       "id": "navigation-2-49",
@@ -26150,8 +26158,26 @@
         "menu"
       ],
       "mainCases": 3,
-      "class": "c",
-      "removal": "Menu overlay uses surfaces.overlay without presence options (nav_menu.luau); no menu motion API remains."
+      "class": "a",
+      "previousClass": "c",
+      "candidateCases": [
+        "native_menu_parity::native menu parity with main::grows each level from 0.96 at the corner it hangs at, fades in and dips out faster",
+        "native_menu_parity::native menu parity with main::pivots a default panel at its top leading corner and a trailing panel at its leading side",
+        "native_menu_parity::native menu parity with main::removes the travel under reduced motion for the panel and each submenu level",
+        "native_menu_parity::native menu parity with main::slides sheet submenus forward on entry and backward on Back; reduced=false",
+        "native_menu_parity::native menu parity with main::slides sheet submenus forward on entry and backward on Back; reduced=true"
+      ],
+      "restoredBy": "parity/menu",
+      "liveEvidence": {
+        "host": "Roblox Studio 0.740 playtest of the Facet Showcase built from parity/menu, own place file, virtual mouse input",
+        "artifacts": [
+          "artifacts/captures/menu/menu-live.json"
+        ],
+        "cases": [
+          "menu-live/materialize-and-dismiss"
+        ],
+        "observed": "Each level scales 0.96 to 1 with a fade from the corner where it hangs and dips out faster; sheet rows slide +32 to 0 on entry and -32 to 0 on Back; reduced motion removes both."
+      }
     },
     {
       "id": "navigation-2-50",
@@ -30964,8 +30990,23 @@
         "native_regions_feedback"
       ],
       "mainCases": 1,
-      "class": "c",
-      "removal": "Menu takes label/icon only (api.md Menu); custom Button triggers deleted."
+      "class": "a",
+      "previousClass": "c",
+      "candidateCases": [
+        "native_menu_parity::native menu parity with main::attaches to the caller's trigger node and returns that same node without a wrapper",
+        "native_menu_parity::native menu parity with main::refuses label and trigger together"
+      ],
+      "restoredBy": "parity/menu",
+      "liveEvidence": {
+        "host": "Roblox Studio 0.740 playtest of the Facet Showcase built from parity/menu, own place file, virtual mouse input",
+        "artifacts": [
+          "artifacts/captures/menu/menu-live.json"
+        ],
+        "cases": [
+          "menu-live/trigger-and-callbacks"
+        ],
+        "observed": "A right-click and a left-click on an authored Button trigger open the menu, and the menu returns that Button."
+      }
     },
     {
       "id": "paint-62",
@@ -39048,7 +39089,8 @@
       "mainCases": 1,
       "class": "a",
       "candidateCases": [
-        "native_content_navigation::native content navigation deltas::sets the floating panel width from width"
+        "native_content_navigation::native content navigation deltas::sets the floating panel width from width",
+        "native_menu_parity::native menu parity with main::takes a dimension table, a UDim or pixels for width and refuses a malformed one by name"
       ],
       "mainBaseline": "bc9a56a67934c017bba202f4e8179305dc3756e6",
       "family": "content-navigation"

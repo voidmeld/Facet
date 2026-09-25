@@ -917,7 +917,12 @@ local function rulesFor(package: ThemeTypes.ThemePackage, selected: string?, typ
 	rule(".facet-menu-destructive:Press", { BackgroundTransparency = 0, BackgroundColor3 = c("controlPressed") })
 	rule(".facet-menu-destructive >> .facet-button-caption", { TextColor3 = c("danger") })
 	rule(".facet-menu-destructive >> .facet-icon", { ImageColor3 = c("danger") })
-	rule(".facet-menu::UIStroke", { Color = c("hairline"), Transparency = 0.3, Thickness = 1 })
+	rule(".facet-menu::UIStroke", {
+		Color = c("hairline"),
+		Transparency = 0.3,
+		Thickness = 1,
+		ApplyStrokeMode = types.Enum.ApplyStrokeMode.Border,
+	})
 	rule(".facet-menu::UIShadow", {
 		BlurRadius = types.UDim.new(0, 14),
 		Transparency = 0.35,

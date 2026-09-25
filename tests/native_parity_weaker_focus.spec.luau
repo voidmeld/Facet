@@ -474,6 +474,7 @@ t.describe("native parity weaker focus", function()
 			return Host.Frame({
 				UI.Menu({
 					isPresented = opened,
+					presentation = "sheet",
 					items = {
 						{
 							id = "Sort",

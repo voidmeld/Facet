@@ -28,6 +28,7 @@ local function items(count: number, log: { string }?): { any }
 end
 
 local NESTED = {
+	{ id = "plain", label = "Plain", onSelect = function() end },
 	{
 		id = "adjust",
 		label = "Adjust",
@@ -230,9 +231,10 @@ t.describe("native menu parity with main", function()
 		})
 		local panel = open(world)
 		t.expect(panel:HasTag("facet-menu")).toBe(true)
-		t.expect(panel:FindFirstChildWhichIsA("UICorner") ~= nil).toBe(true)
-		t.expect(panel:FindFirstChildWhichIsA("UIStroke") ~= nil).toBe(true)
-		t.expect(panel:FindFirstChildWhichIsA("UIShadow") ~= nil).toBe(true)
+		t.expect(panel:FindFirstChildWhichIsA("UICorner")).toBeNil()
+		t.expect(panel:FindFirstChildWhichIsA("UIStroke")).toBeNil()
+		t.expect(panel:FindFirstChildWhichIsA("UIShadow")).toBeNil()
+		t.expect(world.find("MenuGroup", panel):HasTag("facet-menu-group")).toBe(true)
 		local rows = panel:FindFirstChild("MenuRows", true)
 		t.expect(rows:FindFirstChildWhichIsA("UIListLayout").Padding.Offset).toBe(0)
 		local padding = rows:FindFirstChildWhichIsA("UIPadding")
@@ -264,6 +266,29 @@ t.describe("native menu parity with main", function()
 			t.expect(world.find(`row{index}`, panel):FindFirstChild("Hairline").Visible).toBe(false)
 		end
 		world.stop()
+	end)
+
+	t.it("grows a Back row only in the sheet and shows the open path on the parent level", function()
+		for _, presentation in { "menu", "sheet" } do
+			local world = labelled({ presentation = presentation, items = NESTED })
+			local panel = open(world)
+			world.find("adjust", panel).Activated.fire()
+			t.expect(`{presentation} {world.find("Back", panel) ~= nil}`)
+				.toBe(`{presentation} {presentation == "sheet"}`)
+			if presentation == "menu" then
+				local parent = world.find("AncestorMenu", world.screen.Parent)
+				local row = world.find("adjust", parent)
+				t.expect(row:HasTag("facet-selected")).toBe(true)
+				t.expect(world.find("skin", parent):HasTag("facet-selected")).toBe(false)
+				t.expect(world.find("skin", parent):FindFirstChild("Hairline").Visible).toBe(true)
+				for _, id in { "plain", "adjust", "skin" } do
+					local layout =
+						world.find(id, parent):FindFirstChild("Content"):FindFirstChildWhichIsA("UIListLayout")
+					t.expect(`{id} {layout.HorizontalAlignment.Name}`).toBe(`{id} Left`)
+				end
+			end
+			world.stop()
+		end
 	end)
 
 	t.it("paints a selected row with the accent under an onAccent label at 4.5:1 or better", function()
@@ -298,6 +323,7 @@ t.describe("native menu parity with main", function()
 		t.expect(clip.CornerRadius).toBe(panelCorner.CornerRadius)
 		local _, stroke = ruleIndex(sheet, ".facet-menu::UIStroke")
 		t.expect(stroke.Thickness).toBe(1)
+		t.expect(stroke.ApplyStrokeMode.Name).toBe("Border")
 		local _, shadow = ruleIndex(sheet, ".facet-menu::UIShadow")
 		t.expect(shadow.BlurRadius.Offset > 0).toBe(true)
 		local _, rule = ruleIndex(sheet, ".facet-menu-hairline")
