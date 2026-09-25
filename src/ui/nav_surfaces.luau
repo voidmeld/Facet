@@ -676,7 +676,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 								Name = "SourceSnapshot",
 								AnchorPoint = V2.zero,
 								Position = D2.fromOffset(0, 0),
-								Size = D2.fromScale(1, 1),
+								Size = function(use: ComposeTypes.Use)
+									local extent = use(sourceSize)
+									return D2.fromOffset(extent.X, extent.Y)
+								end,
 								AutomaticSize = E.AutomaticSize.None,
 							})
 							surfaces.attach(panel, {
@@ -686,10 +689,10 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 									Interactable = false,
 									ZIndex = 2,
 									Visible = function(use: ComposeTypes.Use)
-										return use(sourceParent) ~= nil and amount(use) < 0.65
+										return use(sourceParent) ~= nil and amount(use) < 0.35
 									end,
 									GroupTransparency = function(use: ComposeTypes.Use)
-										return math.clamp((amount(use) - 0.15) / 0.5, 0, 1)
+										return math.clamp(amount(use) / 0.35, 0, 1)
 									end,
 									snapshot,
 								},
@@ -699,9 +702,7 @@ return function(ctx: Types.Context, UI: Controls, surfaces: Nav.Surfaces): ()
 							Interactable = function(use: ComposeTypes.Use)
 								return not use(phase.exiting) and amount(use) >= 0.65
 							end,
-							GroupTransparency = function(use: ComposeTypes.Use)
-								return if snapshot then 1 - math.clamp((amount(use) - 0.15) / 0.5, 0, 1) else 0
-							end,
+							GroupTransparency = 0,
 						})
 						runtime.decorate(panel, {
 							AnchorPoint = V2.zero,

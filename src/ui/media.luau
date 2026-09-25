@@ -1414,7 +1414,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			end)
 		end
 	end
-	local function stageLive(stage: ViewportFrame): ComposeTypes.Readable<boolean>
+	local function stageLive(stage: ViewportFrame): (ComposeTypes.Readable<boolean>, ComposeTypes.Readable<boolean>)
 		local owner = assert(Compose.currentOwner())
 		local moving = Compose.cell(false)
 		local visible = Compose.cell(true)
@@ -1508,7 +1508,8 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 		locate()
 		return Compose.formula(function(use: ComposeTypes.Use): boolean
 			return use(visible) and not use(moving)
-		end)
+		end),
+			visible
 	end
 
 	UI.Stage = ctx.construct("Stage", function(spec: Media.StageProps): ViewportFrame
@@ -1540,7 +1541,7 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 			} :: Engine.ViewportFrameNativeProps
 		)
 		local stage = ctx.styled(Host.ViewportFrame(native), "panel")
-		local live = stageLive(stage)
+		local live, shown = stageLive(stage)
 		stage:SetAttribute("FacetLive", live:peek())
 		Compose.watch(function(use: ComposeTypes.Use)
 			stage:SetAttribute("FacetLive", use(live))
@@ -1569,12 +1570,12 @@ return function(ctx: Types.Context, controls: Media.MediaControls?): Media.Media
 				local queued = false
 				local function attempt()
 					queued = false
-					if live:peek() then
+					if shown:peek() then
 						build()
 					end
 				end
 				Compose.watch(function(use: ComposeTypes.Use)
-					if use(live) and not built and not queued then
+					if use(shown) and not built and not queued then
 						queued = true
 						enqueue(attempt)
 					end

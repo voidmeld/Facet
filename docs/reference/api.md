@@ -1468,8 +1468,10 @@ Motion options:
   enables native source motion. `source` can also be a readable.
 - `surface = "fullScreen"` fills the native presentation area.
 - With `surface = "fullScreen"` and a source transition, both bounds
-  interpolate from the source rectangle. A non-interactive native snapshot
-  keeps the appearance during the handoff. Dismissal reverses to the source if
+  interpolate from the source rectangle. The alert content keeps its final
+  size and the growing panel clips it. A non-interactive native snapshot at
+  the source size covers the start of the handoff and fades out in the first
+  35 percent of the motion. Dismissal fades it in during the last 35 percent. Dismissal reverses to the source if
   it still exists. Compose owns the snapshot and the departing presentation.
   The source stays mounted.
 - Native reduced motion makes the handoff immediate.
@@ -2124,9 +2126,11 @@ the nearest ScrollingFrame ancestor scrolls and for 0.15 seconds after, and
 while less than half of the stage shows in that scroll window. Without a
 ScrollingFrame ancestor it is true. Pause scene animation while `live` is
 false, so a scrolling feed does not write scene properties on each frame. With
-`lazy = true`, the stage builds its content only when it is first live, and the
-stages of one control set build one per frame. A stage that scrolls past does
-not build its scene. The stage sets the attributes `FacetLive` and
+`lazy = true`, the stage builds its content when half of it first shows in the
+scroll window, also while the window scrolls, and the stages of one control
+set build one per frame. Its animation stays paused until `live` is true, and
+the last frame stays visible. A stage that does not show does not build its
+scene. The stage sets the attributes `FacetLive` and
 `FacetBuilt`. Use the `Host.Part`, `Host.Model` and other native constructors of the
 same runtime. A 3D view inside a UI rectangle is not the same as 3D UI layout.
 
